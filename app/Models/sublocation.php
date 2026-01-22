@@ -17,8 +17,10 @@ class sublocation extends Model
         'updated_by',
     ];
 
-    public function locations()
-    {
-        return $this->belongsTo(location::class, 'location_id');
-    }
+    // public function locations()
+    // {
+    //     return $this->belongsTo(location::class, 'location_id');
+    // }
+
+
 }

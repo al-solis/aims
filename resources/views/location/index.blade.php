@@ -1,11 +1,5 @@
 @extends('dashboard')
 @section('content')
-    <div class="max-w-1xl px-4 py-2 sm:px-6 lg:px-8 lg:py-6 mx-auto">
-        {{-- <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Location Management</h1>
-        <p class="mt-2 text-gray-600 dark:text-gray-300">Manage your organization's locations and sub-locations for asset tracking.</p> --}}
-        @extends('layouts.app')
-
-@section('content')
     <div class="p-6 space-y-6">
 
         {{-- Header --}}
@@ -17,7 +11,7 @@
                 </p>
             </div>
 
-            <a href="{{ route('locations.create') }}"
+            <a href="{{ route('location.create') }}"
             class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -28,13 +22,13 @@
         </div>
 
         {{-- Stats Cards --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @php
                 $cards = [
                     ['title'=>'Total Locations','value'=>$totalLocations,'color'=>'blue'],
                     ['title'=>'Active Locations','value'=>$activeLocations,'color'=>'green'],
                     ['title'=>'Total Sub-Locations','value'=>$totalSubLocations,'color'=>'purple'],
-                    ['title'=>'Total Capacity','value'=>$totalCapacity,'color'=>'orange'],
+                    // ['title'=>'Total Capacity','value'=>$totalCapacity,'color'=>'orange'],
                 ];
             @endphp
 
@@ -115,7 +109,7 @@
                             <a href="{{ route('locations.edit',$location->id) }}" class="text-gray-600 hover:text-gray-900">
                                 ✏️
                             </a>
-                            <form action="{{ route('locations.destroy',$location->id) }}" method="POST" class="inline">
+                            <form action="{{ route('location.destroy',$location->id) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
                                 <button class="text-red-500 hover:text-red-700">🗑</button>
                             </form>

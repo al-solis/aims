@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LocationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,9 +21,7 @@ Route::middleware('auth')->group(function () {
         return view('main');
     })->name('main');
 
-    Route::get('/location', function () {
-        return view('location.index');
-    })->name('location.index');
+    Route::resource('location', LocationController::class)->except(['destroy']);
 });
 
 require __DIR__ . '/auth.php';

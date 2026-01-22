@@ -16,4 +16,8 @@ class location extends Model
         'updated_by',
     ];
 
+    public function sublocations()
+    {
+        return $this->hasMany(sublocation::class, 'location_id');
+    }
 }
