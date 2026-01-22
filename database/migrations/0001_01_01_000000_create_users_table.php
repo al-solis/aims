@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,10 +12,15 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('lname', 30);
+            $table->string('fname', 30);
+            $table->string('mname', 30)->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            $table->integer('role')->default(0); // 0 = user, 1 = admin
+            $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });
@@ -35,6 +39,16 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+
+        DB::table('users')->insert([
+            'lname' => 'Solis',
+            'fname' => 'Al',
+            'mname' => 'B.',
+            'email' => 'gunch1258@yahoo.com',
+            'password' => bcrypt('gunch1258'), // Make sure to hash the password
+            'role' => 1, // Set role to admin
+            'is_active' => true,
+        ]);
     }
 
     /**
