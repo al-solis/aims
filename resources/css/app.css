@@ -1,6 +1,8 @@
+@import "bootstrap-icons/font/bootstrap-icons.css";
 @import "flowbite/src/themes/default";
 @plugin "flowbite/plugin";
 @source "../../node_modules/flowbite";
+
 
 @tailwind base;
 @tailwind components;
