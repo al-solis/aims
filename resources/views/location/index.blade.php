@@ -22,82 +22,106 @@
         </div>
 
         {{-- Stats Cards --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            @php
-                $cards = [
-                    ['title'=>'Total Locations','value'=>$totalLocations,'color'=>'blue'],
-                    ['title'=>'Active Locations','value'=>$activeLocations,'color'=>'green'],
-                    ['title'=>'Total Sub-Locations','value'=>$totalSubLocations,'color'=>'purple'],
-                    // ['title'=>'Total Capacity','value'=>$totalCapacity,'color'=>'orange'],
-                ];
-            @endphp
+        @php
+            $cards = [
+                [
+                    'title' => 'Total Locations',
+                    'value' => $totalLocations,
+                    'color' => 'blue',
+                    'icon' => '
+                        <svg xmlns="http://www.w3.org/2000/svg" class ="text-blue-600" width="16" height="16" fill="currentColor" class="bi bi-building" viewBox="0 0 16 16">
+                        <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/>
+                        <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3z"/>
+                        </svg>'
+                ],
+                [
+                    'title' => 'Active Locations',
+                    'value' => $activeLocations,
+                    'color' => 'green',
+                    'icon' => '
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M5 13l4 4L19 7" />
+                        </svg>'
+                ],
+                [
+                    'title' => 'Total Sub-Locations',
+                    'value' => $totalSubLocations,
+                    'color' => 'orange',
+                    'icon' => '
+                        <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 7h18M3 12h18M3 17h18" />
+                        </svg>'
+                ],
+            ];
+        @endphp
 
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach($cards as $card)
-            <div class="bg-white border rounded-xl p-4 flex items-center gap-4">
-                <div class="w-10 h-10 rounded-lg bg-{{ $card['color'] }}-100 flex items-center justify-center">
-                    <span class="w-4 h-4 bg-{{ $card['color'] }}-500 rounded-full"></span>
+                <div class="bg-white border rounded-xl p-4 flex items-center gap-4">
+                    
+                    <div class="w-10 h-10 rounded-lg bg-{{ $card['color'] }}-100 
+                                flex items-center justify-center">
+                        {!! $card['icon'] !!}
+                    </div>
+
+                    <div>
+                        <p class="text-sm text-gray-500">{{ $card['title'] }}</p>
+                        <p class="text-xl font-semibold text-gray-900">
+                            {{ $card['value'] }}
+                        </p>
+                    </div>
                 </div>
-                <div>
-                    <p class="text-sm text-gray-500">{{ $card['title'] }}</p>
-                    <p class="text-xl font-semibold">{{ $card['value'] }}</p>
-                </div>
-            </div>
             @endforeach
         </div>
 
         {{-- Filters --}}
-        <div class="flex flex-col md:flex-row gap-4">
-            <div class="flex-1">
+        <div class="flex flex-col md:flex-row gap-4 text-xs md:text-sm">
+            <div class="md:w-2/3 w-full">
                 <input type="text"
                     placeholder="Search by name, code, or city..."
-                    class="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-gray-200">
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
             </div>
 
-            <select class="px-4 py-2 border rounded-lg">
-                <option value="">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-            </select>
+            <div class="md:w-1/3 w-full">
+                <select id="status" name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                    {{-- <option selected="">Select product type</option>--}}
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                </select>
+            </div>
+            
         </div>
 
         {{-- Table --}}
         <div class="bg-white border rounded-xl overflow-hidden">
-            <table class="min-w-full text-sm">
+            <table class="min-w-full text-xs">
                 <thead class="bg-gray-50 text-gray-600">
                     <tr>
-                        <th class="px-4 py-3 text-left">Code</th>
-                        <th class="px-4 py-3 text-left">Name</th>
-                        <th class="px-4 py-3 text-left">Type</th>
-                        <th class="px-4 py-3 text-left">Address</th>
-                        <th class="px-4 py-3 text-left">Contact</th>
-                        <th class="px-4 py-3 text-left">Sub-Locations</th>
-                        <th class="px-4 py-3 text-left">Capacity</th>
-                        <th class="px-4 py-3 text-left">Status</th>
-                        <th class="px-4 py-3 text-right">Actions</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Code</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[200px]">Name</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[350px]">Description</th>                        
+                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Sub-Locations</th>                        
+                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Status</th>
+                        <th scope="col" class="px-4 py-3 text-center w-[150px]">Actions</th>
                     </tr>
                 </thead>
 
                 <tbody class="divide-y">
                     @forelse($locations as $location)
                     <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 font-medium">{{ $location->code }}</td>
-                        <td class="px-4 py-3">{{ $location->name }}</td>
-                        <td class="px-4 py-3">{{ $location->type }}</td>
-                        <td class="px-4 py-3 text-gray-500">
-                            {{ $location->address }}<br>
-                            {{ $location->city }}, {{ $location->state }}
-                        </td>
-                        <td class="px-4 py-3">
-                            {{ $location->contact_name }}<br>
-                            <span class="text-gray-500">{{ $location->contact_phone }}</span>
-                        </td>
-                        <td class="px-4 py-3">
+                        <td class="px-4 py-3 font-medium w-[100px]">{{ $location->code }}</td>
+                        <td class="px-4 py-3 w-[200px]">{{ $location->name }}</td>
+                        <td class="px-4 py-3 w-[350px]">{{ $location->description }}</td>                        
+                        <td class="px-4 py-3 w-[100px]">
                             <a href="#" class="text-blue-600 hover:underline">
                                 {{ $location->sub_locations_count }} sub-locations
                             </a>
-                        </td>
-                        <td class="px-4 py-3">{{ $location->capacity }}</td>
-                        <td class="px-4 py-3">
+                        </td>                        
+                        <td class="px-4 py-3 w-[100px]">
                             <span class="px-2 py-1 text-xs rounded-full
                                 {{ $location->status === 'Active'
                                     ? 'bg-green-100 text-green-700'
@@ -105,7 +129,7 @@
                                 {{ $location->status }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-right space-x-2">
+                        <td class="px-4 py-3 text-right space-x-2 w-[150px]">
                             <a href="{{ route('locations.edit',$location->id) }}" class="text-gray-600 hover:text-gray-900">
                                 ✏️
                             </a>
