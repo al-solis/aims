@@ -16,13 +16,13 @@ class LocationController extends Controller
         return view('location.index', [
             'locations' => $locations,
             'totalLocations' => Location::count(),
-            'activeLocations' => Location::where('is_active', '1')->count(),
+            'activeLocations' => Location::where('status', 1)->count(),
             'totalSubLocations' => SubLocation::count(),
         ]);
     }
 
-    public function create()
-    {
-        return view('location.create');
-    }
+    // public function create()
+    // {
+    //     return view('location.create');
+    // }
 }
