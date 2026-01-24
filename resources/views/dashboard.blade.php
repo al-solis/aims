@@ -1,11 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
     <div class="flex items-center gap-3">
-        <x-application-logo
-            class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200"
-        />
+        <div class="flex-shrink-0 mt-0">
+            <x-application-logo
+                class="h-9 w-auto fill-current text-gray-800 dark:text-gray-200"
+            />
+        </div>       
 
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="ml-3 font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight mt-0">
             {{ __('Asset Inventory Management System') }}
         </h2>
     </div>

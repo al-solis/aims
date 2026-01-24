@@ -24,4 +24,26 @@ class SublocationController extends Controller
             'activeSubLocations' => $activeSubLocations,
         ]);
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'location_id' => 'required|exists:locations,id',
+            'code' => 'required|string|max:15|unique:sublocations,code',
+            'name' => 'required|string|max:60',
+            'description' => 'nullable|string',
+            'status' => 'required|integer|in:0,1,2',
+        ]);
+
+        SubLocation::create([
+            'location_id' => $request->location_id,
+            'code' => $request->code,
+            'name' => $request->name,
+            'description' => $request->description,
+            'status' => $request->status,
+            'created_by' => Auth::id(),
+        ]);
+
+        return redirect()->route('location.sublocation.index', ['location' => $request->location_id])->with('success', 'Sub-Location created successfully.');
+    }
 }

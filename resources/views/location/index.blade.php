@@ -120,7 +120,7 @@
         {{-- Table --}}
         <div class="bg-white border rounded-xl overflow-hidden">
             <table class="min-w-full text-xs">
-                <thead class="bg-gray-50 text-gray-600">
+                <thead class="bg-gray-200 text-gray-600">
                     <tr>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Code</th>
                         <th scope="col" class="px-4 py-3 text-left w-[200px]">Name</th>
