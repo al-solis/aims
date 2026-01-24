@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('location_id');
             $table->foreign('location_id')->references('id')->on('locations');
 
+            $table->string('code', 15)->unique()->nullable(false);
             $table->string('name', 60);
             $table->string('description', 150)->nullable();
             $table->integer('status')->default(1); // 1: Active, 0: Inactive, 2: Under Maintenance

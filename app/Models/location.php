@@ -9,9 +9,10 @@ class location extends Model
     protected $table = "locations";
 
     protected $fillable = [
+        'code',
         'name',
         'description',
-        'is_active',
+        'status',
         'created_by',
         'updated_by',
     ];

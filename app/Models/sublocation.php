@@ -9,10 +9,11 @@ class sublocation extends Model
     protected $table = "sublocations";
 
     protected $fillable = [
+        'code',
         'location_id',
         'name',
         'description',
-        'is_active',
+        'status',
         'created_by',
         'updated_by',
     ];

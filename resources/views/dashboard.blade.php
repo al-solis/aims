@@ -53,10 +53,13 @@
                     <i class="bi bi-bar-chart"></i>
                     Reports
                 </a>
-                {{-- <a href="" class="py-1.5 px-2.5 inline-flex items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700">
-                    <i class="bi bi-building"></i>
-                    Company Profile
-                </a> --}}
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="py-1.5 px-2.5 inline-flex items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700" href="#">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Signout
+                    </button>
+                </form>                
         </div>
     </div>
 </x-slot>
