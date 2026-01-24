@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\SublocationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,7 +22,10 @@ Route::middleware('auth')->group(function () {
         return view('main');
     })->name('main');
 
+    Route::put('location/{id}', [LocationController::class, 'update'])->name('location.update');
     Route::resource('location', LocationController::class)->except(['destroy']);
+
+    Route::resource('location.sublocation', SublocationController::class)->except(['desctroy']);
 });
 
 require __DIR__ . '/auth.php';

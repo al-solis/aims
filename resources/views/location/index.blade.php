@@ -12,7 +12,7 @@
             </div>
 
             <button data-modal-target="add-modal" data-modal-toggle="add-modal"
-                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
+                class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -61,7 +61,6 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach ($cards as $card)
                 <div class="bg-white border rounded-xl p-4 flex items-center gap-4">
-
                     <div
                         class="w-10 h-10 rounded-lg bg-{{ $card['color'] }}-100 
                                 flex items-center justify-center">
@@ -102,7 +101,7 @@
         {{-- Filters --}}
         <div class="flex flex-col md:flex-row gap-4 text-xs md:text-sm">
             <div class="md:w-2/3 w-full">
-                <input type="text" placeholder="Search by name, code, or city..."
+                <input type="text" placeholder="Search by name, code, or description..."
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
             </div>
 
@@ -139,16 +138,16 @@
                             <td class="px-4 py-3 w-[200px]">{{ $location->name }}</td>
                             <td class="px-4 py-3 w-[350px]">{{ $location->description }}</td>
                             <td class="px-4 py-3 w-[100px]">
-                                <a href="#" class="text-gray-600 hover:underline">
+                                <a href="{{ route('location.sublocation.index', $location->id) }}" class="text-gray-600 hover:underline">
                                     {{ $location->sub_locations_count }} sub-locations
                                 </a>
                             </td>
-                            <td class="px-4 py-3 w-[100px]">
+                            <td class="px-4 py-3 w-[100px] text-xs">
                                 @php
                                     $statuses = [
-                                        0 => ['color' => 'bg-gray-100 text-gray-600', 'label' => 'Inactive'],
+                                        0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Inactive'],
                                         1 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Active'],
-                                        2 => ['color' => 'bg-red-100 text-red-700', 'label' => 'Under Maintenance'],
+                                        2 => ['color' => 'bg-yellow-100 text-yellow-700', 'label' => 'Under Maintenance'],
                                     ];
                                     $status = $statuses[$location->status] ?? [
                                         'color' => 'bg-gray-100 text-gray-600',
@@ -160,7 +159,7 @@
                                     {{ $status['label'] }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 w-[50px] flex justify-left items-center">
+                            <td class="px-4 py-3 w-[50px] flex justify-center">
                                 <button 
                                     type="button" 
                                     title="Edit location {{ $location->name }}" 
@@ -172,7 +171,7 @@
                                     data-description="{{ $location->description }}" 
                                     data-status="{{ $location->status }}"
                                     onclick="openEditModal(this)"
-                                    class="group flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+                                    class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                                         <path
@@ -196,7 +195,7 @@
                             </td>
                             {{-- <td class="px-4 py-3 text-right space-x-2 w-[150px]">
                             <a href="{{ route('locations.edit',$location->id) }}" class="text-gray-600 hover:text-gray-900">
-                                ✏️
+                                edit
                             </a>
                             <form action="{{ route('location.destroy',$location->id) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
