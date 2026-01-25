@@ -31,4 +31,9 @@ class employee extends Model
         'created_by',
         'updated_by',
     ];
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'location_id');
+    }
 }

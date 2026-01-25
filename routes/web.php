@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
 
 
     Route::post('employee/upload-image', [EmployeeController::class, 'uploadImage'])->name('employee.uploadImage');
+    Route::post('employee/cleanup-temp-file', [EmployeeController::class, 'cleanupTempFile'])->name('employee.cleanupTempFile');
     Route::resource('employee', EmployeeController::class)->except(['destroy']);
 });
 

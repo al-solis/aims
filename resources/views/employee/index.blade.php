@@ -120,6 +120,20 @@
                 </div>
 
                 <div class="md:w-1/3 w-full">
+                    <select id="searchloc" name="searchloc"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                        onchange="this.form.submit()">
+                        <option value="">All Locations</option>
+                        @foreach ($locations as $location)
+                            <option value="{{ $location->id }}"
+                                {{ request('searchloc') == $location->id ? 'selected' : '' }}>
+                                {{ $location->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="md:w-1/3 w-full">
                     <select id="status" name="status"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                         onchange="this.form.submit()">
@@ -139,13 +153,13 @@
             <table class="min-w-full text-xs">
                 <thead class="bg-gray-200 text-gray-600">
                     <tr>
-                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Code</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[200px]">Name</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Position</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Code</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Name</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Position</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Location</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Email</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Phone</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Status</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
                 </thead>
@@ -153,13 +167,15 @@
                 <tbody class="divide-y">
                     @forelse($employees as $employee)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 font-medium w-[100px]">{{ $employee->code }}</td>
-                            <td class="px-4 py-3 w-[200px]">{{ $employee->name }}</td>
-                            <td class="px-4 py-3 w-[100px]">{{ $employee->position }}</td>
-                            <td class="px-4 py-3 w-[100px]">{{ $employee->location->name ?? 'N/A' }}</td>
+                            <td class="px-4 py-3 font-medium w-[80px]">{{ $employee->employee_code }}</td>
+                            <td class="px-4 py-3 w-[150px]">{{ $employee->last_name }}, {{ $employee->first_name }}
+                                {{ $employee->middle_name }}</td>
+                            <td class="px-4 py-3 w-[150px]">{{ $employee->position }}</td>
+                            <td class="px-4 py-3 w-[100px]">{{ $employee->location ? $employee->location->name : '' }}
+                            </td>
                             <td class="px-4 py-3 w-[100px]">{{ $employee->email }}</td>
-                            <td class="px-4 py-3 w-[100px]">{{ $employee->phone }}</td>
-                            <td class="px-4 py-3 w-[100px] text-xs">
+                            <td class="px-4 py-3 w-[100px]">{{ $employee->mobile }}</td>
+                            <td class="px-4 py-3 w-[80px] text-xs">
                                 @php
                                     $statuses = [
                                         0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Inactive'],
@@ -177,11 +193,11 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3 w-[50px] flex justify-center">
-                                <button type="button" title="Edit employee {{ $employee->name }}"
+                                <button type="button" title="Edit employee {{ $employee->lname }}"
                                     data-modal-target="edit-modal" data-modal-toggle="edit-modal"
-                                    data-id="{{ $employee->id }}" data-name="{{ $employee->name }}"
-                                    data-code="{{ $employee->code }}"
-                                    data-description="{{ $employee->location->description }}"
+                                    data-id="{{ $employee->id }}" data-name="{{ $employee->lname }}"
+                                    data-code="{{ $employee->employee_code }}"
+                                    data-description="{{ $employee->location->description ?? '' }}"
                                     data-status="{{ $employee->status }}" onclick="openEditModal(this)"
                                     class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"

@@ -18,18 +18,18 @@ return new class extends Migration {
             $table->string('last_name', 50);
             $table->date('hire_date')->nullable();
             $table->date('date_of_birth')->nullable();
-            $table->string('email', 100)->unique();
+            $table->string('email', 30)->nullable();
             $table->string('mobile', 15)->nullable();
             $table->string('position', 60)->nullable();
 
-            $table->unsignedBigInteger('location_id');
+            $table->unsignedBigInteger('location_id')->nullable();
             $table->foreign('location_id')->references('id')->on('locations');
 
             $table->string('address', 255)->nullable();
             $table->string('city', 50)->nullable();
             $table->string('state', 50)->nullable();
-            $table->string('postal_code', 20)->nullable();
             $table->string('country', 50)->nullable();
+            $table->string('postal_code', 20)->nullable();
 
             $table->string('emergency_contact', 50)->nullable();
             $table->string('emergency_phone', 15)->nullable();

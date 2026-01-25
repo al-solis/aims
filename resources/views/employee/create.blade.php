@@ -25,10 +25,10 @@
         <div class="bg-white rounded-xl shadow-xs p-3 sm:p-8">
             <div class="text-center mb-4">
                 <h2 class="text-2xl md:text-3xl font-bold text-gray-800">
-                    Employee Management
+                    Employee Information
                 </h2>
                 <p class="text-sm text-gray-600">
-                    Manage your employee.
+                    Display employee information.
                 </p>
             </div>
             <hr style="border: 0; height: 1px; background-color: #ccc; margin: 10px 0;">
@@ -39,8 +39,8 @@
                 <div class="grid gap-2 sm:grid-cols-2 sm:gap-2 mb-2">
                     <input type="hidden" id="id" name="id" value="0">
 
-                    <input type="hidden" name="employee_path" id="employee_path"
-                        value="{{ old('photo', $employee->photo_path ?? '') }}">
+                    <input type="hidden" name="employee_path" id="employee_path" value="">
+                    <input type="hidden" name="temp_photo_name" id="temp_photo_name" value="">
 
                     <div class="sm:col-span-1">
                         <label for="imgPreview" class="block mb-2 text-xs font-medium text-gray-900 dark:text-white">
@@ -59,7 +59,7 @@
                     <div class="w-full">
                         <label for="idno" class="block text-xs font-medium text-gray-900 dark:text-white">ID
                             No*</label>
-                        <input type="text" name="sku" id="sku"
+                        <input type="text" name="idno" id="idno"
                             class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                             placeholder="e.g. 001-26, 2026-00001" required>
                         <small id="id-feedback" class="text-red-500 text-sm mt-1 hidden">
@@ -84,7 +84,7 @@
                     </div>
                 </div>
 
-                <div class="grid gap-2 sm:grid-cols-1 md:grid-cols-3">
+                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
                     <div class="w-full">
                         <label for="lname" class="block text-xs font-medium text-gray-900 dark:text-white">Last
                             Name*</label>
@@ -108,6 +108,103 @@
                     </div>
                 </div>
 
+                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
+                    <div class="w-full">
+                        <label for="bday"
+                            class="block text-xs font-medium text-gray-900 dark:text-white">Birthday</label>
+                        <input type="date" name="bday" id="bday"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                            placeholder="e.g. mm/dd/yyyy">
+                    </div>
+                    <div class="w-full">
+                        <label for="mobile" class="block text-xs font-medium text-gray-900 dark:text-white">Mobile
+                            No</label>
+                        <input type="tel" name="mobile" id="mobile"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                            placeholder="e.g. 09xxxxxxxxx">
+                    </div>
+                    <div class="w-full">
+                        <label for="email"
+                            class="block text-xs font-medium text-gray-900 dark:text-white">Email</label>
+                        <input type="email" name="email" id="email"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                            placeholder="e.g. juandelacruz@yahoo.com">
+                    </div>
+                </div>
+
+                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                    <div class="w-full">
+                        <label for="position"
+                            class="block text-xs font-medium text-gray-900 dark:text-white">Position</label>
+                        <input type="text" name="position" id="position"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                            placeholder="e.g. Manager">
+                    </div>
+                    <div class="w-full">
+                        <label for="department"
+                            class="block text-xs font-medium text-gray-900 dark:text-white">Department</label>
+                        <select name="department" id="department"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                            <option selected="" value="">Select Department/ Location</option>
+                            @foreach ($locations as $location)
+                                <option value="{{ $location->id }}">{{ $location->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <label for="address" class="block text-xs font-medium text-gray-900 dark:text-white">Address*</label>
+                <textarea name="address" id="address" rows="3"
+                    class="mb-2 px-3 py-2 w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                    placeholder="Address..." required></textarea>
+
+                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-4">
+                    <div class="w-full">
+                        <label for="city" class="block text-xs font-medium text-gray-900 dark:text-white">City</label>
+                        <input type="text" name="city" id="city"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                            placeholder="e.g. City">
+                    </div>
+                    <div class="w-full">
+                        <label for="state" class="block text-xs font-medium text-gray-900 dark:text-white">State/
+                            Province</label>
+                        <input type="text" name="state" id="state"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                            placeholder="e.g. State/ Province">
+                    </div>
+                    <div class="w-full">
+                        <label for="country"
+                            class="block text-xs font-medium text-gray-900 dark:text-white">Country</label>
+                        <input type="text" name="country" id="country"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                            placeholder="e.g. Philippines">
+                    </div>
+                    <div class="w-full">
+                        <label for="zip" class="block text-xs font-medium text-gray-900 dark:text-white">Zip
+                            Code</label>
+                        <input type="text" name="zip" id="zip"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                            placeholder="e.g. 4103">
+                    </div>
+                </div>
+
+                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                    <div class="w-full">
+                        <label for="emergency" class="block text-xs font-medium text-gray-900 dark:text-white">Emergency
+                            Contact</label>
+                        <input type="text" name="emergency" id="emergency"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                            placeholder="e.g. Emergency Contact">
+                    </div>
+                    <div class="w-full">
+                        <label for="e_no" class="block text-xs font-medium text-gray-900 dark:text-white">Emergency
+                            No.</label>
+                        <input type="tel" name="e_no" id="e_no"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                            placeholder="e.g. 09xxxxxxxxx">
+                    </div>
+                </div>
+
                 <div class="mt-5 flex justify-end gap-x-2">
                     <a href="{{ route('employee.index') }}" type="button" id="closeButton"
                         class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 ">
@@ -126,49 +223,65 @@
     </div>
 
     <script>
+        let uploadedTempPhoto = null;
+
         function clearModalFields() {
-            // Clear all form fields
             const form = document.querySelector('form');
             form.reset();
 
-            // Reset image to default
             const imgPreview = document.getElementById('empPreview');
             imgPreview.src = "{{ asset('storage/default/employee.jpg') }}";
 
-            // Clear hidden path input
             document.getElementById('employee_path').value = '';
+            document.getElementById('temp_photo_name').value = '';
 
-            // Remove any success messages after a delay
-            setTimeout(() => {
-                const successMessage = document.querySelector('[data-success]');
-                if (successMessage) {
-                    successMessage.remove();
-                }
-            }, 3000);
+            if (uploadedTempPhoto) {
+                cleanupTempFile(uploadedTempPhoto.path);
+                uploadedTempPhoto = null;
+            }
+        }
+
+        function cleanupTempFile(filePath) {
+            if (!filePath) return;
+
+            fetch('{{ route('employee.cleanupTempFile') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        file_path: filePath
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Temp file cleaned up:', data);
+                })
+                .catch(err => {
+                    console.error('Error cleaning up temp file:', err);
+                });
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             const imgPreview = document.getElementById('empPreview');
             const fileInput = document.getElementById('photoInput');
-            const imgPathInput = document.getElementById('employee_path');
+            const employeePathInput = document.getElementById('employee_path');
+            const tempPhotoNameInput = document.getElementById('temp_photo_name');
 
-            // Make image clickable to trigger file input
             imgPreview.addEventListener('click', function() {
                 fileInput.click();
             });
 
-            // Handle file selection
             fileInput.addEventListener('change', function() {
                 if (fileInput.files && fileInput.files[0]) {
-                    // Validate file size (2MB max)
-                    const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+                    const maxSize = 2 * 1024 * 1024;
                     if (fileInput.files[0].size > maxSize) {
                         alert('File size exceeds 2MB limit. Please choose a smaller file.');
                         fileInput.value = '';
                         return;
                     }
 
-                    // Validate file type
                     const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
                     if (!validTypes.includes(fileInput.files[0].type)) {
                         alert('Please select a valid image file (JPEG, PNG, JPG, GIF, WEBP).');
@@ -176,19 +289,16 @@
                         return;
                     }
 
-                    // Show preview immediately
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         imgPreview.src = e.target.result;
                     }
                     reader.readAsDataURL(fileInput.files[0]);
 
-                    // Upload to server
                     uploadImageToServer(fileInput.files[0]);
                 }
             });
 
-            // Function to upload image to server
             function uploadImageToServer(file) {
                 const formData = new FormData();
                 formData.append('photo', file);
@@ -199,45 +309,28 @@
 
                 fetch('{{ route('employee.uploadImage') }}', {
                         method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
+                        body: formData
                     })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
+                    .then(response => response.json())
                     .then(data => {
                         imgPreview.classList.remove('opacity-50');
 
                         if (data.path) {
-                            imgPathInput.value = data.path;
-                            imgPreview.src = '{{ asset('storage') }}/' + data.path;
-                            imgPreview.title = 'Photo uploaded successfully!';
-
-
-                            const successIndicator = document.createElement('div');
-                            successIndicator.className = 'text-green-500 text-xs mt-1';
-                            successIndicator.textContent = '✓ Photo uploaded successfully';
-                            successIndicator.id = 'upload-success';
-
-                            const existingIndicator = document.getElementById('upload-success');
-                            if (existingIndicator) {
-                                existingIndicator.remove();
+                            if (uploadedTempPhoto) {
+                                cleanupTempFile(uploadedTempPhoto.path);
                             }
 
-                            imgPreview.parentNode.appendChild(successIndicator);
+                            uploadedTempPhoto = {
+                                path: data.path,
+                                temp_name: data.temp_name,
+                                url: data.url
+                            };
 
-                            setTimeout(() => {
-                                const indicator = document.getElementById('upload-success');
-                                if (indicator) {
-                                    indicator.remove();
-                                }
-                                imgPreview.title = 'Click to change photo';
-                            }, 3000);
+                            employeePathInput.value = data.path;
+                            tempPhotoNameInput.value = data.temp_name;
+
+                            imgPreview.src = data.url;
+                            imgPreview.title = 'Photo uploaded. Form must be saved to keep.';
 
                         } else if (data.error) {
                             throw new Error(data.error);
@@ -246,15 +339,43 @@
                     .catch(err => {
                         console.error('Upload error:', err);
                         imgPreview.classList.remove('opacity-50');
-
                         imgPreview.src = "{{ asset('storage/default/employee.jpg') }}";
                         imgPreview.title = 'Upload failed. Click to try again.';
                         fileInput.value = '';
-                        imgPathInput.value = '';
-
                         alert('Error uploading image: ' + err.message);
                     });
             }
+
+            // Handle page unload (user leaves without saving)
+            window.addEventListener('beforeunload', function(e) {
+                if (uploadedTempPhoto && !document.querySelector('[data-success]')) {
+                    cleanupTempFile(uploadedTempPhoto.path);
+                }
+            });
+
+            // Handle form reset (clear button or browser reset)
+            document.getElementById('employeeForm').addEventListener('reset', function() {
+                if (uploadedTempPhoto) {
+                    cleanupTempFile(uploadedTempPhoto.path);
+                    uploadedTempPhoto = null;
+                }
+            });
+
+            // Handle back button click
+            document.getElementById('closeButton').addEventListener('click', function(e) {
+                if (uploadedTempPhoto) {
+                    e.preventDefault(); // Prevent immediate navigation
+
+                    // Clean up temp file first, then navigate
+                    cleanupTempFile(uploadedTempPhoto.path);
+                    uploadedTempPhoto = null;
+
+                    // Navigate after cleanup
+                    setTimeout(() => {
+                        window.location.href = this.href;
+                    }, 100);
+                }
+            });
         });
     </script>
 @endsection
