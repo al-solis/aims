@@ -11,13 +11,16 @@
                 </p>
             </div>
 
-            <button data-modal-target="add-modal" data-modal-toggle="add-modal"
-                class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Add Employee
-            </button>
+            <a href="{{ route('employee.create') }}">
+                <button
+                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add Employee
+                </button>
+            </a>
+
         </div>
 
         {{-- Stats Cards --}}
@@ -110,14 +113,14 @@
         <form action="" method="GET">
             <div class="flex flex-col md:flex-row gap-2 text-xs md:text-sm">
                 <div class="md:w-2/3 w-full">
-                    <input type="text" id="simple-search" name="search" placeholder="Search by name, code, or position..."
+                    <input type="text" id="simple-search" name="search"
+                        placeholder="Search by name, code, or position..."
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                        value = "{{ request()->query('search') }}"
-                        oninput="this.form.submit()"> 
+                        value = "{{ request()->query('search') }}" oninput="this.form.submit()">
                 </div>
 
                 <div class="md:w-1/3 w-full">
-                    <select id="status" name="status" 
+                    <select id="status" name="status"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                         onchange="this.form.submit()">
                         <option value="">All Status</option>
@@ -127,8 +130,9 @@
                     </select>
                 </div>
             </div>
-            <button type="submit" class="hidden mt-4 w-full shrink-0 rounded-lg bg-gray-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800 sm:mt-0 sm:w-auto">Search</button>
-        </form>      
+            <button type="submit"
+                class="hidden mt-4 w-full shrink-0 rounded-lg bg-gray-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800 sm:mt-0 sm:w-auto">Search</button>
+        </form>
 
         {{-- Table --}}
         <div class="bg-white border rounded-xl overflow-hidden">
@@ -154,7 +158,7 @@
                             <td class="px-4 py-3 w-[100px]">{{ $employee->position }}</td>
                             <td class="px-4 py-3 w-[100px]">{{ $employee->location->name ?? 'N/A' }}</td>
                             <td class="px-4 py-3 w-[100px]">{{ $employee->email }}</td>
-                            <td class="px-4 py-3 w-[100px]">{{ $employee->phone }}</td>                            
+                            <td class="px-4 py-3 w-[100px]">{{ $employee->phone }}</td>
                             <td class="px-4 py-3 w-[100px] text-xs">
                                 @php
                                     $statuses = [
@@ -173,17 +177,12 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3 w-[50px] flex justify-center">
-                                <button 
-                                    type="button" 
-                                    title="Edit employee {{ $employee->name }}" 
-                                    data-modal-target="edit-modal"
-                                    data-modal-toggle="edit-modal" 
-                                    data-id="{{ $employee->id }}"
-                                    data-name="{{ $employee->name }}" 
+                                <button type="button" title="Edit employee {{ $employee->name }}"
+                                    data-modal-target="edit-modal" data-modal-toggle="edit-modal"
+                                    data-id="{{ $employee->id }}" data-name="{{ $employee->name }}"
                                     data-code="{{ $employee->code }}"
-                                    data-description="{{ $employee->location->description }}" 
-                                    data-status="{{ $employee->status }}"
-                                    onclick="openEditModal(this)"
+                                    data-description="{{ $employee->location->description }}"
+                                    data-status="{{ $employee->status }}" onclick="openEditModal(this)"
                                     class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -224,14 +223,15 @@
                         </tr>
                     @endforelse
                 </tbody>
-            </table>            
-        </div>       
+            </table>
+        </div>
         <!-- Pagination Links -->
-        <div class="w-full md:w-auto text-xs flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0 mb-2">
+        <div
+            class="w-full md:w-auto text-xs flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0 mb-2">
             {{ $employees->links() }}
-        </div>  
+        </div>
     </div>
-    
+
     <script>
         function clearModalFields() {
             // Clear all form fields
@@ -248,15 +248,15 @@
         }
 
         function openEditModal(button) {
-        const id = button.getAttribute('data-id');
-        document.getElementById('edit_id').value = button.getAttribute('data-id');
-        document.getElementById('edit_code').value = button.getAttribute('data-code');
-        document.getElementById('edit_name').value = button.getAttribute('data-name');
-        document.getElementById('edit_description').value = button.getAttribute('data-description');
-        document.getElementById('edit_status').value = button.getAttribute('data-status');
-        
-        const form = document.getElementById('editForm');
-        form.action = `/employee/${id}`;
-        }    
+            const id = button.getAttribute('data-id');
+            document.getElementById('edit_id').value = button.getAttribute('data-id');
+            document.getElementById('edit_code').value = button.getAttribute('data-code');
+            document.getElementById('edit_name').value = button.getAttribute('data-name');
+            document.getElementById('edit_description').value = button.getAttribute('data-description');
+            document.getElementById('edit_status').value = button.getAttribute('data-status');
+
+            const form = document.getElementById('editForm');
+            form.action = `/employee/${id}`;
+        }
     </script>
 @endsection

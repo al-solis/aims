@@ -46,4 +46,36 @@ class EmployeeController extends Controller
 
         return view('employee.index', compact('employees', 'totalEmployees', 'activeEmployees', 'onleaveEmployees', 'inactiveEmployees', 'search', 'status'));
     }
+
+    public function create()
+    {
+        $locations = Location::where('status', 1)->get();
+        return view('employee.create', compact('locations'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string|max:15|unique:employees,code',
+            'name' => 'required|string|max:100',
+            'position' => 'required|string|max:100',
+            'location_id' => 'required|exists:locations,id',
+            'email' => 'nullable|email|max:100',
+            'phone' => 'nullable|string|max:15',
+            'status' => 'required|integer|in:0,1,2',
+        ]);
+
+        Employee::create([
+            'code' => $request->code,
+            'name' => $request->name,
+            'position' => $request->position,
+            'location_id' => $request->location_id,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'status' => $request->status,
+            'created_by' => Auth::id(),
+        ]);
+
+        return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
+    }
 }
