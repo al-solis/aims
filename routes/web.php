@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\SublocationController;
+use App\Http\Controllers\EmployeeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,6 +28,8 @@ Route::middleware('auth')->group(function () {
 
     Route::put('location/sublocation/{id}', [SublocationController::class, 'update'])->name('location.sublocation.update');
     Route::resource('location.sublocation', SublocationController::class)->except(['destroy']);
+
+    Route::resource('employee', EmployeeController::class)->except(['destroy']);
 });
 
 require __DIR__ . '/auth.php';
