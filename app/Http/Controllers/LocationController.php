@@ -5,20 +5,41 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Location;
 use App\Models\SubLocation;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 class LocationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $locations = Location::withCount('sublocations')->get();
+        $search = $request->query('search');
+        $status = $request->query('status');
 
-        return view('location.index', [
-            'locations' => $locations,
-            'totalLocations' => Location::count(),
-            'activeLocations' => Location::where('status', 1)->count(),
-            'totalSubLocations' => SubLocation::count(),
-        ]);
+        $query = Location::query();
+        $totalLocations = Location::count();
+        $activeLocations = Location::where('status', 1)->count();
+        $totalSubLocations = SubLocation::count();
+
+        if ($status !== null && $status !== '') {
+            $search = '';
+        }
+
+        if ($search) {
+            $query->where(function (Builder $q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%');
+                $q->orWhere('code', 'like', '%' . $search . '%');
+                $q->orWhere('description', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($status !== null && $status !== '') {
+            $query->where('status', $status);
+        }
+
+        $locations = $query->withCount('sublocations')->paginate(config('app.paginate'));
+
+        return view('location.index', compact('locations', 'totalLocations', 'activeLocations', 'totalSubLocations', 'search', 'status'));
+
     }
 
     public function store(Request $request)

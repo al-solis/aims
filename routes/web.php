@@ -25,7 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::put('location/{id}', [LocationController::class, 'update'])->name('location.update');
     Route::resource('location', LocationController::class)->except(['destroy']);
 
-    Route::resource('location.sublocation', SublocationController::class)->except(['desctroy']);
+    Route::put('location/sublocation/{id}', [SublocationController::class, 'update'])->name('location.sublocation.update');
+    Route::resource('location.sublocation', SublocationController::class)->except(['destroy']);
 });
 
 require __DIR__ . '/auth.php';

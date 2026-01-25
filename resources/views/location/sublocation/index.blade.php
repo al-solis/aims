@@ -7,7 +7,7 @@
             <!-- Left: Title & Description -->
             <div>
                 <h1 class="text-2xl font-semibold text-gray-900">Sub-Location Management</h1>
-                <p class="text-sm text-gray-500">Manage sub-locations for asset tracking</p>
+                <p class="text-sm text-gray-500">Manage sub-locations for {{ $location->name }}</p>
             </div>
 
             <!-- Right: Buttons -->
@@ -99,23 +99,28 @@
         @endif
 
         {{-- Filters --}}
-        <div class="flex flex-col md:flex-row gap-4 text-xs md:text-sm">
-            <div class="md:w-2/3 w-full">
-                <input type="text" placeholder="Search by name, code, or description..."
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-            </div>
+        <form action="" method="GET">
+            <div class="flex flex-col md:flex-row gap-2 text-xs md:text-sm">
+                <div class="md:w-2/3 w-full">
+                    <input type="text" id="simple-search" name="search" placeholder="Search by name, code, or description..."
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                        value = "{{ request()->query('search') }}"
+                        oninput="this.form.submit()"> 
+                </div>
 
-            <div class="md:w-1/3 w-full">
-                <select id="status" name="status"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                    {{-- <option selected="">Select product type</option> --}}
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
-                    <option value="2">Under Maintenance</option>
-                </select>
+                <div class="md:w-1/3 w-full">
+                    <select id="status" name="status" 
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                        onchange="this.form.submit()">
+                        <option value="">All Status</option>
+                        <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Active</option>
+                        <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Inactive</option>
+                        <option value="2" {{ request('status') === '2' ? 'selected' : '' }}>Under Maintenance</option>
+                    </select>
+                </div>
             </div>
-
-        </div>
+            <button type="submit" class="hidden mt-4 w-full shrink-0 rounded-lg bg-gray-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800 sm:mt-0 sm:w-auto">Search</button>
+        </form>
 
         {{-- Table --}}
         <div class="bg-white border rounded-xl overflow-hidden">
@@ -123,9 +128,9 @@
                 <thead class="bg-gray-200 text-gray-600">
                     <tr>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Location</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Code</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[200px]">Name</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[350px]">Description</th>                        
+                        <th scope="col" class="px-4 py-3 text-left w-[100px]">SL Code</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[200px]">SL Name</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[350px]">SL Description</th>                        
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
@@ -209,7 +214,10 @@
                 </tbody>
             </table>
         </div>
-
+        <!-- Pagination Links -->
+        <div class="w-full md:w-auto text-xs flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0 mb-2">
+            {{ $sublocations->links() }}
+        </div> 
     </div>
 
     <!-- Create sub-location modal -->
@@ -293,4 +301,105 @@
         </div>
     </div>
     <!-- End create sub-location modal -->
+
+    <!-- Modal  Edit-->
+    <div id="edit-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-md max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+                <!-- Modal header -->
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        Update Sub-Location
+                    </h3>
+                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="edit-modal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                        <span class="sr-only">Close</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <form id="editForm" class="p-4 md:p-5" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="edit_id" id="edit_id">                    
+                    <input type="hidden" name="location_id" value="{{ $locationId }}">
+
+                    <div class="grid gap-2 mb-4 sm:grid-cols-1">
+                        <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-3">
+                            <div class="w-full md:col-span-1">
+                                <label for="edit_code"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Code*</label>
+                                <input type="text" name="edit_code" id="edit_code"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. HQ-MAIN-REC" required>
+                            </div>
+                            <div class="w-full md:col-span-2">
+                                <label for="edit_name"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
+                                <input type="text" name="edit_name" id="edit_name"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. Ground Floor - Reception" required>
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label for="edit_description"
+                                class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
+                            <textarea type="text" name="edit_description" id="edit_description" rows="3"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                placeholder="Location description"></textarea>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label for="edit_status"
+                                class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
+                            <select id="edit_status" name="edit_status"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                required>
+                                {{-- <option selected="">Select product type</option> --}}
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                                <option value="2">Under Maintenance</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                        {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
+                        Update Sub-Location
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- End edit modal -->
+
+    <script>
+        function clearModalFields() {
+            // Clear all form fields
+            const form = document.querySelector('form');
+            form.reset();
+
+            // Remove any success messages after a delay
+            setTimeout(() => {
+                const successMessage = document.querySelector('[data-success]');
+                if (successMessage) {
+                    successMessage.remove();
+                }
+            }, 3000);
+        }
+
+        function openEditModal(button) {
+        const id = button.getAttribute('data-id');
+        document.getElementById('edit_id').value = button.getAttribute('data-id');
+        document.getElementById('edit_code').value = button.getAttribute('data-code');
+        document.getElementById('edit_name').value = button.getAttribute('data-name');
+        document.getElementById('edit_description').value = button.getAttribute('data-description');
+        document.getElementById('edit_status').value = button.getAttribute('data-status');
+        
+        const form = document.getElementById('editForm');
+        form.action = `/location/sublocation/${id}`;
+        }    
+    </script>
 @endsection

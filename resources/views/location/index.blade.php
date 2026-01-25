@@ -99,23 +99,28 @@
         @endif
 
         {{-- Filters --}}
-        <div class="flex flex-col md:flex-row gap-4 text-xs md:text-sm">
-            <div class="md:w-2/3 w-full">
-                <input type="text" placeholder="Search by name, code, or description..."
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-            </div>
+        <form action="" method="GET">
+            <div class="flex flex-col md:flex-row gap-2 text-xs md:text-sm">
+                <div class="md:w-2/3 w-full">
+                    <input type="text" id="simple-search" name="search" placeholder="Search by name, code, or description..."
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                        value = "{{ request()->query('search') }}"
+                        oninput="this.form.submit()"> 
+                </div>
 
-            <div class="md:w-1/3 w-full">
-                <select id="status" name="status"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                    {{-- <option selected="">Select product type</option> --}}
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
-                    <option value="2">Under Maintenance</option>
-                </select>
+                <div class="md:w-1/3 w-full">
+                    <select id="status" name="status" 
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                        onchange="this.form.submit()">
+                        <option value="">All Status</option>
+                        <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Active</option>
+                        <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Inactive</option>
+                        <option value="2" {{ request('status') === '2' ? 'selected' : '' }}>Under Maintenance</option>
+                    </select>
+                </div>
             </div>
-
-        </div>
+            <button type="submit" class="hidden mt-4 w-full shrink-0 rounded-lg bg-gray-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800 sm:mt-0 sm:w-auto">Search</button>
+        </form>      
 
         {{-- Table --}}
         <div class="bg-white border rounded-xl overflow-hidden">
@@ -138,8 +143,8 @@
                             <td class="px-4 py-3 w-[200px]">{{ $location->name }}</td>
                             <td class="px-4 py-3 w-[350px]">{{ $location->description }}</td>
                             <td class="px-4 py-3 w-[100px]">
-                                <a href="{{ route('location.sublocation.index', $location->id) }}" class="text-gray-600 hover:underline">
-                                    {{ $location->sub_locations_count }} sub-locations
+                                <a href="{{ route('location.sublocation.index', $location->id) }}" class="font-semibold text-gray-600 hover:underline">
+                                    ({{ $location->sublocations_count }}) sub-locations
                                 </a>
                             </td>
                             <td class="px-4 py-3 w-[100px] text-xs">
@@ -211,9 +216,12 @@
                         </tr>
                     @endforelse
                 </tbody>
-            </table>
-        </div>
-
+            </table>            
+        </div>       
+        <!-- Pagination Links -->
+        <div class="w-full md:w-auto text-xs flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0 mb-2">
+            {{ $locations->links() }}
+        </div>  
     </div>
 
     <!-- Create location modal -->
@@ -359,7 +367,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-sm px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                    <button type="submit" class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
                         {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
                         Update Location
                     </button>
