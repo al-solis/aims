@@ -78,4 +78,13 @@ class EmployeeController extends Controller
 
         return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
     }
+
+    public function uploadImage(Request $request)
+    {
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('employees', 'public');
+            return response()->json(['path' => $path]);
+        }
+        return response()->json(['error' => 'No file uploaded'], 400);
+    }
 }

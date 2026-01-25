@@ -29,6 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::put('location/sublocation/{id}', [SublocationController::class, 'update'])->name('location.sublocation.update');
     Route::resource('location.sublocation', SublocationController::class)->except(['destroy']);
 
+
+    Route::post('employee/upload-image', [EmployeeController::class, 'uploadImage'])->name('employee.uploadImage');
     Route::resource('employee', EmployeeController::class)->except(['destroy']);
 });
 
