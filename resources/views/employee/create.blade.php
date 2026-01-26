@@ -39,8 +39,8 @@
                 <div class="grid gap-2 sm:grid-cols-2 sm:gap-2 mb-2">
                     <input type="hidden" id="id" name="id" value="0">
 
-                    <input type="hidden" name="employee_path" id="employee_path" value="">
-                    <input type="hidden" name="temp_photo_name" id="temp_photo_name" value="">
+                    <input type="text" name="employee_path" id="employee_path" value="">
+                    <input type="text" name="temp_photo_name" id="temp_photo_name" value="">
 
                     <div class="sm:col-span-1">
                         <label for="imgPreview" class="block mb-2 text-xs font-medium text-gray-900 dark:text-white">
@@ -224,6 +224,7 @@
 
     <script>
         let uploadedTempPhoto = null;
+        let isSubmitting = false;
 
         function clearModalFields() {
             const form = document.querySelector('form');
@@ -346,9 +347,13 @@
                     });
             }
 
+            document.getElementById('employeeForm').addEventListener('submit', function() {
+                isSubmitting = true;
+            });
+
             // Handle page unload (user leaves without saving)
             window.addEventListener('beforeunload', function(e) {
-                if (uploadedTempPhoto && !document.querySelector('[data-success]')) {
+                if (uploadedTempPhoto && !isSubmitting) {
                     cleanupTempFile(uploadedTempPhoto.path);
                 }
             });

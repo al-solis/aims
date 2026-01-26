@@ -108,21 +108,24 @@ class EmployeeController extends Controller
             'employee_path' => 'nullable|string'
         ]);
 
+        $photoPath = null;
+
         try {
             // Check if there's a temp photo to move
-            if ($request->filled('employee_path') && Str::contains($request->employee_path, $this->tempFolder)) {
+            if (
+                $request->filled('employee_path') &&
+                Str::contains($request->employee_path, $this->tempFolder)
+            ) {
                 $tempPath = $request->employee_path;
 
-                // Generate new permanent path
-                $newFileName = 'employee_' . time() . '_' . Str::random(10) . '.' . pathinfo($tempPath, PATHINFO_EXTENSION);
-                $newPath = 'employees/' . $newFileName;
-
-                // Move from temp to permanent storage
                 if (Storage::disk('public')->exists($tempPath)) {
-                    Storage::disk('public')->move($tempPath, $newPath);
 
-                    // Update the path for database storage
-                    $validated['photo_path'] = $newPath;
+                    Storage::disk('public')->makeDirectory('employees');
+
+                    $extension = pathinfo($tempPath, PATHINFO_EXTENSION);
+                    $photoPath = 'employees/employee_' . time() . '_' . Str::random(8) . '.' . $extension;
+
+                    Storage::disk('public')->move($tempPath, $photoPath);
                 }
             }
 
@@ -144,18 +147,22 @@ class EmployeeController extends Controller
                 'emergency_contact' => $request->emergency,
                 'emergency_phone' => $request->e_no,
                 'status' => $request->status,
-                'photo_path' => $request->employee_path ?? null,
+                'photo_path' => $photoPath,
                 'created_by' => Auth::id(),
             ]);
 
         } catch (\Exception $e) {
-            if ($request->filled('employee_path') && Str::contains($request->employee_path, $this->tempFolder)) {
+            if ($request->filled('employee_path')) {
                 Storage::disk('public')->delete($request->employee_path);
             }
 
-            return back()->withErrors(['error' => 'Failed to save employee: ' . $e->getMessage()]);
+            return back()->withErrors([
+                'error' => 'Failed to save employee: ' . $e->getMessage()
+            ]);
         }
-        // return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
+        return redirect()
+            ->route('employee.index')
+            ->with('success', 'Employee created successfully.');
     }
 
     public function uploadImage(Request $request)

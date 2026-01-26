@@ -102,14 +102,14 @@
         <form action="" method="GET">
             <div class="flex flex-col md:flex-row gap-2 text-xs md:text-sm">
                 <div class="md:w-2/3 w-full">
-                    <input type="text" id="simple-search" name="search" placeholder="Search by name, code, or description..."
+                    <input type="text" id="simple-search" name="search"
+                        placeholder="Search by name, code, or description..."
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                        value = "{{ request()->query('search') }}"
-                        oninput="this.form.submit()"> 
+                        value = "{{ request()->query('search') }}" oninput="this.form.submit()">
                 </div>
 
                 <div class="md:w-1/3 w-full">
-                    <select id="status" name="status" 
+                    <select id="status" name="status"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                         onchange="this.form.submit()">
                         <option value="">All Status</option>
@@ -119,8 +119,9 @@
                     </select>
                 </div>
             </div>
-            <button type="submit" class="hidden mt-4 w-full shrink-0 rounded-lg bg-gray-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800 sm:mt-0 sm:w-auto">Search</button>
-        </form>      
+            <button type="submit"
+                class="hidden mt-4 w-full shrink-0 rounded-lg bg-gray-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800 sm:mt-0 sm:w-auto">Search</button>
+        </form>
 
         {{-- Table --}}
         <div class="bg-white border rounded-xl overflow-hidden">
@@ -143,8 +144,10 @@
                             <td class="px-4 py-3 w-[200px]">{{ $location->name }}</td>
                             <td class="px-4 py-3 w-[350px]">{{ $location->description }}</td>
                             <td class="px-4 py-3 w-[100px]">
-                                <a href="{{ route('location.sublocation.index', $location->id) }}" class="font-semibold text-gray-600 hover:underline">
-                                    ({{ $location->sublocations_count }}) sub-locations
+                                <a href="{{ route('location.sublocation.index', $location->id) }}"
+                                    class="font-semibold text-gray-600 hover:underline">
+                                    ({{ $location->sublocations_count }})
+                                    sub-locations
                                 </a>
                             </td>
                             <td class="px-4 py-3 w-[100px] text-xs">
@@ -152,7 +155,10 @@
                                     $statuses = [
                                         0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Inactive'],
                                         1 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Active'],
-                                        2 => ['color' => 'bg-yellow-100 text-yellow-700', 'label' => 'Under Maintenance'],
+                                        2 => [
+                                            'color' => 'bg-yellow-100 text-yellow-700',
+                                            'label' => 'Under Maintenance',
+                                        ],
                                     ];
                                     $status = $statuses[$location->status] ?? [
                                         'color' => 'bg-gray-100 text-gray-600',
@@ -164,49 +170,25 @@
                                     {{ $status['label'] }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 w-[50px] flex justify-center">
-                                <button 
-                                    type="button" 
-                                    title="Edit location {{ $location->name }}" 
-                                    data-modal-target="edit-modal"
-                                    data-modal-toggle="edit-modal" 
-                                    data-id="{{ $location->id }}"
-                                    data-name="{{ $location->name }}" 
-                                    data-code="{{ $location->code }}"
-                                    data-description="{{ $location->description }}" 
-                                    data-status="{{ $location->status }}"
-                                    onclick="openEditModal(this)"
-                                    class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                        fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                        <path
-                                            d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                        <path fill-rule="evenodd"
-                                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                                    </svg>
-                                    {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
-                                </button>
-
-                                {{-- <button 
-                                            type="button"
-                                            title="Void Authorization No. {{ $muzing->code }}"
-                                            onclick="voidAuthorization({{ $muzing->code }})"
-                                            class="ml-1 group flex items-center space-x-1 text-gray-500 hover:text-red-600 transition-colors">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                                                    <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z"/>
-                                                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
-                                                </svg>                                            
-                                        </button> --}}
+                            <td class="px-4 py-3 w-[50px]">
+                                <div class="flex items-center justify-center space-x-2">
+                                    <button type="button" title="Edit location {{ $location->name }}"
+                                        data-modal-target="edit-modal" data-modal-toggle="edit-modal"
+                                        data-id="{{ $location->id }}" data-name="{{ $location->name }}"
+                                        data-code="{{ $location->code }}" data-description="{{ $location->description }}"
+                                        data-status="{{ $location->status }}" onclick="openEditModal(this)"
+                                        class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                            <path
+                                                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                            <path fill-rule="evenodd"
+                                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                        </svg>
+                                        {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
+                                    </button>
+                                </div>
                             </td>
-                            {{-- <td class="px-4 py-3 text-right space-x-2 w-[150px]">
-                            <a href="{{ route('locations.edit',$location->id) }}" class="text-gray-600 hover:text-gray-900">
-                                edit
-                            </a>
-                            <form action="{{ route('location.destroy',$location->id) }}" method="POST" class="inline">
-                                @csrf @method('DELETE')
-                                <button class="text-red-500 hover:text-red-700">🗑</button>
-                            </form>
-                        </td> --}}
                         </tr>
                     @empty
                         <tr>
@@ -216,12 +198,13 @@
                         </tr>
                     @endforelse
                 </tbody>
-            </table>            
-        </div>       
+            </table>
+        </div>
         <!-- Pagination Links -->
-        <div class="w-full md:w-auto text-xs flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0 mb-2">
+        <div
+            class="w-full md:w-auto text-xs flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0 mb-2">
             {{ $locations->links() }}
-        </div>  
+        </div>
     </div>
 
     <!-- Create location modal -->
@@ -306,18 +289,24 @@
     <!-- End create location modal -->
 
     <!-- Modal  Edit-->
-    <div id="edit-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div id="edit-modal" tabindex="-1" aria-hidden="true"
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-md max-h-full">
             <!-- Modal content -->
             <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
                 <!-- Modal header -->
-                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+                <div
+                    class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                         Update Location
                     </h3>
-                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="edit-modal">
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    <button type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        data-modal-toggle="edit-modal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                         </svg>
                         <span class="sr-only">Close</span>
                     </button>
@@ -327,7 +316,7 @@
                     @csrf
                     @method('PUT')
                     <input type="hidden" name="edit_id" id="edit_id">
-                    
+
                     <div class="grid gap-2 mb-4 sm:grid-cols-1">
                         <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-3">
                             <div class="w-full md:col-span-1">
@@ -367,7 +356,8 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                    <button type="submit"
+                        class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
                         {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
                         Update Location
                     </button>
@@ -393,15 +383,15 @@
         }
 
         function openEditModal(button) {
-        const id = button.getAttribute('data-id');
-        document.getElementById('edit_id').value = button.getAttribute('data-id');
-        document.getElementById('edit_code').value = button.getAttribute('data-code');
-        document.getElementById('edit_name').value = button.getAttribute('data-name');
-        document.getElementById('edit_description').value = button.getAttribute('data-description');
-        document.getElementById('edit_status').value = button.getAttribute('data-status');
-        
-        const form = document.getElementById('editForm');
-        form.action = `/location/${id}`;
-        }    
+            const id = button.getAttribute('data-id');
+            document.getElementById('edit_id').value = button.getAttribute('data-id');
+            document.getElementById('edit_code').value = button.getAttribute('data-code');
+            document.getElementById('edit_name').value = button.getAttribute('data-name');
+            document.getElementById('edit_description').value = button.getAttribute('data-description');
+            document.getElementById('edit_status').value = button.getAttribute('data-status');
+
+            const form = document.getElementById('editForm');
+            form.action = `/location/${id}`;
+        }
     </script>
 @endsection

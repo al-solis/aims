@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('employee_code', 20)->unique();
             $table->string('first_name', 50);
-            $table->string('middle_name', 50);
+            $table->string('middle_name', 50)->nullable();
             $table->string('last_name', 50);
             $table->date('hire_date')->nullable();
             $table->date('date_of_birth')->nullable();

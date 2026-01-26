@@ -153,7 +153,7 @@
             <table class="min-w-full text-xs">
                 <thead class="bg-gray-200 text-gray-600">
                     <tr>
-                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Code</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[50px]">Code</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Name</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Position</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Location</th>
@@ -167,7 +167,7 @@
                 <tbody class="divide-y">
                     @forelse($employees as $employee)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 font-medium w-[80px]">{{ $employee->employee_code }}</td>
+                            <td class="px-4 py-3 font-medium w-[50px]">{{ $employee->employee_code }}</td>
                             <td class="px-4 py-3 w-[150px]">{{ $employee->last_name }}, {{ $employee->first_name }}
                                 {{ $employee->middle_name }}</td>
                             <td class="px-4 py-3 w-[150px]">{{ $employee->position }}</td>
@@ -192,44 +192,45 @@
                                     {{ $status['label'] }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 w-[50px] flex justify-center">
-                                <button type="button" title="Edit employee {{ $employee->lname }}"
-                                    data-modal-target="edit-modal" data-modal-toggle="edit-modal"
-                                    data-id="{{ $employee->id }}" data-name="{{ $employee->lname }}"
-                                    data-code="{{ $employee->employee_code }}"
-                                    data-description="{{ $employee->location->description ?? '' }}"
-                                    data-status="{{ $employee->status }}" onclick="openEditModal(this)"
-                                    class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                        fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                        <path
-                                            d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                        <path fill-rule="evenodd"
-                                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                                    </svg>
-                                    {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
-                                </button>
+                            <td class="px-4 py-3 w-[50px]">
+                                <div class="flex items-center justify-center space-x-2">
+                                    <button type="button"
+                                        title="Edit employee {{ $employee->last_name }}, {{ $employee->first_name }}
+                                {{ $employee->middle_name }}"
+                                        data-modal-target="edit-modal" data-modal-toggle="edit-modal"
+                                        data-id="{{ $employee->id }}" data-code="{{ $employee->employee_code }}"
+                                        data-department="{{ $employee->location->description ?? '' }}"
+                                        data-status="{{ $employee->status }}" onclick="openEditModal(this)"
+                                        class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                            <path
+                                                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                            <path fill-rule="evenodd"
+                                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                        </svg>
+                                        {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
+                                    </button>
 
-                                {{-- <button 
-                                            type="button"
-                                            title="Void Authorization No. {{ $muzing->code }}"
-                                            onclick="voidAuthorization({{ $muzing->code }})"
-                                            class="ml-1 group flex items-center space-x-1 text-gray-500 hover:text-red-600 transition-colors">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                                                    <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z"/>
-                                                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
-                                                </svg>                                            
-                                        </button> --}}
+                                    <button type="button"
+                                        title="View assets {{ $employee->last_name }}, {{ $employee->first_name }}
+                                {{ $employee->middle_name }}"
+                                        data-modal-target="view-asset-modal" data-modal-toggle="view-asset-modal"
+                                        data-id="{{ $employee->id }}" data-code="{{ $employee->employee_code }}"
+                                        data-department="{{ $employee->location->description ?? '' }}"
+                                        data-status="{{ $employee->status }}" onclick="openEditModal(this)"
+                                        class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-card-list" viewBox="0 0 16 16">
+                                            <path
+                                                d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z" />
+                                            <path
+                                                d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8m0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0" />
+                                        </svg>
+                                        {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
+                                    </button>
+                                </div>
                             </td>
-                            {{-- <td class="px-4 py-3 text-right space-x-2 w-[150px]">
-                            <a href="{{ route('locations.edit',$location->id) }}" class="text-gray-600 hover:text-gray-900">
-                                edit
-                            </a>
-                            <form action="{{ route('location.destroy',$location->id) }}" method="POST" class="inline">
-                                @csrf @method('DELETE')
-                                <button class="text-red-500 hover:text-red-700">🗑</button>
-                            </form>
-                        </td> --}}
                         </tr>
                     @empty
                         <tr>
