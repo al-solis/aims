@@ -391,7 +391,7 @@
             document.getElementById('edit_status').value = button.getAttribute('data-status');
 
             const form = document.getElementById('editForm');
-            form.action = `/location/${id}`;
+            form.action = `location/${id}`;
         }
     </script>
 @endsection

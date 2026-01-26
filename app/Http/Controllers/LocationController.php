@@ -38,7 +38,7 @@ class LocationController extends Controller
 
         $locations = $query->withCount('sublocations')->paginate(config('app.paginate'));
 
-        return view('location.index', compact('locations', 'totalLocations', 'activeLocations', 'totalSubLocations', 'search', 'status'));
+        return view('setup.location.index', compact('locations', 'totalLocations', 'activeLocations', 'totalSubLocations', 'search', 'status'));
 
     }
 

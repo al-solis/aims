@@ -45,7 +45,7 @@ class SublocationController extends Controller
 
         $sublocations = $query->paginate(config('app.paginate'));
 
-        return view('location.sublocation.index', compact('sublocations', 'location', 'locationId', 'totalSubLocations', 'activeSubLocations', 'search', 'active'));
+        return view('setup.location.sublocation.index', compact('sublocations', 'location', 'locationId', 'totalSubLocations', 'activeSubLocations', 'search', 'active'));
     }
 
     public function store(Request $request)

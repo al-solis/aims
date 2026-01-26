@@ -153,6 +153,7 @@ class EmployeeController extends Controller
                 'address' => $request->address,
                 'city' => $request->city,
                 'state' => $request->state,
+                'country' => $request->country,
                 'postal_code' => $request->zip,
                 'emergency_contact' => $request->emergency,
                 'emergency_phone' => $request->e_no,
@@ -173,6 +174,97 @@ class EmployeeController extends Controller
         return redirect()
             ->route('employee.index')
             ->with('success', 'Employee created successfully.');
+    }
+
+    public function update(Request $request, Employee $employee)
+    {
+        $request->validate([
+            'idno' => 'required|string|max:20|unique:employees,employee_code,' . $employee->id,
+            'fname' => 'required|string|max:50',
+            'mname' => 'nullable|string|max:50',
+            'lname' => 'required|string|max:50',
+            'date' => 'nullable|date',
+            'bday' => 'nullable|date',
+            'email' => 'nullable|email|max:100',
+            'mobile' => 'nullable|string|max:15',
+            'position' => 'nullable|string|max:60',
+            'department' => 'nullable',
+            'address' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:50',
+            'state' => 'nullable|string|max:50',
+            'country' => 'nullable|string|max:50',
+            'zip' => 'nullable|string|max:20',
+            'emergency' => 'nullable|string|max:50',
+            'e_no' => 'nullable|string|max:15',
+            'status' => 'required|integer|in:0,1,2',
+            'employee_path' => 'nullable|string'
+        ]);
+
+        $photoPath = $employee->photo_path;
+
+        try {
+            // Check if there's a new temp photo to move
+            if (
+                $request->filled('employee_path') &&
+                Str::contains($request->employee_path, $this->tempFolder)
+            ) {
+                $tempPath = $request->employee_path;
+
+                if (Storage::disk('public')->exists($tempPath)) {
+
+                    Storage::disk('public')->makeDirectory('employees');
+
+                    $extension = pathinfo($tempPath, PATHINFO_EXTENSION);
+                    $newPhotoPath = 'employees/employee_' . time() . '_' . Str::random(8) . '.' . $extension;
+
+                    Storage::disk('public')->move($tempPath, $newPhotoPath);
+
+                    // Delete old photo if exists
+                    if ($photoPath && Storage::disk('public')->exists($photoPath)) {
+                        Storage::disk('public')->delete($photoPath);
+                    }
+
+                    $photoPath = $newPhotoPath;
+                }
+            }
+
+            $employee->update([
+                'employee_code' => $request->idno,
+                'first_name' => $request->fname,
+                'middle_name' => $request->mname,
+                'last_name' => $request->lname,
+                'position' => $request->position,
+                'location_id' => $request->department ?? null,
+                'email' => $request->email,
+                'mobile' => $request->mobile,
+                'hire_date' => $request->date,
+                'date_of_birth' => $request->bday,
+                'address' => $request->address,
+                'city' => $request->city,
+                'state' => $request->state,
+                'country' => $request->country,
+                'postal_code' => $request->zip,
+                'emergency_contact' => $request->emergency,
+                'emergency_phone' => $request->e_no,
+                'status' => $request->status,
+                'photo_path' => $photoPath,
+                'updated_by' => Auth::id(),
+            ]);
+
+        } catch (\Exception $e) {
+            if ($request->filled('employee_path')) {
+                $employee->update([
+                    'photo_path' => $employee->photo_path,
+                ]);
+                Storage::disk('public')->delete($request->employee_path);
+            }
+            $employee->update([
+                'photo_path' => $employee->photo_path,
+            ]);
+        }
+        return redirect()
+            ->route('employee.index')
+            ->with('success', 'Employee updated successfully.');
     }
 
     public function uploadImage(Request $request)

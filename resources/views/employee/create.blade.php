@@ -54,7 +54,7 @@
                         <div class="flex items-center gap-3 mb-2">
                             <img id="empPreview"
                                 class="inline-block size-32 rounded-lg ring-white dark:ring-neutral-900 cursor-pointer hover:opacity-80 transition-opacity duration-200 border border-gray-300"
-                                src="{{ $employee ? asset('storage/' . $employee->photo_path) : asset('storage/default/employee.jpg') }}"
+                                src="{{ $employee && $employee->photo_path ? asset('storage/' . $employee->photo_path) : asset('storage/default/employee.jpg') }}"
                                 alt="Employee photo" title="Click to upload photo">
                             <input type="file" id="photoInput" name="photo" accept="image/*" class="hidden">
                         </div>
@@ -75,8 +75,8 @@
                         <label for="date" class="block text-xs font-medium text-gray-900 dark:text-white">Date
                             Hired*</label>
                         <input type="date" name="date" id="date"
-                            value={{ old('date', $employee->hire_date ?? '') }}
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                            value="{{ old('date', $employee->hire_date ?? '') }}"
+                            class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                             placeholder="e.g. 04/08/1984" required>
 
                         <label for="status"
@@ -170,9 +170,10 @@
                 </div>
 
                 <label for="address" class="block text-xs font-medium text-gray-900 dark:text-white">Address*</label>
-                <textarea name="address" id="address" rows="3" value="{{ old('address', $employee->address ?? '') }}"
+                <textarea name="address" id="address" rows="3" text="{{ old('address', $employee->address ?? '') }}"
                     class="mb-2 px-3 py-2 w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                    placeholder="Address..." required></textarea>
+                    placeholder="Address..." required>{{ old('address', $employee->address ?? '') }}
+                </textarea>
 
                 <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-4">
                     <div class="w-full">
