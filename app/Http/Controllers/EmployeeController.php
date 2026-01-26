@@ -80,8 +80,18 @@ class EmployeeController extends Controller
 
     public function create()
     {
-        $locations = Location::where('status', 1)->get();
-        return view('employee.create', compact('locations'));
+        return view('employee.create', [
+            'employee' => null,
+            'locations' => Location::all(),
+        ]);
+    }
+
+    public function edit(Employee $employee)
+    {
+        return view('employee.create', [
+            'employee' => $employee,
+            'locations' => Location::all(),
+        ]);
     }
 
     public function store(Request $request)
@@ -210,5 +220,17 @@ class EmployeeController extends Controller
         }
 
         return response()->json(['error' => 'Invalid file path'], 400);
+    }
+
+    public function checkIdNo(Request $request)
+    {
+        $idno = $request->input('idno');
+        $id = $request->input('id');
+
+        $exists = Employee::where('employee_code', $idno)
+            ->where('id', '!=', $id)
+            ->exists();
+
+        return response()->json(['exists' => $exists]);
     }
 }

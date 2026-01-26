@@ -194,14 +194,10 @@
                             </td>
                             <td class="px-4 py-3 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
-                                    <button type="button"
-                                        title="Edit employee {{ $employee->last_name }}, {{ $employee->first_name }}
-                                {{ $employee->middle_name }}"
-                                        data-modal-target="edit-modal" data-modal-toggle="edit-modal"
-                                        data-id="{{ $employee->id }}" data-code="{{ $employee->employee_code }}"
-                                        data-department="{{ $employee->location->description ?? '' }}"
-                                        data-status="{{ $employee->status }}" onclick="openEditModal(this)"
-                                        class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+                                    <a href="{{ route('employee.edit', $employee->id) }}"
+                                        title="Edit employee {{ $employee->last_name }}, {{ $employee->first_name }} {{ $employee->middle_name }}"
+                                        class="group flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                                             <path
@@ -209,8 +205,7 @@
                                             <path fill-rule="evenodd"
                                                 d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
                                         </svg>
-                                        {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
-                                    </button>
+                                    </a>
 
                                     <button type="button"
                                         title="View assets {{ $employee->last_name }}, {{ $employee->first_name }}
