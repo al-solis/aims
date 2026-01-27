@@ -1,4 +1,4 @@
-<p align="center" style="background:#eee; padding:16px;"><a href="https://github.com/al-solis/aims/blob/main/public/images/kesia_banner.webp" target="_blank"><img src="https://github.com/al-solis/aims/blob/main/public/images/kesia_banner.webp" width="400" alt="Logo"></a></p>
+<p align="center" style="background:#eee; padding:16px;"><a href="https://github.com/al-solis/aims/blob/main/public/images/kesia_banner.webp" target="_blank"><img src="https://github.com/al-solis/aims/blob/main/public/images/kesia_banner.webp" style="background:#eee; padding:16px;" width="400" alt="Logo"></a></p>
 
 
 ## About AIMS
@@ -17,8 +17,4 @@ physical assets throughout KESIA operations.
 
 ## Inquiries
 
-If you need a customize web application for your busines email Alfie Solis via [gunch1258@yahoo.com](mailto:gunch1258@yahoo.com). 
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+If you need a customize web application for your busines email me via [gunch1258@yahoo.com](mailto:gunch1258@yahoo.com). 
