@@ -1,5 +1,6 @@
-<p align="center" style="background:#eee; padding:16px;"><a href="https://github.com/al-solis/aims/blob/main/public/images/logo.PNG" target="_blank"><img src="https://github.com/al-solis/aims/blob/main/public/images/logo.PNG" style="background:#eee; padding:16px;" width="400" alt="Logo"></a>KING ELEAZAR</p>
-<p>Security & Investigation Agency Inc.</p>
+<p align="center" style="background:#eee; padding:16px;"><a href="https://github.com/al-solis/aims/blob/main/public/images/logo.PNG" target="_blank"><img src="https://github.com/al-solis/aims/blob/main/public/images/logo.PNG" style="background:#eee; padding:16px;" width="200" alt="Logo"></a></p>
+<p align="center">KING ELEAZAR</p>
+<p align="center">Security & Investigation Agency Inc.</p>
 
 
 ## About AIMS
