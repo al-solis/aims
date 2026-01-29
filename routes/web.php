@@ -6,6 +6,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\SublocationController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\LicenseTypeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -43,6 +44,8 @@ Route::middleware('auth')->group(function () {
     })->name('setup.index');
 
     Route::resource('setup/category', CategoryController::class)->except(['destroy']);
+
+    Route::resource('setup/license', LicenseTypeController::class)->except(['destroy']);
 
 });
 
