@@ -40,193 +40,250 @@
                     @method('PUT')
                 @endif
 
-                <div class="grid gap-2 sm:grid-cols-2 sm:gap-2 mb-2">
-                    <input type="hidden" id="id" name="id" value="{{ old('id', $employee->id ?? '') }}">
-
-                    <input type="hidden" name="employee_path" id="employee_path"
-                        value="{{ old('employee_path', $employee->photo_path ?? '') }}">
-                    <input type="hidden" name="temp_photo_name" id="temp_photo_name" value="">
-
-                    <div class="sm:col-span-1">
-                        <label for="imgPreview" class="block mb-2 text-xs font-medium text-gray-900 dark:text-white">
-                            Employee Photo (Click to upload)
-                        </label>
-                        <div class="flex items-center gap-3 mb-2">
-                            <img id="empPreview"
-                                class="inline-block size-32 rounded-lg ring-white dark:ring-neutral-900 cursor-pointer hover:opacity-80 transition-opacity duration-200 border border-gray-300"
-                                src="{{ $employee && $employee->photo_path ? asset('storage/' . $employee->photo_path) : asset('storage/default/employee.jpg') }}"
-                                alt="Employee photo" title="Click to upload photo">
-                            <input type="file" id="photoInput" name="photo" accept="image/*" class="hidden">
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">Click on the image to upload a photo (Max: 2MB)</p>
+                <div class="">
+                    <div class="mb-2 border-b border-gray-200 dark:border-gray-700">
+                        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="employee-tab"
+                            data-tabs-toggle="#employee-tab-content"
+                            data-tabs-active-classes="text-primary-600 hover:text-primary-600 dark:text-primary-500 dark:hover:text-primary-500 border-primary-600 dark:border-primary-500"
+                            data-tabs-inactive-classes="dark:border-transparent text-gray-500 hover:text-gray-600 dark:text-gray-400 border-gray-100 hover:border-gray-300 dark:border-gray-700 dark:hover:text-gray-300 role="tablist">
+                            <li class="me-2" role="presentation">
+                                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="basic-tab"
+                                    data-tabs-target="#basic" type="button" role="tab" aria-controls="basic"
+                                    aria-selected="false">Basic Information</button>
+                            </li>
+                            @if ($employee)
+                                <li class="me-2" role="presentation">
+                                    <button
+                                        class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                                        id="idinfo-tab" data-tabs-target="#idinfo" type="button" role="tab"
+                                        aria-controls="idinfo" aria-selected="false">ID Information</button>
+                                </li>
+                            @endif
+                        </ul>
                     </div>
 
-                    <div class="w-full">
-                        <label for="idno" class="block text-xs font-medium text-gray-900 dark:text-white">ID
-                            No*</label>
-                        <input type="text" name="idno" id="idno"
-                            value="{{ old('idno', $employee->employee_code ?? '') }}"
-                            class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. 001-26, 2026-00001" required>
-                        <small id="id-feedback" class="text-red-500 text-xs mb-1 hidden">
-                            ID number already exists in another record.
-                        </small>
+                    <div id="employee-tab-content">
+                        <div class="hidden p-1 rounded-lg bg-gray-50 dark:bg-gray-800" id="basic" role="tabpanel"
+                            aria-labelledby="basic-tab">
+                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">Please fill the following information
+                                <strong class="font-medium text-gray-800 dark:text-white">Basic Information tab's associated
+                                    content</strong>.
+                            </p>
+                            <div class="grid gap-2 sm:grid-cols-2 sm:gap-2 mb-2">
+                                <input type="hidden" id="id" name="id"
+                                    value="{{ old('id', $employee->id ?? '') }}">
 
-                        <label for="date" class="block text-xs font-medium text-gray-900 dark:text-white">Date
-                            Hired*</label>
-                        <input type="date" name="date" id="date"
-                            value="{{ old('date', $employee->hire_date ?? '') }}"
-                            class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. 04/08/1984" required>
+                                <input type="hidden" name="employee_path" id="employee_path"
+                                    value="{{ old('employee_path', $employee->photo_path ?? '') }}">
+                                <input type="hidden" name="temp_photo_name" id="temp_photo_name" value="">
 
-                        <label for="status"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                        <select id="status" name="status"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            required>
-                            <option value="1" @selected(old('status', $employee->status ?? 1) == 1)>Active</option>
-                            <option value="0" @selected(old('status', $employee->status ?? 1) == 0)>Inactive</option>
-                            <option value="2" @selected(old('status', $employee->status ?? 1) == 2)>On leave</option>
-                        </select>
-                    </div>
-                </div>
+                                <div class="sm:col-span-1">
+                                    <label for="imgPreview"
+                                        class="block mb-2 text-xs font-medium text-gray-900 dark:text-white">
+                                        Employee Photo (Click to upload)
+                                    </label>
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <img id="empPreview"
+                                            class="inline-block size-32 rounded-lg ring-white dark:ring-neutral-900 cursor-pointer hover:opacity-80 transition-opacity duration-200 border border-gray-300"
+                                            src="{{ $employee && $employee->photo_path ? asset('storage/' . $employee->photo_path) : asset('storage/default/employee.jpg') }}"
+                                            alt="Employee photo" title="Click to upload photo">
+                                        <input type="file" id="photoInput" name="photo" accept="image/*"
+                                            class="hidden">
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">Click on the image to upload a photo (Max: 2MB)
+                                    </p>
+                                </div>
 
-                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
-                    <div class="w-full">
-                        <label for="lname" class="block text-xs font-medium text-gray-900 dark:text-white">Last
-                            Name*</label>
-                        <input type="text" name="lname" id="lname"
-                            value ="{{ old('lname', $employee->last_name ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. Dela Cruz" required="">
-                    </div>
-                    <div class="w-full">
-                        <label for="fname" class="block text-xs font-medium text-gray-900 dark:text-white">First
-                            Name*</label>
-                        <input type="text" name="fname" id="fname"
-                            value ="{{ old('fname', $employee->first_name ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. Juan" required="">
-                    </div>
-                    <div class="w-full">
-                        <label for="mname" class="block text-xs font-medium text-gray-900 dark:text-white">Middle
-                            Name</label>
-                        <input type="text" name="mname" id="mname"
-                            value ="{{ old('mname', $employee->middle_name ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. Santos">
-                    </div>
-                </div>
+                                <div class="w-full">
+                                    <label for="idno" class="block text-xs font-medium text-gray-900 dark:text-white">ID
+                                        No*</label>
+                                    <input type="text" name="idno" id="idno"
+                                        value="{{ old('idno', $employee->employee_code ?? '') }}"
+                                        class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 001-26, 2026-00001" required>
+                                    <small id="id-feedback" class="text-red-500 text-xs mb-1 hidden">
+                                        ID number already exists in another record.
+                                    </small>
 
-                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
-                    <div class="w-full">
-                        <label for="bday"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Birthday</label>
-                        <input type="date" name="bday" id="bday"
-                            value="{{ old('bday', $employee->date_of_birth ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. mm/dd/yyyy">
-                    </div>
-                    <div class="w-full">
-                        <label for="mobile" class="block text-xs font-medium text-gray-900 dark:text-white">Mobile
-                            No</label>
-                        <input type="tel" name="mobile" id="mobile"
-                            value="{{ old('mobile', $employee->mobile ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. 09xxxxxxxxx">
-                    </div>
-                    <div class="w-full">
-                        <label for="email"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Email</label>
-                        <input type="email" name="email" id="email"
-                            value="{{ old('email', $employee->email ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. juandelacruz@yahoo.com">
-                    </div>
-                </div>
+                                    <label for="date"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Date
+                                        Hired*</label>
+                                    <input type="date" name="date" id="date"
+                                        value="{{ old('date', $employee->hire_date ?? '') }}"
+                                        class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 04/08/1984" required>
 
-                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
-                    <div class="w-full">
-                        <label for="position"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Position</label>
-                        <input type="text" name="position" id="position"
-                            value="{{ old('position', $employee->position ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. Manager">
-                    </div>
-                    <div class="w-full">
-                        <label for="department"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Department</label>
-                        <select name="department" id="department"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                            <option selected="" value="">Select Department/ Location</option>
-                            @foreach ($locations as $location)
-                                <option value="{{ $location->id }}"
-                                    {{ old('department', $employee->location_id ?? '') == $location->id ? 'selected' : '' }}>
-                                    {{ $location->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
+                                    <label for="status"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
+                                    <select id="status" name="status"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        required>
+                                        <option value="1" @selected(old('status', $employee->status ?? 1) == 1)>Active</option>
+                                        <option value="0" @selected(old('status', $employee->status ?? 1) == 0)>Inactive</option>
+                                        <option value="2" @selected(old('status', $employee->status ?? 1) == 2)>On leave</option>
+                                    </select>
+                                </div>
+                            </div>
 
-                <label for="address" class="block text-xs font-medium text-gray-900 dark:text-white">Address*</label>
-                <textarea name="address" id="address" rows="3" text="{{ old('address', $employee->address ?? '') }}"
-                    class="mb-2 px-3 py-2 w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                    placeholder="Address..." required>{{ old('address', $employee->address ?? '') }}
+                            <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
+                                <div class="w-full">
+                                    <label for="lname"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Last
+                                        Name*</label>
+                                    <input type="text" name="lname" id="lname"
+                                        value ="{{ old('lname', $employee->last_name ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Dela Cruz" required="">
+                                </div>
+                                <div class="w-full">
+                                    <label for="fname"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">First
+                                        Name*</label>
+                                    <input type="text" name="fname" id="fname"
+                                        value ="{{ old('fname', $employee->first_name ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Juan" required="">
+                                </div>
+                                <div class="w-full">
+                                    <label for="mname"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Middle
+                                        Name</label>
+                                    <input type="text" name="mname" id="mname"
+                                        value ="{{ old('mname', $employee->middle_name ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Santos">
+                                </div>
+                            </div>
+
+                            <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
+                                <div class="w-full">
+                                    <label for="bday"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Birthday</label>
+                                    <input type="date" name="bday" id="bday"
+                                        value="{{ old('bday', $employee->date_of_birth ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. mm/dd/yyyy">
+                                </div>
+                                <div class="w-full">
+                                    <label for="mobile"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Mobile
+                                        No</label>
+                                    <input type="tel" name="mobile" id="mobile"
+                                        value="{{ old('mobile', $employee->mobile ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 09xxxxxxxxx">
+                                </div>
+                                <div class="w-full">
+                                    <label for="email"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Email</label>
+                                    <input type="email" name="email" id="email"
+                                        value="{{ old('email', $employee->email ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. juandelacruz@yahoo.com">
+                                </div>
+                            </div>
+
+                            <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                                <div class="w-full">
+                                    <label for="position"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Position</label>
+                                    <input type="text" name="position" id="position"
+                                        value="{{ old('position', $employee->position ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Manager">
+                                </div>
+                                <div class="w-full">
+                                    <label for="department"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Department</label>
+                                    <select name="department" id="department"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                        <option selected="" value="">Select Department/ Location</option>
+                                        @foreach ($locations as $location)
+                                            <option value="{{ $location->id }}"
+                                                {{ old('department', $employee->location_id ?? '') == $location->id ? 'selected' : '' }}>
+                                                {{ $location->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label for="address"
+                                class="block text-xs font-medium text-gray-900 dark:text-white">Address*</label>
+                            <textarea name="address" id="address" rows="3" text="{{ old('address', $employee->address ?? '') }}"
+                                class="mb-2 px-3 py-2 w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                placeholder="Address..." required>{{ old('address', $employee->address ?? '') }}
                 </textarea>
 
-                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-4">
-                    <div class="w-full">
-                        <label for="city" class="block text-xs font-medium text-gray-900 dark:text-white">City</label>
-                        <input type="text" name="city" id="city"
-                            value="{{ old('city', $employee->city ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. City">
-                    </div>
-                    <div class="w-full">
-                        <label for="state" class="block text-xs font-medium text-gray-900 dark:text-white">State/
-                            Province</label>
-                        <input type="text" name="state" id="state"
-                            value="{{ old('state', $employee->state ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. State/ Province">
-                    </div>
-                    <div class="w-full">
-                        <label for="country"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Country</label>
-                        <input type="text" name="country" id="country"
-                            value="{{ old('country', $employee->country ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. Philippines">
-                    </div>
-                    <div class="w-full">
-                        <label for="zip" class="block text-xs font-medium text-gray-900 dark:text-white">Zip
-                            Code</label>
-                        <input type="text" name="zip" id="zip"
-                            value="{{ old('zip', $employee->postal_code ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. 4103">
+                            <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-4">
+                                <div class="w-full">
+                                    <label for="city"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">City</label>
+                                    <input type="text" name="city" id="city"
+                                        value="{{ old('city', $employee->city ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. City">
+                                </div>
+                                <div class="w-full">
+                                    <label for="state"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">State/
+                                        Province</label>
+                                    <input type="text" name="state" id="state"
+                                        value="{{ old('state', $employee->state ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. State/ Province">
+                                </div>
+                                <div class="w-full">
+                                    <label for="country"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Country</label>
+                                    <input type="text" name="country" id="country"
+                                        value="{{ old('country', $employee->country ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Philippines">
+                                </div>
+                                <div class="w-full">
+                                    <label for="zip"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Zip
+                                        Code</label>
+                                    <input type="text" name="zip" id="zip"
+                                        value="{{ old('zip', $employee->postal_code ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 4103">
+                                </div>
+                            </div>
+
+                            <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                                <div class="w-full">
+                                    <label for="emergency"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Emergency
+                                        Contact</label>
+                                    <input type="text" name="emergency" id="emergency"
+                                        value="{{ old('emergency', $employee->emergency_contact ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Emergency Contact">
+                                </div>
+                                <div class="w-full">
+                                    <label for="e_no"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Emergency
+                                        No.</label>
+                                    <input type="tel" name="e_no" id="e_no"
+                                        value="{{ old('e_no', $employee->emergency_phone ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 09xxxxxxxxx">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hidden p-1 rounded-lg bg-gray-50 dark:bg-gray-800" id="idinfo" role="tabpanel"
+                            aria-labelledby="idinfo-tab">
+                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the
+                                <strong class="font-medium text-gray-800 dark:text-white">Dashboard tab's associated
+                                    content</strong>. Clicking another tab will toggle the visibility of this one for the
+                                next.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
-                    <div class="w-full">
-                        <label for="emergency" class="block text-xs font-medium text-gray-900 dark:text-white">Emergency
-                            Contact</label>
-                        <input type="text" name="emergency" id="emergency"
-                            value="{{ old('emergency', $employee->emergency_contact ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. Emergency Contact">
-                    </div>
-                    <div class="w-full">
-                        <label for="e_no" class="block text-xs font-medium text-gray-900 dark:text-white">Emergency
-                            No.</label>
-                        <input type="tel" name="e_no" id="e_no"
-                            value="{{ old('e_no', $employee->emergency_phone ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. 09xxxxxxxxx">
-                    </div>
-                </div>
 
                 <div class="mt-5 flex justify-end gap-x-2">
                     <a href="{{ route('employee.index') }}" type="button" id="closeButton"

@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('license_types', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('description')->nullable();
+            $table->string('name', 50);
+            $table->string('description', 255)->nullable();
             $table->boolean('is_active')->default(true);
 
             $table->unsignedBigInteger('created_by');

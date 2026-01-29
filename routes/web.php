@@ -7,6 +7,7 @@ use App\Http\Controllers\SublocationController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LicenseTypeController;
+use App\Http\Controllers\IdTypeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -46,6 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('setup/category', CategoryController::class)->except(['destroy']);
 
     Route::resource('setup/license', LicenseTypeController::class)->except(['destroy']);
+
+    Route::resource('setup/idtype', IdTypeController::class)->except(['destroy']);
 
 });
 
