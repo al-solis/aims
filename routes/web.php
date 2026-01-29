@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\SublocationController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\CategoryController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -40,6 +41,9 @@ Route::middleware('auth')->group(function () {
     Route::get('setup', function () {
         return view('setup.index');
     })->name('setup.index');
+
+    Route::resource('setup/category', CategoryController::class)->except(['destroy']);
+
 });
 
 require __DIR__ . '/auth.php';
