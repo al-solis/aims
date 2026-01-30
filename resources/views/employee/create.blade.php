@@ -274,115 +274,128 @@
                         </div>
 
                         @if ($employee)
-                            <div class="hidden p-1 rounded-lg bg-gray-50 dark:bg-gray-800" id="idinfo" role="tabpanel"
-                                aria-labelledby="idinfo-tab">
-                                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">Maintenance of
-                                    <strong class="font-medium text-gray-800 dark:text-white">Employee ID</strong> records.
-                                </p>
-
-                                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
-                                    <div class="w-full">
-                                        <label for="employee_id_type"
-                                            class="block text-xs font-medium text-gray-900 dark:text-white">ID Type</label>
-                                        <select name="employee_id_type" id="employee_id_type"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                            <option selected="" value="">Select ID Type</option>
-                                            @foreach ($idTypes as $idType)
-                                                <option value="{{ $idType->id }}"
-                                                    {{ old('employee_id_type', $employeeIds->first()->id_type_id ?? '') == $idType->id ? 'selected' : '' }}>
-                                                    {{ $idType->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="w-full">
-                                        <label for="employee_id_number"
-                                            class="block text-xs font-medium text-gray-900 dark:text-white">ID
-                                            Number</label>
-                                        <input type="text" name="employee_id_number" id="employee_id_number"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                            placeholder="e.g. 242-327-268">
-                                    </div>
-                                </div>
-
-                                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
-                                    <div class="w-full">
-                                        <label for="employee_id_issued_date"
-                                            class="block text-xs font-medium text-gray-900 dark:text-white">Issued
-                                            Date</label>
-                                        <input type="date" name="employee_id_issued_date" id="employee_id_issued_date"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                            placeholder="e.g. mm/dd/yyyy">
-                                    </div>
-                                    <div class="w-full">
-                                        <label for="employee_id_expiry_date"
-                                            class="block text-xs font-medium text-gray-900 dark:text-white">Expiry
-                                            Date</label>
-                                        <input type="date" name="employee_id_expiry_date" id="employee_id_expiry_date"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                            placeholder="e.g. mm/dd/yyyy">
+                            <meta name="csrf-token" content="{{ csrf_token() }}">
+                            <div id="employeeIdSection" data-employee-id="{{ $employee->id }}">
+                                <div class="hidden p-1 rounded-lg bg-gray-50 dark:bg-gray-800" id="idinfo"
+                                    role="tabpanel" aria-labelledby="idinfo-tab">
+                                    <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">Maintenance of
+                                        <strong class="font-medium text-gray-800 dark:text-white">Employee ID</strong>
+                                        records.
+                                    </p>
+                                    <input type="hidden" id="employee_id_record_id" name="employee_id_record_id"
+                                        value="">
+                                    <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                                        <div class="w-full">
+                                            <label for="employee_id_type"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">ID
+                                                Type</label>
+                                            <select name="employee_id_type" id="employee_id_type"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                                <option selected="" value="">Select ID Type</option>
+                                                @foreach ($idTypes as $idType)
+                                                    <option value="{{ $idType->id }}">{{ $idType->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="w-full">
+                                            <label for="employee_id_number"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">ID
+                                                Number</label>
+                                            <input type="text" name="employee_id_number" id="employee_id_number"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                                placeholder="e.g. 242-327-268">
+                                        </div>
                                     </div>
 
-                                    <button id="edit-opt-btn"
-                                        class="mt-4 w-1/3 h-fit text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-sm px-4 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                                        type="button">
-                                        +
-                                    </button>
-                                </div>
+                                    <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
+                                        <div class="w-full">
+                                            <label for="employee_id_issued_date"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Issued
+                                                Date</label>
+                                            <input type="date" name="employee_id_issued_date"
+                                                id="employee_id_issued_date"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                                placeholder="e.g. mm/dd/yyyy">
+                                        </div>
+                                        <div class="w-full">
+                                            <label for="employee_id_expiry_date"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Expiry
+                                                Date</label>
+                                            <input type="date" name="employee_id_expiry_date"
+                                                id="employee_id_expiry_date"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                                placeholder="e.g. mm/dd/yyyy">
+                                        </div>
 
-                                {{-- Table --}}
-                                <div class="bg-white border rounded-xl overflow-hidden">
-                                    <table class="min-w-full text-xs">
-                                        <thead class="bg-gray-200 text-gray-600">
-                                            <tr>
-                                                <th scope="col" class="px-4 py-3 text-left w-[100px]">Name</th>
-                                                <th scope="col" class="px-4 py-3 text-left w-[80px]">ID Number</th>
-                                                <th scope="col" class="px-4 py-3 text-left w-[60px]">Issued</th>
-                                                <th scope="col" class="px-4 py-3 text-left w-[60px]">Expiry</th>
-                                                <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
-                                            </tr>
-                                        </thead>
+                                        <button id="add-id-btn" type="button"
+                                            class="mt-4 h-fit text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-sm px-4 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                                            Add ID
+                                        </button>
+                                    </div>
 
-                                        <tbody class="divide-y">
-                                            @forelse($employeeIds as $employeeId)
-                                                <tr class="hover:bg-gray-50">
-                                                    <td class="px-4 py-3 font-medium w-[100px]">
-                                                        {{ $employeeId->idType->name }}</td>
-                                                    <td class="px-4 py-3 w-[80px]">
-                                                        {{ $employeeId->id_number }}</td>
-                                                    <td class="px-4 py-3 w-[60px]">
-                                                        {{ $employeeId->issue_date }}</td>
-                                                    <td class="px-4 py-3 w-[60px]">
-                                                        {{ $employeeId->expiry_date }}
-                                                    </td>
-                                                    <td class="px-4 py-3 w-[50px]">
-                                                        <div class="flex items-center justify-center space-x-2">
-                                                            <a href=""
-                                                                title="Edit employee {{ $employeeId->employee->last_name }}, {{ $employeeId->employee->first_name }} {{ $employeeId->employee->middle_name }}"
-                                                                class="group flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
-
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                    height="16" fill="currentColor"
-                                                                    class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                                                    <path
-                                                                        d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                                                    <path fill-rule="evenodd"
-                                                                        d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                                                                </svg>
-                                                            </a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @empty
+                                    {{-- Table --}}
+                                    <div class="bg-white border rounded-xl overflow-hidden">
+                                        <table class="min-w-full text-xs" id="employeeIdsTable">
+                                            <thead class="bg-gray-200 text-gray-600">
                                                 <tr>
-                                                    <td colspan="9" class="px-4 py-6 text-center text-gray-500">
-                                                        No IDs found.
-                                                    </td>
+                                                    <th scope="col" class="px-4 py-3 text-left w-[100px]">ID Type</th>
+                                                    <th scope="col" class="px-4 py-3 text-left w-[80px]">ID Number</th>
+                                                    <th scope="col" class="px-4 py-3 text-left w-[60px]">Issued</th>
+                                                    <th scope="col" class="px-4 py-3 text-left w-[60px]">Expiry</th>
+                                                    <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                                                 </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
+                                            </thead>
 
+                                            <tbody id="employeeIdsBody" class="divide-y">
+                                                @forelse($employeeIds as $employeeId)
+                                                    <tr id="row-{{ $employeeId->id }}" class="hover:bg-gray-50">
+                                                        <td class="px-2 py-2 font-medium w-[100px]">
+                                                            {{ $employeeId->idType->name }}</td>
+                                                        <td class="px-2 py-2 w-[80px]">{{ $employeeId->id_number }}</td>
+                                                        <td class="px-2 py-2 w-[60px]">{{ $employeeId->issue_date }}</td>
+                                                        <td class="px-2 py-2 w-[60px]">{{ $employeeId->expiry_date }}</td>
+                                                        <td class="px-2 py-2 w-[50px]">
+                                                            <div class="flex items-center justify-center space-x-2">
+                                                                <button type="button"
+                                                                    onclick="editEmployeeId({{ $employeeId->id }})"
+                                                                    title="Edit ID"
+                                                                    class="text-blue-600 hover:text-blue-800 transition-colors">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                        height="16" fill="currentColor"
+                                                                        class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                                        <path
+                                                                            d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                                                        <path fill-rule="evenodd"
+                                                                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                                                    </svg>
+                                                                </button>
+                                                                <button type="button"
+                                                                    onclick="deleteEmployeeId({{ $employeeId->id }})"
+                                                                    title="Delete ID"
+                                                                    class="text-red-600 hover:text-red-800 transition-colors">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                        height="16" fill="currentColor"
+                                                                        class="bi bi-trash" viewBox="0 0 16 16">
+                                                                        <path
+                                                                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                                        <path
+                                                                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr id="no-ids-row">
+                                                        <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                                                            No IDs found.
+                                                        </td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -569,6 +582,175 @@
                     }, 100);
                 }
             });
+
+            // ========== EMPLOYEE ID MANAGEMENT ==========
+            const employeeIdSection = document.getElementById('employeeIdSection');
+
+            if (employeeIdSection) {
+                const addIdBtn = document.getElementById('add-id-btn');
+                const employeeIdForm = {
+                    recordId: document.getElementById('employee_id_record_id'),
+                    type: document.getElementById('employee_id_type'),
+                    number: document.getElementById('employee_id_number'),
+                    issuedDate: document.getElementById('employee_id_issued_date'),
+                    expiryDate: document.getElementById('employee_id_expiry_date')
+                };
+
+                // Add ID Button Click Handler
+                addIdBtn.addEventListener('click', function() {
+                    const employeeId = employeeIdForm.recordId.value;
+                    const idType = employeeIdForm.type.value;
+                    const idNumber = employeeIdForm.number.value.trim();
+                    const issuedDate = employeeIdForm.issuedDate.value;
+                    const expiryDate = employeeIdForm.expiryDate.value;
+
+                    // Validation
+                    if (!idType) {
+                        alert('Please select ID Type.');
+                        employeeIdForm.type.focus();
+                        return;
+                    }
+
+                    if (!idNumber) {
+                        showToast('ID Number is required.', 'error');
+                        employeeIdForm.number.classList.add('border-red-500');
+                        employeeIdForm.number.focus();
+                        return;
+                    } else {
+                        employeeIdForm.number.classList.remove('border-red-500');
+                    }
+
+                    const employeeIdData = {
+                        id: employeeId || null,
+                        id_type_id: idType,
+                        id_number: idNumber,
+                        issue_date: issuedDate || null,
+                        expiry_date: expiryDate || null,
+                        _token: document.querySelector('meta[name="csrf-token"]').content
+                    };
+
+                    const url = employeeId ?
+                        `/employee/{{ $employee->id ?? 0 }}/ids/${employeeId}` :
+                        `/employee/{{ $employee->id ?? 0 }}/ids`;
+
+                    const method = employeeId ? 'PUT' : 'POST';
+
+
+                    // Make AJAX request
+                    fetch(url, {
+                            method: method,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': employeeIdData._token
+                            },
+                            body: JSON.stringify(employeeIdData)
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Clear form
+                                clearIdForm();
+
+                                // Refresh the table
+                                refreshEmployeeIds();
+
+                                // Show success message
+                                showToast(data.message || 'ID saved successfully!', 'success');
+                            } else {
+                                throw new Error(data.message || 'Failed to save ID');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showToast(error.message || 'An error occurred', 'error');
+                        });
+                });
+
+                // Function to clear ID form
+                function clearIdForm() {
+                    employeeIdForm.recordId.value = '';
+                    employeeIdForm.type.value = '';
+                    employeeIdForm.number.value = '';
+                    employeeIdForm.issuedDate.value = '';
+                    employeeIdForm.expiryDate.value = '';
+                    addIdBtn.textContent = 'Add ID';
+                    addIdBtn.classList.remove('bg-blue-700', 'hover:bg-blue-800');
+                    addIdBtn.classList.add('bg-green-700', 'hover:bg-green-800');
+                }
+
+                // Function to refresh employee IDs table
+                function refreshEmployeeIds() {
+                    fetch(`/employee/{{ $employee->id ?? 0 }}/ids`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const tbody = document.getElementById('employeeIdsBody');
+                            const noIdsRow = document.getElementById('no-ids-row');
+
+                            if (data.length === 0) {
+                                if (!noIdsRow) {
+                                    tbody.innerHTML = `
+                            <tr id="no-ids-row">
+                                <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                                    No IDs found.
+                                </td>
+                            </tr>
+                        `;
+                                }
+                                return;
+                            }
+
+                            // Remove no-ids row if exists
+                            if (noIdsRow) {
+                                noIdsRow.remove();
+                            }
+
+                            // Build table rows
+                            let rowsHtml = '';
+                            data.forEach(id => {
+                                rowsHtml += `
+                        <tr id="row-${id.id}" class="hover:bg-gray-50">
+                            <td class="px-2 py-2 font-medium w-[100px]">${id.id_type.name}</td>
+                            <td class="px-2 py-2 w-[80px]">${id.id_number}</td>
+                            <td class="px-2 py-2 w-[60px]">${id.issue_date || ''}</td>
+                            <td class="px-2 py-2 w-[60px]">${id.expiry_date || ''}</td>
+                            <td class="px-2 py-2 w-[50px]">
+                                <div class="flex items-center justify-center space-x-2">
+                                    <button type="button" onclick="editEmployeeId(${id.id})" 
+                                        title="Edit ID" 
+                                        class="text-blue-600 hover:text-blue-800 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" 
+                                            fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                        </svg>
+                                    </button>
+                                    <button type="button" onclick="deleteEmployeeId(${id.id})" 
+                                        title="Delete ID" 
+                                        class="text-red-600 hover:text-red-800 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" 
+                                            fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2 2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                            });
+
+                            tbody.innerHTML = rowsHtml;
+                        })
+                        .catch(error => {
+                            console.error('Error refreshing IDs:', error);
+                        });
+                }
+            }
+
+
+
+
         });
 
         document.getElementById('idno').addEventListener('blur', function() {
@@ -610,5 +792,137 @@
                 })
                 .catch(err => console.error('Error:', err));
         });
+
+
+        // Function to edit employee ID
+        function editEmployeeId(id) {
+            // Fetch the ID details
+            fetch(`/employee/{{ $employee->id ?? 0 }}/ids/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Populate the form with the ID data
+                        document.getElementById('employee_id_record_id').value = data.id.id;
+                        document.getElementById('employee_id_type').value = data.id.id_type_id;
+                        document.getElementById('employee_id_number').value = data.id.id_number;
+                        document.getElementById('employee_id_issued_date').value = data.id.issue_date || '';
+                        document.getElementById('employee_id_expiry_date').value = data.id.expiry_date ||
+                            '';
+
+                        // Change button to "Update ID"
+                        const addBtn = document.getElementById('add-id-btn');
+                        addBtn.textContent = 'Update ID';
+                        addBtn.classList.remove('bg-green-700', 'hover:bg-green-800');
+                        addBtn.classList.add('bg-blue-700', 'hover:bg-blue-800');
+
+                        // Scroll to the form
+                        document.getElementById('employee_id_number').focus();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching ID:', error);
+                    showToast('Failed to load ID details', 'error');
+                });
+        }
+
+        // Function to delete employee ID
+        function deleteEmployeeId(id) {
+            const row = document.getElementById(`row-${id}`);
+            if (!row) return;
+
+            const idNumberCell = row.querySelector('td:nth-child(2)');
+            const idNumber = idNumberCell ? idNumberCell.textContent.trim() : 'this';
+
+            if (!confirm(`Are you sure you want to delete this ID (${idNumber})?`)) {
+                return;
+            }
+
+            fetch(`/employee/{{ $employee->id ?? 0 }}/ids/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the row from the table
+                        const row = document.getElementById(`row-${id}`);
+                        if (row) {
+                            row.remove();
+                        }
+
+                        // Check if table is empty
+                        const tbody = document.getElementById('employeeIdsBody');
+                        if (tbody.children.length === 0) {
+                            tbody.innerHTML = `
+                                <tr id="no-ids-row">
+                                    <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                                        No IDs found.
+                                    </td>
+                                </tr>
+                            `;
+                        }
+
+                        showToast(data.message || 'ID deleted successfully!', 'success');
+                    } else {
+                        throw new Error(data.message || 'Failed to delete ID');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast(error.message || 'An error occurred', 'error');
+                });
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 
+                ${type === 'success' ? 'bg-green-100 text-green-700 border border-green-300' : 
+                type === 'error' ? 'bg-red-100 text-red-700 border border-red-300' : 
+                'bg-blue-100 text-blue-700 border border-blue-300'}`;
+            toast.textContent = message;
+            toast.style.animation = 'slideInRight 0.3s ease-out';
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+
+        // Add CSS for animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 @endsection

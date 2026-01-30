@@ -19,7 +19,7 @@ class employee_id extends Model
         'updated_by',
     ];
 
-    public function employeeId()
+    public function employee()
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }

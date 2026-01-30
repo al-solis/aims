@@ -8,6 +8,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LicenseTypeController;
 use App\Http\Controllers\IdTypeController;
+use App\Http\Controllers\EmployeeIdController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -50,6 +51,17 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('setup/idtype', IdTypeController::class)->except(['destroy']);
 
+    // Route::post('/employee/{employee}/ids', [EmployeeIdController::class, 'store'])
+    //     ->name('employee.ids.store');
+
+    // Employee ID routes
+    Route::prefix('employee/{employee}/ids')->group(function () {
+        Route::get('/', [EmployeeController::class, 'getEmployeeIds'])->name('employee.ids.index');
+        Route::post('/', [EmployeeController::class, 'storeEmployeeId'])->name('employee.ids.store');
+        Route::get('/{id}', [EmployeeController::class, 'getEmployeeId'])->name('employee.ids.show');
+        Route::put('/{id}', [EmployeeController::class, 'updateEmployeeId'])->name('employee.ids.update');
+        Route::delete('/{id}', [EmployeeController::class, 'destroyEmployeeId'])->name('employee.ids.destroy');
+    });
 });
 
 require __DIR__ . '/auth.php';

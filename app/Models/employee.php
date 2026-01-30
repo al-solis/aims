@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\employee_id as EmployeeId;
 class employee extends Model
 {
     protected $table = 'employees';
@@ -35,5 +35,10 @@ class employee extends Model
     public function location()
     {
         return $this->belongsTo(Location::class, 'location_id');
+    }
+
+    public function employeeIds()
+    {
+        return $this->hasMany(EmployeeId::class);
     }
 }

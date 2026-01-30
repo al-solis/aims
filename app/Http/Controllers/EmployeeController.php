@@ -329,4 +329,98 @@ class EmployeeController extends Controller
 
         return response()->json(['exists' => $exists]);
     }
+
+    // Get employee IDs (for AJAX refresh)
+    public function getEmployeeIds($employeeId)
+    {
+        $employee = Employee::findOrFail($employeeId);
+        $ids = $employee->employeeIds()->with('idType')->get();
+
+        return response()->json($ids);
+    }
+
+    // Get single employee ID (for editing)
+    public function getEmployeeId($employeeId, $id)
+    {
+        $employeeIdRecord = EmployeeId::where('employee_id', $employeeId)
+            ->where('id', $id)
+            ->firstOrFail();
+
+        return response()->json([
+            'success' => true,
+            'id' => $employeeIdRecord
+        ]);
+    }
+
+    // Store employee ID (AJAX)
+    public function storeEmployeeId(Request $request, $employeeId)
+    {
+        $request->validate([
+            'id_type_id' => 'required|exists:id_types,id',
+            'id_number' => 'required|string|max:50|unique:employee_ids,id_number,' . $employeeId,
+            'issue_date' => 'nullable|date',
+            'expiry_date' => 'nullable|date|after_or_equal:issue_date'
+        ]);
+
+        $employeeIdRecord = EmployeeId::create([
+            'employee_id' => $employeeId,
+            'id_type_id' => $request->id_type_id,
+            'id_number' => $request->id_number,
+            'issue_date' => $request->issue_date,
+            'expiry_date' => $request->expiry_date
+        ]);
+
+        $employeeIdRecord->load('idType');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'ID added successfully',
+            'id' => $employeeIdRecord
+        ]);
+    }
+
+    // Update employee ID (AJAX)
+    public function updateEmployeeId(Request $request, $employeeId, $id)
+    {
+        $request->validate([
+            'id_type_id' => 'required|exists:id_types,id',
+            'id_number' => 'required|string|max:50|unique:employee_ids,id_number,' . $employeeId,
+            'issue_date' => 'nullable|date',
+            'expiry_date' => 'nullable|date|after_or_equal:issue_date'
+        ]);
+
+        $employeeIdRecord = EmployeeId::where('employee_id', $employeeId)
+            ->where('id', $id)
+            ->firstOrFail();
+
+        $employeeIdRecord->update([
+            'id_type_id' => $request->id_type_id,
+            'id_number' => $request->id_number,
+            'issue_date' => $request->issue_date,
+            'expiry_date' => $request->expiry_date
+        ]);
+
+        $employeeIdRecord->load('idType');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'ID updated successfully',
+            'id' => $employeeIdRecord
+        ]);
+    }
+
+    // Delete employee ID (AJAX)
+    public function destroyEmployeeId($employeeId, $id)
+    {
+        $employeeIdRecord = EmployeeId::where('employee_id', $employeeId)
+            ->where('id', $id)
+            ->firstOrFail();
+
+        $employeeIdRecord->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'ID deleted successfully'
+        ]);
+    }
 }
