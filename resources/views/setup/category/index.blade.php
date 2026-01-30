@@ -134,6 +134,7 @@
                     <tr>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Name</th>
                         <th scope="col" class="px-4 py-3 text-left w-[200px]">Description</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Asset Code</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
@@ -144,6 +145,7 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3 w-[150px]">{{ $category->name }}</td>
                             <td class="px-4 py-3 w-[200px]">{{ $category->description }}</td>
+                            <td class="px-4 py-3 w-[80px]">{{ $category->asset_code }}</td>
                             <td class="px-4 py-3 w-[100px] text-xs">
                                 @php
                                     $statuses = [
@@ -165,6 +167,7 @@
                                     <button type="button" title="Edit category {{ $category->name }}"
                                         data-modal-target="edit-modal" data-modal-toggle="edit-modal"
                                         data-id="{{ $category->id }}" data-name="{{ $category->name }}"
+                                        data-asset_code="{{ $category->asset_code }}"
                                         data-description="{{ $category->description }}"
                                         data-status="{{ $category->is_active }}" onclick="openEditModal(this)"
                                         class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
@@ -223,8 +226,8 @@
                 <!-- Modal body -->
                 <form action="{{ route('category.store') }}" method="POST">
                     @csrf
-                    <div class="grid gap-2 mb-4 sm:grid-cols-1">
-                        <div class="w-full md:col-span-2">
+                    <div class="grid gap-2 mb-4 sm:grid-cols-2">
+                        <div class="sm:col-span-2">
                             <label for="name"
                                 class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
                             <input type="text" name="name" id="name"
@@ -239,7 +242,14 @@
                                 placeholder="Category description"></textarea>
                         </div>
 
-                        <div class="sm:col-span-2">
+                        <div class="md:col-span-1">
+                            <label for="asset_code" class="block text-xs font-medium text-gray-900 dark:text-white">Asset
+                                Code*</label>
+                            <input type="text" name="asset_code" id="asset_code"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                placeholder="e.g. FA" required>
+                        </div>
+                        <div class="md:col-span-1">
                             <label for="status"
                                 class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
                             <select id="status" name="status"
@@ -250,7 +260,6 @@
                                 <option value="0">Inactive</option>
                             </select>
                         </div>
-
                     </div>
                     <button type="submit"
                         class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
@@ -297,7 +306,7 @@
                     @method('PUT')
                     <input type="hidden" name="edit_id" id="edit_id">
 
-                    <div class="grid gap-2 mb-4 sm:grid-cols-1">
+                    <div class="grid gap-2 mb-4 sm:grid-cols-2">
                         <div class="sm:col-span-2">
                             <label for="edit_name"
                                 class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
@@ -312,8 +321,14 @@
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                 placeholder="Category description"></textarea>
                         </div>
-
-                        <div class="sm:col-span-2">
+                        <div class="sm:col-span-1">
+                            <label for="edit_asset_code"
+                                class="block text-xs font-medium text-gray-900 dark:text-white">Asset Code*</label>
+                            <input type="text" name="edit_asset_code" id="edit_asset_code"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                placeholder="e.g. FA" required>
+                        </div>
+                        <div class="sm:col-span-1">
                             <label for="edit_status"
                                 class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
                             <select id="edit_status" name="edit_status"
@@ -356,6 +371,7 @@
             const id = button.getAttribute('data-id');
             document.getElementById('edit_id').value = button.getAttribute('data-id');
             document.getElementById('edit_name').value = button.getAttribute('data-name');
+            document.getElementById('edit_asset_code').value = button.getAttribute('data-asset_code');
             document.getElementById('edit_description').value = button.getAttribute('data-description');
             document.getElementById('edit_status').value = button.getAttribute('data-status');
 

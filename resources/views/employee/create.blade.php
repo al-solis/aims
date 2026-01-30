@@ -288,7 +288,7 @@
                                         <div class="w-full">
                                             <label for="employee_id_type"
                                                 class="block text-xs font-medium text-gray-900 dark:text-white">ID
-                                                Type</label>
+                                                Type*</label>
                                             <select name="employee_id_type" id="employee_id_type"
                                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
                                                 <option selected="" value="">Select ID Type</option>
@@ -300,7 +300,7 @@
                                         <div class="w-full">
                                             <label for="employee_id_number"
                                                 class="block text-xs font-medium text-gray-900 dark:text-white">ID
-                                                Number</label>
+                                                Number*</label>
                                             <input type="text" name="employee_id_number" id="employee_id_number"
                                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                                 placeholder="e.g. 242-327-268">
@@ -747,9 +747,6 @@
                         });
                 }
             }
-
-
-
 
         });
 

@@ -25,6 +25,7 @@ class CategoryController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%');
                 $q->orWhere('description', 'like', '%' . $search . '%');
+                $q->orWhere('asset_code', 'like', '%' . $search . '%');
             });
         }
 
@@ -42,11 +43,13 @@ class CategoryController extends Controller
         $request->validate([
             'name' => 'required|string|max:50',
             'description' => 'nullable|string|max:255',
+            'asset_code' => 'required|string|max:10',
         ]);
 
         Category::create([
             'name' => $request->name,
             'description' => $request->description,
+            'asset_code' => $request->asset_code,
             'is_active' => $request->status,
             'created_by' => Auth::id(),
         ]);
@@ -59,12 +62,14 @@ class CategoryController extends Controller
         $request->validate([
             'edit_name' => 'required|string|max:50',
             'edit_description' => 'nullable|string|max:255',
+            'edit_asset_code' => 'required|string|max:10',
         ]);
 
         $category = Category::findOrFail($id);
         $category->update([
             'name' => $request->edit_name,
             'description' => $request->edit_description,
+            'asset_code' => $request->edit_asset_code,
             'is_active' => $request->edit_status,
             'updated_by' => Auth::id(),
         ]);

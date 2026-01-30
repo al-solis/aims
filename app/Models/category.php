@@ -11,6 +11,7 @@ class category extends Model
     protected $fillable = [
         'name',
         'description',
+        'asset_code',
         'is_active',
         'created_by',
         'updated_by',
