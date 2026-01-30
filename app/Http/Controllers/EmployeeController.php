@@ -9,6 +9,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Employee;
 use App\Models\Location;
+use App\Models\id_type as IdType;
+use App\Models\employee_id as EmployeeId;
 
 class EmployeeController extends Controller
 {
@@ -91,6 +93,8 @@ class EmployeeController extends Controller
         return view('employee.create', [
             'employee' => $employee,
             'locations' => Location::all(),
+            'idTypes' => IdType::all(),
+            'employeeIds' => EmployeeId::where('employee_id', $employee->id)->get(),
         ]);
     }
 

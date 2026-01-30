@@ -273,14 +273,39 @@
                             </div>
                         </div>
 
-                        <div class="hidden p-1 rounded-lg bg-gray-50 dark:bg-gray-800" id="idinfo" role="tabpanel"
-                            aria-labelledby="idinfo-tab">
-                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the
-                                <strong class="font-medium text-gray-800 dark:text-white">Dashboard tab's associated
-                                    content</strong>. Clicking another tab will toggle the visibility of this one for the
-                                next.
-                            </p>
-                        </div>
+                        @if ($employee)
+                            <div class="hidden p-1 rounded-lg bg-gray-50 dark:bg-gray-800" id="idinfo" role="tabpanel"
+                                aria-labelledby="idinfo-tab">
+                                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">Maintenance of
+                                    <strong class="font-medium text-gray-800 dark:text-white">Employee ID</strong> records.
+                                </p>
+
+                                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                                    <div class="w-full">
+                                        <label for="employee_id_type"
+                                            class="block text-xs font-medium text-gray-900 dark:text-white">ID Type</label>
+                                        <select name="employee_id_type" id="employee_id_type"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                            <option selected="" value="">Select ID Type</option>
+                                            @foreach ($idTypes as $idType)
+                                                <option value="{{ $idType->id }}"
+                                                    {{ old('employee_id_type', $employeeIds->first()->id_type_id ?? '') == $idType->id ? 'selected' : '' }}>
+                                                    {{ $idType->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="w-full">
+                                        <label for="employee_id_number"
+                                            class="block text-xs font-medium text-gray-900 dark:text-white">ID
+                                            Number</label>
+                                        <input type="text" name="employee_id_number" id="employee_id_number"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                            placeholder="e.g. 242-327-268">
+                                    </div>
+
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
