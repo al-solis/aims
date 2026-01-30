@@ -208,8 +208,7 @@
                                     </a>
 
                                     <button type="button"
-                                        title="View assets {{ $employee->last_name }}, {{ $employee->first_name }}
-                                {{ $employee->middle_name }}"
+                                        title="View assigned assets to {{ $employee->last_name }}, {{ $employee->first_name }} {{ $employee->middle_name }}"
                                         data-modal-target="view-asset-modal" data-modal-toggle="view-asset-modal"
                                         data-id="{{ $employee->id }}" data-code="{{ $employee->employee_code }}"
                                         data-department="{{ $employee->location->description ?? '' }}"
