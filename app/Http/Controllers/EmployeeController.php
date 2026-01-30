@@ -93,7 +93,7 @@ class EmployeeController extends Controller
         return view('employee.create', [
             'employee' => $employee,
             'locations' => Location::all(),
-            'idTypes' => IdType::all(),
+            'idTypes' => IdType::where('is_active', 1)->get(),
             'employeeIds' => EmployeeId::where('employee_id', $employee->id)->get(),
         ]);
     }

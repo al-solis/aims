@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('id_type_id');
             $table->foreign('id_type_id')->references('id')->on('id_types');
 
+            $table->string('id_number')->nullable(false);
             $table->date('issue_date')->nullable();
             $table->date('expiry_date')->nullable();
 

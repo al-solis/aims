@@ -302,8 +302,87 @@
                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                             placeholder="e.g. 242-327-268">
                                     </div>
-
                                 </div>
+
+                                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
+                                    <div class="w-full">
+                                        <label for="employee_id_issued_date"
+                                            class="block text-xs font-medium text-gray-900 dark:text-white">Issued
+                                            Date</label>
+                                        <input type="date" name="employee_id_issued_date" id="employee_id_issued_date"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                            placeholder="e.g. mm/dd/yyyy">
+                                    </div>
+                                    <div class="w-full">
+                                        <label for="employee_id_expiry_date"
+                                            class="block text-xs font-medium text-gray-900 dark:text-white">Expiry
+                                            Date</label>
+                                        <input type="date" name="employee_id_expiry_date" id="employee_id_expiry_date"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                            placeholder="e.g. mm/dd/yyyy">
+                                    </div>
+
+                                    <button id="edit-opt-btn"
+                                        class="mt-4 w-1/3 h-fit text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-sm px-4 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                        type="button">
+                                        +
+                                    </button>
+                                </div>
+
+                                {{-- Table --}}
+                                <div class="bg-white border rounded-xl overflow-hidden">
+                                    <table class="min-w-full text-xs">
+                                        <thead class="bg-gray-200 text-gray-600">
+                                            <tr>
+                                                <th scope="col" class="px-4 py-3 text-left w-[100px]">Name</th>
+                                                <th scope="col" class="px-4 py-3 text-left w-[80px]">ID Number</th>
+                                                <th scope="col" class="px-4 py-3 text-left w-[60px]">Issued</th>
+                                                <th scope="col" class="px-4 py-3 text-left w-[60px]">Expiry</th>
+                                                <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody class="divide-y">
+                                            @forelse($employeeIds as $employeeId)
+                                                <tr class="hover:bg-gray-50">
+                                                    <td class="px-4 py-3 font-medium w-[100px]">
+                                                        {{ $employeeId->idType->name }}</td>
+                                                    <td class="px-4 py-3 w-[80px]">
+                                                        {{ $employeeId->id_number }}</td>
+                                                    <td class="px-4 py-3 w-[60px]">
+                                                        {{ $employeeId->issue_date }}</td>
+                                                    <td class="px-4 py-3 w-[60px]">
+                                                        {{ $employeeId->expiry_date }}
+                                                    </td>
+                                                    <td class="px-4 py-3 w-[50px]">
+                                                        <div class="flex items-center justify-center space-x-2">
+                                                            <a href=""
+                                                                title="Edit employee {{ $employeeId->employee->last_name }}, {{ $employeeId->employee->first_name }} {{ $employeeId->employee->middle_name }}"
+                                                                class="group flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                    height="16" fill="currentColor"
+                                                                    class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                                                    <path fill-rule="evenodd"
+                                                                        d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                                                </svg>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="9" class="px-4 py-6 text-center text-gray-500">
+                                                        No IDs found.
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+
                             </div>
                         @endif
                     </div>
