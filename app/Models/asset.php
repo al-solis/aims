@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\category;
+use App\Models\location;
+use App\Models\employee;
 
 class asset extends Model
 {
@@ -30,16 +33,16 @@ class asset extends Model
 
     public function location()
     {
-        return $this->belongsTo('locations', 'location_id');
+        return $this->belongsTo(location::class, 'location_id');
     }
 
     public function category()
     {
-        return $this->belongsTo('categories', 'category_id');
+        return $this->belongsTo(category::class, 'category_id');
     }
 
     public function assigned_user()
     {
-        return $this->belongsTo('employees', 'assigned_to');
+        return $this->belongsTo(employee::class, 'assigned_to');
     }
 }

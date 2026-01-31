@@ -16,4 +16,5 @@ class category extends Model
         'created_by',
         'updated_by',
     ];
+
 }

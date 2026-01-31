@@ -91,7 +91,7 @@
             <table class="min-w-full text-xs">
                 <thead class="bg-gray-200 text-gray-600">
                     <tr>
-                        <th scope="col" class="px-4 py-3 text-left w-[50px]">Code</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Code</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Name</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Category</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Serial</th>
@@ -106,13 +106,10 @@
                 <tbody class="divide-y">
                     @forelse($assets as $asset)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 font-medium w-[50px]">{{ $asset->asset_code }}</td>
+                            <td class="px-4 py-3 font-medium w-[80px]">{{ $asset->asset_code }}</td>
                             <td class="px-4 py-3 w-[150px]">{{ $asset->name }}</td>
                             <td class="px-4 py-3 w-[80px]">{{ $asset->category_id ? $asset->category->name : '' }}</td>
                             <td class="px-4 py-3 w-[100px]">{{ $asset->serial }}</td>
-                            <td class="px-4 py-3 w-[80px]">{{ $asset->status }}</td>
-                            <td class="px-4 py-3 w-[100px]">
-                                {{ $asset->assigned_to ? $asset->assigned_user->last_name : '' }}</td>
                             <td class="px-4 py-3 w-[80px] text-xs">
                                 @php
                                     $statuses = [
@@ -120,7 +117,7 @@
                                         1 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Active'],
                                         2 => ['color' => 'bg-yellow-100 text-yellow-700', 'label' => 'On Leave'],
                                     ];
-                                    $status = $statuses[$employee->status] ?? [
+                                    $status = $statuses[$asset->status] ?? [
                                         'color' => 'bg-gray-100 text-gray-600',
                                         'label' => 'Unknown',
                                     ];
@@ -131,11 +128,14 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3 w-[100px]">
+                                {{ $asset->assigned_to ? $asset->assigned_user->last_name . ', ' . $asset->assigned_user->first_name . ' ' . $asset->assigned_user->middle_name : '' }}
+                            </td>
+                            <td class="px-4 py-3 w-[100px]">
                                 {{ $asset->location_id ? $asset->location->name : '' }}</td>
                             <td class="px-4 py-3 w-[80px]"></td>
                             <td class="px-4 py-3 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
-                                    <a href="" title="Edit asset {{ $assset->asset_code }}"
+                                    <a href="" title="Edit asset {{ $asset->asset_code }}"
                                         class="group flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
 
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -228,10 +228,11 @@
 
                         <div class="sm:col-span-1">
                             <label for="category_id"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Category</label>
+                                class="block text-xs font-medium text-gray-900 dark:text-white">Category*</label>
                             <select id="category_id" name="category_id"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                <option selected="">Select category</option>
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                required>
+                                <option value = "" selected disabled>Select category</option>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
                                 @endforeach
@@ -251,7 +252,7 @@
                                 class="block text-xs font-medium text-gray-900 dark:text-white">Location</label>
                             <select id="location_id" name="location_id"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                <option selected="">Select location</option>
+                                <option value = "0" selected disabled>Select location</option>
                                 @foreach ($locations as $location)
                                     <option value="{{ $location->id }}">{{ $location->name }}</option>
                                 @endforeach
@@ -263,7 +264,7 @@
                                 class="block text-xs font-medium text-gray-900 dark:text-white">Sub-location</label>
                             <select id="sublocation_id" name="sublocation_id"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                <option selected="">Select sub-location</option>
+                                <option value = "0" selected disabled>Select sub-location</option>
                             </select>
                         </div>
 
@@ -301,27 +302,11 @@
                         </div>
 
                         <div class="sm:col-span-2">
-                            <label for="description"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                            <textarea type="text" name="description" id="description" rows="2"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                placeholder="Asset description"></textarea>
-                        </div>
-
-                        <div class="sm:col-span-1">
-                            <label for="asset_code" class="block text-xs font-medium text-gray-900 dark:text-white">Asset
-                                Code*</label>
-                            <input type="text" name="asset_code" id="asset_code"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                placeholder="e.g. FA" required>
-                        </div>
-
-                        <div class="sm:col-span-1">
                             <label for="assigned_to"
                                 class="select2 block text-xs font-medium text-gray-900 dark:text-white">Assigned To</label>
                             <select id="assigned_to" name="assigned_to"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                <option selected="">Select employee</option>
+                                <option value = "0" selected disabled>Select employee</option>
                                 @foreach ($employees as $employee)
                                     <option value="{{ $employee->id }}">{{ $employee->last_name }},
                                         {{ $employee->first_name }} {{ $employee->middle_name }}</option>
@@ -329,16 +314,20 @@
                             </select>
                         </div>
 
-                        <div class="sm:col-span-1">
-                            <label for="status"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                            <select id="status" name="status"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                required>
-                                {{-- <option selected="">Select product type</option> --}}
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
-                            </select>
+                        <div class="sm:col-span-2">
+                            <label for="description"
+                                class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
+                            <textarea type="text" name="description" id="description" rows="2"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                placeholder="Additional details about the asset"></textarea>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label for="warranty"
+                                class="block text-xs font-medium text-gray-900 dark:text-white">Warranty</label>
+                            <textarea type="text" name="warranty" id="warranty" rows="1"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                placeholder="Warranty details/ expiration"></textarea>
                         </div>
                     </div>
 
@@ -406,7 +395,7 @@
                         success: function(data) {
                             sublocationSelect.empty();
                             sublocationSelect.append(
-                                '<option value="">Select sub-location</option>');
+                                '<option value="0">Select sub-location</option>');
 
                             $.each(data, function(key, sublocation) {
                                 sublocationSelect.append(
