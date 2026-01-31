@@ -9,6 +9,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LicenseTypeController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\EmployeeIdController;
+use App\Http\Controllers\AssetController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -62,6 +63,8 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}', [EmployeeController::class, 'updateEmployeeId'])->name('employee.ids.update');
         Route::delete('/{id}', [EmployeeController::class, 'destroyEmployeeId'])->name('employee.ids.destroy');
     });
+
+    Route::resource('asset', AssetController::class)->except(['destroy']);
 });
 
 require __DIR__ . '/auth.php';

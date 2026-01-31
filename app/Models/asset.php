@@ -27,4 +27,15 @@ class asset extends Model
         'created_by',
         'updated_by',
     ]);
+
+    public function location()
+    {
+        return $this->belongsTo('locations', 'location_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo('categories', 'category_id');
+    }
+
 }
