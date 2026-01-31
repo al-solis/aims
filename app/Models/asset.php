@@ -38,4 +38,8 @@ class asset extends Model
         return $this->belongsTo('categories', 'category_id');
     }
 
+    public function assigned_user()
+    {
+        return $this->belongsTo('employees', 'assigned_to');
+    }
 }

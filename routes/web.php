@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [EmployeeController::class, 'destroyEmployeeId'])->name('employee.ids.destroy');
     });
 
+    Route::get('/get-sublocations/{location}', [LocationController::class, 'getSublocations']);
     Route::resource('asset', AssetController::class)->except(['destroy']);
 });
 

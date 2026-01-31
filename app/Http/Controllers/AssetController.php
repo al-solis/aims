@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\asset;
 use App\Models\category;
 use App\Models\location;
+use App\Models\employee;
+use Illuminate\Support\Facades\Auth;
 
 
 class AssetController extends Controller
@@ -21,7 +23,8 @@ class AssetController extends Controller
         $locationid = $request->route('location');
         $locations = Location::get();
         $categories = Category::get();
-        $sublocations = Sublocation::where('location_id', $locationid)->get();
+        $sublocations = Sublocation::get();
+        $employees = Employee::where('status', '1')->get();
 
         $query = Asset::query();
 
@@ -48,6 +51,42 @@ class AssetController extends Controller
                 'searchloc' => $searchloc
             ]);
 
-        return view('asset.index', compact('assets', 'categories', 'locations', 'sublocations'));
+        return view('asset.index', compact('assets', 'categories', 'locations', 'sublocations', 'employees'));
+    }
+
+    public function store(Request $request, Asset $asset)
+    {
+        $request->validate([
+            'asset_code' => 'required|string|max:25|unique:assets,asset_code,' . $asset->id,
+            'name' => 'required|string|max:50',
+            'description' => 'nullable|string|max:250',
+            'category_id' => 'nullable',
+            'cost' => 'nullable|decimal',
+            'purchase_date' => 'nullable|date|after_or_equal:' . now()->format(''),
+            'manufacturer' => 'nullable|string|max:150',
+            'model' => 'nullable|string|max:150',
+            'serial' => 'nullable|string|max:50',
+        ]);
+
+        $asset->insert([
+            'asset_code' => $request->asset_code,
+            'name' => $request->name,
+            'description' => $request->description,
+            'category_id' => $request->category_id,
+            'cost' => $request->cost,
+            'purchase_date' => $request->purchase_date,
+            'manufacturer' => $request->manufacturer,
+            'model' => $request->model,
+            'serial' => $request->serial,
+            'assigned_to' => $request->assigned_to,
+            'location_id' => $request->location_id,
+            'sublocation_id' => $request->sublocation_id,
+            'condition' => $request->condition,
+            'warranty' => $request->warranty,
+            'created_by' => Auth::id(),
+            'created_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Asset created successfully.');
     }
 }

@@ -83,4 +83,10 @@ class LocationController extends Controller
 
         return redirect()->route('location.index')->with('success', 'Location updated successfully.');
     }
+
+    public function getSublocations($locationId)
+    {
+        $sublocations = SubLocation::where('location_id', $locationId)->get();
+        return response()->json($sublocations);
+    }
 }

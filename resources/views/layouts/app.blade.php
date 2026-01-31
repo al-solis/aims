@@ -12,8 +12,10 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+    <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
+
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/flowbite.min.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/flowbite.min.js', 'resources/js/select2.min.js'])
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 </head>
@@ -70,8 +72,11 @@
         </button>
     </div>
 
-    <script src="{{ asset('build/assets/flowbite.min-DpCNk_9L.js') }}"></script>
-    <script src="{{ asset('build/assets/preline-DARbpiha.js') }}"></script>
+    <script src="{{ asset('assets/js/preline.js') }}"></script>
+    <script src="{{ asset('assets/js/flowbite.min.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('assets/js/select2.min.js') }}"></script>
+
 </body>
 
 </html>
