@@ -11,7 +11,10 @@ use App\Models\location;
 use App\Models\employee;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-
+use Barryvdh\DomPDF\Facade\Pdf;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Writer\PngWriter;
 
 class AssetController extends Controller
 {
@@ -101,5 +104,38 @@ class AssetController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Asset created successfully.');
+    }
+
+    public function printAssetLabel(Request $request)
+    {
+        $assetIds = $request->input('asset_ids', []);
+
+        if (!is_array($assetIds)) {
+            $assetIds = [$assetIds];
+        }
+
+        if (empty($assetIds)) {
+            return redirect()->back()->with('error', 'No assets selected for label printing.');
+        }
+
+        $assets = Asset::with(['category', 'location', 'assigned_user'])
+            ->whereIn('id', $assetIds)->get();
+        // ->map(function ($asset) {
+
+        //     $result = Builder::create()
+        //         ->writer(new PngWriter())
+        //         ->data(url('/assets/' . $asset->id))
+        //         ->size(200)
+        //         ->margin(0)
+        //         ->build();
+
+        //     $asset->qr_base64 = base64_encode($result->getString());
+
+        //     return $asset;
+        // });
+
+        $pdf = Pdf::loadView('asset.asset_labels', compact('assets'))
+            ->setPaper('a4', 'portrait');
+        return $pdf->stream('asset_labels.pdf');
     }
 }

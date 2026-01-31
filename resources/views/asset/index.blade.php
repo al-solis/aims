@@ -99,7 +99,7 @@
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Assigned To</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Location</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">License Status</th>
-                        <th scope="col" class="px-4 py-3 text-center w-[80px]">Actions</th>
+                        <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
                 </thead>
 
@@ -135,7 +135,7 @@
                             <td class="px-4 py-3 w-[80px]"></td>
                             <td class="px-4 py-3 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
-                                    <a href="" title="Edit asset {{ $asset->asset_code }}"
+                                    <a href="" title="Edit asset: {{ $asset->asset_code }}"
                                         class="group flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
 
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -144,6 +144,34 @@
                                                 d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
                                             <path fill-rule="evenodd"
                                                 d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                        </svg>
+                                    </a>
+
+                                    <a href="" title="Transfer asset: {{ $asset->asset_code }}"
+                                        class="group flex items-center space-x-1 text-gray-500 hover:text-green-600 transition-colors">
+
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-folder-symlink" viewBox="0 0 16 16">
+                                            <path
+                                                d="m11.798 8.271-3.182 1.97c-.27.166-.616-.036-.616-.372V9.1s-2.571-.3-4 2.4c.571-4.8 3.143-4.8 4-4.8v-.769c0-.336.346-.538.616-.371l3.182 1.969c.27.166.27.576 0 .742" />
+                                            <path
+                                                d="m.5 3 .04.87a2 2 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14h10.348a2 2 0 0 0 1.991-1.819l.637-7A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2m.694 2.09A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09l-.636 7a1 1 0 0 1-.996.91H2.826a1 1 0 0 1-.995-.91zM6.172 2a1 1 0 0 1 .707.293L7.586 3H2.19q-.362.002-.683.12L1.5 2.98a1 1 0 0 1 1-.98z" />
+                                        </svg>
+                                    </a>
+
+                                    <a href="{{ route('asset.labels', ['asset_ids' => $asset->id]) }}"
+                                        title="Generate barcode: {{ $asset->asset_code }}"
+                                        class="group flex items-center space-x-1 text-gray-500 hover:text-yellow-600 transition-colors">
+
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
+                                            <path
+                                                d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z" />
+                                            <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z" />
+                                            <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z" />
+                                            <path
+                                                d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z" />
+                                            <path d="M12 9h2V8h-2z" />
                                         </svg>
                                     </a>
 

@@ -65,6 +65,10 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/get-sublocations/{location}', [LocationController::class, 'getSublocations']);
+    Route::get('/asset/labels', [AssetController::class, 'printAssetLabel'])->name('asset.labels');
+    Route::post('/assets/print-labels', [AssetController::class, 'printAssetLabel'])->name('assets.print.labels');
+
+
     Route::resource('asset', AssetController::class)->except(['destroy']);
 });
 
