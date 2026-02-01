@@ -149,7 +149,7 @@
         </form>
 
         {{-- Table --}}
-        <div class="bg-white border rounded-xl overflow-hidden">
+        <div class="bg-white border rounded-xl overflow-x-auto md:overflow-visible scroll-smooth">
             <table class="min-w-full text-xs">
                 <thead class="bg-gray-200 text-gray-600">
                     <tr>

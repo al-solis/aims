@@ -129,7 +129,7 @@
         </form>
 
         {{-- Table --}}
-        <div class="bg-white border rounded-xl overflow-hidden">
+        <div class="bg-white border rounded-xl overflow-x-auto md:overflow-visible scroll-smooth">
             <table class="min-w-full text-xs">
                 <thead class="bg-gray-200 text-gray-600">
                     <tr>
@@ -222,48 +222,50 @@
                     </button>
                 </div>
                 <!-- Modal body -->
-                <form action="{{ route('idtype.store') }}" method="POST">
-                    @csrf
-                    <div class="grid gap-2 mb-4 sm:grid-cols-1">
-                        <div class="w-full md:col-span-2">
-                            <label for="name"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                            <input type="text" name="name" id="name"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                placeholder="e.g. Firearms" required>
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label for="description"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                            <textarea type="text" name="description" id="description" rows="3"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                placeholder="Category description"></textarea>
-                        </div>
+                <div class="overflow-y-auto max-h-[70vh]">
+                    <form action="{{ route('idtype.store') }}" method="POST">
+                        @csrf
+                        <div class="grid gap-2 mb-4 sm:grid-cols-1">
+                            <div class="w-full md:col-span-2">
+                                <label for="name"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
+                                <input type="text" name="name" id="name"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. Firearms" required>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label for="description"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
+                                <textarea type="text" name="description" id="description" rows="3"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Category description"></textarea>
+                            </div>
 
-                        <div class="sm:col-span-2">
-                            <label for="status"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                            <select id="status" name="status"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                required>
-                                {{-- <option selected="">Select product type</option> --}}
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
-                            </select>
-                        </div>
+                            <div class="sm:col-span-2">
+                                <label for="status"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
+                                <select id="status" name="status"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    required>
+                                    {{-- <option selected="">Select product type</option> --}}
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
+                            </div>
 
-                    </div>
-                    <button type="submit"
-                        class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
-                        <svg class="mr-1 -ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        Add ID Type
-                    </button>
-                </form>
+                        </div>
+                        <button type="submit"
+                            class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                            <svg class="mr-1 -ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            Add ID Type
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -293,46 +295,48 @@
                     </button>
                 </div>
                 <!-- Modal body -->
-                <form id="editForm" class="p-4 md:p-5" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" name="edit_id" id="edit_id">
+                <div class="overflow-y-auto max-h-[70vh]">
+                    <form id="editForm" class="p-4 md:p-5" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="edit_id" id="edit_id">
 
-                    <div class="grid gap-2 mb-4 sm:grid-cols-1">
-                        <div class="sm:col-span-2">
-                            <label for="edit_name"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                            <input type="text" name="edit_name" id="edit_name"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                placeholder="e.g. Firearms" required>
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label for="edit_description"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                            <textarea type="text" name="edit_description" id="edit_description" rows="3"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                placeholder="Category description"></textarea>
+                        <div class="grid gap-2 mb-4 sm:grid-cols-1">
+                            <div class="sm:col-span-2">
+                                <label for="edit_name"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
+                                <input type="text" name="edit_name" id="edit_name"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. Firearms" required>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label for="edit_description"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
+                                <textarea type="text" name="edit_description" id="edit_description" rows="3"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Category description"></textarea>
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label for="edit_status"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
+                                <select id="edit_status" name="edit_status"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    required>
+                                    {{-- <option selected="">Select product type</option> --}}
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
+                            </div>
                         </div>
 
-                        <div class="sm:col-span-2">
-                            <label for="edit_status"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                            <select id="edit_status" name="edit_status"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                required>
-                                {{-- <option selected="">Select product type</option> --}}
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <button type="submit"
-                        class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
-                        {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
-                        Update ID Type
-                    </button>
-                </form>
+                        <button type="submit"
+                            class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                            {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
+                            Update ID Type
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

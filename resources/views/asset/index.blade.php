@@ -87,7 +87,7 @@
         </form>
 
         {{-- Table --}}
-        <div class="bg-white border rounded-xl overflow-hidden">
+        <div class="bg-white border rounded-xl overflow-x-auto md:overflow-visible scroll-smooth">
             <table class="min-w-full text-xs">
                 <thead class="bg-gray-200 text-gray-600">
                     <tr>
@@ -235,141 +235,146 @@
                     </button>
                 </div>
                 <!-- Modal body -->
-                <form action="{{ route('asset.store') }}" method="POST">
-                    @csrf
-                    <div class="grid gap-2 mb-4 sm:grid-cols-2">
-                        <div class="sm:col-span-1">
-                            <label for="name" class="block text-xs font-medium text-gray-900 dark:text-white">Asset
-                                Name*</label>
-                            <input type="text" name="name" id="name"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                placeholder="Enter asset name" required>
+                <div class="overflow-y-auto max-h-[70vh]">
+                    <form action="{{ route('asset.store') }}" method="POST">
+                        @csrf
+                        <div class="grid gap-2 mb-4 sm:grid-cols-2">
+                            <div class="sm:col-span-1">
+                                <label for="name"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Asset
+                                    Name*</label>
+                                <input type="text" name="name" id="name"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Enter asset name" required>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="cost"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Asset
+                                    Cost*</label>
+                                <input type="number" name="cost" id="cost"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. 0.00" required>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="category_id"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Category*</label>
+                                <select id="category_id" name="category_id"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    required>
+                                    <option value = "" selected disabled>Select category</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="subcategory"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Sub-category</label>
+                                <input type="text" name="subcategory" id="subcategory"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. Handgun, Patrol Vehicle">
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="location_id"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Location</label>
+                                <select id="location_id" name="location_id"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                    <option value = "0" selected disabled>Select location</option>
+                                    @foreach ($locations as $location)
+                                        <option value="{{ $location->id }}">{{ $location->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="sublocation_id"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Sub-location</label>
+                                <select id="sublocation_id" name="sublocation_id"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                    <option value = "0" selected disabled>Select sub-location</option>
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="manufacturer"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Manufacturer</label>
+                                <input type="text" name="manufacturer" id="manufacturer"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. Brand/ Manufacturer">
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="purchase_date"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Date
+                                    Purchase*</label>
+                                <input type="date" name="purchase_date" id="purchase_date"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. mm/dd/yyyy" required>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="model"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Model</label>
+                                <input type="text" name="model" id="model"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. Model number/ name">
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="serial"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Serial</label>
+                                <input type="text" name="serial" id="serial"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. Serial number">
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label for="assigned_to"
+                                    class="select2 block text-xs font-medium text-gray-900 dark:text-white">Assigned
+                                    To</label>
+                                <select id="assigned_to" name="assigned_to"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                    <option value = "0" selected disabled>Select employee</option>
+                                    @foreach ($employees as $employee)
+                                        <option value="{{ $employee->id }}">{{ $employee->last_name }},
+                                            {{ $employee->first_name }} {{ $employee->middle_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label for="description"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
+                                <textarea type="text" name="description" id="description" rows="2"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Additional details about the asset"></textarea>
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label for="warranty"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Warranty</label>
+                                <textarea type="text" name="warranty" id="warranty" rows="1"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Warranty details/ expiration"></textarea>
+                            </div>
                         </div>
 
-                        <div class="sm:col-span-1">
-                            <label for="cost" class="block text-xs font-medium text-gray-900 dark:text-white">Asset
-                                Cost*</label>
-                            <input type="number" name="cost" id="cost"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                placeholder="e.g. 0.00" required>
-                        </div>
-
-                        <div class="sm:col-span-1">
-                            <label for="category_id"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Category*</label>
-                            <select id="category_id" name="category_id"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                required>
-                                <option value = "" selected disabled>Select category</option>
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="sm:col-span-1">
-                            <label for="subcategory"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Sub-category</label>
-                            <input type="text" name="subcategory" id="subcategory"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                placeholder="e.g. Handgun, Patrol Vehicle">
-                        </div>
-
-                        <div class="sm:col-span-1">
-                            <label for="location_id"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Location</label>
-                            <select id="location_id" name="location_id"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                <option value = "0" selected disabled>Select location</option>
-                                @foreach ($locations as $location)
-                                    <option value="{{ $location->id }}">{{ $location->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="sm:col-span-1">
-                            <label for="sublocation_id"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Sub-location</label>
-                            <select id="sublocation_id" name="sublocation_id"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                <option value = "0" selected disabled>Select sub-location</option>
-                            </select>
-                        </div>
-
-                        <div class="sm:col-span-1">
-                            <label for="manufacturer"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Manufacturer</label>
-                            <input type="text" name="manufacturer" id="manufacturer"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                placeholder="e.g. Brand/ Manufacturer">
-                        </div>
-
-                        <div class="sm:col-span-1">
-                            <label for="purchase_date"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Date
-                                Purchase*</label>
-                            <input type="date" name="purchase_date" id="purchase_date"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                placeholder="e.g. mm/dd/yyyy" required>
-                        </div>
-
-                        <div class="sm:col-span-1">
-                            <label for="model"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Model</label>
-                            <input type="text" name="model" id="model"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                placeholder="e.g. Model number/ name">
-                        </div>
-
-                        <div class="sm:col-span-1">
-                            <label for="serial"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Serial</label>
-                            <input type="text" name="serial" id="serial"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                placeholder="e.g. Serial number">
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <label for="assigned_to"
-                                class="select2 block text-xs font-medium text-gray-900 dark:text-white">Assigned To</label>
-                            <select id="assigned_to" name="assigned_to"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                <option value = "0" selected disabled>Select employee</option>
-                                @foreach ($employees as $employee)
-                                    <option value="{{ $employee->id }}">{{ $employee->last_name }},
-                                        {{ $employee->first_name }} {{ $employee->middle_name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <label for="description"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                            <textarea type="text" name="description" id="description" rows="2"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                placeholder="Additional details about the asset"></textarea>
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <label for="warranty"
-                                class="block text-xs font-medium text-gray-900 dark:text-white">Warranty</label>
-                            <textarea type="text" name="warranty" id="warranty" rows="1"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                placeholder="Warranty details/ expiration"></textarea>
-                        </div>
-                    </div>
-
-                    <button type="submit"
-                        class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
-                        <svg class="mr-1 -ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        Add Asset
-                    </button>
-                </form>
+                        <button type="submit"
+                            class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                            <svg class="mr-1 -ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            Add Asset
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
