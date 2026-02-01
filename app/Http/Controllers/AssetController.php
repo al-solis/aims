@@ -120,22 +120,9 @@ class AssetController extends Controller
 
         $assets = Asset::with(['category', 'location', 'assigned_user'])
             ->whereIn('id', $assetIds)->get();
-        // ->map(function ($asset) {
-
-        //     $result = Builder::create()
-        //         ->writer(new PngWriter())
-        //         ->data(url('/assets/' . $asset->id))
-        //         ->size(200)
-        //         ->margin(0)
-        //         ->build();
-
-        //     $asset->qr_base64 = base64_encode($result->getString());
-
-        //     return $asset;
-        // });
 
         $pdf = Pdf::loadView('asset.asset_labels', compact('assets'))
-            ->setPaper('a4', 'portrait');
+            ->setPaper([0, 0, 198.5, 70.9], 'portrait');
         return $pdf->stream('asset_labels.pdf');
     }
 }

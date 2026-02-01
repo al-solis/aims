@@ -160,7 +160,7 @@
                                     </a>
 
                                     <a href="{{ route('asset.labels', ['asset_ids' => $asset->id]) }}"
-                                        title="Generate barcode: {{ $asset->asset_code }}"
+                                        title="Generate barcode: {{ $asset->asset_code }}" target="_blank"
                                         class="group flex items-center space-x-1 text-gray-500 hover:text-yellow-600 transition-colors">
 
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"

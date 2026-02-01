@@ -124,5 +124,10 @@ return [
     ],
 
     // Pagination per page setting
-    'paginate' => env('APP_PAGINATE_PER_PAGE', 10)
+    'paginate' => env('APP_PAGINATE_PER_PAGE', 10),
+
+    'aliases' => [
+        'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
+        'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
+    ],
 ];
