@@ -135,7 +135,18 @@
                             <td class="px-4 py-3 w-[80px]"></td>
                             <td class="px-4 py-3 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
-                                    <a href="" title="Edit asset: {{ $asset->asset_code }}"
+                                    <button type="button" title="Edit asset: {{ $asset->asset_code }}"
+                                        data-modal-target="edit-modal" data-modal-toggle="edit-modal"
+                                        data-id="{{ $asset->id }}" data-code="{{ $asset->asset_code }}"
+                                        data-name="{{ $asset->name }}" data-category="{{ $asset->category_id }}"
+                                        data-subcategory="{{ $asset->subcategory }}" data-serial="{{ $asset->serial }}"
+                                        data-cost="{{ $asset->cost }}" data-status="{{ $asset->status }}"
+                                        data-purchase_date="{{ $asset->purchase_date }}"
+                                        data-manufacturer="{{ $asset->manufacturer }}" data-model="{{ $asset->model }}"
+                                        data-serial="{{ $asset->serial }}" data-assigned_to="{{ $asset->assigned_to }}"
+                                        data-location="{{ $asset->location_id }}"
+                                        data-sublocation="{{ $asset->subloc_id }}" data-warranty="{{ $asset->warranty }}"
+                                        onclick="openEditModal(this)"
                                         class="group flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
 
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -145,7 +156,7 @@
                                             <path fill-rule="evenodd"
                                                 d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
                                         </svg>
-                                    </a>
+                                    </button>
 
                                     <a href="" title="Transfer asset: {{ $asset->asset_code }}"
                                         class="group flex items-center space-x-1 text-gray-500 hover:text-green-600 transition-colors">
@@ -161,6 +172,16 @@
 
                                     <a href="{{ route('asset.labels', ['asset_ids' => $asset->id]) }}"
                                         title="Generate barcode: {{ $asset->asset_code }}" target="_blank"
+                                        class="group flex items-center space-x-1 text-gray-500 hover:text-red-600 transition-colors">
+
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-upc-scan" viewBox="0 0 16 16">
+                                            <path
+                                                d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z" />
+                                        </svg>
+                                    </a>
+
+                                    <a href="" title="Generate QR: {{ $asset->asset_code }}"
                                         class="group flex items-center space-x-1 text-gray-500 hover:text-yellow-600 transition-colors">
 
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -174,7 +195,6 @@
                                             <path d="M12 9h2V8h-2z" />
                                         </svg>
                                     </a>
-
                                     {{-- <button type="button"
                                         title="View assigned assets to {{ $employee->last_name }}, {{ $employee->first_name }} {{ $employee->middle_name }}"
                                         data-modal-target="view-asset-modal" data-modal-toggle="view-asset-modal"
@@ -380,6 +400,176 @@
     </div>
     <!-- End create asset modal -->
 
+    <!-- Modal  Edit-->
+    <div id="edit-modal" tabindex="-1" aria-hidden="true"
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-md max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+                <!-- Modal header -->
+                <div
+                    class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        Update Asset
+                        @if (isset($asset) && $asset->asset_code)
+                            {{ '(' . $asset->asset_code . ')' }}
+                        @endif
+                    </h3>
+                    <button type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        data-modal-toggle="edit-modal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Close</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="overflow-y-auto max-h-[70vh]">
+                    <form id="editForm" class="p-4 md:p-5" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="edit_id" id="edit_id">
+
+                        <div class="grid gap-2 mb-4 sm:grid-cols-2">
+                            <div class="sm:col-span-1">
+                                <label for="edit_name"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Asset
+                                    Name*</label>
+                                <input type="text" name="edit_name" id="edit_name"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Enter asset name" required>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_cost"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Asset
+                                    Cost*</label>
+                                <input type="number" name="edit_cost" id="edit_cost"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. 0.00" required>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_category_id"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Category*</label>
+                                <select id="edit_category_id" name="edit_category_id"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    required>
+                                    <option value = "" selected disabled>Select category</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_subcategory"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Sub-category</label>
+                                <input type="text" name="edit_subcategory" id="edit_subcategory"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. Handgun, Patrol Vehicle">
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_location_id"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Location</label>
+                                <select id="edit_location_id" name="edit_location_id"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                    <option value = "0" selected disabled>Select location</option>
+                                    @foreach ($locations as $location)
+                                        <option value="{{ $location->id }}">{{ $location->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_sublocation_id"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Sub-location</label>
+                                <select id="edit_sublocation_id" name="edit_sublocation_id"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                    <option value = "0" selected disabled>Select sub-location</option>
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_manufacturer"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Manufacturer</label>
+                                <input type="text" name="edit_manufacturer" id="edit_manufacturer"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. Brand/ Manufacturer">
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_purchase_date"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Date
+                                    Purchase*</label>
+                                <input type="date" name="edit_purchase_date" id="edit_purchase_date"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. mm/dd/yyyy" required>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_model"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Model</label>
+                                <input type="text" name="edit_model" id="edit_model"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. Model number/ name">
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_serial"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Serial</label>
+                                <input type="text" name="edit_serial" id="edit_serial"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. Serial number">
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label for="edit_assigned_to"
+                                    class="select2 block text-xs font-medium text-gray-900 dark:text-white">Assigned
+                                    To</label>
+                                <select id="edit_assigned_to" name="edit_assigned_to"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                    <option value = "0" selected disabled>Select employee</option>
+                                    @foreach ($employees as $employee)
+                                        <option value="{{ $employee->id }}">{{ $employee->last_name }},
+                                            {{ $employee->first_name }} {{ $employee->middle_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label for="edit_description"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
+                                <textarea type="text" name="edit_description" id="edit_description" rows="2"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Additional details about the asset"></textarea>
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label for="edit_warranty"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Warranty</label>
+                                <textarea type="text" name="edit_warranty" id="edit_warranty" rows="1"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Warranty details/ expiration"></textarea>
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                            class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                            {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
+                            Update Asset
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End edit modal -->
+
     <script>
         function clearModalFields() {
             // Clear all form fields
@@ -398,10 +588,19 @@
         function openEditModal(button) {
             const id = button.getAttribute('data-id');
             document.getElementById('edit_id').value = button.getAttribute('data-id');
-            document.getElementById('edit_code').value = button.getAttribute('data-code');
             document.getElementById('edit_name').value = button.getAttribute('data-name');
             document.getElementById('edit_description').value = button.getAttribute('data-description');
-            document.getElementById('edit_status').value = button.getAttribute('data-status');
+            document.getElementById('edit_cost').value = button.getAttribute('data-cost');
+            document.getElementById('edit_category_id').value = button.getAttribute('data-category');
+            document.getElementById('edit_subcategory').value = button.getAttribute('data-subcategory');
+            document.getElementById('edit_serial').value = button.getAttribute('data-serial');
+            document.getElementById('edit_location_id').value = button.getAttribute('data-location');
+            document.getElementById('edit_purchase_date').value = button.getAttribute('data-purchase_date');
+            document.getElementById('edit_manufacturer').value = button.getAttribute('data-manufacturer');
+            document.getElementById('edit_model').value = button.getAttribute('data-model');
+            document.getElementById('edit_assigned_to').value = button.getAttribute('data-assigned_to');
+            document.getElementById('edit_sublocation_id').value = button.getAttribute('data-sublocation');
+            document.getElementById('edit_warranty').value = button.getAttribute('data-warranty');
 
             const form = document.getElementById('editForm');
             form.action = `/asset/${id}`;

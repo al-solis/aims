@@ -16,6 +16,7 @@ class asset extends Model
         'name',
         'description',
         'category_id',
+        'subcategory',
         'cost',
         'purchase_date',
         'status',

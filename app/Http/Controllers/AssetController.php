@@ -86,6 +86,7 @@ class AssetController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'category_id' => $request->category_id,
+            'subcategory' => $request->subcategory,
             'cost' => $request->cost ?? 0,
             'purchase_date' => $request->purchase_date,
             'manufacturer' => $request->manufacturer,
@@ -124,5 +125,43 @@ class AssetController extends Controller
         $pdf = Pdf::loadView('asset.asset_labels', compact('assets'))
             ->setPaper([0, 0, 198.5, 70.9], 'portrait');
         return $pdf->stream('asset_labels.pdf');
+    }
+
+    public function update(Request $request, Asset $asset)
+    {
+        $request->validate([
+            'edit_name' => 'required|string|max:50',
+            'edit_description' => 'nullable|string|max:250',
+            'edit_category_id' => 'required|exists:categories,id',
+            'edit_cost' => 'nullable|numeric',
+            'edit_purchase_date' => 'nullable|date|before_or_equal:' . now()->format(format: 'm/d/Y'),
+            'edit_manufacturer' => 'nullable|string|max:150',
+            'edit_model' => 'nullable|string|max:150',
+            'edit_serial' => 'nullable|string|max:50',
+        ]);
+
+        $asset->update([
+            'name' => $request->edit_name,
+            'description' => $request->edit_description,
+            'category_id' => $request->edit_category_id,
+            'subcategory' => $request->edit_subcategory,
+            'cost' => $request->edit_cost ?? 0,
+            'purchase_date' => $request->edit_purchase_date,
+            'manufacturer' => $request->edit_manufacturer,
+            'model' => $request->edit_model,
+            'serial' => $request->edit_serial,
+            'assigned_to' => $request->edit_assigned_to ?? null,
+            'location_id' => empty($request->edit_location_id)
+                ? null
+                : $request->edit_location_id,
+            'subloc_id' => empty($request->edit_sublocation_id)
+                ? null
+                : $request->edit_sublocation_id,
+            'warranty' => $request->edit_warranty,
+            'updated_by' => Auth::id(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Asset updated successfully.');
     }
 }

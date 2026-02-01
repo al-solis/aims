@@ -10,7 +10,9 @@ use App\Http\Controllers\LicenseTypeController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\EmployeeIdController;
 use App\Http\Controllers\AssetController;
+use App\Http\Controllers\AuthController;
 
+Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::get('/', function () {
     return view('welcome');
 });
@@ -73,3 +75,4 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+

@@ -19,6 +19,8 @@ return new class extends Migration {
             $table->unsignedBigInteger('category_id');
             $table->foreign('category_id')->references('id')->on('categories');
 
+            $table->string('subcategory', 50)->nullable();
+
             $table->decimal('cost', 10, 2)->nullable();
             $table->date('purchase_date');
             $table->integer('status')->default('1'); //1: Available, 2: Active, 3: Assigned, 4: Maintenance, 5: Retired
