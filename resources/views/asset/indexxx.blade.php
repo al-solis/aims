@@ -1,25 +1,5 @@
 @extends('dashboard')
 @section('content')
-
-    <style>
-        .custom-checkbox {
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border: 1px solid #9ca3af;
-            /* gray-400 */
-            background-color: #e5e7eb;
-            /* gray-200 */
-            border-radius: 3px;
-            cursor: pointer;
-        }
-
-        .custom-checkbox:checked {
-            background-color: #6b7280;
-            /* gray-500 */
-        }
-    </style>
-
     <div class="p-6 space-y-6">
 
         {{-- Header --}}
@@ -32,32 +12,7 @@
             </div>
 
             <div class="flex items-center gap-2 mt-0">
-                <div id="bulk-actions" class="flex items-center gap-2"
-                    style="{{ count(session('selected_assets', [])) > 0 ? '' : 'display:none;' }}">
-
-                    <a id="print-selected-btn" href="#" target="_blank"
-                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-upc-scan" viewBox="0 0 16 16">
-                            <path
-                                d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z" />
-                        </svg>
-                        Print Selected (<span id="selected-count">0</span>)
-                    </a>
-
-                    <button onclick="clearSelection()"
-                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-eraser" viewBox="0 0 16 16">
-                            <path
-                                d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828zm2.121.707a1 1 0 0 0-1.414 0L4.16 7.547l5.293 5.293 4.633-4.633a1 1 0 0 0 0-1.414zM8.746 13.547 3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293z" />
-                        </svg>
-                        Clear Selection
-                    </button>
-                </div>
-
-
-                {{-- <a href="{{ route('setup.index') }}"
+                <a href="{{ route('setup.index') }}"
                     class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 ">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-upc-scan" viewBox="0 0 16 16">
@@ -65,7 +20,12 @@
                             d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z" />
                     </svg>
                     Bulk UPC Generate
-                </a> --}}
+                </a>
+
+                <span id="selectedCount">0</span>
+                <button id="printBtn" class="hidden">Print Selected</button>
+                <button id="clearBtn" class="hidden" onclick="clearSelection()">Clear Selection</button>
+
 
                 <button data-modal-target="add-modal" data-modal-toggle="add-modal"
                     class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
@@ -100,9 +60,11 @@
         @endif
 
         {{-- Filters --}}
-        <form action="" method="GET">
+        <form action="" method="GET" id="searchForm">
             <input type="hidden" name="selected_assets" id="selected_assets"
                 value="{{ implode(',', session('selected_assets', [])) }}">
+            {{-- <input type="hidden" name="selected_assets" id="selected_assets"
+                value="{{ implode(',', old('selected_assets', [])) }}"> --}}
 
             <div class="flex flex-col md:flex-row gap-2 text-xs md:text-sm">
                 <div class="md:w-2/3 w-full">
@@ -151,7 +113,7 @@
                 <thead class="bg-gray-200 text-gray-600">
                     <tr>
                         <th scope="col" class="px-4 py-3 text-center w-[40px]">
-                            <input type="checkbox" id="select-all" class="form-checkbox custom-checkbox">
+                            <input type="checkbox" id="select-all" class="form-checkbox">
                         </th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Code</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Name</th>
@@ -169,8 +131,10 @@
                     @forelse($assets as $asset)
                         <tr class="hover:bg-gray-150">
                             <td class="px-4 py-2 text-center">
-                                <input type="checkbox" class="asset-checkbox custom-checkbox"
-                                    value="{{ $asset->id }}" @if (in_array($asset->id, session('selected_assets', []))) checked @endif>
+                                <input type="checkbox" class="asset-checkbox" value="{{ $asset->id }}"
+                                    {{ in_array($asset->id, session('selected_assets', [])) ? 'checked' : '' }}>
+                                {{-- <input type="checkbox" class="asset-checkbox" value="{{ $asset->id }}"
+                                    @if (in_array($asset->id, old('selected_assets', []))) checked @endif> --}}
                             </td>
                             <td class="px-4 py-2font-medium w-[80px]">{{ $asset->asset_code }}</td>
                             <td class="px-4 py-2 w-[150px]">{{ $asset->name }} <br>
@@ -710,169 +674,133 @@
             });
         });
 
-        // Individual checkbox
-        document.addEventListener('change', function(e) {
-            if (e.target.classList.contains('asset-checkbox')) {
-                updateBulkActions();
-            }
-        });
+        // //checkbox select all
+        // const selectAll = document.getElementById('select-all');
+        // const checkboxes = document.querySelectorAll('.asset-checkbox');
 
-        // Select all
-        document.getElementById('select-all')?.addEventListener('change', function() {
-            document.querySelectorAll('.asset-checkbox').forEach(cb => {
-                cb.checked = this.checked;
-            });
-            updateBulkActions();
-        });
+        // selectAll.addEventListener('change', function() {
+        //     checkboxes.forEach(cb => cb.checked = this.checked);
+        // });
 
-        // Run on page load (important for search / pagination)
-        document.addEventListener('DOMContentLoaded', updateBulkActions);
+        // checkboxes.forEach(cb => {
+        //     cb.addEventListener('change', function() {
+        //         if (!this.checked) {
+        //             selectAll.checked = false;
+        //         } else if ([...checkboxes].every(c => c.checked)) {
+        //             selectAll.checked = true;
+        //         }
+        //     });
+        // });
 
+        // let selectedAssets = [];
+
+        // // Load initial checked checkboxes
+        // document.querySelectorAll('.asset-checkbox:checked').forEach(cb => {
+        //     selectedAssets.push(cb.value);
+        // });
+
+        // // When user clicks a checkbox
+        // document.addEventListener('change', function(e) {
+        //     if (e.target.classList.contains('asset-checkbox')) {
+        //         const id = e.target.value;
+        //         if (e.target.checked) {
+        //             if (!selectedAssets.includes(id)) selectedAssets.push(id);
+        //         } else {
+        //             selectedAssets = selectedAssets.filter(x => x != id);
+        //         }
+        //     }
+        // });
+
+        // // When rendering new table (AJAX search or pagination)
+        // function renderAssetsTable(html) {
+        //     document.getElementById('asset-table').innerHTML = html;
+
+        //     // re-check previously selected
+        //     document.querySelectorAll('.asset-checkbox').forEach(cb => {
+        //         if (selectedAssets.includes(cb.value)) cb.checked = true;
+        //     });
+        // }
+
+        // // Check all functionality
+        // document.getElementById('check-all').addEventListener('change', function() {
+        //     const checkboxes = document.querySelectorAll('.asset-checkbox');
+        //     checkboxes.forEach(cb => {
+        //         cb.checked = this.checked;
+        //         const id = cb.value;
+        //         if (this.checked && !selectedAssets.includes(id)) selectedAssets.push(id);
+        //         if (!this.checked) selectedAssets = selectedAssets.filter(x => x != id);
+        //     });
+        // });
+
+        //asset bulk action
         // Load selected assets from session or hidden input
-        let selectedAssets = @json(session('selected_assets', []));
+        document.addEventListener('DOMContentLoaded', () => {
 
-        // Update hidden input with current selections
-        function updateSelectedAssetsInput() {
-            document.getElementById('selected_assets').value = selectedAssets.join(',');
-        }
-
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set initial hidden input value
-            updateSelectedAssetsInput();
-
-            // Check all functionality
-            const selectAll = document.getElementById('select-all');
             const checkboxes = document.querySelectorAll('.asset-checkbox');
+            const countEl = document.getElementById('selectedCount');
+            const printBtn = document.getElementById('printBtn');
+            const clearBtn = document.getElementById('clearBtn');
 
-            selectAll.addEventListener('change', function() {
-                checkboxes.forEach(cb => {
-                    const id = cb.value;
-                    if (this.checked) {
-                        cb.checked = true;
-                        if (!selectedAssets.includes(id)) {
-                            selectedAssets.push(id);
-                        }
-                    } else {
-                        cb.checked = false;
-                        selectedAssets = selectedAssets.filter(x => x != id);
-                    }
-                });
-                updateSelectedAssetsInput();
-
-                // Submit form to save selection to session
-                saveSelectionToSession();
-            });
-
-            // Individual checkbox change
-            checkboxes.forEach(cb => {
-                cb.addEventListener('change', function() {
-                    const id = this.value;
-                    if (this.checked) {
-                        if (!selectedAssets.includes(id)) {
-                            selectedAssets.push(id);
-                        }
-                    } else {
-                        selectedAssets = selectedAssets.filter(x => x != id);
-                    }
-                    updateSelectedAssetsInput();
-
-                    // Update "Select All" checkbox
-                    const allChecked = [...checkboxes].every(c => c.checked);
-                    selectAll.checked = allChecked;
-
-                    // Save selection to session
-                    saveSelectionToSession();
-                });
-            });
-
-            // Initialize "Select All" checkbox state
-            if (checkboxes.length > 0) {
-                const allChecked = [...checkboxes].every(c => c.checked);
-                selectAll.checked = allChecked;
+            function getSelectedIds() {
+                return Array.from(
+                    document.querySelectorAll('.asset-checkbox:checked')
+                ).map(cb => cb.value);
             }
+
+            function updateUI(selected) {
+                const count = selected.length;
+                countEl.textContent = count;
+
+                if (count > 0) {
+                    printBtn.classList.remove('hidden');
+                    clearBtn.classList.remove('hidden');
+                } else {
+                    printBtn.classList.add('hidden');
+                    clearBtn.classList.add('hidden');
+                }
+            }
+
+            function syncSession(selected) {
+                fetch("{{ route('asset.save-selection') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        selected_assets: selected.join(',')
+                    })
+                });
+            }
+
+            function handleChange() {
+                const selected = getSelectedIds();
+                updateUI(selected);
+                syncSession(selected);
+            }
+
+            // attach events
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', handleChange);
+            });
+
+            // init on page load (session restore)
+            updateUI(getSelectedIds());
         });
 
-        // Function to save selection to session via AJAX
-        function saveSelectionToSession() {
-            const formData = new FormData();
-            formData.append('selected_assets', selectedAssets.join(','));
-            formData.append('_token', '{{ csrf_token() }}');
-
-            fetch('{{ route('asset.save-selection') }}', {
-                method: 'POST',
-                body: formData
-            }).catch(error => console.error('Error saving selection:', error));
-        }
-
-        // Save selection when page unloads (optional)
-        window.addEventListener('beforeunload', function() {
-            saveSelectionToSession();
-        });
-
-        // Function to clear selection
+        // clear selection
         function clearSelection() {
-            selectedAssets = [];
-            updateSelectedAssetsInput();
-
-            // Uncheck all checkboxes
-            document.querySelectorAll('.asset-checkbox').forEach(cb => cb.checked = false);
-            document.getElementById('select-all').checked = false;
-
-            // Clear from session via AJAX
-            fetch('{{ route('asset.clear-selection') }}', {
+            fetch("{{ route('asset.clear-selection') }}", {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
-            }).then(response => {
-                location.reload();
-            }).catch(error => console.error('Error clearing selection:', error));
-        }
-
-        //update print selected button link
-        const PRINT_BASE_URL = "{{ route('asset.labels') }}";
-
-        function getSelectedAssetIds() {
-            return Array.from(document.querySelectorAll('.asset-checkbox:checked'))
-                .map(cb => cb.value);
-        }
-
-        function updateBulkActions() {
-            const ids = getSelectedAssetIds();
-            const bulkActions = document.getElementById('bulk-actions');
-            const printBtn = document.getElementById('print-selected-btn');
-            const countSpan = document.getElementById('selected-count');
-
-            if (ids.length > 0) {
-                bulkActions.style.display = 'flex';
-                countSpan.textContent = ids.length;
-
-                // 🔥 Live update URL
-                printBtn.href = PRINT_BASE_URL + '?asset_ids=' + ids.join(',');
-            } else {
-                bulkActions.style.display = 'none';
-                printBtn.href = '#';
-            }
-        }
-
-        // Checkbox change
-        document.addEventListener('change', function(e) {
-            if (e.target.classList.contains('asset-checkbox')) {
-                updateBulkActions();
-            }
-        });
-
-        // Select all
-        document.getElementById('select-all')?.addEventListener('change', function() {
-            document.querySelectorAll('.asset-checkbox').forEach(cb => {
-                cb.checked = this.checked;
+            }).then(() => {
+                document.querySelectorAll('.asset-checkbox').forEach(cb => cb.checked = false);
+                document.getElementById('selectedCount').textContent = 0;
+                document.getElementById('printBtn').classList.add('hidden');
+                document.getElementById('clearBtn').classList.add('hidden');
             });
-            updateBulkActions();
-        });
-
-        // Initial load (important for search / pagination)
-        document.addEventListener('DOMContentLoaded', updateBulkActions);
+        }
     </script>
 @endsection

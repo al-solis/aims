@@ -112,19 +112,28 @@ class AssetController extends Controller
     {
         $assetIds = $request->input('asset_ids', []);
 
-        if (!is_array($assetIds)) {
-            $assetIds = [$assetIds];
+        if (is_string($assetIds)) {
+            $assetIds = explode(',', $assetIds);
         }
+
+        $assetIds = array_values(
+            array_filter(array_map('intval', (array) $assetIds))
+        );
 
         if (empty($assetIds)) {
             return redirect()->back()->with('error', 'No assets selected for label printing.');
         }
 
-        $assets = Asset::with(['category', 'location', 'assigned_user'])
-            ->whereIn('id', $assetIds)->get();
+        // dd($assetIds);
 
+        $assets = Asset::with(['category', 'location', 'assigned_user'])
+            ->whereIn('id', $assetIds)
+            ->get();
+
+        // dd($assets);
         $pdf = Pdf::loadView('asset.asset_labels', compact('assets'))
             ->setPaper([0, 0, 198.5, 70.9], 'portrait');
+
         return $pdf->stream('asset_labels.pdf');
     }
 

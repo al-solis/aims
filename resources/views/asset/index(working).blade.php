@@ -1,25 +1,5 @@
 @extends('dashboard')
 @section('content')
-
-    <style>
-        .custom-checkbox {
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border: 1px solid #9ca3af;
-            /* gray-400 */
-            background-color: #e5e7eb;
-            /* gray-200 */
-            border-radius: 3px;
-            cursor: pointer;
-        }
-
-        .custom-checkbox:checked {
-            background-color: #6b7280;
-            /* gray-500 */
-        }
-    </style>
-
     <div class="p-6 space-y-6">
 
         {{-- Header --}}
@@ -32,30 +12,26 @@
             </div>
 
             <div class="flex items-center gap-2 mt-0">
-                <div id="bulk-actions" class="flex items-center gap-2"
-                    style="{{ count(session('selected_assets', [])) > 0 ? '' : 'display:none;' }}">
-
-                    <a id="print-selected-btn" href="#" target="_blank"
-                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200">
+                @if (count(session('selected_assets', [])) > 0)
+                    <a href="{{ route('asset.labels', ['asset_ids' => implode(',', session('selected_assets', []))]) }}"
+                        target="_blank"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-upc-scan" viewBox="0 0 16 16">
+                            class="bi bi-printer" viewBox="0 0 16 16">
+                            <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1" />
                             <path
-                                d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z" />
+                                d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM13 7V5a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v2a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1v-1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v1a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1m-1 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0m0 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
                         </svg>
-                        Print Selected (<span id="selected-count">0</span>)
+                        Print Selected ({{ count(session('selected_assets', [])) }})
                     </a>
+                @endif
 
+                @if (count(session('selected_assets', [])) > 0)
                     <button onclick="clearSelection()"
-                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-eraser" viewBox="0 0 16 16">
-                            <path
-                                d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828zm2.121.707a1 1 0 0 0-1.414 0L4.16 7.547l5.293 5.293 4.633-4.633a1 1 0 0 0 0-1.414zM8.746 13.547 3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293z" />
-                        </svg>
+                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-red-600 rounded-lg hover:bg-red-700">
                         Clear Selection
                     </button>
-                </div>
-
+                @endif
 
                 {{-- <a href="{{ route('setup.index') }}"
                     class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 ">
@@ -151,7 +127,7 @@
                 <thead class="bg-gray-200 text-gray-600">
                     <tr>
                         <th scope="col" class="px-4 py-3 text-center w-[40px]">
-                            <input type="checkbox" id="select-all" class="form-checkbox custom-checkbox">
+                            <input type="checkbox" id="select-all" class="form-checkbox">
                         </th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Code</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Name</th>
@@ -169,8 +145,8 @@
                     @forelse($assets as $asset)
                         <tr class="hover:bg-gray-150">
                             <td class="px-4 py-2 text-center">
-                                <input type="checkbox" class="asset-checkbox custom-checkbox"
-                                    value="{{ $asset->id }}" @if (in_array($asset->id, session('selected_assets', []))) checked @endif>
+                                <input type="checkbox" class="asset-checkbox" value="{{ $asset->id }}"
+                                    @if (in_array($asset->id, session('selected_assets', []))) checked @endif>
                             </td>
                             <td class="px-4 py-2font-medium w-[80px]">{{ $asset->asset_code }}</td>
                             <td class="px-4 py-2 w-[150px]">{{ $asset->name }} <br>
@@ -710,24 +686,7 @@
             });
         });
 
-        // Individual checkbox
-        document.addEventListener('change', function(e) {
-            if (e.target.classList.contains('asset-checkbox')) {
-                updateBulkActions();
-            }
-        });
-
-        // Select all
-        document.getElementById('select-all')?.addEventListener('change', function() {
-            document.querySelectorAll('.asset-checkbox').forEach(cb => {
-                cb.checked = this.checked;
-            });
-            updateBulkActions();
-        });
-
-        // Run on page load (important for search / pagination)
-        document.addEventListener('DOMContentLoaded', updateBulkActions);
-
+        //checkbox select all
         // Load selected assets from session or hidden input
         let selectedAssets = @json(session('selected_assets', []));
 
@@ -830,49 +789,5 @@
                 location.reload();
             }).catch(error => console.error('Error clearing selection:', error));
         }
-
-        //update print selected button link
-        const PRINT_BASE_URL = "{{ route('asset.labels') }}";
-
-        function getSelectedAssetIds() {
-            return Array.from(document.querySelectorAll('.asset-checkbox:checked'))
-                .map(cb => cb.value);
-        }
-
-        function updateBulkActions() {
-            const ids = getSelectedAssetIds();
-            const bulkActions = document.getElementById('bulk-actions');
-            const printBtn = document.getElementById('print-selected-btn');
-            const countSpan = document.getElementById('selected-count');
-
-            if (ids.length > 0) {
-                bulkActions.style.display = 'flex';
-                countSpan.textContent = ids.length;
-
-                // 🔥 Live update URL
-                printBtn.href = PRINT_BASE_URL + '?asset_ids=' + ids.join(',');
-            } else {
-                bulkActions.style.display = 'none';
-                printBtn.href = '#';
-            }
-        }
-
-        // Checkbox change
-        document.addEventListener('change', function(e) {
-            if (e.target.classList.contains('asset-checkbox')) {
-                updateBulkActions();
-            }
-        });
-
-        // Select all
-        document.getElementById('select-all')?.addEventListener('change', function() {
-            document.querySelectorAll('.asset-checkbox').forEach(cb => {
-                cb.checked = this.checked;
-            });
-            updateBulkActions();
-        });
-
-        // Initial load (important for search / pagination)
-        document.addEventListener('DOMContentLoaded', updateBulkActions);
     </script>
 @endsection

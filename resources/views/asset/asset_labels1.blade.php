@@ -9,6 +9,12 @@
     <meta charset="utf-8">
     <title>Asset Labels</title>
     <style>
+        @page {
+            size: 70mm 25mm;
+            margin: 0;
+            padding: 0;
+        }
+
         html,
         body {
             font-family: sans-serif;
@@ -24,17 +30,18 @@
             /* border: 1px solid #000; */
             padding: 0;
             margin: 0;
-            display: block;
+            display: inline-block;
             text-align: center;
             vertical-align: top;
-            page-break-inside: avoid;
         }
 
+        /* QR Code - Top left */
         .qr {
-            margin-bottom: 2px;
-            /* width: 100%;
-            height: 12mm;
-            margin: 0 auto 1px auto; */
+            position: absolute;
+            top: 1mm;
+            left: 1mm;
+            width: 20mm;
+            height: 20mm;
         }
 
         .asset-code {
@@ -69,7 +76,7 @@
 </head>
 
 <body>
-    @foreach ($assets as $asset)
+    @forelse ($assets as $asset)
         <div class="label">
             <div class="qr">
                 {!! QrCode::size(60)->generate($asset->asset_code) !!}
@@ -85,14 +92,12 @@
                 alt="barcode" />
         </div>
 
-        @unless (@$loop->last)
+        @if ($loop->iteration % 10 == 0)
             <div class="page-break"></div>
-        @endunless
-
-        {{-- @empty
+        @endif
+    @empty
         <p>No assets to display.</p>
-        @endforelse --}}
-    @endforeach
+    @endforelse
 </body>
 
 </html>
