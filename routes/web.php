@@ -12,7 +12,6 @@ use App\Http\Controllers\EmployeeIdController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AuthController;
 
-Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::get('/', function () {
     return view('welcome');
 });
@@ -70,6 +69,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/asset/labels', [AssetController::class, 'printAssetLabel'])->name('asset.labels');
     Route::post('/assets/print-labels', [AssetController::class, 'printAssetLabel'])->name('assets.print.labels');
 
+    Route::post('/asset/save-selection', [AssetController::class, 'saveSelection'])->name('asset.save-selection');
+    Route::post('/asset/clear-selection', [AssetController::class, 'clearSelection'])->name('asset.clear-selection');
 
     Route::resource('asset', AssetController::class)->except(['destroy']);
 });

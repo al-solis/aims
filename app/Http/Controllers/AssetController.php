@@ -52,7 +52,8 @@ class AssetController extends Controller
             ->appends([
                 'search' => $search,
                 'searchcat' => $searchcat,
-                'searchloc' => $searchloc
+                'searchloc' => $searchloc,
+                'selected_assets' => $request->input('selected_assets', '')
             ]);
 
         return view('asset.index', compact('assets', 'categories', 'locations', 'sublocations', 'employees'));
@@ -81,7 +82,7 @@ class AssetController extends Controller
         $assetcode = "{$category->asset_code}-{$year}-{$sequence}";
 
 
-        $asset->insert([
+        $asset = Asset::create([
             'asset_code' => $assetcode,
             'name' => $request->name,
             'description' => $request->description,
@@ -163,5 +164,31 @@ class AssetController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Asset updated successfully.');
+    }
+
+    //asset toggle session
+    public function saveSelection(Request $request)
+    {
+        $selectedAssets = $request->input('selected_assets', '');
+
+        if ($selectedAssets) {
+            $assetIds = explode(',', $selectedAssets);
+            // Filter out empty values
+            $assetIds = array_filter($assetIds, function ($id) {
+                return !empty($id);
+            });
+            // Store in session
+            session(['selected_assets' => array_values($assetIds)]);
+        } else {
+            session()->forget('selected_assets');
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function clearSelection()
+    {
+        session()->forget('selected_assets');
+        return response()->json(['success' => true]);
     }
 }

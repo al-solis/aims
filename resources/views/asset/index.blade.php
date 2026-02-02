@@ -11,14 +11,46 @@
                 </p>
             </div>
 
-            <button data-modal-target="add-modal" data-modal-toggle="add-modal"
-                class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Add Asset
-            </button>
+            <div class="flex items-center gap-2 mt-0">
+                <a href="{{ route('setup.index') }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 ">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-upc-scan" viewBox="0 0 16 16">
+                        <path
+                            d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z" />
+                    </svg>
+                    Bulk UPC Generate
+                </a>
 
+                @if (count(session('selected_assets', [])) > 0)
+                    <a href="{{ route('asset.labels', ['asset_ids' => implode(',', session('selected_assets', []))]) }}"
+                        target="_blank"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-printer" viewBox="0 0 16 16">
+                            <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1" />
+                            <path
+                                d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM13 7V5a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v2a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1v-1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v1a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1m-1 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0m0 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+                        </svg>
+                        Print Selected ({{ count(session('selected_assets', [])) }})
+                    </a>
+                @endif
+
+                @if (count(session('selected_assets', [])) > 0)
+                    <button onclick="clearSelection()"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-red-600 rounded-lg hover:bg-red-700">
+                        Clear Selection
+                    </button>
+                @endif
+
+                <button data-modal-target="add-modal" data-modal-toggle="add-modal"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add Asset
+                </button>
+            </div>
         </div>
 
 
@@ -44,7 +76,12 @@
         @endif
 
         {{-- Filters --}}
-        <form action="" method="GET">
+        <form action="" method="GET" id="searchForm">
+            <input type="hidden" name="selected_assets" id="selected_assets"
+                value="{{ implode(',', session('selected_assets', [])) }}">
+            {{-- <input type="hidden" name="selected_assets" id="selected_assets"
+                value="{{ implode(',', old('selected_assets', [])) }}"> --}}
+
             <div class="flex flex-col md:flex-row gap-2 text-xs md:text-sm">
                 <div class="md:w-2/3 w-full">
                     <input type="text" id="simple-search" name="search" placeholder="Search by name, code, or serial..."
@@ -91,6 +128,9 @@
             <table class="min-w-full text-xs">
                 <thead class="bg-gray-200 text-gray-600">
                     <tr>
+                        <th scope="col" class="px-4 py-3 text-center w-[40px]">
+                            <input type="checkbox" id="select-all" class="form-checkbox">
+                        </th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Code</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Name</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Category</th>
@@ -105,12 +145,20 @@
 
                 <tbody class="divide-y">
                     @forelse($assets as $asset)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 font-medium w-[80px]">{{ $asset->asset_code }}</td>
-                            <td class="px-4 py-3 w-[150px]">{{ $asset->name }}</td>
-                            <td class="px-4 py-3 w-[80px]">{{ $asset->category_id ? $asset->category->name : '' }}</td>
-                            <td class="px-4 py-3 w-[100px]">{{ $asset->serial }}</td>
-                            <td class="px-4 py-3 w-[80px] text-xs">
+                        <tr class="hover:bg-gray-150">
+                            <td class="px-4 py-2 text-center">
+                                <input type="checkbox" class="asset-checkbox" value="{{ $asset->id }}"
+                                    @if (in_array($asset->id, session('selected_assets', []))) checked @endif>
+                                {{-- <input type="checkbox" class="asset-checkbox" value="{{ $asset->id }}"
+                                    @if (in_array($asset->id, old('selected_assets', []))) checked @endif> --}}
+                            </td>
+                            <td class="px-4 py-2font-medium w-[80px]">{{ $asset->asset_code }}</td>
+                            <td class="px-4 py-2 w-[150px]">{{ $asset->name }} <br>
+                                <span class="text-gray-400 text-xs">{{ $asset->subcategory }}</span>
+                            </td>
+                            <td class="px-4 py-2 w-[80px]">{{ $asset->category_id ? $asset->category->name : '' }}</td>
+                            <td class="px-4 py-2 w-[100px]">{{ $asset->serial }}</td>
+                            <td class="px-4 py-2 w-[80px] text-xs">
                                 @php
                                     $statuses = [
                                         0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Inactive'],
@@ -127,13 +175,13 @@
                                     {{ $status['label'] }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 w-[100px]">
+                            <td class="px-4 py-2 w-[100px]">
                                 {{ $asset->assigned_to ? $asset->assigned_user->last_name . ', ' . $asset->assigned_user->first_name . ' ' . $asset->assigned_user->middle_name : '' }}
                             </td>
-                            <td class="px-4 py-3 w-[100px]">
+                            <td class="px-4 py-2 w-[100px]">
                                 {{ $asset->location_id ? $asset->location->name : '' }}</td>
-                            <td class="px-4 py-3 w-[80px]"></td>
-                            <td class="px-4 py-3 w-[50px]">
+                            <td class="px-4 py-2 w-[80px]"></td>
+                            <td class="px-4 py-2 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
                                     <button type="button" title="Edit asset: {{ $asset->asset_code }}"
                                         data-modal-target="edit-modal" data-modal-toggle="edit-modal"
@@ -145,8 +193,8 @@
                                         data-manufacturer="{{ $asset->manufacturer }}" data-model="{{ $asset->model }}"
                                         data-serial="{{ $asset->serial }}" data-assigned_to="{{ $asset->assigned_to }}"
                                         data-location="{{ $asset->location_id }}"
-                                        data-sublocation="{{ $asset->subloc_id }}" data-warranty="{{ $asset->warranty }}"
-                                        onclick="openEditModal(this)"
+                                        data-sublocation="{{ $asset->subloc_id }}"
+                                        data-warranty="{{ $asset->warranty }}" onclick="openEditModal(this)"
                                         class="group flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
 
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -641,5 +689,167 @@
                 }
             });
         });
+
+        // //checkbox select all
+        // const selectAll = document.getElementById('select-all');
+        // const checkboxes = document.querySelectorAll('.asset-checkbox');
+
+        // selectAll.addEventListener('change', function() {
+        //     checkboxes.forEach(cb => cb.checked = this.checked);
+        // });
+
+        // checkboxes.forEach(cb => {
+        //     cb.addEventListener('change', function() {
+        //         if (!this.checked) {
+        //             selectAll.checked = false;
+        //         } else if ([...checkboxes].every(c => c.checked)) {
+        //             selectAll.checked = true;
+        //         }
+        //     });
+        // });
+
+        // let selectedAssets = [];
+
+        // // Load initial checked checkboxes
+        // document.querySelectorAll('.asset-checkbox:checked').forEach(cb => {
+        //     selectedAssets.push(cb.value);
+        // });
+
+        // // When user clicks a checkbox
+        // document.addEventListener('change', function(e) {
+        //     if (e.target.classList.contains('asset-checkbox')) {
+        //         const id = e.target.value;
+        //         if (e.target.checked) {
+        //             if (!selectedAssets.includes(id)) selectedAssets.push(id);
+        //         } else {
+        //             selectedAssets = selectedAssets.filter(x => x != id);
+        //         }
+        //     }
+        // });
+
+        // // When rendering new table (AJAX search or pagination)
+        // function renderAssetsTable(html) {
+        //     document.getElementById('asset-table').innerHTML = html;
+
+        //     // re-check previously selected
+        //     document.querySelectorAll('.asset-checkbox').forEach(cb => {
+        //         if (selectedAssets.includes(cb.value)) cb.checked = true;
+        //     });
+        // }
+
+        // // Check all functionality
+        // document.getElementById('check-all').addEventListener('change', function() {
+        //     const checkboxes = document.querySelectorAll('.asset-checkbox');
+        //     checkboxes.forEach(cb => {
+        //         cb.checked = this.checked;
+        //         const id = cb.value;
+        //         if (this.checked && !selectedAssets.includes(id)) selectedAssets.push(id);
+        //         if (!this.checked) selectedAssets = selectedAssets.filter(x => x != id);
+        //     });
+        // });
+
+        //asset bulk action
+        // Load selected assets from session or hidden input
+        let selectedAssets = @json(session('selected_assets', []));
+
+        // Update hidden input with current selections
+        function updateSelectedAssetsInput() {
+            document.getElementById('selected_assets').value = selectedAssets.join(',');
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial hidden input value
+            updateSelectedAssetsInput();
+
+            // Check all functionality
+            const selectAll = document.getElementById('select-all');
+            const checkboxes = document.querySelectorAll('.asset-checkbox');
+
+            selectAll.addEventListener('change', function() {
+                checkboxes.forEach(cb => {
+                    const id = cb.value;
+                    if (this.checked) {
+                        cb.checked = true;
+                        if (!selectedAssets.includes(id)) {
+                            selectedAssets.push(id);
+                        }
+                    } else {
+                        cb.checked = false;
+                        selectedAssets = selectedAssets.filter(x => x != id);
+                    }
+                });
+                updateSelectedAssetsInput();
+
+                // Submit form to save selection to session
+                saveSelectionToSession();
+            });
+
+            // Individual checkbox change
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const id = this.value;
+                    if (this.checked) {
+                        if (!selectedAssets.includes(id)) {
+                            selectedAssets.push(id);
+                        }
+                    } else {
+                        selectedAssets = selectedAssets.filter(x => x != id);
+                    }
+                    updateSelectedAssetsInput();
+
+                    // Update "Select All" checkbox
+                    const allChecked = [...checkboxes].every(c => c.checked);
+                    selectAll.checked = allChecked;
+
+                    // Save selection to session
+                    saveSelectionToSession();
+                });
+            });
+
+            // Initialize "Select All" checkbox state
+            if (checkboxes.length > 0) {
+                const allChecked = [...checkboxes].every(c => c.checked);
+                selectAll.checked = allChecked;
+            }
+        });
+
+        // Function to save selection to session via AJAX
+        function saveSelectionToSession() {
+            const formData = new FormData();
+            formData.append('selected_assets', selectedAssets.join(','));
+            formData.append('_token', '{{ csrf_token() }}');
+
+            fetch('{{ route('asset.save-selection') }}', {
+                method: 'POST',
+                body: formData
+            }).catch(error => console.error('Error saving selection:', error));
+        }
+
+        // Save selection when page unloads (optional)
+        window.addEventListener('beforeunload', function() {
+            saveSelectionToSession();
+        });
+
+        // Function to clear selection
+        function clearSelection() {
+            selectedAssets = [];
+            updateSelectedAssetsInput();
+
+            // Uncheck all checkboxes
+            document.querySelectorAll('.asset-checkbox').forEach(cb => cb.checked = false);
+            document.getElementById('select-all').checked = false;
+
+            // Clear from session via AJAX
+            fetch('{{ route('asset.clear-selection') }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                location.reload();
+            }).catch(error => console.error('Error clearing selection:', error));
+        }
     </script>
 @endsection
