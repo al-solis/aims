@@ -161,12 +161,12 @@ class AssetController extends Controller
             'model' => $request->edit_model,
             'serial' => $request->edit_serial,
             'assigned_to' => $request->edit_assigned_to ?? null,
-            'location_id' => empty($request->edit_location_id)
+            'location_id' => empty($request->location_id)
                 ? null
-                : $request->edit_location_id,
-            'subloc_id' => empty($request->edit_sublocation_id)
+                : $request->location_id,
+            'subloc_id' => empty($request->sublocation_id)
                 ? null
-                : $request->edit_sublocation_id,
+                : $request->sublocation_id,
             'warranty' => $request->edit_warranty,
             'updated_by' => Auth::id(),
             'updated_at' => now(),

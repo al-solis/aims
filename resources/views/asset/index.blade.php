@@ -206,7 +206,8 @@
                                     <button type="button" title="Edit asset: {{ $asset->asset_code }}"
                                         data-modal-target="edit-modal" data-modal-toggle="edit-modal"
                                         data-id="{{ $asset->id }}" data-code="{{ $asset->asset_code }}"
-                                        data-name="{{ $asset->name }}" data-category="{{ $asset->category_id }}"
+                                        data-name="{{ $asset->name }}" data-description="{{ $asset->description }}"
+                                        data-category="{{ $asset->category_id }}"
                                         data-subcategory="{{ $asset->subcategory }}" data-serial="{{ $asset->serial }}"
                                         data-cost="{{ $asset->cost }}" data-status="{{ $asset->status }}"
                                         data-purchase_date="{{ $asset->purchase_date }}"
@@ -369,9 +370,9 @@
                             <div class="sm:col-span-1">
                                 <label for="location_id"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Location</label>
-                                <select id="location_id" name="location_id"
+                                <select id="location_id" name="location_id" data-target="#sublocation_id"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                    <option value = "0" selected disabled>Select location</option>
+                                    <option value = "" selected disabled>Select location</option>
                                     @foreach ($locations as $location)
                                         <option value="{{ $location->id }}">{{ $location->name }}</option>
                                     @endforeach
@@ -383,7 +384,7 @@
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Sub-location</label>
                                 <select id="sublocation_id" name="sublocation_id"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                    <option value = "0" selected disabled>Select sub-location</option>
+                                    <option value = "" selected disabled>Select sub-location</option>
                                 </select>
                             </div>
 
@@ -544,9 +545,9 @@
                             <div class="sm:col-span-1">
                                 <label for="edit_location_id"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Location</label>
-                                <select id="edit_location_id" name="edit_location_id"
+                                <select id="edit_location_id" name="location_id" data-target="#edit_sublocation_id"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                    <option value = "0" selected disabled>Select location</option>
+                                    <option value = "" selected disabled>Select location</option>
                                     @foreach ($locations as $location)
                                         <option value="{{ $location->id }}">{{ $location->name }}</option>
                                     @endforeach
@@ -556,9 +557,9 @@
                             <div class="sm:col-span-1">
                                 <label for="edit_sublocation_id"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Sub-location</label>
-                                <select id="edit_sublocation_id" name="edit_sublocation_id"
+                                <select id="edit_sublocation_id" name="sublocation_id"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                    <option value = "0" selected disabled>Select sub-location</option>
+                                    <option value = "" selected disabled>Select sub-location</option>
                                 </select>
                             </div>
 
@@ -672,42 +673,88 @@
 
             const form = document.getElementById('editForm');
             form.action = `/asset/${id}`;
+
+            const locationId = $(button).data('location');
+            const sublocationId = $(button).data('sublocation');
+
+            selectedEditSublocation = sublocationId;
+
+            if (locationId) {
+                $.ajax({
+                    url: `/get-sublocations/${locationId}`,
+                    type: 'GET',
+                    success: function(data) {
+                        // clear existing options
+                        $('#edit_sublocation_id').empty().append(
+                            '<option value="" disabled>Select sub-location</option>');
+
+                        data.forEach(function(subloc) {
+                            $('#edit_sublocation_id').append(
+                                `<option value="${subloc.id}">${subloc.name}</option>`
+                            );
+                        });
+
+                        // select the correct sub-location
+                        if (sublocationId) {
+                            $('#edit_sublocation_id').val(sublocationId);
+                        }
+                    },
+                    error: function() {
+                        $('#edit_sublocation_id').empty().append(
+                            '<option value="" disabled>Error loading sub-locations</option>');
+                    }
+                });
+            }
+
         }
 
-        $(document).ready(function() {
+        let selectedEditSublocation = null;
 
-            $('#assigned_to').select2({
-                placeholder: "Select employee",
-                allowClear: true,
-                width: '100%'
-            });
+        // ADD + EDIT location change handler
+        $(document).on('change', '#location_id, #edit_location_id', function() {
 
-            $('#location_id').on('change', function() {
-                let locationId = $(this).val();
-                let sublocationSelect = $('#sublocation_id');
+            const locationId = $(this).val();
+            const sublocationSelect = $($(this).data('target'));
 
-                sublocationSelect.html('<option value="">Loading...</option>');
+            // alert('Location Id: ' + locationId);
+            // alert('Sublocation Select Id: ' + sublocationSelect.attr('id'));
 
-                if (locationId) {
-                    $.ajax({
-                        url: `/get-sublocations/${locationId}`,
-                        type: 'GET',
-                        success: function(data) {
-                            sublocationSelect.empty();
-                            sublocationSelect.append(
-                                '<option value="0">Select sub-location</option>');
+            sublocationSelect
+                .html('<option>Loading...</option>')
+                .prop('disabled', true);
 
-                            $.each(data, function(key, sublocation) {
-                                sublocationSelect.append(
-                                    `<option value="${sublocation.id}">${sublocation.name}</option>`
-                                );
-                            });
-                        }
+            if (!locationId) {
+                sublocationSelect.html('<option value="">Select sub-location</option>');
+                return;
+            }
+
+            $.ajax({
+                url: `/get-sublocations/${locationId}`,
+                type: 'GET',
+                success: function(data) {
+                    sublocationSelect.empty()
+                        .append('<option value="">Select sub-location</option>');
+
+                    $.each(data, function(_, sublocation) {
+                        sublocationSelect.append(
+                            `<option value="${sublocation.id}">${sublocation.name}</option>`
+                        );
                     });
-                } else {
-                    sublocationSelect.html('<option value="">Select sub-location</option>');
+
+                    if (selectedEditSublocation && sublocationSelect.attr('id') ===
+                        'edit_sublocation_id') {
+                        sublocationSelect.val(selectedEditSublocation);
+                        selectedEditSublocation = null;
+                    }
+
+                    sublocationSelect.prop('disabled', false);
                 }
             });
+        });
+
+        //load sub-location when edit modal is shown
+        $('#editModal').on('shown.bs.modal', function() {
+            $('#edit_location_id').trigger('change');
         });
 
         // Individual checkbox
@@ -849,7 +896,7 @@
                 bulkActions.style.display = 'flex';
                 countSpan.textContent = ids.length;
 
-                // 🔥 Live update URL
+                // Live update URL
                 printBtn.href = PRINT_BASE_URL + '?asset_ids=' + ids.join(',');
             } else {
                 bulkActions.style.display = 'none';
