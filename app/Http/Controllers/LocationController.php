@@ -86,7 +86,9 @@ class LocationController extends Controller
 
     public function getSublocations($locationId)
     {
-        $sublocations = SubLocation::where('location_id', $locationId)->get();
+        $sublocations = SubLocation::where('location_id', $locationId)
+            // ->whereNot('status', 0)
+            ->get();
         return response()->json($sublocations);
     }
 }
