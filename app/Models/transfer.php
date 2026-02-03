@@ -9,7 +9,10 @@ class transfer extends Model
     protected $table = 'transfers';
 
     protected $fillable = [
+        'code',
+        'date',
         'asset_id',
+        'description',
         'from_employee_id',
         'to_employee_id',
         'location_id',

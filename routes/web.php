@@ -11,6 +11,7 @@ use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\EmployeeIdController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TransferController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -73,6 +74,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/asset/clear-selection', [AssetController::class, 'clearSelection'])->name('asset.clear-selection');
 
     Route::resource('asset', AssetController::class)->except(['destroy']);
+
+    Route::resource('asset/transfer', TransferController::class)->except(['destroy']);
 });
 
 require __DIR__ . '/auth.php';

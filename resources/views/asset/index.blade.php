@@ -227,7 +227,8 @@
                                         </svg>
                                     </button>
 
-                                    <a href="" title="Transfer asset: {{ $asset->asset_code }}"
+                                    <a href="{{ route('transfer.show', $asset->id) }}"
+                                        title="Transfer asset: {{ $asset->asset_code }}"
                                         class="group flex items-center space-x-1 text-gray-500 hover:text-green-600 transition-colors">
 
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"

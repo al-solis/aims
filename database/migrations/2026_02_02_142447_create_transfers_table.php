@@ -12,9 +12,11 @@ return new class extends Migration {
     {
         Schema::create('transfers', function (Blueprint $table) {
             $table->id();
-
+            $table->string('code', 20)->unique('code');
             $table->unsignedBigInteger('asset_id');
+            $table->date('date')->nullable(false);
             $table->foreign('asset_id')->references('id')->on('assets');
+            $table->string('description', 255)->nullable();
             $table->unsignedBigInteger('from_employee_id')->nullable();
             $table->foreign('from_employee_id')->references('id')->on('employees');
             $table->unsignedBigInteger('to_employee_id');
