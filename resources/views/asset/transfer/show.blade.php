@@ -248,7 +248,8 @@
                 <div class="overflow-y-auto max-h-[70vh]">
                     <form action="{{ route('transfer.store') }}" method="POST">
                         @csrf
-
+                        <input type="hidden" name="purchase_date" id="purchase_date"
+                            value="{{ $assets->purchase_date ?? '' }}">
                         <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-2">
                             <div class="sm:col-span-1">
                                 <label for="transfer_date"
@@ -500,6 +501,17 @@
                     alert(
                         'The "Destination" employee cannot be the same as the "Source" employee. Please select a different employee.'
                     );
+                    this.value = '';
+                    this.focus();
+                }
+            });
+
+            document.getElementById('transfer_date').addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                const purchaseDate = document.getElementById('purchase_date').value;
+                if (selectedDate < new Date(purchaseDate)) {
+                    alert(
+                        `The transfer date cannot be before the purchase date ${purchaseDate}. Please select a valid date.`);
                     this.value = '';
                     this.focus();
                 }

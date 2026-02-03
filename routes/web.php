@@ -75,6 +75,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('asset', AssetController::class)->except(['destroy']);
 
+    Route::get('asset/transfer/{assetId}/count', [TransferController::class, 'countAssetTransfers'])->name('asset.transfer.count');
     Route::resource('asset/transfer', TransferController::class)->except(['destroy']);
 });
 

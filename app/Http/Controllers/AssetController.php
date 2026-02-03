@@ -4,17 +4,19 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\sublocation;
 use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\asset;
-use App\Models\category;
-use App\Models\location;
-use App\Models\employee;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
+use App\Models\User;
+use App\Models\asset;
+use App\Models\category;
+use App\Models\location;
+use App\Models\employee;
+use App\Models\transfer;
+use App\Models\transfer_detail as TransferDetail;
 
 class AssetController extends Controller
 {
@@ -28,7 +30,7 @@ class AssetController extends Controller
         $locations = Location::get();
         $categories = Category::get();
         $sublocations = Sublocation::get();
-        $employees = Employee::where('status', '1')->get();
+        $employees = Employee::where('status', '!=', '0')->get();
 
         $query = Asset::query();
 
@@ -160,13 +162,13 @@ class AssetController extends Controller
             'manufacturer' => $request->edit_manufacturer,
             'model' => $request->edit_model,
             'serial' => $request->edit_serial,
-            'assigned_to' => $request->edit_assigned_to ?? null,
-            'location_id' => empty($request->location_id)
+            'assigned_to' => $request->hidden_edit_assigned_to ?? null,
+            'location_id' => empty($request->hidden_edit_location_id)
                 ? null
-                : $request->location_id,
-            'subloc_id' => empty($request->sublocation_id)
+                : $request->hidden_edit_location_id,
+            'subloc_id' => empty($request->hidden_edit_sublocation_id)
                 ? null
-                : $request->sublocation_id,
+                : $request->hidden_edit_sublocation_id,
             'warranty' => $request->edit_warranty,
             'updated_by' => Auth::id(),
             'updated_at' => now(),

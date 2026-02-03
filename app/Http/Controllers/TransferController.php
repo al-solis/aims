@@ -141,4 +141,13 @@ class TransferController extends Controller
 
         return redirect()->back()->with('success', 'Transfer created successfully.');
     }
+
+    public function countAssetTransfers($assetId)
+    {
+        $count = Transfer::with('transferDetails')->whereHas('transferDetails', function (Builder $q) use ($assetId) {
+            $q->where('asset_id', $assetId);
+            $q->where('cancelled', false);
+        })->count();
+        return response()->json(['count' => $count]);
+    }
 }

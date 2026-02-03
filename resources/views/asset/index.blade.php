@@ -544,6 +544,7 @@
                             </div>
 
                             <div class="sm:col-span-1">
+                                <input type="hidden" name="hidden_edit_location_id" id="hidden_edit_location_id">
                                 <label for="edit_location_id"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Location</label>
                                 <select id="edit_location_id" name="location_id" data-target="#edit_sublocation_id"
@@ -556,6 +557,7 @@
                             </div>
 
                             <div class="sm:col-span-1">
+                                <input type="hidden" name="hidden_edit_sublocation_id" id="hidden_edit_sublocation_id">
                                 <label for="edit_sublocation_id"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Sub-location</label>
                                 <select id="edit_sublocation_id" name="sublocation_id"
@@ -573,6 +575,8 @@
                             </div>
 
                             <div class="sm:col-span-1">
+                                <input type="hidden" name="asset_transfer_count" id="asset_transfer_count"
+                                    value =''>
                                 <label for="edit_purchase_date"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Date
                                     Purchase*</label>
@@ -598,6 +602,7 @@
                             </div>
 
                             <div class="sm:col-span-2">
+                                <input type="hidden" name="hidden_edit_assigned_to" id="hidden_edit_assigned_to">
                                 <label for="edit_assigned_to"
                                     class="select2 block text-xs font-medium text-gray-900 dark:text-white">Assigned
                                     To</label>
@@ -672,6 +677,21 @@
             document.getElementById('edit_sublocation_id').value = button.getAttribute('data-sublocation');
             document.getElementById('edit_warranty').value = button.getAttribute('data-warranty');
 
+            if (document.getElementById('edit_assigned_to').value !== '0' &&
+                document.getElementById('edit_assigned_to').value !== '') {
+                document.getElementById('edit_assigned_to').disabled = true;
+                document.getElementById('edit_location_id').disabled = true;
+                document.getElementById('edit_sublocation_id').disabled = true;
+                document.getElementById('hidden_edit_assigned_to').value = document.getElementById('edit_assigned_to')
+                    .value;
+                document.getElementById('hidden_edit_location_id').value = document.getElementById('edit_location_id')
+                    .value;
+                document.getElementById('hidden_edit_sublocation_id').value = button.getAttribute('data-sublocation');
+            } else {
+                document.getElementById('edit_assigned_to').disabled = false;
+                document.getElementById('hidden_edit_assigned_to').value = '';
+            }
+
             const form = document.getElementById('editForm');
             form.action = `/asset/${id}`;
 
@@ -707,6 +727,42 @@
                 });
             }
 
+        }
+
+        document.getElementById('edit_assigned_to').addEventListener('change', function() {
+            document.getElementById('hidden_edit_assigned_to').value = this.value;
+        });
+
+        document.getElementById('edit_location_id').addEventListener('change', function() {
+            document.getElementById('hidden_edit_location_id').value = this.value;
+        });
+
+        document.getElementById('edit_sublocation_id').addEventListener('change', function() {
+            document.getElementById('hidden_edit_sublocation_id').value = this.value;
+        });
+
+        //disable purchase date if transferred has been made
+        document.getElementById('edit_purchase_date').addEventListener('focus', function() {
+            const assetId = document.getElementById('edit_id').value;
+            getAssetTransfers(assetId).then(() => {
+                const transferCount = parseInt(document.getElementById('asset_transfer_count').value, 10);
+                if (transferCount > 0) {
+                    alert('Purchase date cannot be changed because this asset has been transferred.');
+                    this.blur();
+                }
+            });
+        });
+
+        function getAssetTransfers(assetId) {
+            return fetch(`/asset/transfer/${assetId}/count`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('asset_transfer_count').value = data.count;
+                })
+                .catch(error => {
+                    console.error('Error fetching asset transfers:', error);
+                    return [];
+                });
         }
 
         let selectedEditSublocation = null;
