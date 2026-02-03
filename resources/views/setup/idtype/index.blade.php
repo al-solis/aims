@@ -225,7 +225,7 @@
                 <div class="overflow-y-auto max-h-[70vh]">
                     <form action="{{ route('idtype.store') }}" method="POST">
                         @csrf
-                        <div class="grid gap-2 mb-4 sm:grid-cols-1">
+                        <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-1">
                             <div class="w-full md:col-span-2">
                                 <label for="name"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
@@ -301,7 +301,7 @@
                         @method('PUT')
                         <input type="hidden" name="edit_id" id="edit_id">
 
-                        <div class="grid gap-2 mb-4 sm:grid-cols-1">
+                        <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-1">
                             <div class="sm:col-span-2">
                                 <label for="edit_name"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>

@@ -225,7 +225,7 @@
                 <!-- Modal header -->
                 <div class="flex justify-between items-center pb-4 mb-2 rounded-t border-b sm:mb-5 dark:border-gray-600">
                     <h3 class="text-md font-semibold text-gray-900 dark:text-white">
-                        Add New ID Type
+                        Create Transfer
                     </h3>
                     <button type="button"
                         class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -241,22 +241,25 @@
                 </div>
                 <!-- Modal body -->
                 <div class="overflow-y-auto max-h-[70vh]">
-                    <form action="{{ route('idtype.store') }}" method="POST">
+                    <form action="{{ route('transfer.store') }}" method="POST">
                         @csrf
-                        <div class="grid gap-2 mb-4 sm:grid-cols-1">
-                            <div class="w-full md:col-span-2">
-                                <label for="name"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                                <input type="text" name="name" id="name"
+                        <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-2">
+                            <div class="sm:col-span-1">
+                                <label for="asset_id"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Asset
+                                    ID*</label>
+                                <input type="text" name="asset_id" id="asset_id"
+                                    value="{{ $assets->asset_code ?? '' }}"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="e.g. Firearms" required>
+                                    placeholder="e.g. FA-2026-00000" required>
                             </div>
-                            <div class="sm:col-span-2">
+                            <div class="sm:col-span-1">
                                 <label for="description"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                <textarea type="text" name="description" id="description" rows="3"
+                                <input type="text" name="description" id="description"
+                                    value="{{ $assets->name ?? '' }}"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="Category description"></textarea>
+                                    placeholder="e.g. Computer Laptop" required>
                             </div>
 
                             <div class="sm:col-span-2">
@@ -270,8 +273,9 @@
                                     <option value="0">Inactive</option>
                                 </select>
                             </div>
-
                         </div>
+
+
                         <button type="submit"
                             class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
                             <svg class="mr-1 -ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
@@ -286,104 +290,103 @@
                 </div>
             </div>
         </div>
-    </div>
-    <!-- End create ID Type modal -->
+        <!-- End create ID Type modal -->
 
-    <!-- Modal  Edit-->
-    <div id="edit-modal" tabindex="-1" aria-hidden="true"
-        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-        <div class="relative p-4 w-full max-w-md max-h-full">
-            <!-- Modal content -->
-            <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
-                <!-- Modal header -->
-                <div
-                    class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        Update ID Type
-                    </h3>
-                    <button type="button"
-                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                        data-modal-toggle="edit-modal">
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                        </svg>
-                        <span class="sr-only">Close</span>
-                    </button>
-                </div>
-                <!-- Modal body -->
-                <div class="overflow-y-auto max-h-[70vh]">
-                    <form id="editForm" class="p-4 md:p-5" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <input type="hidden" name="edit_id" id="edit_id">
-
-                        <div class="grid gap-2 mb-4 sm:grid-cols-1">
-                            <div class="sm:col-span-2">
-                                <label for="edit_name"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                                <input type="text" name="edit_name" id="edit_name"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="e.g. Firearms" required>
-                            </div>
-                            <div class="sm:col-span-2">
-                                <label for="edit_description"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                <textarea type="text" name="edit_description" id="edit_description" rows="3"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="Category description"></textarea>
-                            </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="edit_status"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                                <select id="edit_status" name="edit_status"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    required>
-                                    {{-- <option selected="">Select product type</option> --}}
-                                    <option value="1">Active</option>
-                                    <option value="0">Inactive</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <button type="submit"
-                            class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
-                            {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
+        <!-- Modal  Edit-->
+        <div id="edit-modal" tabindex="-1" aria-hidden="true"
+            class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            <div class="relative p-4 w-full max-w-md max-h-full">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+                    <!-- Modal header -->
+                    <div
+                        class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                             Update ID Type
+                        </h3>
+                        <button type="button"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                            data-modal-toggle="edit-modal">
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                            </svg>
+                            <span class="sr-only">Close</span>
                         </button>
-                    </form>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="overflow-y-auto max-h-[70vh]">
+                        <form id="editForm" class="p-4 md:p-5" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="edit_id" id="edit_id">
+
+                            <div class="grid gap-2 mb-4 sm:grid-cols-1">
+                                <div class="sm:col-span-2">
+                                    <label for="edit_name"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
+                                    <input type="text" name="edit_name" id="edit_name"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Firearms" required>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label for="edit_description"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
+                                    <textarea type="text" name="edit_description" id="edit_description" rows="3"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="Category description"></textarea>
+                                </div>
+
+                                <div class="sm:col-span-2">
+                                    <label for="edit_status"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
+                                    <select id="edit_status" name="edit_status"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        required>
+                                        {{-- <option selected="">Select product type</option> --}}
+                                        <option value="1">Active</option>
+                                        <option value="0">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit"
+                                class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                                {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
+                                Update ID Type
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- End edit modal -->
+        <!-- End edit modal -->
 
-    <script>
-        function clearModalFields() {
-            // Clear all form fields
-            const form = document.querySelector('form');
-            form.reset();
+        <script>
+            function clearModalFields() {
+                // Clear all form fields
+                const form = document.querySelector('form');
+                form.reset();
 
-            // Remove any success messages after a delay
-            setTimeout(() => {
-                const successMessage = document.querySelector('[data-success]');
-                if (successMessage) {
-                    successMessage.remove();
-                }
-            }, 3000);
-        }
+                // Remove any success messages after a delay
+                setTimeout(() => {
+                    const successMessage = document.querySelector('[data-success]');
+                    if (successMessage) {
+                        successMessage.remove();
+                    }
+                }, 3000);
+            }
 
-        function openEditModal(button) {
-            const id = button.getAttribute('data-id');
-            document.getElementById('edit_id').value = button.getAttribute('data-id');
-            document.getElementById('edit_name').value = button.getAttribute('data-name');
-            document.getElementById('edit_description').value = button.getAttribute('data-description');
-            document.getElementById('edit_status').value = button.getAttribute('data-status');
+            function openEditModal(button) {
+                const id = button.getAttribute('data-id');
+                document.getElementById('edit_id').value = button.getAttribute('data-id');
+                document.getElementById('edit_name').value = button.getAttribute('data-name');
+                document.getElementById('edit_description').value = button.getAttribute('data-description');
+                document.getElementById('edit_status').value = button.getAttribute('data-status');
 
-            const form = document.getElementById('editForm');
-            form.action = `idtype/${id}`;
-        }
-    </script>
-@endsection
+                const form = document.getElementById('editForm');
+                form.action = `idtype/${id}`;
+            }
+        </script>
+    @endsection

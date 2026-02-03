@@ -228,7 +228,7 @@
                 <form action="{{ route('location.sublocation.store', $locationId) }}" method="POST">
                     @csrf
                     <input type="hidden" name="location_id" value="{{ $locationId }}">
-                    <div class="grid gap-2 mb-4 sm:grid-cols-1">
+                    <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-1">
                         <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-3">
                             <div class="w-full md:col-span-1">
                                 <label for="code"
@@ -313,7 +313,7 @@
                     <input type="hidden" name="edit_id" id="edit_id">
                     <input type="hidden" name="location_id" value="{{ $locationId }}">
 
-                    <div class="grid gap-2 mb-4 sm:grid-cols-1">
+                    <div class="grid ml-1 mr-1gap-2 mb-4 sm:grid-cols-1">
                         <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-3">
                             <div class="w-full md:col-span-1">
                                 <label for="edit_code"

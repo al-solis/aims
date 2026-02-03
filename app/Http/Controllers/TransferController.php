@@ -53,13 +53,18 @@ class TransferController extends Controller
 
         if ($assetId) {
             $query->where('asset_id', $assetId);
+
+            $assets = Asset::where('id', $assetId)->first();
+        } else {
+            $assets = Asset::where('status', '!=', '5')->get();
         }
 
+        // dd($assets);
         $transfers = $query->with(['asset', 'location', 'sublocation'])->paginate(config('app.paginate'));
 
         return view(
             'asset.transfer.show',
-            compact('locations', 'status', 'search', 'searchLoc', 'employees', 'transfers', 'assetId', 'totalTransfers', 'activeTransfers', 'cancelledTransfers')
+            compact('locations', 'status', 'search', 'searchLoc', 'employees', 'transfers', 'assetId', 'totalTransfers', 'activeTransfers', 'cancelledTransfers', 'assets')
         );
     }
 }
