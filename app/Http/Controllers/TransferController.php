@@ -126,7 +126,7 @@ class TransferController extends Controller
             'from_sublocation_id' => $request->from_sublocation_id ?? null,
             'to_employee_id' => $request->to_employee_id,
             'to_location_id' => $request->location_id ?? null,
-            'to_sublocation_id' => $request->sublocation_id ?? null,
+            'to_subloc_id' => $request->sublocation_id ?? null,
             'created_at' => now(),
         ]);
 
