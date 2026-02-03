@@ -121,8 +121,8 @@
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                         onchange="this.form.submit()">
                         <option value="">All Status</option>
-                        <option value="0" {{ request('cancelled') === '0' ? 'selected' : '' }}>Active</option>
-                        <option value="1" {{ request('cancelled') === '1' ? 'selected' : '' }}>Cancelled</option>
+                        <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Active</option>
+                        <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Cancelled</option>
                     </select>
                 </div>
             </div>
@@ -135,7 +135,7 @@
             <table class="min-w-full text-xs">
                 <thead class="bg-gray-200 text-gray-600">
                     <tr>
-                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Code</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[120px]">Code</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Date</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Asset</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Description</th>
@@ -149,56 +149,61 @@
                     </tr>
                 </thead>
 
-                <tbody class="divide-y">
+                <tbody class="divide-y text-xs">
                     @forelse($transfers as $transfer)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 w-[80px]">{{ $transfer->code }}</td>
-                            <td class="px-4 py-3 w-[80px]">{{ $transfer->date }}</td>
-                            <td class="px-4 py-3 w-[150px]">{{ $transfer->asset->asset_code ?? 'N/A' }}</td>
-                            <td class="px-4 py-3 w-[150px]">{{ $transfer->asset->name ?? 'N/A' }}</td>
-                            <td class="px-4 py-3 w-[200px]">{{ $transfer->description }}</td>
-                            <td class="px-4 py-3 w-[150px]">{{ $transfer->from_employee->first_name ?? 'N/A' }}
-                                {{ $transfer->from_employee->last_name ?? '' }}</td>
-                            <td class="px-4 py-3 w-[150px]">{{ $transfer->to_employee->first_name ?? 'N/A' }}
-                                {{ $transfer->to_employee->last_name ?? '' }}</td>
-                            <td class="px-4 py-3 w-[150px]">{{ $transfer->location->name ?? 'N/A' }}</td>
-                            <td class="px-4 py-3 w-[150px]">{{ $transfer->sublocation->name ?? 'N/A' }}</td>
-                            <td class="px-4 py-3 w-[100px] text-xs">
-                                @php
-                                    $statuses = [
-                                        0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Cancelled'],
-                                        1 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Active'],
-                                    ];
-                                    $status = $statuses[$transfer->cancelled] ?? [
-                                        'color' => 'bg-gray-100 text-gray-600',
-                                        'label' => 'Unknown',
-                                    ];
-                                @endphp
+                        @foreach ($transfer->transferDetails as $detail)
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 w-[120px]">{{ $transfer->code }}</td>
+                                <td class="px-4 py-3 w-[80px]">{{ $transfer->date }}</td>
+                                <td class="px-4 py-3 w-[150px]">{{ $detail->asset->asset_code ?? '' }}</td>
+                                <td class="px-4 py-3 w-[150px]">{{ $detail->asset->name ?? '' }}</td>
+                                <td class="px-4 py-3 w-[200px]">{{ $transfer->description }}</td>
+                                <td class="px-4 py-3 w-[150px]">
+                                    {{ $detail->fromEmployee->first_name ?? '' }}
+                                    {{ $detail->fromEmployee->last_name ?? '' }}</td>
+                                <td class="px-4 py-3 w-[150px]">{{ $detail->toEmployee->first_name ?? '' }}
+                                    {{ $detail->toEmployee->last_name ?? '' }}</td>
+                                <td class="px-4 py-3 w-[150px]">{{ $detail->toLocation->name ?? '' }}</td>
+                                <td class="px-4 py-3 w-[150px]">{{ $detail->toSublocation->name ?? '' }}
+                                </td>
+                                <td class="px-4 py-3 w-[100px] text-xs">
+                                    @php
+                                        $statuses = [
+                                            1 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Cancelled'],
+                                            0 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Active'],
+                                        ];
+                                        $status = $statuses[$transfer->cancelled] ?? [
+                                            'color' => 'bg-gray-100 text-gray-600',
+                                            'label' => 'Unknown',
+                                        ];
+                                    @endphp
 
-                                <span class="px-2 py-1 text-xs rounded-full {{ $status['color'] }}">
-                                    {{ $status['label'] }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 w-[50px]">
-                                <div class="flex items-center justify-center space-x-2">
-                                    <button type="button" title="Edit ID Type {{ $transfer->description }}"
-                                        data-modal-target="edit-modal" data-modal-toggle="edit-modal"
-                                        data-id="{{ $transfer->id }}" data-name="{{ $transfer->name }}"
-                                        data-description="{{ $transfer->description }}"
-                                        data-status="{{ $transfer->cancelled }}" onclick="openEditModal(this)"
-                                        class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                            <path
-                                                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                            <path fill-rule="evenodd"
-                                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                                        </svg>
-                                        {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                                    <span class="px-2 py-1 text-xs rounded-full {{ $status['color'] }}">
+                                        {{ $status['label'] }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 w-[50px]">
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <button type="button" title="Edit ID Type {{ $transfer->description }}"
+                                            data-modal-target="edit-modal" data-modal-toggle="edit-modal"
+                                            data-id="{{ $transfer->id }}" data-name="{{ $transfer->name }}"
+                                            data-description="{{ $transfer->description }}"
+                                            data-status="{{ $transfer->cancelled }}" onclick="openEditModal(this)"
+                                            class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                                <path fill-rule="evenodd"
+                                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                            </svg>
+                                            {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+
                     @empty
                         <tr>
                             <td colspan="9" class="px-4 py-6 text-center text-gray-500">
@@ -219,7 +224,7 @@
     <!-- Create Transfer modal -->
     <div id="add-modal" tabindex="-1" aria-hidden="true"
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
-        <div class="relative p-4 w-full max-w-md h-full md:h-auto">
+        <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
             <!-- Modal content -->
             <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
                 <!-- Modal header -->
@@ -243,36 +248,92 @@
                 <div class="overflow-y-auto max-h-[70vh]">
                     <form action="{{ route('transfer.store') }}" method="POST">
                         @csrf
+
                         <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-2">
                             <div class="sm:col-span-1">
-                                <label for="asset_id"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Asset
-                                    ID*</label>
-                                <input type="text" name="asset_id" id="asset_id"
-                                    value="{{ $assets->asset_code ?? '' }}"
+                                <label for="transfer_date"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Date*</label>
+                                <input type="date" name="transfer_date" id="transfer_date" max="{{ date('Y-m-d') }}"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="e.g. FA-2026-00000" required>
+                                    placeholder="mm/dd/yyyy" required>
                             </div>
                             <div class="sm:col-span-1">
+                                <input type="hidden" name="asset_id" id="asset_id" value="{{ $assets->id ?? '' }}">
+                                <label for="asset_code"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Asset
+                                    ID</label>
+                                <input type="text" name="asset_code" id="asset_code"
+                                    value="{{ $assets->asset_code ?? '' }}"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. FA-2026-00000" readonly>
+                            </div>
+                            <div class="sm:col-span-2">
                                 <label for="description"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
                                 <input type="text" name="description" id="description"
                                     value="{{ $assets->name ?? '' }}"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="e.g. Computer Laptop" required>
+                                    placeholder="e.g. Computer Laptop" readonly>
+                            </div>
+                            <input type="hidden" name="from_employee_id" id="from_employee_id"
+                                value="{{ $assets->assigned_to }}">
+                            <input type="hidden" name="from_location_id" id="from_location_id"
+                                value="{{ $assets->location_id }}">
+                            <input type="hidden" name="from_sublocation_id" id="from_sublocation_id"
+                                value="{{ $assets->sublocation_id }}">
+                            <div class="sm:col-span-1">
+                                <label for="from_employee_name"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">From</label>
+                                <input type="text" name="from_employee_name" id="from_employee_name"
+                                    value="{{ $assets->assigned_to ? $assets->assigned_user->last_name . ', ' . $assets->assigned_user->first_name . ' ' . $assets->assigned_user->middle_name : 'N/A' }}"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. Computer Laptop" readonly>
+                            </div>
+                            <div class="sm:col-span-1">
+                                <label for="to_employee_id"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Transfer to*</label>
+                                <select id="to_employee_id" name="to_employee_id"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    required>
+                                    <option value="" selected>Select employee</option>
+                                    @foreach ($employees as $employee)
+                                        <option value="{{ $employee->id }}">
+                                            {{ $employee->last_name }}, {{ $employee->first_name }}
+                                            {{ $employee->middle_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="location_id"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Location</label>
+                                <select id="location_id" name="location_id" data-target="#sublocation_id"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                    <option value="" selected>Select location</option>
+                                    @foreach ($locations as $location)
+                                        <option value="{{ $location->id }}">
+                                            {{ $location->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="sublocation_id"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Sub-Location</label>
+                                <select id="sublocation_id" name="sublocation_id"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                    <option value="" selected>Select sub-location</option>
+                                </select>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="status"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                                <select id="status" name="status"
+                                <label for="description"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
+                                <textarea id="description" name="description" rows="2"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    required>
-                                    {{-- <option selected="">Select product type</option> --}}
-                                    <option value="1">Active</option>
-                                    <option value="0">Inactive</option>
-                                </select>
+                                    placeholder="e.g. Transfer note"></textarea>
                             </div>
+
                         </div>
 
 
@@ -284,7 +345,7 @@
                                     d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            Add ID Type
+                            Create Transfer
                         </button>
                     </form>
                 </div>
@@ -388,5 +449,60 @@
                 const form = document.getElementById('editForm');
                 form.action = `idtype/${id}`;
             }
+
+            let selectedEditSublocation = null;
+
+            // ADD + EDIT location change handler
+            $(document).on('change', '#location_id, #edit_location_id', function() {
+
+                const locationId = $(this).val();
+                const sublocationSelect = $($(this).data('target'));
+
+                // alert('Location Id: ' + locationId);
+                // alert('Sublocation Select Id: ' + sublocationSelect.attr('id'));
+
+                sublocationSelect
+                    .html('<option>Loading...</option>')
+                    .prop('disabled', true);
+
+                if (!locationId) {
+                    sublocationSelect.html('<option value="">Select sub-location</option>');
+                    return;
+                }
+
+                $.ajax({
+                    url: `/get-sublocations/${locationId}`,
+                    type: 'GET',
+                    success: function(data) {
+                        sublocationSelect.empty()
+                            .append('<option value="">Select sub-location</option>');
+
+                        $.each(data, function(_, sublocation) {
+                            sublocationSelect.append(
+                                `<option value="${sublocation.id}">${sublocation.name}</option>`
+                            );
+                        });
+
+                        if (selectedEditSublocation && sublocationSelect.attr('id') ===
+                            'edit_sublocation_id') {
+                            sublocationSelect.val(selectedEditSublocation);
+                            selectedEditSublocation = null;
+                        }
+
+                        sublocationSelect.prop('disabled', false);
+                    }
+                });
+            });
+
+            document.getElementById('to_employee_id').addEventListener('change', function() {
+                const from_employee_id = document.getElementById('from_employee_id').value;
+                if (this.value == from_employee_id) {
+                    alert(
+                        'The "Destination" employee cannot be the same as the "Source" employee. Please select a different employee.'
+                    );
+                    this.value = '';
+                    this.focus();
+                }
+            });
         </script>
     @endsection

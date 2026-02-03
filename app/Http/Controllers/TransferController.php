@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\asset;
 use App\Models\location;
 use App\Models\sublocation;
 use App\Models\employee;
 use App\Models\transfer;
+use App\Models\transfer_detail as TransferDetail;
 
 class TransferController extends Controller
 {
@@ -27,12 +30,13 @@ class TransferController extends Controller
 
         $locations = Location::orderBy('name')->get();
         $sublocation = sublocation::orderBy('name')->get();
-        $employees = Employee::orderBy('last_name')
+        $employees = Employee::where('status', '!=', '0')
+            ->orderBy('last_name')
             ->orderBy('first_name')
             ->orderBy('middle_name')
             ->get();
 
-        $query = Transfer::query();
+        $query = Transfer::with('transferDetails');
 
         if ($search) {
             $query->where(function (Builder $q) use ($search) {
@@ -52,7 +56,9 @@ class TransferController extends Controller
         }
 
         if ($assetId) {
-            $query->where('asset_id', $assetId);
+            $query->whereHas('transferDetails', function (Builder $q) use ($assetId) {
+                $q->where('asset_id', $assetId);
+            });
 
             $assets = Asset::where('id', $assetId)->first();
         } else {
@@ -60,11 +66,79 @@ class TransferController extends Controller
         }
 
         // dd($assets);
-        $transfers = $query->with(['asset', 'location', 'sublocation'])->paginate(config('app.paginate'));
+        $transfers = $query->with(
+            [
+                'transferDetails',
+                'transferDetails.asset',
+                'transferDetails.fromEmployee',
+                'transferDetails.toEmployee',
+                'transferDetails.fromLocation',
+                'transferDetails.toLocation',
+                'transferDetails.fromSublocation',
+                'transferDetails.toSublocation',
+            ]
+        )
+            ->paginate(config('app.paginate'))
+            ->appends([
+                'search' => $search,
+                'status' => $status,
+                'searchloc' => $searchLoc,
+            ]);
 
         return view(
             'asset.transfer.show',
-            compact('locations', 'status', 'search', 'searchLoc', 'employees', 'transfers', 'assetId', 'totalTransfers', 'activeTransfers', 'cancelledTransfers', 'assets')
+            compact('locations', 'employees', 'transfers', 'assetId', 'totalTransfers', 'activeTransfers', 'cancelledTransfers', 'assets')
         );
+    }
+
+    public function store(Request $request, Transfer $transfer)
+    {
+        $request->validate([
+            'asset_id' => 'required|exists:assets,id',
+            'transfer_date' => 'required|date',
+            'from_employee_id' => 'required|exists:employees,id',
+            'to_employee_id' => 'required|exists:employees,id',
+            'location_id' => 'nullable|exists:locations,id',
+            'sublocation_id' => 'nullable|exists:sublocations,id',
+            'description' => 'nullable|string|max:255',
+        ]);
+
+        $year = Carbon::parse($request->transfer_date)->year;
+        $count = Transfer::whereYear('date', $year)->count() + 1;
+        $sequence = str_pad($count, 5, '0', STR_PAD_LEFT);
+        $trxcode = 'TRF-' . $year . '-' . $sequence;
+
+        $transfer = Transfer::create([
+            'code' => $trxcode,
+
+            'date' => $request->transfer_date,
+
+            'description' => $request->description,
+            'created_by' => Auth::id(),
+            'created_at' => now(),
+        ]);
+
+        $transferDetails = TransferDetail::create([
+            'transfer_id' => $transfer->id,
+            'asset_id' => $request->asset_id,
+            'from_employee_id' => $request->from_employee_id,
+            'from_location_id' => $request->from_location_id ?? null,
+            'from_sublocation_id' => $request->from_sublocation_id ?? null,
+            'to_employee_id' => $request->to_employee_id,
+            'to_location_id' => $request->location_id ?? null,
+            'to_sublocation_id' => $request->sublocation_id ?? null,
+            'created_at' => now(),
+        ]);
+
+        DB::table('assets')
+            ->where('id', $request->asset_id)
+            ->update([
+                'assigned_to' => $request->to_employee_id,
+                'location_id' => $request->location_id ?? null,
+                'subloc_id' => $request->sublocation_id ?? null,
+                'updated_at' => now(),
+            ]);
+
+        return redirect()->back()->with('success', 'Transfer created successfully.');
     }
 }
