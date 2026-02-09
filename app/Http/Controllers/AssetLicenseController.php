@@ -86,4 +86,30 @@ class AssetLicenseController extends Controller
         return redirect()->route('licenses.index')->with('success', 'License added successfully.');
     }
 
+    public function update(Request $request, $id)
+    {
+
+
+        $request->validate([
+            'edit_asset_id' => 'required|exists:assets,id',
+            'edit_license_type_id' => 'required|exists:license_types,id',
+            'edit_license_number' => 'required|string|max:255',
+            'edit_issuing_authority' => 'required|string|max:255',
+            'edit_expiration_date' => 'required|date',
+        ]);
+
+        $license = asset_license::findOrFail($id);
+        $license->update([
+            'asset_id' => $request->edit_asset_id,
+            'license_type_id' => $request->edit_license_type_id,
+            'license_number' => $request->edit_license_number,
+            'issuing_authority' => $request->edit_issuing_authority,
+            'issue_date' => $request->edit_issue_date,
+            'expiration_date' => $request->edit_expiration_date,
+            'updated_by' => Auth::id(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->route('licenses.index')->with('success', 'License updated successfully.');
+    }
 }

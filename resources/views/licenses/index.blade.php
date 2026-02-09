@@ -170,12 +170,21 @@
                             <td class="px-4 py-3 w-[100px]">
                                 {{ $assetLicense->expiration_date ? Carbon::parse($assetLicense->expiration_date)->format('Y-m-d') : 'N/A' }}
                             </td>
-                            <td class="px-4 py-3 w-[100px] text-xs">
+                            <td class="px-4 py-3 w-[100px] text-xs font-semibold">
                                 @php
                                     $statuses = [
-                                        0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Expired'],
-                                        1 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Active'],
-                                        2 => ['color' => 'bg-yellow-100 text-yellow-600', 'label' => 'Expiring Soon'],
+                                        0 => [
+                                            'color' => 'bg-red-100 text-red-600',
+                                            'label' => 'Expired',
+                                        ],
+                                        1 => [
+                                            'color' => 'bg-green-100 text-green-700',
+                                            'label' => 'Active',
+                                        ],
+                                        2 => [
+                                            'color' => 'bg-yellow-100 text-yellow-600',
+                                            'label' => 'Expiring Soon',
+                                        ],
                                     ];
                                     $status = $statuses[$assetLicense->status] ?? [
                                         'color' => 'bg-gray-100 text-gray-600',
@@ -196,7 +205,12 @@
                                     <button type="button" title="Edit license {{ $assetLicense->asset->name }}"
                                         data-modal-target="edit-modal" data-modal-toggle="edit-modal"
                                         data-id="{{ $assetLicense->id }}"
-                                        data-name="{{ $assetLicense->license_type->name }}"
+                                        data-license_type_id="{{ $assetLicense->license_type_id }}"
+                                        data-asset_id="{{ $assetLicense->asset_id }}"
+                                        data-license_number="{{ $assetLicense->license_number }}"
+                                        data-issuing_authority="{{ $assetLicense->issuing_authority }}"
+                                        data-issue_date="{{ $assetLicense->issue_date ? Carbon::parse($assetLicense->issue_date)->format('Y-m-d') : '' }}"
+                                        data-expiration_date="{{ $assetLicense->expiration_date ? Carbon::parse($assetLicense->expiration_date)->format('Y-m-d') : '' }}"
                                         data-status="{{ $assetLicense->status }}" onclick="openEditModal(this)"
                                         class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -364,38 +378,75 @@
                         <input type="hidden" name="edit_id" id="edit_id">
 
                         <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-1">
-                            <div class="sm:col-span-2">
-                                <label for="edit_name"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                                <input type="text" name="edit_name" id="edit_name"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="e.g. Firearms" required>
+                            <div class="w-full md:col-span-2">
+                                <label for="edit_asset_id"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Asset Name*</label>
+                                <select name="edit_asset_id" id="edit_asset_id"
+                                    class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    required>
+                                    <option value="{{ old('edit_asset_id') }}" selected>Select asset</option>
+                                    @foreach ($assets as $asset)
+                                        <option value="{{ $asset->id }}"
+                                            {{ old('edit_asset_id', $assetLicense->asset_id ?? '') == $asset->id ? 'selected' : '' }}>
+                                            {{ $asset->name }} -
+                                            {{ $asset->asset_code }}</option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <div class="sm:col-span-2">
-                                <label for="edit_description"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                <textarea type="text" name="edit_description" id="edit_description" rows="3"
+                            <div class="sm:col-span-1">
+                                <label for="edit_license_type_id"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">License Type*</label>
+                                <select id="edit_license_type_id" name="edit_license_type_id"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    required>
+                                    <option value="" selected>Select type</option>
+                                    @foreach ($licenseTypes as $licenseType)
+                                        <option value="{{ $licenseType->id }}"
+                                            {{ old('edit_license_type_id', $assetLicense->license_type_id ?? '') == $licenseType->id ? 'selected' : '' }}>
+                                            {{ $licenseType->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_license_number"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">License Number*</label>
+                                <input type="text" name="edit_license_number" id="edit_license_number"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="Category description"></textarea>
+                                    placeholder="License/ permit number" required>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="edit_status"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                                <select id="edit_status" name="edit_status"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                <label for="edit_issuing_authority"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Issuing
+                                    Authority*</label>
+                                <input type="text" name="edit_issuing_authority" id="edit_issuing_authority"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Authority or department name" required>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_issue_date"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Date Issued</label>
+                                <input type="date" name="edit_issue_date" id="edit_issue_date"
+                                    value="{{ old('edit_issue_date') }}"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_expiration_date"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Date Expired</label>
+                                <input type="date" name="edit_expiration_date" id="edit_expiration_date"
+                                    value="{{ old('edit_expiration_date') }}"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     required>
-                                    {{-- <option selected="">Select product type</option> --}}
-                                    <option value="1">Active</option>
-                                    <option value="0">Inactive</option>
-                                </select>
                             </div>
                         </div>
 
                         <button type="submit"
                             class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
                             {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
-                            Update License Type
+                            Update License
                         </button>
                     </form>
                 </div>
@@ -406,7 +457,12 @@
 
     <script>
         $(document).ready(function() {
-            $('#name').select2({
+            $('#asset_id').select2({
+                placeholder: "Select asset",
+                allowClear: true,
+                width: '100%'
+            });
+            $('#edit_asset_id').select2({
                 placeholder: "Select asset",
                 allowClear: true,
                 width: '100%'
@@ -430,12 +486,17 @@
         function openEditModal(button) {
             const id = button.getAttribute('data-id');
             document.getElementById('edit_id').value = button.getAttribute('data-id');
-            document.getElementById('edit_name').value = button.getAttribute('data-name');
-            document.getElementById('edit_description').value = button.getAttribute('data-description');
-            document.getElementById('edit_status').value = button.getAttribute('data-status');
+            document.getElementById('edit_asset_id').value = button.getAttribute('data-asset_id');
+            document.getElementById('edit_license_type_id').value = button.getAttribute('data-license_type_id');
+            document.getElementById('edit_license_number').value = button.getAttribute('data-license_number');
+            document.getElementById('edit_issuing_authority').value = button.getAttribute('data-issuing_authority');
+            document.getElementById('edit_issue_date').value = button.getAttribute('data-issue_date') ?? null;
+            document.getElementById('edit_expiration_date').value = button.getAttribute('data-expiration_date') ?? null;
+
 
             const form = document.getElementById('editForm');
-            // form.action = `license/${id}`;
+            form.action = `/licenses/${id}`;
+
         }
     </script>
 @endsection

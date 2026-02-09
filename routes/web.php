@@ -83,7 +83,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-last-transfer-code/{assetId}', [TransferController::class, 'getLastTransferCode'])->name('asset.transfer.last-code');
     Route::post('/transfer/{transferId}/void', [TransferController::class, 'voidTransfer'])->name('asset.transfer.void');
 
-    Route::resource('licenses', AssetLicenseController::class)->except(['destroy']);
+
+    Route::get('/licenses', [AssetLicenseController::class, 'index'])->name('licenses.index');
+    Route::post('/licenses', [AssetLicenseController::class, 'store'])->name('licenses.store');
+    Route::put('/licenses/{id}', [AssetLicenseController::class, 'update'])->name('licenses.update');
+    //Route::resource('licenses', AssetLicenseController::class)->except(['destroy']);
+
 });
 
 require __DIR__ . '/auth.php';
