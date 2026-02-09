@@ -77,6 +77,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('asset/transfer/{assetId}/count', [TransferController::class, 'countAssetTransfers'])->name('asset.transfer.count');
     Route::resource('asset/transfer', TransferController::class)->except(['destroy']);
+
+    Route::get('/validate-transfer-date', [TransferController::class, 'validateTransferDate'])->name('asset.transfer.validate-date');
+    Route::get('/get-last-transfer-code/{assetId}', [TransferController::class, 'getLastTransferCode'])->name('asset.transfer.last-code');
+    Route::post('/transfer/{transferId}/void', [TransferController::class, 'voidTransfer'])->name('asset.transfer.void');
 });
 
 require __DIR__ . '/auth.php';

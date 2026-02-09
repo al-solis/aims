@@ -131,6 +131,7 @@
         </form>
 
         {{-- Table --}}
+        <input type="hidden" name="last_transfer_no" id="last_transfer_no">
         <div class="bg-white border rounded-xl overflow-x-auto md:overflow-visible scroll-smooth">
             <table class="min-w-full text-xs">
                 <thead class="bg-gray-200 text-gray-600">
@@ -145,7 +146,7 @@
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Location</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Sub-location</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Cancelled</th>
-                        <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
+                        <th scope="col" class="px-4 py-3 text-center w-[150px]">Actions</th>
                     </tr>
                 </thead>
 
@@ -182,14 +183,14 @@
                                         {{ $status['label'] }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 w-[50px]">
+                                <td class="px-4 py-3 w-[150px]">
                                     <div class="flex items-center justify-center space-x-2">
-                                        <button type="button" title="Edit ID Type {{ $transfer->description }}"
+                                        <button type="button" title="Edit transfer {{ $transfer->code }}"
                                             data-modal-target="edit-modal" data-modal-toggle="edit-modal"
                                             data-id="{{ $transfer->id }}" data-name="{{ $transfer->name }}"
                                             data-description="{{ $transfer->description }}"
                                             data-status="{{ $transfer->cancelled }}" onclick="openEditModal(this)"
-                                            class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+                                            class="group flex space-x-5 text-gray-500 hover:text-blue-600 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                                                 <path
@@ -197,8 +198,23 @@
                                                 <path fill-rule="evenodd"
                                                     d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
                                             </svg>
-                                            {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
                                         </button>
+
+                                        <button type="button" title="Void transfer {{ $transfer->code }}"
+                                            data-id="{{ $transfer->id }}" data-name="{{ $transfer->name }}"
+                                            data-code="{{ $transfer->code }}"
+                                            data-description="{{ $transfer->description }}"
+                                            data-cancelled="{{ $transfer->cancelled }}" onclick="voidTransfer(this)"
+                                            class="void-btn hidden group flex text-gray-500 hover:text-red-600 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-x-square" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                                                <path
+                                                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                            </svg>
+                                        </button>
+
                                     </div>
                                 </td>
                             </tr>
@@ -352,169 +368,230 @@
                 </div>
             </div>
         </div>
-        <!-- End create ID Type modal -->
+    </div>
+    <!-- End create ID Type modal -->
 
-        <!-- Modal  Edit-->
-        <div id="edit-modal" tabindex="-1" aria-hidden="true"
-            class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-            <div class="relative p-4 w-full max-w-md max-h-full">
-                <!-- Modal content -->
-                <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
-                    <!-- Modal header -->
-                    <div
-                        class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                            Update ID Type
-                        </h3>
-                        <button type="button"
-                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                            data-modal-toggle="edit-modal">
-                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 14 14">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                            </svg>
-                            <span class="sr-only">Close</span>
-                        </button>
-                    </div>
-                    <!-- Modal body -->
-                    <div class="overflow-y-auto max-h-[70vh]">
-                        <form id="editForm" class="p-4 md:p-5" method="POST">
-                            @csrf
-                            @method('PUT')
-                            <input type="hidden" name="edit_id" id="edit_id">
+    <!-- Modal  Edit-->
+    <div id="edit-modal" tabindex="-1" aria-hidden="true"
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-md max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+                <!-- Modal header -->
+                <div
+                    class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        Update ID Type
+                    </h3>
+                    <button type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        data-modal-toggle="edit-modal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Close</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="overflow-y-auto max-h-[70vh]">
+                    <form id="editForm" class="p-4 md:p-5" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="edit_id" id="edit_id">
 
-                            <div class="grid gap-2 mb-4 sm:grid-cols-1">
-                                <div class="sm:col-span-2">
-                                    <label for="edit_name"
-                                        class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                                    <input type="text" name="edit_name" id="edit_name"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                        placeholder="e.g. Firearms" required>
-                                </div>
-                                <div class="sm:col-span-2">
-                                    <label for="edit_description"
-                                        class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                    <textarea type="text" name="edit_description" id="edit_description" rows="3"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                        placeholder="Category description"></textarea>
-                                </div>
-
-                                <div class="sm:col-span-2">
-                                    <label for="edit_status"
-                                        class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                                    <select id="edit_status" name="edit_status"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                        required>
-                                        {{-- <option selected="">Select product type</option> --}}
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
-                                </div>
+                        <div class="grid gap-2 mb-4 sm:grid-cols-1">
+                            <div class="sm:col-span-2">
+                                <label for="edit_name"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
+                                <input type="text" name="edit_name" id="edit_name"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. Firearms" required>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label for="edit_description"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
+                                <textarea type="text" name="edit_description" id="edit_description" rows="3"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Category description"></textarea>
                             </div>
 
-                            <button type="submit"
-                                class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
-                                {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
-                                Update ID Type
-                            </button>
-                        </form>
-                    </div>
+                            <div class="sm:col-span-2">
+                                <label for="edit_status"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
+                                <select id="edit_status" name="edit_status"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    required>
+                                    {{-- <option selected="">Select product type</option> --}}
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                            class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                            {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
+                            Update ID Type
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-        <!-- End edit modal -->
+    </div>
+    <!-- End edit modal -->
 
-        <script>
-            function clearModalFields() {
-                // Clear all form fields
-                const form = document.querySelector('form');
-                form.reset();
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            //Check the last transfer code
+            const assetId = document.getElementById('asset_id').value;
+            $.ajax({
+                url: `/get-last-transfer-code/${assetId}`,
+                type: 'GET',
+                success: function(response) {
 
-                // Remove any success messages after a delay
-                setTimeout(() => {
-                    const successMessage = document.querySelector('[data-success]');
-                    if (successMessage) {
-                        successMessage.remove();
-                    }
-                }, 3000);
-            }
+                    const lastTransferNo = response.last_code;
 
-            function openEditModal(button) {
-                const id = button.getAttribute('data-id');
-                document.getElementById('edit_id').value = button.getAttribute('data-id');
-                document.getElementById('edit_name').value = button.getAttribute('data-name');
-                document.getElementById('edit_description').value = button.getAttribute('data-description');
-                document.getElementById('edit_status').value = button.getAttribute('data-status');
+                    document.querySelectorAll('.void-btn').forEach(button => {
+                        const transferCode = button.getAttribute('data-code');
+                        const cancelled = button.getAttribute('data-cancelled');
 
-                const form = document.getElementById('editForm');
-                form.action = `idtype/${id}`;
-            }
-
-            let selectedEditSublocation = null;
-
-            // ADD + EDIT location change handler
-            $(document).on('change', '#location_id, #edit_location_id', function() {
-
-                const locationId = $(this).val();
-                const sublocationSelect = $($(this).data('target'));
-
-                // alert('Location Id: ' + locationId);
-                // alert('Sublocation Select Id: ' + sublocationSelect.attr('id'));
-
-                sublocationSelect
-                    .html('<option>Loading...</option>')
-                    .prop('disabled', true);
-
-                if (!locationId) {
-                    sublocationSelect.html('<option value="">Select sub-location</option>');
-                    return;
-                }
-
-                $.ajax({
-                    url: `/get-sublocations/${locationId}`,
-                    type: 'GET',
-                    success: function(data) {
-                        sublocationSelect.empty()
-                            .append('<option value="">Select sub-location</option>');
-
-                        $.each(data, function(_, sublocation) {
-                            sublocationSelect.append(
-                                `<option value="${sublocation.id}">${sublocation.name}</option>`
-                            );
-                        });
-
-                        if (selectedEditSublocation && sublocationSelect.attr('id') ===
-                            'edit_sublocation_id') {
-                            sublocationSelect.val(selectedEditSublocation);
-                            selectedEditSublocation = null;
+                        if (transferCode === lastTransferNo && cancelled === '0') {
+                            button.classList.remove('hidden');
                         }
+                    });
+                },
+                error: function() {
+                    console.error('Failed to fetch last transfer code');
+                }
+            });
+        });
 
-                        sublocationSelect.prop('disabled', false);
+        function clearModalFields() {
+            // Clear all form fields
+            const form = document.querySelector('form');
+            form.reset();
+
+            // Remove any success messages after a delay
+            setTimeout(() => {
+                const successMessage = document.querySelector('[data-success]');
+                if (successMessage) {
+                    successMessage.remove();
+                }
+            }, 3000);
+        }
+
+        function openEditModal(button) {
+            const id = button.getAttribute('data-id');
+            document.getElementById('edit_id').value = button.getAttribute('data-id');
+            document.getElementById('edit_name').value = button.getAttribute('data-name');
+            document.getElementById('edit_description').value = button.getAttribute('data-description');
+            document.getElementById('edit_status').value = button.getAttribute('data-status');
+
+            const form = document.getElementById('editForm');
+            form.action = `idtype/${id}`;
+        }
+
+        let selectedEditSublocation = null;
+
+        // ADD + EDIT location change handler
+        $(document).on('change', '#location_id, #edit_location_id', function() {
+
+            const locationId = $(this).val();
+            const sublocationSelect = $($(this).data('target'));
+
+            // alert('Location Id: ' + locationId);
+            // alert('Sublocation Select Id: ' + sublocationSelect.attr('id'));
+
+            sublocationSelect
+                .html('<option>Loading...</option>')
+                .prop('disabled', true);
+
+            if (!locationId) {
+                sublocationSelect.html('<option value="">Select sub-location</option>');
+                return;
+            }
+
+            $.ajax({
+                url: `/get-sublocations/${locationId}`,
+                type: 'GET',
+                success: function(data) {
+                    sublocationSelect.empty()
+                        .append('<option value="">Select sub-location</option>');
+
+                    $.each(data, function(_, sublocation) {
+                        sublocationSelect.append(
+                            `<option value="${sublocation.id}">${sublocation.name}</option>`
+                        );
+                    });
+
+                    if (selectedEditSublocation && sublocationSelect.attr('id') ===
+                        'edit_sublocation_id') {
+                        sublocationSelect.val(selectedEditSublocation);
+                        selectedEditSublocation = null;
+                    }
+
+                    sublocationSelect.prop('disabled', false);
+                }
+            });
+        });
+
+        document.getElementById('to_employee_id').addEventListener('change', function() {
+            const from_employee_id = document.getElementById('from_employee_id').value;
+            if (this.value == from_employee_id) {
+                alert(
+                    'The "Destination" employee cannot be the same as the "Source" employee. Please select a different employee.'
+                );
+                this.value = '';
+                this.focus();
+            }
+        });
+
+        document.getElementById('transfer_date').addEventListener('change', function() {
+            const selectedDate = new Date(this.value);
+            const purchaseDate = document.getElementById('purchase_date').value;
+            if (selectedDate < new Date(purchaseDate)) {
+                alert(
+                    `The transfer date cannot be before the purchase date ${purchaseDate}. Please select a valid date.`
+                );
+                this.value = '';
+                this.focus();
+            }
+
+            $.ajax({
+                url: `/validate-transfer-date?asset_id=${document.getElementById('asset_id').value}&transfer_date=${this.value}`,
+                type: 'GET',
+                success: function(response) {
+                    if (!response.valid) {
+                        alert(response.message);
+                        document.getElementById('transfer_date').value = '';
+                        document.getElementById('transfer_date').focus();
+                    }
+                }
+            });
+        });
+
+        function voidTransfer(button) {
+            const transferId = button.getAttribute('data-id');
+            const transferCode = button.getAttribute('data-code');
+
+            if (confirm(`Are you sure you want to void transfer ${transferCode}? This action cannot be undone.`)) {
+                $.ajax({
+                    url: `/transfer/${transferId}/void`,
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        alert(response.message);
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('An error occurred while trying to void the transfer. Please try again.');
                     }
                 });
-            });
-
-            document.getElementById('to_employee_id').addEventListener('change', function() {
-                const from_employee_id = document.getElementById('from_employee_id').value;
-                if (this.value == from_employee_id) {
-                    alert(
-                        'The "Destination" employee cannot be the same as the "Source" employee. Please select a different employee.'
-                    );
-                    this.value = '';
-                    this.focus();
-                }
-            });
-
-            document.getElementById('transfer_date').addEventListener('change', function() {
-                const selectedDate = new Date(this.value);
-                const purchaseDate = document.getElementById('purchase_date').value;
-                if (selectedDate < new Date(purchaseDate)) {
-                    alert(
-                        `The transfer date cannot be before the purchase date ${purchaseDate}. Please select a valid date.`);
-                    this.value = '';
-                    this.focus();
-                }
-            });
-        </script>
-    @endsection
+            }
+        }
+    </script>
+@endsection

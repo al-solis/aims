@@ -749,6 +749,7 @@
                 if (transferCount > 0) {
                     alert('Purchase date cannot be changed because this asset has been transferred.');
                     this.blur();
+                    return;
                 }
             });
         });

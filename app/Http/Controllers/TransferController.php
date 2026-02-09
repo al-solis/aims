@@ -150,4 +150,57 @@ class TransferController extends Controller
         })->count();
         return response()->json(['count' => $count]);
     }
+
+    public function validateTransferDate(Request $request)
+    {
+        $request->validate([
+            'asset_id' => 'required|exists:assets,id',
+            'transfer_date' => 'required|date',
+        ]);
+
+        $assetId = $request->input('asset_id');
+        $transferDate = Carbon::parse($request->input('transfer_date'));
+
+        $latestTransfer = Transfer::whereHas('transferDetails', function (Builder $q) use ($assetId) {
+            $q->where('asset_id', $assetId);
+            $q->where('cancelled', false);
+        })->orderBy('date', 'desc')->first();
+
+        if ($latestTransfer && $transferDate->lt(Carbon::parse($latestTransfer->date))) {
+            return response()->json(['valid' => false, 'message' => 'Transfer date cannot be earlier than the latest transfer date.']);
+        }
+
+        return response()->json(['valid' => true]);
+    }
+
+    public function voidTransfer($transferId)
+    {
+        $transfer = Transfer::findOrFail($transferId);
+        $transfer->cancelled = true;
+        $transfer->save();
+
+        foreach ($transfer->transferDetails as $detail) {
+            DB::table('assets')
+                ->where('id', $detail->asset_id)
+                ->update([
+                    'assigned_to' => $detail->from_employee_id,
+                    'location_id' => $detail->from_location_id,
+                    'subloc_id' => $detail->from_sublocation_id,
+                    'updated_by' => Auth::id(),
+                    'updated_at' => now(),
+                ]);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Transfer has been voided.']);
+    }
+
+    public function getLastTransferCode($assetId)
+    {
+        $lastTransfer = Transfer::whereHas('transferDetails', function (Builder $q) use ($assetId) {
+            $q->where('asset_id', $assetId);
+            $q->where('cancelled', false);
+        })->orderBy('date', 'desc')->first();
+
+        return response()->json(['last_code' => $lastTransfer ? $lastTransfer->code : null]);
+    }
 }
