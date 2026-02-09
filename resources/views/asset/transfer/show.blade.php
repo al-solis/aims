@@ -310,7 +310,7 @@
                                 <label for="to_employee_id"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Transfer to*</label>
                                 <select id="to_employee_id" name="to_employee_id"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     required>
                                     <option value="" selected>Select employee</option>
                                     @foreach ($employees as $employee)
@@ -352,7 +352,6 @@
                             </div>
 
                         </div>
-
 
                         <button type="submit"
                             class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
@@ -443,6 +442,14 @@
     <!-- End edit modal -->
 
     <script>
+        $(document).ready(function() {
+            $('#to_employee_id').select2({
+                placeholder: "Select employee",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             //Check the last transfer code
             const assetId = document.getElementById('asset_id').value;

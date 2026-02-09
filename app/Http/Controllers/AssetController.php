@@ -30,7 +30,11 @@ class AssetController extends Controller
         $locations = Location::get();
         $categories = Category::get();
         $sublocations = Sublocation::get();
-        $employees = Employee::where('status', '!=', '0')->get();
+        $employees = Employee::where('status', '!=', '0')
+            ->orderBy('last_name', 'asc')
+            ->orderBy('first_name', 'asc')
+            ->orderBy('middle_name', 'asc')
+            ->get();
 
         $query = Asset::query();
 
@@ -40,6 +44,11 @@ class AssetController extends Controller
                 $q->orWhere('asset_code', 'like', '%' . $search . '%');
                 $q->orWhere('description', 'like', '%' . $search . '%');
                 $q->orWhere('serial', 'like', '%' . $search . '%');
+                $q->orWhereHas('assigned_user', function ($q) use ($search) {
+                    $q->where('first_name', 'like', '%' . $search . '%')
+                        ->orWhere('last_name', 'like', '%' . $search . '%')
+                        ->orWhere('middle_name', 'like', '%' . $search . '%');
+                });
             });
         }
 

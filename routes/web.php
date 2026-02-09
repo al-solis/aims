@@ -12,6 +12,7 @@ use App\Http\Controllers\EmployeeIdController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TransferController;
+use App\Http\Controllers\AssetLicenseController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -81,6 +82,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/validate-transfer-date', [TransferController::class, 'validateTransferDate'])->name('asset.transfer.validate-date');
     Route::get('/get-last-transfer-code/{assetId}', [TransferController::class, 'getLastTransferCode'])->name('asset.transfer.last-code');
     Route::post('/transfer/{transferId}/void', [TransferController::class, 'voidTransfer'])->name('asset.transfer.void');
+
+    Route::resource('licenses', AssetLicenseController::class)->except(['destroy']);
 });
 
 require __DIR__ . '/auth.php';
