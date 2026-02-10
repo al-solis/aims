@@ -145,7 +145,7 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3 w-[150px]">{{ $licenseType->name }}</td>
                             <td class="px-4 py-3 w-[200px]">{{ $licenseType->description }}</td>
-                            <td class="px-4 py-3 w-[100px] text-xs">
+                            <td class="px-4 py-3 w-[100px] text-xs font-semibold">
                                 @php
                                     $statuses = [
                                         0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Inactive'],

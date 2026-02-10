@@ -96,6 +96,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 
     Route::resource('clearance', ClearanceHeaderController::class)->except(['destroy']);
+    Route::put('/clearance/{id}/details', [ClearanceHeaderController::class, 'updateDetails'])
+        ->name('clearance.update-details');
+
+    Route::post('/clearance/{id}/mark-complete', [ClearanceHeaderController::class, 'markAsComplete'])->name('clearance.mark-complete');
 });
 
 require __DIR__ . '/auth.php';

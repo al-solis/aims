@@ -143,7 +143,7 @@
                             <td class="px-4 py-3 font-medium w-[100px]">{{ $sublocation->code }}</td>
                             <td class="px-4 py-3 w-[200px]">{{ $sublocation->name }}</td>
                             <td class="px-4 py-3 w-[350px]">{{ $sublocation->description }}</td>
-                            <td class="px-4 py-3 w-[100px] text-xs">
+                            <td class="px-4 py-3 w-[100px] text-xs font-semibold">
                                 @php
                                     $statuses = [
                                         0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Inactive'],

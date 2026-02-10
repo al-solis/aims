@@ -190,7 +190,7 @@
                             </td>
                             <td class="px-4 py-2 w-[80px]">{{ $asset->category_id ? $asset->category->name : '' }}</td>
                             <td class="px-4 py-2 w-[100px]">{{ $asset->serial }}</td>
-                            <td class="px-4 py-2 w-[80px] text-xs">
+                            <td class="px-4 py-2 w-[80px] text-xs font-semibold">
                                 @php
                                     $statuses = [
                                         0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Inactive'],

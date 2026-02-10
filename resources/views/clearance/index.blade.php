@@ -182,7 +182,7 @@
                             </td>
                             <td class="px-4 py-3 w-[80px]">
                                 {{ Carbon::parse($clearanceHeader->expected_date)->format('Y-m-d') }}</td>
-                            <td class="px-4 py-3 w-[80px] text-xs">
+                            <td class="px-4 py-3 w-[80px] text-xs font-semibold">
                                 @php
                                     $statuses = [
                                         0 => ['color' => 'bg-yellow-100 text-yellow-600', 'label' => 'Pending'],
@@ -196,6 +196,12 @@
                                     ];
                                 @endphp
 
+                                @if ($clearanceHeader->expected_date < now() && $clearanceHeader->status != 2)
+                                    @php
+                                        $status = $statuses[3]; // Overdue
+                                    @endphp
+                                @endif
+
                                 <span class="px-2 py-1 text-xs rounded-full {{ $status['color'] }}">
                                     {{ $status['label'] }}
                                 </span>
@@ -206,12 +212,8 @@
                                 {{ number_format($clearanceHeader->clearance_details->sum('total'), 2) }}</td>
                             <td class="px-4 py-3 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
-                                    <button type="button" title="Edit license type {{ $clearanceHeader->request_number }}"
-                                        data-modal-target="edit-modal" data-modal-toggle="edit-modal"
-                                        data-id="{{ $clearanceHeader->id }}"
-                                        data-name="{{ $clearanceHeader->employee_name }}"
-                                        data-description="{{ $clearanceHeader->department_name }}"
-                                        data-status="{{ $clearanceHeader->status }}" onclick="openEditModal(this)"
+                                    <a href="{{ route('clearance.show', $clearanceHeader->id) }}" type="button"
+                                        title="Edit clearance {{ $clearanceHeader->request_number }}"
                                         class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -220,8 +222,36 @@
                                             <path fill-rule="evenodd"
                                                 d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
                                         </svg>
-                                        {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
-                                    </button>
+                                    </a>
+
+                                    @if ($clearanceHeader->status == 2)
+                                        {{-- Completed --}}
+                                        <button type="button"
+                                            title="Request {{ $clearanceHeader->request_number }} is already completed"
+                                            class="group flex space-x-1 text-gray-300 cursor-not-allowed">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0" />
+                                                <path
+                                                    d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z" />
+                                            </svg>
+                                        </button>
+                                    @else
+                                        {{-- Mark as complete --}}
+                                        <button type="button"
+                                            title="Mark as complete {{ $clearanceHeader->request_number }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors"
+                                            onclick="markAsComplete({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}' )">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0" />
+                                                <path
+                                                    d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z" />
+                                            </svg>
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -354,6 +384,25 @@
                 width: '100%'
             });
         });
+
+        function markAsComplete(id, requestNumber) {
+            if (confirm(`Are you sure you want to mark clearance ${requestNumber} as complete?`)) {
+                $.ajax({
+                    url: `/clearance/${id}/mark-complete`,
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        alert(response.message);
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('An error occurred while marking as complete.');
+                    }
+                });
+            }
+        }
 
         function clearModalFields() {
             // Clear all form fields

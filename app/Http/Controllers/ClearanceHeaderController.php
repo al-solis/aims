@@ -22,8 +22,10 @@ class ClearanceHeaderController extends Controller
 
         $totalRequests = clearance_header::count();
         $pendingRequests = clearance_header::where('status', '0')->count();
-        $overdueRequests = clearance_header::where('status', '2')->count();
-        $completedRequests = clearance_header::where('status', '1')->count();
+        $overdueRequests = clearance_header::where('expected_date', '<', now())
+            ->where('status', '!=', '2')
+            ->count();
+        $completedRequests = clearance_header::where('status', '2')->count();
 
         $query = clearance_header::query();
 
@@ -91,4 +93,56 @@ class ClearanceHeaderController extends Controller
 
         return redirect()->route('clearance.index')->with('success', 'Clearance request created successfully.');
     }
+
+    public function show($id)
+    {
+        $clearanceHeader = clearance_header::with('clearance_details.asset')->findOrFail($id);
+        return view('clearance.show', compact('clearanceHeader'));
+    }
+
+    public function updateDetails(Request $request, $id)
+    {
+        $detailIds = $request->detail_id;
+        $actuals = $request->actual;
+        $statuses = $request->status;
+        $totals = $request->total;
+
+
+        if ($detailIds || $actuals || $statuses || $totals) {
+
+            foreach ($detailIds as $index => $detailId) {
+
+                clearance_detail::where('id', $detailId)->update([
+                    'actual_cost' => $actuals[$index],
+                    'status' => $statuses[$index],
+                    'total' => $totals[$index],
+                    'updated_by' => Auth::id(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
+
+        clearance_header::where('id', $id)->update([
+            'status' => 1,
+            'type' => $request->type,
+            'expected_date' => $request->expected_date,
+            'remarks' => $request->remarks,
+            'updated_by' => Auth::id(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect(route('clearance.index'))->with('success', 'Clearance details updated successfully.');
+    }
+
+    public function markAsComplete($id)
+    {
+        clearance_header::where('id', $id)->update([
+            'status' => 2,
+            'updated_by' => Auth::id(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['message' => 'Clearance request marked as complete.']);
+    }
+
 }

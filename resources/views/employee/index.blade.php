@@ -175,7 +175,7 @@
                             </td>
                             <td class="px-4 py-3 w-[100px]">{{ $employee->email }}</td>
                             <td class="px-4 py-3 w-[100px]">{{ $employee->mobile }}</td>
-                            <td class="px-4 py-3 w-[80px] text-xs">
+                            <td class="px-4 py-3 w-[80px] text-xs font-semibold">
                                 @php
                                     $statuses = [
                                         0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Inactive'],
