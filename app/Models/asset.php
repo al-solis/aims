@@ -46,4 +46,9 @@ class asset extends Model
     {
         return $this->belongsTo(employee::class, 'assigned_to');
     }
+
+    public function licenses()
+    {
+        return $this->hasMany(asset_license::class, 'asset_id');
+    }
 }

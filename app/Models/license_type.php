@@ -15,4 +15,9 @@ class license_type extends Model
         'created_by',
         'updated_by',
     ];
+
+    public function license_type()
+    {
+        return $this->hasMany(asset_license::class, 'license_type_id');
+    }
 }

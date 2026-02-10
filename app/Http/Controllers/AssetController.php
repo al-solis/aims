@@ -17,6 +17,7 @@ use App\Models\location;
 use App\Models\employee;
 use App\Models\transfer;
 use App\Models\transfer_detail as TransferDetail;
+use App\Models\asset_license as AssetLicense;
 
 class AssetController extends Controller
 {
@@ -59,7 +60,7 @@ class AssetController extends Controller
             $query->where('category_id', 'like', '%' . $searchcat . '%');
         }
 
-        $assets = $query->paginate(config('app.paginate'))
+        $assets = $query->with('licenses')->paginate(config('app.paginate'))
             ->appends([
                 'search' => $search,
                 'searchcat' => $searchcat,

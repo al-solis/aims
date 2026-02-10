@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\asset_license;
 use App\Models\license_type;
 use App\Models\asset;
+use App\Models\setting;
 use Carbon\Carbon;
 
 class AssetLicenseController extends Controller
@@ -17,8 +18,12 @@ class AssetLicenseController extends Controller
     {
         $search = $request->input('search');
         $status = $request->input('status');
+        $searchType = $request->input('searchType');
 
         $now = Carbon::now();
+        $licenseExpiringDaysSetting = setting::where('key', 'license_expiring_days')->first();
+        $licenseExpiringDays = $licenseExpiringDaysSetting ? (int) $licenseExpiringDaysSetting->value : 30;
+
         $totalLicenses = asset_license::count();
         $activeLicenses = asset_license::active()->count();
         $expiringSoonLicenses = asset_license::expiringSoon()->count();
@@ -29,37 +34,41 @@ class AssetLicenseController extends Controller
             ->orderBy('name', 'asc')
             ->get();
 
+        $allLicenseTypes = license_type::orderBy('name', 'asc')->get();
+
         $licenseTypes = license_type::where('is_active', '!=', '0')
             ->orderBy('name', 'asc')
             ->get();
 
         if ($search) {
+            $query->orWhere('license_number', 'like', '%' . $search . '%')
+                ->orWhere('issuing_authority', 'like', '%' . $search . '%')
+                ->orWhere('expiration_date', 'like', '%' . $search . '%');
             $query->whereHas('asset', function ($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%')
                     ->orWhere('asset_code', 'like', '%' . $search . '%');
-                $q->orWhereHas('license_type', function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%');
-                });
-                $q->orWhere('license_number', 'like', '%' . $search . '%')
-                    ->orWhere('issuing_authority', 'like', '%' . $search . '%')
-                    ->orWhere('expiration_date', 'like', '%' . $search . '%');
             });
         }
 
-        if ($status) {
+        if ($searchType) {
+            $query->where('license_type_id', $searchType);
+        }
 
-            if ($status !== null) {
-                $query->where('status', $status);
-            }
+        if ($status !== null) {
+            $query->status($status);
         }
 
         $assetLicenses = $query->with('asset', 'license_type')->paginate(config('app.paginate'))
             ->appends([
                 'search' => $search,
-                'status' => $status
+                'status' => $status,
+                'searchType' => $searchType,
             ]);
 
-        return view('licenses.index', compact('assetLicenses', 'assets', 'licenseTypes', 'totalLicenses', 'activeLicenses', 'expiringSoonLicenses', 'expiredLicenses'));
+        return view(
+            'licenses.index',
+            compact('assetLicenses', 'assets', 'licenseTypes', 'allLicenseTypes', 'totalLicenses', 'activeLicenses', 'expiringSoonLicenses', 'expiredLicenses', 'licenseExpiringDays')
+        );
     }
 
     public function store(Request $request)

@@ -5,6 +5,8 @@ namespace App\Models;
 use Hoa\Iterator\Append;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use App\Models\settings;
+
 class asset_license extends Model
 {
     protected $table = 'asset_licenses';
@@ -22,14 +24,18 @@ class asset_license extends Model
 
     protected $appends = ['status', 'status_label'];
 
+    protected function expiringDays(): int
+    {
+        return (int) setting::where('key', 'license_expiring_days')->first()->value ?? 30;
+    }
     public function getStatusAttribute()
     {
         $now = Carbon::now();
-        if ($this->expiration_date > $now->copy()->addDays(30)) {
+        if ($this->expiration_date > $now->copy()->addDays($this->expiringDays())) {
             return '1';
         } elseif ($this->expiration_date <= $now) {
             return '0';
-        } elseif ($this->expiration_date > $now && $this->expiration_date <= $now->copy()->addDays(30)) {
+        } elseif ($this->expiration_date > $now && $this->expiration_date <= $now->copy()->addDays($this->expiringDays())) {
             return '2';
         }
     }
@@ -42,8 +48,8 @@ class asset_license extends Model
                 'label' => 'Active',
                 'color' => 'green',
                 'icon' => '
-                    <svg class="w-5 h-5 text-green-600" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm3.97-9.03a.75.75 0 0 1-1.08.04L7.477 10.417l-2.384-2.384a.75.75 0 1 1 1.06-1.06l2.944 2.943a.75.75 0 0 1 .08.094z"/>
+                    <svg class="w-5 h-5 text-green-600" width="16" height="16" fill="currentColor" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                     </svg>',
             ];
         } elseif ($status == '0') {
@@ -106,7 +112,7 @@ class asset_license extends Model
 
     public function scopeActive($query)
     {
-        return $query->where('expiration_date', '>', Carbon::now()->addDays(30));
+        return $query->where('expiration_date', '>', Carbon::now()->addDays($this->expiringDays()));
     }
 
     public function scopeExpired($query)
@@ -117,9 +123,18 @@ class asset_license extends Model
     public function scopeExpiringSoon($query)
     {
         $now = Carbon::now();
-        return $query->whereBetween('expiration_date', [$now, $now->copy()->addDays(30)]);
+        return $query->whereBetween('expiration_date', [$now, $now->copy()->addDays($this->expiringDays())]);
     }
 
+    public function scopeStatus($query, $status)
+    {
+        return match ($status) {
+            '1' => $query->active(),
+            '0' => $query->expired(),
+            '2' => $query->expiringSoon(),
+            default => $query,
+        };
+    }
     public function asset()
     {
         return $this->belongsTo(asset::class, 'asset_id');

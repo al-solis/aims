@@ -172,7 +172,7 @@
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Assigned To</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Location</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[80px]">License Status</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[150px]">License Status</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
                 </thead>
@@ -212,7 +212,31 @@
                             </td>
                             <td class="px-4 py-2 w-[100px]">
                                 {{ $asset->location_id ? $asset->location->name : '' }}</td>
-                            <td class="px-4 py-2 w-[80px]"></td>
+                            <td class="px-4 py-3 w-[150px]">
+                                @php
+                                    $license = $asset->licenses->sortByDesc('expiration_date')->first();
+                                @endphp
+                                @if ($license)
+                                    <div class="flex items-start gap-2 text-xs">
+                                        {{-- Icon --}}
+                                        <span class="mt-0.5 text-{{ $license->status_label['color'] }}-700">
+                                            {!! $license->status_label['icon'] !!}
+                                        </span>
+
+                                        <div class="flex flex-col items-start leading-tight">
+                                            <span
+                                                class="font-medium
+                                                text-{{ $license->status_label['color'] }}-700">
+                                                {{ $license->status_label['label'] }}
+                                            </span>
+
+                                            <span class="text-gray-400">
+                                                {{ $license->license_number }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                @endif
+                            </td>
                             <td class="px-4 py-2 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
                                     <button type="button" title="Edit asset: {{ $asset->asset_code }}"

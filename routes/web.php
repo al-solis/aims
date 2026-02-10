@@ -13,6 +13,9 @@ use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\AssetLicenseController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\ClearanceHeaderController;
+use App\Http\Controllers\ClearanceDetailController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -89,6 +92,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/licenses/{id}', [AssetLicenseController::class, 'update'])->name('licenses.update');
     //Route::resource('licenses', AssetLicenseController::class)->except(['destroy']);
 
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+    Route::resource('clearance', ClearanceHeaderController::class)->except(['destroy']);
 });
 
 require __DIR__ . '/auth.php';
