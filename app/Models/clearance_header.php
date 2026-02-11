@@ -28,4 +28,5 @@ class clearance_header extends Model
     {
         return $this->hasMany(clearance_detail::class, 'clearance_header_id');
     }
+
 }

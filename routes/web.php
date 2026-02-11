@@ -85,7 +85,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/validate-transfer-date', [TransferController::class, 'validateTransferDate'])->name('asset.transfer.validate-date');
     Route::get('/get-last-transfer-code/{assetId}', [TransferController::class, 'getLastTransferCode'])->name('asset.transfer.last-code');
     Route::post('/transfer/{transferId}/void', [TransferController::class, 'voidTransfer'])->name('asset.transfer.void');
-
+    Route::put('/asset/transfer/update/{id}', [TransferController::class, 'update'])->name('asset.transfer.update');
 
     Route::get('/licenses', [AssetLicenseController::class, 'index'])->name('licenses.index');
     Route::post('/licenses', [AssetLicenseController::class, 'store'])->name('licenses.store');
@@ -100,6 +100,14 @@ Route::middleware('auth')->group(function () {
         ->name('clearance.update-details');
 
     Route::post('/clearance/{id}/mark-complete', [ClearanceHeaderController::class, 'markAsComplete'])->name('clearance.mark-complete');
+    Route::post('/clearance/{id}/void', [ClearanceHeaderController::class, 'voidClearance'])->name('clearance.void');
+    Route::get(
+        '/clearance/{id}/print',
+        [ClearanceHeaderController::class, 'print']
+    )->name('clearance.print');
+
+    Route::get('/transfer/{id}/print', [TransferController::class, 'print'])->name('transfer.print');
+
 });
 
 require __DIR__ . '/auth.php';

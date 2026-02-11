@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\asset;
@@ -87,7 +88,7 @@ class TransferController extends Controller
 
         return view(
             'asset.transfer.show',
-            compact('locations', 'employees', 'transfers', 'assetId', 'totalTransfers', 'activeTransfers', 'cancelledTransfers', 'assets')
+            compact('locations', 'employees', 'transfers', 'assetId', 'totalTransfers', 'activeTransfers', 'cancelledTransfers', 'assets', 'sublocation')
         );
     }
 
@@ -202,5 +203,66 @@ class TransferController extends Controller
         })->orderBy('date', 'desc')->first();
 
         return response()->json(['last_code' => $lastTransfer ? $lastTransfer->code : null]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'edit_note' => 'nullable|string|max:255',
+            'edit_transfer_date' => 'required|date',
+            'edit_from_employee_id' => 'required|exists:employees,id',
+            'edit_to_employee_id' => 'required|exists:employees,id',
+            'edit_location_id' => 'nullable|exists:locations,id',
+            'edit_sublocation_id' => 'nullable|exists:sublocations,id',
+        ]);
+
+        $transfer = Transfer::findOrFail($id);
+        $transfer->description = $request->edit_note;
+        $transfer->date = $request->edit_transfer_date;
+        $transfer->save();
+
+        $detail = $transfer->transferDetails()->first();
+        if ($detail) {
+            $detail->from_employee_id = $request->edit_from_employee_id;
+            $detail->from_location_id = $request->edit_from_location_id ?? null;
+            $detail->from_subloc_id = $request->edit_from_sublocation_id ?? null;
+            $detail->to_employee_id = $request->edit_to_employee_id;
+            $detail->to_location_id = $request->edit_location_id ?? null;
+            $detail->to_subloc_id = $request->edit_sublocation_id ?? null;
+            $detail->save();
+
+            DB::table('assets')
+                ->where('id', $detail->asset_id)
+                ->update([
+                    'assigned_to' => $request->edit_to_employee_id,
+                    'location_id' => $request->edit_location_id ?? null,
+                    'subloc_id' => $request->edit_sublocation_id ?? null,
+                    'updated_by' => Auth::id(),
+                    'updated_at' => now(),
+                ]);
+        }
+
+        return redirect()->back()->with('success', 'Transfer updated successfully.');
+    }
+
+    public function print($id)
+    {
+        $transfer = Transfer::with(
+            [
+                'transferDetails',
+                'transferDetails.asset',
+                'transferDetails.fromEmployee',
+                'transferDetails.toEmployee',
+                'transferDetails.fromLocation',
+                'transferDetails.toLocation',
+                'transferDetails.fromSublocation',
+                'transferDetails.toSublocation',
+            ]
+        )->findOrFail($id);
+
+        $pdf = Pdf::loadView('reports.transfer', compact('transfer'))
+            ->setPaper('letter', 'portrait');
+
+        return $pdf->stream('transfer_' . $transfer->code . '.pdf');
     }
 }

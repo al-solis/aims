@@ -46,7 +46,7 @@
                     <div>
                         <p class="text-sm font-medium text-gray-600">Department</p>
                         <p class="text-lg font-semibold text-gray-800">
-                            {{ $clearanceHeader->employee ? $clearanceHeader->employee->location->description : 'N/A' }}
+                            {{ $clearanceHeader->employee && $clearanceHeader->employee->location ? $clearanceHeader->employee->location->description : 'N/A' }}
                         </p>
                     </div>
                 </div>
@@ -159,7 +159,7 @@
 
                 <h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">Clearance Details</h3>
 
-                <div class="bg-white border rounded-xl overflow-x-auto md:overflow-visible scroll-smooth">
+                <div class="bg-white border rounded-xl overflow-x-auto overflow-y-auto md:overflow-visible scroll-smooth">
                     <table class="min-w-full text-xs">
                         <thead class="bg-gray-200 text-gray-600">
                             <tr class="rounded-xl">
@@ -177,18 +177,18 @@
                                 <tr class="hover:bg-gray-50">
                                     <input type="hidden" name="detail_id[]" value="{{ $detail->id }}">
 
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 py-3 w-[120px]">
                                         {{ $detail->asset->name ?? 'N/A' }}
                                     </td>
 
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 py-3 w-[120px]">
                                         <input type="number" min="1" step="1" name="qty[]" id="qty"
                                             class="qty w-full text-xs border rounded px-2 py-1"
                                             value="{{ $detail->quantity }}" readonly>
                                     </td>
-                                    <td class="px-4 py-3">{{ number_format($detail->purchase_cost, 2) }}</td>
+                                    <td class="px-4 py-3 w-[140px]">{{ number_format($detail->purchase_cost, 2) }}</td>
 
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 py-3 w-[150px]">
                                         <input type="number" step="0.01" name="actual[]"
                                             class="actual w-full text-xs border rounded px-2 py-1"
                                             value="{{ $detail->actual_cost ?? $detail->purchase_cost }}">
@@ -196,7 +196,7 @@
 
                                     <!-- TOTAL -->
                                     <input type="hidden" name="total[]" class="total" value="{{ $detail->total }}">
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 py-3 w-[140px]">
                                         <input type="text" class="total-display w-full text-xs border-none px-2 py-1"
                                             value="{{ number_format($detail->total, 2) }}" readonly>
                                     </td>
@@ -211,7 +211,7 @@
                                         ];
                                     @endphp
 
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 py-3 w-[140px]">
                                         <select name="status[]" class="w-full text-xs border rounded px-2 py-1">
                                             @foreach ($statuses as $value => $label)
                                                 <option value="{{ $value }}" @selected($detail->status == $value)>

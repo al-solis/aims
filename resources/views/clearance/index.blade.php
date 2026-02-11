@@ -128,13 +128,29 @@
                 </div>
 
                 <div class="md:w-1/3 w-full">
+                    <select id="searchloc" name="searchloc"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                        onchange="this.form.submit()">
+                        <option value="">All Locations</option>
+                        @foreach ($locations as $location)
+                            <option value="{{ $location->id }}"
+                                {{ request('searchloc') == $location->id ? 'selected' : '' }}>
+                                {{ $location->description }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="md:w-1/3 w-full">
                     <select id="status" name="status"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                         onchange="this.form.submit()">
                         <option value="">All Status</option>
                         <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Pending</option>
-                        <option value="2" {{ request('status') === '2' ? 'selected' : '' }}>Overdue</option>
-                        <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Completed</option>
+                        <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>In-progress</option>
+                        <option value="2" {{ request('status') === '2' ? 'selected' : '' }}>Completed</option>
+                        <option value="3" {{ request('status') === '3' ? 'selected' : '' }}>Overdue</option>
+                        <option value="4" {{ request('status') === '4' ? 'selected' : '' }}>Cancelled</option>
                     </select>
                 </div>
             </div>
@@ -167,7 +183,7 @@
                                 {{ $clearanceHeader->employee ? $clearanceHeader->employee->last_name . ', ' . $clearanceHeader->employee->first_name . ' ' . $clearanceHeader->employee->middle_name : '' }}
                             </td>
                             <td class="px-4 py-3 w-[150px]">
-                                {{ $clearanceHeader->employee ? $clearanceHeader->employee->location->description : '' }}
+                                {{ $clearanceHeader->employee && $clearanceHeader->employee->location ? $clearanceHeader->employee->location->description : '' }}
                             </td>
                             <td class="px-4 py-3 w-[100px]">
                                 @php
@@ -189,6 +205,7 @@
                                         1 => ['color' => 'bg-blue-100 text-blue-700', 'label' => 'In-progress'],
                                         2 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Completed'],
                                         3 => ['color' => 'bg-red-100 text-red-700', 'label' => 'Overdue'],
+                                        4 => ['color' => 'bg-gray-100 text-gray-600', 'label' => 'Cancelled'],
                                     ];
                                     $status = $statuses[$clearanceHeader->status] ?? [
                                         'color' => 'bg-gray-100 text-gray-600',
@@ -213,7 +230,7 @@
                             <td class="px-4 py-3 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
                                     <a href="{{ route('clearance.show', $clearanceHeader->id) }}" type="button"
-                                        title="Edit clearance {{ $clearanceHeader->request_number }}"
+                                        title="Edit clearance : {{ $clearanceHeader->request_number }}"
                                         class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -224,10 +241,21 @@
                                         </svg>
                                     </a>
 
-                                    @if ($clearanceHeader->status == 2)
+                                    <a href="{{ route('clearance.print', $clearanceHeader->id) }}" type="button"
+                                        target="_blank" title="Print clearance : {{ $clearanceHeader->request_number }}"
+                                        class="group flex space-x-1 text-gray-500 hover:text-yellow-600 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+                                            <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1" />
+                                            <path
+                                                d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1" />
+                                        </svg>
+                                    </a>
+
+                                    @if ($clearanceHeader->status == 2 && $clearanceHeader->status != 4)
                                         {{-- Completed --}}
                                         <button type="button"
-                                            title="Request {{ $clearanceHeader->request_number }} is already completed"
+                                            title="Request : {{ $clearanceHeader->request_number }} is already completed"
                                             class="group flex space-x-1 text-gray-300 cursor-not-allowed">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
@@ -237,10 +265,49 @@
                                                     d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z" />
                                             </svg>
                                         </button>
+
+                                        <button type="button"
+                                            title="Request : {{ $clearanceHeader->request_number }} is already completed, cannot be voided"
+                                            class="group flex space-x-1 text-gray-300 cursor-not-allowed"
+                                            onclick="voidClearance({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}' )">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                                <path
+                                                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                            </svg>
+                                        </button>
+                                    @elseif ($clearanceHeader->status == 4)
+                                        {{-- Voided --}}
+                                        <button type="button"
+                                            title="Request : {{ $clearanceHeader->request_number }} is already voided"
+                                            class="group flex space-x-1 text-gray-300 cursor-not-allowed">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0" />
+                                                <path
+                                                    d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z" />
+                                            </svg>
+                                        </button>
+
+                                        <button type="button"
+                                            title="Request : {{ $clearanceHeader->request_number }} is already voided, cannot be voided again"
+                                            class="group flex space-x-1 text-gray-300 cursor-not-allowed"
+                                            onclick="voidClearance({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}' )">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                                <path
+                                                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                            </svg>
+                                        </button>
                                     @else
                                         {{-- Mark as complete --}}
                                         <button type="button"
-                                            title="Mark as complete {{ $clearanceHeader->request_number }}"
+                                            title="Mark as complete : {{ $clearanceHeader->request_number }}"
                                             class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors"
                                             onclick="markAsComplete({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}' )">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -251,7 +318,22 @@
                                                     d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z" />
                                             </svg>
                                         </button>
+
+                                        <button type="button"
+                                            title="Void clearance : {{ $clearanceHeader->request_number }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors"
+                                            onclick="voidClearance({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}' )">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                                <path
+                                                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                            </svg>
+                                        </button>
                                     @endif
+
+
                                 </div>
                             </td>
                         </tr>
@@ -386,7 +468,9 @@
         });
 
         function markAsComplete(id, requestNumber) {
-            if (confirm(`Are you sure you want to mark clearance ${requestNumber} as complete?`)) {
+            if (confirm(
+                    `You will not be able to edit the data once marked as complete. Are you sure you want to mark clearance ${requestNumber} as complete?`
+                )) {
                 $.ajax({
                     url: `/clearance/${id}/mark-complete`,
                     method: 'POST',
@@ -399,6 +483,27 @@
                     },
                     error: function(xhr) {
                         alert('An error occurred while marking as complete.');
+                    }
+                });
+            }
+        }
+
+        function voidClearance(id, requestNumber) {
+            if (confirm(
+                    `You will not be able to edit the data once voided. Are you sure you want to void clearance ${requestNumber}?`
+                )) {
+                $.ajax({
+                    url: `/clearance/${id}/void`,
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        alert(response.message);
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('An error occurred while voiding the clearance.');
                     }
                 });
             }

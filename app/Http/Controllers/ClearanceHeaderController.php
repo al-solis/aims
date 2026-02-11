@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,6 +11,7 @@ use App\Models\asset;
 use App\Models\clearance_detail;
 use App\Models\clearance_header;
 use App\Models\employee;
+use App\Models\location;
 
 class ClearanceHeaderController extends Controller
 {
@@ -17,8 +19,10 @@ class ClearanceHeaderController extends Controller
     {
         $search = $request->input('search');
         $status = $request->input('status');
+        $searchloc = $request->input('searchloc');
 
         $employees = employee::where('status', '1')->get();
+        $locations = location::all();
 
         $totalRequests = clearance_header::count();
         $pendingRequests = clearance_header::where('status', '0')->count();
@@ -30,10 +34,16 @@ class ClearanceHeaderController extends Controller
         $query = clearance_header::query();
 
         if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('employee_name', 'like', '%' . $search . '%')
-                    ->orWhere('employee_idno', 'like', '%' . $search . '%')
-                    ->orWhere('department', 'like', '%' . $search . '%');
+            $query->whereHas('employee', function ($q) use ($search) {
+                $q->where('first_name', 'like', '%' . $search . '%')
+                    ->orWhere('last_name', 'like', '%' . $search . '%')
+                    ->orWhere('middle_name', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($searchloc) {
+            $query->whereHas('employee.location', function ($q) use ($searchloc) {
+                $q->where('id', $searchloc);
             });
         }
 
@@ -49,7 +59,9 @@ class ClearanceHeaderController extends Controller
             'pendingRequests',
             'overdueRequests',
             'completedRequests',
-            'employees'
+            'employees',
+            'locations',
+            'searchloc',
         ));
     }
 
@@ -145,4 +157,27 @@ class ClearanceHeaderController extends Controller
         return response()->json(['message' => 'Clearance request marked as complete.']);
     }
 
+    public function print($id)
+    {
+        $clearance = clearance_header::with([
+            'employee.location',
+            'clearance_details.asset'
+        ])->findOrFail($id);
+
+        $pdf = Pdf::loadView('reports.clearance', compact('clearance'))
+            ->setPaper('letter', 'portrait');
+
+        return $pdf->stream('Clearance-' . $clearance->request_number . '.pdf');
+    }
+
+    public function voidClearance($id)
+    {
+        clearance_header::where('id', $id)->update([
+            'status' => 4,
+            'updated_by' => Auth::id(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['message' => 'Clearance request voided successfully.']);
+    }
 }

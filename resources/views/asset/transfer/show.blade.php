@@ -1,5 +1,8 @@
 @extends('dashboard')
 @section('content')
+    @php
+        use Carbon\Carbon;
+    @endphp
     <div class="p-6 space-y-6">
 
         {{-- Header --}}
@@ -167,7 +170,7 @@
                                 <td class="px-4 py-3 w-[150px]">{{ $detail->toLocation->name ?? '' }}</td>
                                 <td class="px-4 py-3 w-[150px]">{{ $detail->toSublocation->name ?? '' }}
                                 </td>
-                                <td class="px-4 py-3 w-[100px] text-xs">
+                                <td class="px-4 py-3 w-[100px] text-xs font-semibold">
                                     @php
                                         $statuses = [
                                             1 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Cancelled'],
@@ -187,8 +190,17 @@
                                     <div class="flex items-center justify-center space-x-2">
                                         <button type="button" title="Edit transfer {{ $transfer->code }}"
                                             data-modal-target="edit-modal" data-modal-toggle="edit-modal"
-                                            data-id="{{ $transfer->id }}" data-name="{{ $transfer->name }}"
-                                            data-description="{{ $transfer->description }}"
+                                            data-id="{{ $transfer->id }}" data-code="{{ $transfer->code }}"
+                                            data-date="{{ Carbon::parse($transfer->date)->format('Y-m-d') }}"
+                                            data-description="{{ $transfer->transferDetails->first()->asset->name ?? '' }}"
+                                            data-note="{{ $transfer->description }}"
+                                            data-from_employee="{{ $transfer->transferDetails->first()->from_employee_id ?? '' }}"
+                                            data-from_employee_name="{{ $transfer->transferDetails->first()->fromEmployee ? $transfer->transferDetails->first()->fromEmployee->last_name . ', ' . $transfer->transferDetails->first()->fromEmployee->first_name . ' ' . $transfer->transferDetails->first()->fromEmployee->middle_name : 'N/A' }}"
+                                            data-from_location = "{{ $transfer->transferDetails->first()->from_location_id ?? '' }}"
+                                            data-from_sublocation = "{{ $transfer->transferDetails->first()->from_subloc_id ?? '' }}"
+                                            data-to_employee="{{ $transfer->transferDetails->first()->to_employee_id ?? '' }}"
+                                            data-to_location="{{ $transfer->transferDetails->first()->to_location_id ?? '' }}"
+                                            data-to_sublocation = "{{ $transfer->transferDetails->first()->to_subloc_id ?? '' }}"
                                             data-status="{{ $transfer->cancelled }}" onclick="openEditModal(this)"
                                             class="group flex space-x-5 text-gray-500 hover:text-blue-600 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -200,6 +212,17 @@
                                             </svg>
                                         </button>
 
+                                        <a href="{{ route('transfer.print', $transfer->id) }}" type="button"
+                                            target="_blank" title="Print transfer : {{ $transfer->code }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-yellow-600 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+                                                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1" />
+                                                <path
+                                                    d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1" />
+                                            </svg>
+                                        </a>
+
                                         <button type="button" title="Void transfer {{ $transfer->code }}"
                                             data-id="{{ $transfer->id }}" data-name="{{ $transfer->name }}"
                                             data-code="{{ $transfer->code }}"
@@ -207,9 +230,9 @@
                                             data-cancelled="{{ $transfer->cancelled }}" onclick="voidTransfer(this)"
                                             class="void-btn hidden group flex text-gray-500 hover:text-red-600 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                fill="currentColor" class="bi bi-x-square" viewBox="0 0 16 16">
+                                                fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
                                                 <path
-                                                    d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
                                                 <path
                                                     d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
                                             </svg>
@@ -285,9 +308,9 @@
                                     placeholder="e.g. FA-2026-00000" readonly>
                             </div>
                             <div class="sm:col-span-2">
-                                <label for="description"
+                                <label for="asset_description"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                <input type="text" name="description" id="description"
+                                <input type="text" name="asset_description" id="asset_description"
                                     value="{{ $assets->name ?? '' }}"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. Computer Laptop" readonly>
@@ -345,7 +368,7 @@
 
                             <div class="sm:col-span-2">
                                 <label for="description"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Note</label>
                                 <textarea id="description" name="description" rows="2"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. Transfer note"></textarea>
@@ -373,14 +396,14 @@
     <!-- Modal  Edit-->
     <div id="edit-modal" tabindex="-1" aria-hidden="true"
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-        <div class="relative p-4 w-full max-w-md max-h-full">
+        <div class="relative p-4 w-full max-w-xl max-h-full">
             <!-- Modal content -->
             <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
                 <!-- Modal header -->
                 <div
                     class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        Update ID Type
+                        Update Transfer
                     </h3>
                     <button type="button"
                         class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -400,40 +423,113 @@
                         @method('PUT')
                         <input type="hidden" name="edit_id" id="edit_id">
 
-                        <div class="grid gap-2 mb-4 sm:grid-cols-1">
-                            <div class="sm:col-span-2">
-                                <label for="edit_name"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                                <input type="text" name="edit_name" id="edit_name"
+                        <input type="hidden" name="edit_purchase_date" id="edit_purchase_date"
+                            value="{{ $transfer->date ?? '' }}">
+                        <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-2">
+                            <div class="sm:col-span-1">
+                                <label for="edit_transfer_date"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Date*</label>
+                                <input type="date" name="edit_transfer_date" id="edit_transfer_date"
+                                    max="{{ date('Y-m-d') }}"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="e.g. Firearms" required>
+                                    placeholder="mm/dd/yyyy" required>
+                            </div>
+                            <div class="sm:col-span-1">
+                                <input type="hidden" name="edit_asset_id" id="edit_asset_id">
+                                <label for="edit_asset_code"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Asset
+                                    ID</label>
+                                <input type="text" name="edit_asset_code" id="edit_asset_code"
+                                    value="{{ $assets->asset_code ?? '' }}"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. FA-2026-00000" readonly>
                             </div>
                             <div class="sm:col-span-2">
                                 <label for="edit_description"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                <textarea type="text" name="edit_description" id="edit_description" rows="3"
+                                <input type="text" name="edit_description" id="edit_description"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="Category description"></textarea>
+                                    placeholder="e.g. Computer Laptop" readonly>
+                            </div>
+                            <input type="hidden" name="edit_from_employee_id" id="edit_from_employee_id">
+                            <input type="hidden" name="edit_from_location_id" id="edit_from_location_id">
+                            <input type="hidden" name="edit_from_sublocation_id" id="edit_from_sublocation_id">
+                            <div class="sm:col-span-1">
+                                <label for="edit_from_employee_name"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">From</label>
+                                <input type="text" name="edit_from_employee_name" id="edit_from_employee_name"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    readonly>
+                            </div>
+                            <div class="sm:col-span-1">
+                                <label for="edit_to_employee_id"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Transfer to*</label>
+                                <select id="edit_to_employee_id" name="edit_to_employee_id"
+                                    class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    required>
+                                    <option value="" selected>Select employee</option>
+                                    @foreach ($employees as $employee)
+                                        <option value="{{ $employee->id }}">
+                                            {{ $employee->last_name }}, {{ $employee->first_name }}
+                                            {{ $employee->middle_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_location_id"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Location</label>
+                                <select id="edit_location_id" name="edit_location_id" data-target="#edit_sublocation_id"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                    <option value="" selected>Select location</option>
+                                    @foreach ($locations as $location)
+                                        <option value="{{ $location->id }}">
+                                            {{ $location->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_sublocation_id"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Sub-Location</label>
+                                <select id="edit_sublocation_id" name="edit_sublocation_id"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                    <option value="" selected>Select sub-location</option>
+                                    @foreach ($sublocation as $subloc)
+                                        <option value="{{ $subloc->id }}"
+                                            {{ $subloc->id == $transfer->transferDetails->first()->to_sublocation_id ? 'selected' : '' }}>
+                                            {{ $subloc->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="edit_status"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                                <select id="edit_status" name="edit_status"
+                                <label for="edit_note"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
+                                <textarea id="edit_note" name="edit_note" rows="2"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    required>
-                                    {{-- <option selected="">Select product type</option> --}}
-                                    <option value="1">Active</option>
-                                    <option value="0">Inactive</option>
-                                </select>
+                                    placeholder="e.g. Transfer note"></textarea>
                             </div>
                         </div>
 
-                        <button type="submit"
-                            class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
-                            {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
-                            Update ID Type
-                        </button>
+                        @if ($transfer->cancelled == 0)
+                            <button type="submit"
+                                class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                                {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
+                                Update transfer
+                            </button>
+                        @else
+                            <div
+                                class="mt-2 text-white inline-flex items-center bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-md text-xs px-5 py-2.5 text-center">
+                                <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                This transfer is cancelled
+                            </div>
+                        @endif
                     </form>
                 </div>
             </div>
@@ -444,6 +540,12 @@
     <script>
         $(document).ready(function() {
             $('#to_employee_id').select2({
+                placeholder: "Select employee",
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#edit_to_employee_id').select2({
                 placeholder: "Select employee",
                 allowClear: true,
                 width: '100%'
@@ -492,12 +594,31 @@
         function openEditModal(button) {
             const id = button.getAttribute('data-id');
             document.getElementById('edit_id').value = button.getAttribute('data-id');
-            document.getElementById('edit_name').value = button.getAttribute('data-name');
             document.getElementById('edit_description').value = button.getAttribute('data-description');
-            document.getElementById('edit_status').value = button.getAttribute('data-status');
+            document.getElementById('edit_transfer_date').value = button.getAttribute('data-date');
+            document.getElementById('edit_note').value = button.getAttribute('data-note');
+
+            document.getElementById('edit_from_employee_id').value = button.getAttribute('data-from_employee');
+            document.getElementById('edit_from_employee_name').value = button.getAttribute('data-from_employee_name');
+            document.getElementById('edit_from_location_id').value = button.getAttribute('data-from_location');
+            document.getElementById('edit_from_sublocation_id').value = button.getAttribute('data-from_sublocation');
+
+            document.getElementById('edit_to_employee_id').value = button.getAttribute('data-to_employee');
+            document.getElementById('edit_location_id').value = button.getAttribute('data-to_location');
+            selectedEditSublocation = button.getAttribute('data-to_sublocation');
+            document.getElementById('edit_sublocation_id').value = selectedEditSublocation;
+
+            $('#edit_to_employee_id')
+                .val(button.getAttribute('data-to_employee'))
+                .trigger('change');
+
+            document.getElementById('edit_location_id').value = button.getAttribute('data-to_location');
+            selectedEditSublocation = button.getAttribute('data-to_sublocation');
+
+            $('#edit_location_id').trigger('change');
 
             const form = document.getElementById('editForm');
-            form.action = `idtype/${id}`;
+            form.action = `/asset/transfer/update/${id}`;
         }
 
         let selectedEditSublocation = null;
