@@ -22,13 +22,23 @@
                     Back
                 </a>
 
-                <button data-modal-target="add-modal" data-modal-toggle="add-modal"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Transfer Asset
-                </button>
+                @if ($assets->canBeTransferred())
+                    <button data-modal-target="add-modal" data-modal-toggle="add-modal"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Transfer Asset
+                    </button>
+                @else
+                    <button disabled
+                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-600 cursor-not-allowed">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Transfer Asset
+                    </button>
+                @endif
             </div>
         </div>
 
@@ -225,6 +235,7 @@
 
                                         <button type="button" title="Void transfer {{ $transfer->code }}"
                                             data-id="{{ $transfer->id }}" data-name="{{ $transfer->name }}"
+                                            data-asset_status="{{ $assets->status ?? '' }}"
                                             data-code="{{ $transfer->code }}"
                                             data-description="{{ $transfer->description }}"
                                             data-cancelled="{{ $transfer->cancelled }}" onclick="voidTransfer(this)"
@@ -511,24 +522,23 @@
                             </div>
                         </div>
 
+                        @if ($assets->canBeTransferred())
+                            <button type="submit" id="updateBtn"
+                                class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                                Update transfer
+                            </button>
 
-                        <button type="submit" id="updateBtn"
-                            class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
-                            {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
-                            Update transfer
-                        </button>
-
-                        <div id="cancelledMsg"
-                            class="mt-2 text-white inline-flex items-center bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-md text-xs px-5 py-2.5 text-center">
-                            <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            This transfer is cancelled
-                        </div>
-
+                            <div id="cancelledMsg"
+                                class="mt-2 text-white inline-flex items-center bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-md text-xs px-5 py-2.5 text-center">
+                                <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                This transfer is cancelled
+                            </div>
+                        @endif
                     </form>
                 </div>
             </div>
@@ -715,6 +725,12 @@
         function voidTransfer(button) {
             const transferId = button.getAttribute('data-id');
             const transferCode = button.getAttribute('data-code');
+            const assetStatus = button.getAttribute('data-asset_status');
+
+            if (assetStatus === '5') {
+                alert('This transfer cannot be voided because the asset has already been retired.');
+                return;
+            }
 
             if (confirm(`Are you sure you want to void transfer ${transferCode}? This action cannot be undone.`)) {
                 $.ajax({

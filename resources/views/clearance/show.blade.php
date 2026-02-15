@@ -28,7 +28,7 @@
         <div class="bg-white rounded-xl shadow-xs p-3 sm:p-8">
             <div class="text-center mb-4">
                 <h2 class="text-2xl md:text-3xl font-bold text-gray-800">
-                    Display Clearance Request
+                    Clearance Request
                 </h2>
                 <p class="text-sm text-gray-600">
                     Display employee clearance details.

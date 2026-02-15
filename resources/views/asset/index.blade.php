@@ -151,6 +151,20 @@
                     </select>
                 </div>
 
+                <div class="md:w-1/3 w-full">
+                    <select id="searchstat" name="searchstat"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                        onchange="this.form.submit()">
+                        <option value="">All Statuses</option>
+                        <option value="1" {{ request('searchstat') == 1 ? 'selected' : '' }}>Available</option>
+                        <option value="2" {{ request('searchstat') == 2 ? 'selected' : '' }}>Active</option>
+                        <option value="3" {{ request('searchstat') == 3 ? 'selected' : '' }}>Assigned</option>
+                        <option value="4" {{ request('searchstat') == 4 ? 'selected' : '' }}>Maintenance</option>
+                        <option value="5" {{ request('searchstat') == 5 ? 'selected' : '' }}>Retired</option>
+                        <option value="6" {{ request('searchstat') == 6 ? 'selected' : '' }}>Lost</option>
+                        <option value="7" {{ request('searchstat') == 7 ? 'selected' : '' }}>Damaged</option>
+                    </select>
+                </div>
 
             </div>
             <button type="submit"
@@ -165,7 +179,7 @@
                         <th scope="col" class="px-4 py-3 text-center w-[40px]">
                             <input type="checkbox" id="select-all" class="form-checkbox custom-checkbox">
                         </th>
-                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Code</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Code</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Name</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Category</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Serial</th>
@@ -184,7 +198,7 @@
                                 <input type="checkbox" class="asset-checkbox custom-checkbox"
                                     value="{{ $asset->id }}" @if (in_array($asset->id, session('selected_assets', []))) checked @endif>
                             </td>
-                            <td class="px-4 py-2font-medium w-[80px]">{{ $asset->asset_code }}</td>
+                            <td class="px-4 py-2 font-medium w-[100px]">{{ $asset->asset_code }}</td>
                             <td class="px-4 py-2 w-[150px]">{{ $asset->name }} <br>
                                 <span class="text-gray-400 text-xs">{{ $asset->subcategory }}</span>
                             </td>
@@ -197,7 +211,9 @@
                                         2 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Active'],
                                         3 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Assigned'],
                                         4 => ['color' => 'bg-yellow-100 text-yellow-700', 'label' => 'Maintenance'],
-                                        5 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Retired'],
+                                        5 => ['color' => 'bg-gray-100 text-gray-600', 'label' => 'Retired'],
+                                        6 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Lost'],
+                                        7 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Damaged'],
                                     ];
                                     $status = $statuses[$asset->status] ?? [
                                         'color' => 'bg-gray-100 text-gray-600',
@@ -289,7 +305,7 @@
                                         </svg>
                                     </a>
 
-                                    <a href="" title="Generate QR: {{ $asset->asset_code }}"
+                                    {{-- <a href="" title="Generate QR: {{ $asset->asset_code }}"
                                         class="group flex items-center space-x-1 text-gray-500 hover:text-yellow-600 transition-colors">
 
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -302,7 +318,49 @@
                                                 d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z" />
                                             <path d="M12 9h2V8h-2z" />
                                         </svg>
-                                    </a>
+                                    </a> --}}
+                                    @if ($asset->category_id == 2)
+                                        <a href="{{ route('asset.odometer.show', $asset->id) }}" type="button"
+                                            title="Add odometer reading : {{ $asset->asset_code }}"
+                                            data-id="{{ $asset->id }}" data-code="{{ $asset->asset_code }}"
+                                            data-name="{{ $asset->name }}" data-warranty="{{ $asset->warranty }}"
+                                            onclick="openOdoModal(this)"
+                                            class="group flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-speedometer" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 2a.5.5 0 0 1 .5.5V4a.5.5 0 0 1-1 0V2.5A.5.5 0 0 1 8 2M3.732 3.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707M2 8a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 8m9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5m.754-4.246a.39.39 0 0 0-.527-.02L7.547 7.31A.91.91 0 1 0 8.85 8.569l3.434-4.297a.39.39 0 0 0-.029-.518z" />
+                                                <path fill-rule="evenodd"
+                                                    d="M6.664 15.889A8 8 0 1 1 9.336.11a8 8 0 0 1-2.672 15.78zm-4.665-4.283A11.95 11.95 0 0 1 8 10c2.186 0 4.236.585 6.001 1.606a7 7 0 1 0-12.002 0" />
+                                            </svg>
+                                        </a>
+                                    @else
+                                        <button type="button"
+                                            title="Cannot add odometer reading : {{ $asset->asset_code }}"
+                                            class="group flex items-center space-x-1 text-gray-500 hover:text-gray-600 transition-colors disabled:opacity-50 cursor-not-allowed"
+                                            disabled>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-speedometer" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 2a.5.5 0 0 1 .5.5V4a.5.5 0 0 1-1 0V2.5A.5.5 0 0 1 8 2M3.732 3.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707M2 8a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 8m9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5m.754-4.246a.39.39 0 0 0-.527-.02L7.547 7.31A.91.91 0 1 0 8.85 8.569l3.434-4.297a.39.39 0 0 0-.029-.518z" />
+                                                <path fill-rule="evenodd"
+                                                    d="M6.664 15.889A8 8 0 1 1 9.336.11a8 8 0 0 1-2.672 15.78zm-4.665-4.283A11.95 11.95 0 0 1 8 10c2.186 0 4.236.585 6.001 1.606a7 7 0 1 0-12.002 0" />
+                                            </svg>
+                                        </button>
+                                    @endif
+
+                                    <button type="button" title="Retire asset: {{ $asset->asset_code }}"
+                                        data-id="{{ $asset->id }}" data-code="{{ $asset->asset_code }}"
+                                        onclick="retireAsset(this)"
+                                        class="group flex items-center space-x-1 text-gray-500 hover:text-gray-900 transition-colors">
+
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-archive" viewBox="0 0 16 16">
+                                            <path
+                                                d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5zm13-3H1v2h14zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
+                                        </svg>
+                                    </button>
+
                                     {{-- <button type="button"
                                         title="View assigned assets to {{ $employee->last_name }}, {{ $employee->first_name }} {{ $employee->middle_name }}"
                                         data-modal-target="view-asset-modal" data-modal-toggle="view-asset-modal"
@@ -755,25 +813,6 @@
                 $('#hidden_edit_assigned_to').val('');
                 // $('#edit_assigned_to').parent().removeClass('hidden');
             }
-            // if (document.getElementById('edit_assigned_to').value !== '0' &&
-            //     document.getElementById('edit_assigned_to').value !== '' ||
-            //     document.getElementById('edit_assigned_to' !== null)) {
-            //     document.getElementById('edit_assigned_to').disabled = true;
-            //     document.getElementById('edit_location_id').disabled = true;
-            //     document.getElementById('edit_sublocation_id').disabled = true;
-            //     document.getElementById('hidden_edit_assigned_to').value = document.getElementById('edit_assigned_to')
-            //         .value;
-            //     document.getElementById('hidden_edit_location_id').value = document.getElementById('edit_location_id')
-            //         .value;
-            //     document.getElementById('hidden_edit_sublocation_id').value = button.getAttribute('data-sublocation');
-            //     document.getElementById('hidden_edit_assigned_name').value = document.getElementById('edit_assigned_to')
-            //     document.getElementById('hidden_edit_assigned_name').classList.remove('hidden');
-            //     editAssignedTo.classList.add('hidden');
-            // } else {
-            //     document.getElementById('edit_assigned_to').disabled = false;
-            //     document.getElementById('hidden_edit_assigned_to').value = '';
-            //     editAssignedTo.classList.remove('hidden');
-            // }
 
             const locationId = $(button).data('location');
             const sublocationId = $(button).data('sublocation');
@@ -1066,5 +1105,35 @@
 
         // Initial load (important for search / pagination)
         document.addEventListener('DOMContentLoaded', updateBulkActions);
+
+        //Retire Asset
+        function retireAsset(button) {
+            const assetId = button.getAttribute('data-id');
+            const assetCode = button.getAttribute('data-code');
+
+            if (confirm(`Are you sure you want to retire this asset ${assetCode}? This action cannot be undone.`)) {
+
+                fetch(`/asset/${assetId}/retire`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(data.message ?? 'Asset retired successfully.');
+                            location.reload();
+                        } else {
+                            alert(data.message ?? 'Unable to retire asset.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error retiring asset:', error);
+                        alert('An error occurred while retiring the asset.');
+                    });
+            }
+        }
     </script>
 @endsection

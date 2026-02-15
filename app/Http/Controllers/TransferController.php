@@ -29,6 +29,7 @@ class TransferController extends Controller
         $activeTransfers = Transfer::where('cancelled', 0)->count();
         $cancelledTransfers = Transfer::where('cancelled', 1)->count();
 
+        $assetStatus = Asset::where('id', $assetId)->value('status');
         $locations = Location::orderBy('name')->get();
         $sublocation = sublocation::orderBy('name')->get();
         $employees = Employee::where('status', '!=', '0')

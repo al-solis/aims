@@ -19,6 +19,8 @@ use App\Models\transfer;
 use App\Models\transfer_detail as TransferDetail;
 use App\Models\asset_license as AssetLicense;
 use App\Models\duty_order as DutyOrder;
+use App\Models\clearance_header as ClearanceHeader;
+use App\Models\clearance_detail as ClearanceDetail;
 
 class AssetController extends Controller
 {
@@ -27,6 +29,7 @@ class AssetController extends Controller
         $search = $request->input('search');
         $searchloc = $request->input('searchloc');
         $searchcat = $request->input('searchcat');
+        $searchstat = $request->input('searchstat');
 
         $locationid = $request->route('location');
         $locations = Location::get();
@@ -61,11 +64,16 @@ class AssetController extends Controller
             $query->where('category_id', 'like', '%' . $searchcat . '%');
         }
 
+        if ($searchstat !== null) {
+            $query->where('status', $searchstat);
+        }
+
         $assets = $query->with('licenses')->paginate(config('app.paginate'))
             ->appends([
                 'search' => $search,
                 'searchcat' => $searchcat,
                 'searchloc' => $searchloc,
+                'searchstat' => $searchstat,
                 'selected_assets' => $request->input('selected_assets', '')
             ]);
 
@@ -305,5 +313,36 @@ class AssetController extends Controller
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream('duty_detail.pdf');
+    }
+
+    public function retire($id)
+    {
+        $asset = Asset::findOrFail($id);
+
+        if ($asset->status == 5) {
+            return response()->json(['success' => false, 'message' => 'Asset is already retired.']);
+        }
+
+        if ($asset->status == 4) {
+            return response()->json(['success' => false, 'message' => 'Asset is scheduled for maintenance. Please complete or void the maintenance before retiring this asset.']);
+        }
+
+        //Check for active clearance
+        $activeClearance = ClearanceDetail::where('asset_id', $id)
+            ->whereHas('clearance_header', function ($query) {
+                $query->whereIn('status', [0, 1, 3]);
+            })
+            ->exists();
+
+        if ($activeClearance) {
+            return response()->json(['success' => false, 'message' => 'Asset is currently part of an active clearance. Please complete or void the clearance before retiring this asset.']);
+        }
+
+        $asset->status = 5; // Set status to Retired
+        $asset->updated_by = Auth::id();
+        $asset->updated_at = now();
+        $asset->save();
+
+        return response()->json(['success' => true]);
     }
 }

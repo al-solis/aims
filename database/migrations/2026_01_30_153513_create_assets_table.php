@@ -23,7 +23,7 @@ return new class extends Migration {
 
             $table->decimal('cost', 10, 2)->nullable();
             $table->date('purchase_date');
-            $table->integer('status')->default('1'); //1: Available, 2: Active, 3: Assigned, 4: Maintenance, 5: Retired
+            $table->integer('status')->default('1'); //1: Available, 2: Active, 3: Assigned, 4: Maintenance, 5: Retired, 6: Lost, 7: Damaged
 
             $table->string('manufacturer', 50)->nullable();
             $table->string('model', 50)->nullable();

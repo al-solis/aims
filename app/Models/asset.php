@@ -56,4 +56,9 @@ class asset extends Model
     {
         return $this->hasMany(duty_order::class, 'asset_id');
     }
+
+    public function canBeTransferred()
+    {
+        return in_array($this->status, [1, 2, 3]);
+    }
 }

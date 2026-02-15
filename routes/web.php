@@ -19,6 +19,7 @@ use App\Http\Controllers\ClearanceDetailController;
 use App\Http\Controllers\EmployeeHistoryController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\OdometerController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -89,9 +90,17 @@ Route::middleware('auth')->group(function () {
     Route::post('/asset/clear-selection', [AssetController::class, 'clearSelection'])->name('asset.clear-selection');
 
     Route::resource('asset', AssetController::class)->except(['destroy']);
+    Route::post('/asset/{id}/retire', [AssetController::class, 'retire'])->name('asset.retire');
 
     Route::get('asset/transfer/{assetId}/count', [TransferController::class, 'countAssetTransfers'])->name('asset.transfer.count');
     Route::resource('asset/transfer', TransferController::class)->except(['destroy']);
+
+    Route::match(['put', 'patch'], '/asset/odometer/{id}', [OdometerController::class, 'update'])->name('asset.odometer.update');
+    Route::post('/asset/odometer/store', [OdometerController::class, 'store']);
+    Route::get('/asset/{assetId}/odometer', [OdometerController::class, 'show'])->name('asset.odometer.show');
+    Route::get('/asset/{assetId}/odometer-readings', [OdometerController::class, 'getOdometerReadings'])->name('asset.odometer.readings');
+    Route::delete('/asset/odometer/{id}', [OdometerController::class, 'destroy'])->name('asset.odometer.destroy');
+    Route::get('/asset/odometer/{id}', [OdometerController::class, 'getReading'])->name('asset.odometer.get');
 
     Route::get('/validate-transfer-date', [TransferController::class, 'validateTransferDate'])->name('asset.transfer.validate-date');
     Route::get('/get-last-transfer-code/{assetId}', [TransferController::class, 'getLastTransferCode'])->name('asset.transfer.last-code');
