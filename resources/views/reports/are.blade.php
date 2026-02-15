@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html>
+@php
+    use Carbon\Carbon;
+@endphp
 
 <head>
     <meta charset="utf-8">
-    <title>Employee Clearance Report</title>
+    <title>Acknowledgement Receipt for Equipment</title>
 
     <style>
         body {
@@ -101,82 +104,58 @@
         <div class="title">{{ env('APP_COMPANY_NAME') }}</div>
         <div class="sub-title">{{ env('APP_COMPANY_ADDRESS') }}</div>
         <div class="sub-title">{{ env('APP_COMPANY_CONTACT') }}</div>
-        <br\>
-            <div class="sub-title" style="font-weight: bolder; font-size: 15px">EMPLOYEE CLEARANCE FORM</div>
-            <div class="sub-title">Request No: {{ $clearance->request_number }}@if ($clearance->status == '4')
-                    <span style="color: red; font-weight: bold;">(Cancelled)</span>
-                @endif
-            </div>
-            <div class="sub-title">Date: {{ $clearance->created_at->format('F d, Y') }}</div>
+        <br>
+        <br>
+        <br>
+        <div class="sub-title mb-4" style="font-weight: bolder; font-size: 15px">ACKNOWLEDGEMENT RECEIPT FOR EQUIPMENT
+        </div>
+
+        <p style="text-align: right">Date: <strong><u>{{ today()->format('j F Y') }}</u></strong></p>
+    </div>
+    <br>
+    <br>
+    <p style="text-align: justify">I acknowledge to receive from PROPERTY SECTION, the following property for which I am
+        responsible,
+        subject to the provision of the Accounting Law and which will be used in the office of the</p>
+
+    <div>
+        <p style="text-align: center">{{ $employee->location->name ?? 'N/A' }}<br>
+            {{ $employee->location->description ?? '' }}</p>
     </div>
 
-    {{-- EMPLOYEE INFO --}}
-    <div class="section">
-        <div class="section-title">Employee Information</div>
-        <table>
-            <tr>
-                <td width="25%"><strong>Name:</strong></td>
-                <td width="75%">
-                    {{ $clearance->employee->last_name }},
-                    {{ $clearance->employee->first_name }}
-                    {{ $clearance->employee->middle_name }}
-                </td>
-            </tr>
-            <tr>
-                <td><strong>Department:</strong></td>
-                <td>{{ $clearance->employee->location->description ?? 'N/A' }}</td>
-            </tr>
-        </table>
-    </div>
 
     {{-- CLEARANCE DETAILS --}}
     <div class="section">
-        <div class="section-title">Accountability Details</div>
+        {{-- <div class="section-title">Accountability Details</div> --}}
 
         <table>
             <thead>
                 <tr>
-                    <th>Asset</th>
-                    <th class="text-right">Qty</th>
-                    <th class="text-right">Purchase Cost</th>
-                    <th class="text-right">Actual Cost</th>
-                    <th class="text-right">Total</th>
-                    <th>Status</th>
+                    <th>Property No.</th>
+                    <th>Asset Description</th>
+                    <th>Serial No.</th>
+                    <th>Acquisition Date</th>
+                    <th class="text-right">Cost</th>
                 </tr>
             </thead>
             <tbody>
                 @php $grandTotal = 0; @endphp
 
-                @foreach ($clearance->clearance_details as $detail)
+                @foreach ($assets as $asset)
                     @php
-                        $grandTotal += $detail->total;
-
-                        $statusText = match ($detail->status) {
-                            '1' => 'Returned',
-                            '2' => 'Damaged',
-                            '3' => 'Lost',
-                            default => 'Pending',
-                        };
-
-                        $statusClass = match ($detail->status) {
-                            '1' => 'status-returned',
-                            '2' => 'status-damaged',
-                            '3' => 'status-lost',
-                            default => 'status-pending',
-                        };
+                        $grandTotal += $asset->cost;
                     @endphp
 
                     <tr>
-                        <td>{{ $detail->asset->name ?? 'N/A' }}</td>
-                        <td class="text-right">{{ number_format($detail->quantity, 2) }}</td>
-                        <td class="text-right">{{ number_format($detail->purchase_cost, 2) }}</td>
-                        <td class="text-right">{{ number_format($detail->actual_cost, 2) }}</td>
-                        <td class="text-right">{{ number_format($detail->total, 2) }}</td>
-                        <td class="{{ $statusClass }}">{{ $statusText }}</td>
+                        <td>{{ $asset->asset_code ?? 'N/A' }}</td>
+                        <td>{{ $asset->name ?? 'N/A' }}</td>
+                        <td>{{ $asset->serial ?? 'N/A' }}</td>
+                        <td>{{ Carbon::parse($asset->purchase_date)->format('m/d/Y') }}</td>
+                        <td class="text-right">{{ number_format($asset->cost, 2) }}</td>
                     </tr>
                 @endforeach
 
-                @if ($clearance->clearance_details->isEmpty())
+                @if ($assets->isEmpty())
                     <tr>
                         <td colspan="6" style="text-align: center; font-size: 11px; color: #555">No asset
                             details found.</td>
@@ -185,26 +164,29 @@
                 <tr>
                     <td colspan="4" class="text-right"><strong>Grand Total</strong></td>
                     <td class="text-right"><strong>{{ number_format($grandTotal, 2) }}</strong></td>
-                    <td></td>
                 </tr>
             </tbody>
         </table>
 
 
     </div>
-    <p style="text-align: center; font-size: 11px; color:#555">This clearance certificate is valid only when properly
-        signed
-        and dated.</p>
 
     {{-- SIGNATURES --}}
     <div class="footer">
+        <div>. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+            .</div>
         <div class="signature">
-            ___________________________<br>
-            Employee Signature
+            Received By:<br><br>
+            <br>
+            <u>{{ $employee->last_name . ', ' . $employee->first_name . ' ' . $employee->middle_name }}</u><br>
+            Signature Over Printed Name
         </div>
         <div class="signature" style="float:right;">
+            Received From:<br><br>
+            <br>
             ___________________________<br>
-            Authorized Officer
+            Signature Over Printed Name
         </div>
     </div>
 

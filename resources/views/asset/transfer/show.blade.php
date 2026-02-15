@@ -496,8 +496,7 @@
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
                                     <option value="" selected>Select sub-location</option>
                                     @foreach ($sublocation as $subloc)
-                                        <option value="{{ $subloc->id }}"
-                                            {{ $subloc->id == $transfer->transferDetails->first()->to_sublocation_id ? 'selected' : '' }}>
+                                        <option value="{{ $subloc->id }}">
                                             {{ $subloc->name }}</option>
                                     @endforeach
                                 </select>
@@ -512,24 +511,24 @@
                             </div>
                         </div>
 
-                        @if ($transfer->cancelled == 0)
-                            <button type="submit"
-                                class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
-                                {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
-                                Update transfer
-                            </button>
-                        @else
-                            <div
-                                class="mt-2 text-white inline-flex items-center bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-md text-xs px-5 py-2.5 text-center">
-                                <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                This transfer is cancelled
-                            </div>
-                        @endif
+
+                        <button type="submit" id="updateBtn"
+                            class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                            {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
+                            Update transfer
+                        </button>
+
+                        <div id="cancelledMsg"
+                            class="mt-2 text-white inline-flex items-center bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-md text-xs px-5 py-2.5 text-center">
+                            <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            This transfer is cancelled
+                        </div>
+
                     </form>
                 </div>
             </div>
@@ -593,7 +592,9 @@
 
         function openEditModal(button) {
             const id = button.getAttribute('data-id');
-            document.getElementById('edit_id').value = button.getAttribute('data-id');
+            const status = button.getAttribute('data-status');
+            document.getElementById('edit_id').value = id;
+
             document.getElementById('edit_description').value = button.getAttribute('data-description');
             document.getElementById('edit_transfer_date').value = button.getAttribute('data-date');
             document.getElementById('edit_note').value = button.getAttribute('data-note');
@@ -616,6 +617,17 @@
             selectedEditSublocation = button.getAttribute('data-to_sublocation');
 
             $('#edit_location_id').trigger('change');
+
+            const updateBtn = document.getElementById('updateBtn');
+            const cancelledMessage = document.getElementById('cancelledMsg');
+
+            if (status == '0') {
+                updateBtn.classList.remove('hidden');
+                cancelledMessage.classList.add('hidden');
+            } else {
+                updateBtn.classList.add('hidden');
+                cancelledMessage.classList.remove('hidden');
+            }
 
             const form = document.getElementById('editForm');
             form.action = `/asset/transfer/update/${id}`;

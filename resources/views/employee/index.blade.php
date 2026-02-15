@@ -1,5 +1,8 @@
 @extends('dashboard')
 @section('content')
+    @php
+        use Carbon\Carbon;
+    @endphp
     <div class="p-6 space-y-6">
 
         {{-- Header --}}
@@ -210,9 +213,8 @@
                                     <button type="button"
                                         title="View assigned assets to {{ $employee->last_name }}, {{ $employee->first_name }} {{ $employee->middle_name }}"
                                         data-modal-target="view-asset-modal" data-modal-toggle="view-asset-modal"
-                                        data-id="{{ $employee->id }}" data-code="{{ $employee->employee_code }}"
-                                        data-department="{{ $employee->location->description ?? '' }}"
-                                        data-status="{{ $employee->status }}" onclick="openEditModal(this)"
+                                        data-name="{{ $employee->last_name }}, {{ $employee->first_name }} {{ $employee->middle_name }}"
+                                        data-id="{{ $employee->id }}" onclick="openAssetModal(this)"
                                         class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-card-list" viewBox="0 0 16 16">
@@ -243,6 +245,86 @@
         </div>
     </div>
 
+    <!-- View asset modal -->
+    <div id="view-asset-modal" tabindex="-1" aria-hidden="true"
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
+        <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
+            <!-- Modal content -->
+            <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+                <!-- Modal header -->
+                <div class="flex justify-between items-center pb-4 mb-2 rounded-t border-b sm:mb-5 dark:border-gray-600">
+                    <h3 class="text-md font-semibold text-gray-900 dark:text-white">
+                        Asset Accountability
+                    </h3>
+                    <button type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        data-modal-toggle="view-asset-modal">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="overflow-y-auto max-h-[70vh]">
+                    <form action="" method="put">
+                        @csrf
+                        <input type="hidden" name="empId" id="empId">
+                        <div name="employee_name" id="employee_name" class="mb-2 text-md font-semibold"></div>
+                        <div class="overflow-y-auto max-h-[70vh]">
+                            <table class="min-w-full text-xs border rounded-xl">
+                                <thead class="bg-gray-200">
+                                    <tr>
+                                        <th class="px-2 py-2 text-left">Asset Code</th>
+                                        <th class="px-2 py-2 text-left">Name</th>
+                                        <th class="px-2 py-2 text-left">Category</th>
+                                        <th class="px-2 py-2 text-left">Location</th>
+                                        {{-- <th class="px-2 py-2 text-left">Status</th> --}}
+                                        <th class="px-2 py-2 text-left">License Validity</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="assetTableBody">
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-gray-500">
+                                            Loading...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <br />
+                        <a href="#" title="Print Acknowledgement Receipt for Equipement" onclick="printARE()"
+                            class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="mr-2 bi bi-printer" viewBox="0 0 16 16">
+                                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1" />
+                                <path
+                                    d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1" />
+                            </svg>
+                            ARE
+                        </a>
+
+                        <a href="#" title="Print Duty Detail" onclick="printDutyDetail()"
+                            class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="mr-2 bi bi-printer" viewBox="0 0 16 16">
+                                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1" />
+                                <path
+                                    d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1" />
+                            </svg>
+                            Duty Detail
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End view assest modal -->
+
     <script>
         function clearModalFields() {
             // Clear all form fields
@@ -258,16 +340,81 @@
             }, 3000);
         }
 
-        function openEditModal(button) {
+        function openAssetModal(button) {
             const id = button.getAttribute('data-id');
-            document.getElementById('edit_id').value = button.getAttribute('data-id');
-            document.getElementById('edit_code').value = button.getAttribute('data-code');
-            document.getElementById('edit_name').value = button.getAttribute('data-name');
-            document.getElementById('edit_description').value = button.getAttribute('data-description');
-            document.getElementById('edit_status').value = button.getAttribute('data-status');
+            document.getElementById('empId').value = id
+            document.getElementById('employee_name').innerText = button.getAttribute('data-name');
+            const statusMap = {
+                1: 'Available',
+                2: 'Active',
+                3: 'Assigned',
+                4: 'Maintenance',
+                5: 'Retired'
+            };
 
-            const form = document.getElementById('editForm');
-            form.action = `/employee/${id}`;
+            fetch(`/employee/${id}/accountability`)
+                .then(response => response.json())
+                .then(data => {
+
+                    const tbody = document.getElementById('assetTableBody');
+                    tbody.innerHTML = '';
+
+                    if (data.assets.length === 0) {
+                        tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-gray-500">
+                            No assigned assets found.
+                        </td>
+                    </tr>
+                `;
+                        return;
+                    }
+
+                    data.assets.forEach(asset => {
+
+                        const statusLabel = statusMap[asset.status] || 'Available'
+
+                        let expirationDate = asset.licenses ?
+                            asset.licenses.map(l => new Date(l.expiration_date).toLocaleDateString())
+                            .join('<br>') :
+                            '';
+
+                        tbody.innerHTML += `
+                    <tr class="border-b">
+                        <td class="px-2 py-2">${asset.asset_code ?? ''}</td>
+                        <td class="px-2 py-2">${asset.name ?? ''}</td>
+                        <td class="px-2 py-2">${asset.category ? asset.category.name : ''}</td>
+                        <td class="px-2 py-2">${asset.location ? asset.location.name : ''}</td>                        
+                        <td class="px-2 py-2">${expirationDate}</td>
+                    </tr>
+                `;
+                    });
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+
+        function printARE() {
+            const empId = document.getElementById('empId').value
+            if (!empId) {
+                alert('Employee must be selected.');
+                return;
+            }
+
+            let url = "{{ route('are.print') }}" + "?empId=" + empId;
+            window.open(url, '_blank');
+        }
+
+        function printDutyDetail() {
+            const empId = document.getElementById('empId').value
+            if (!empId) {
+                alert('Employee must be selected.');
+                return;
+            }
+
+            let url = "{{ route('duty.detail.print') }}" + "?empId=" + empId;
+            window.open(url, '_blank');
         }
     </script>
 @endsection

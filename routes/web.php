@@ -16,6 +16,9 @@ use App\Http\Controllers\AssetLicenseController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ClearanceHeaderController;
 use App\Http\Controllers\ClearanceDetailController;
+use App\Http\Controllers\EmployeeHistoryController;
+use App\Http\Controllers\MainController;
+use App\Http\Controllers\MaintenanceController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,9 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/main', function () {
-        return view('main');
-    })->name('main');
+    Route::get('/main', [MainController::class, 'index'])->name('main');
 
     Route::put('setup/location/{id}', [LocationController::class, 'update'])->name('location.update');
     Route::resource('setup/location', LocationController::class)->except(['destroy']);
@@ -69,6 +70,16 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}', [EmployeeController::class, 'updateEmployeeId'])->name('employee.ids.update');
         Route::delete('/{id}', [EmployeeController::class, 'destroyEmployeeId'])->name('employee.ids.destroy');
     });
+    Route::get('employee/{id}/accountability', [EmployeeController::class, 'viewAccountability'])->name('employee.accountability');
+
+    // Route::get('employee/{id}/history', [EmployeeHistoryController::class, 'viewHistory'])->name('employee.history');
+    Route::get('/employee/{id}/history', [EmployeeHistoryController::class, 'getByEmployee']);
+    Route::get('/employee-history/{id}', [EmployeeHistoryController::class, 'show']);
+
+    Route::post('/employee-history/store', [EmployeeHistoryController::class, 'store']);
+    Route::put('/employee-history/{id}', [EmployeeHistoryController::class, 'update']);
+    Route::delete('/employee-history/{id}', [EmployeeHistoryController::class, 'destroy']);
+
 
     Route::get('/get-sublocations/{location}', [LocationController::class, 'getSublocations']);
     Route::get('/asset/labels', [AssetController::class, 'printAssetLabel'])->name('asset.labels');
@@ -107,7 +118,13 @@ Route::middleware('auth')->group(function () {
     )->name('clearance.print');
 
     Route::get('/transfer/{id}/print', [TransferController::class, 'print'])->name('transfer.print');
+    Route::get('/are/print', [AssetController::class, 'printARE'])->name('are.print');
+    Route::get('/duty-detail/print', [AssetController::class, 'printDutyDetail'])->name('duty.detail.print');
 
+    Route::resource('maintenance', MaintenanceController::class)->except(['destroy']);
+    Route::post('/maintenance/{id}/mark-complete', [MaintenanceController::class, 'markAsComplete'])->name('maintenance.mark-complete');
+    Route::post('/maintenance/{id}/mark-in-progress', [MaintenanceController::class, 'markAsInProgress'])->name('maintenance.mark-in-progress');
+    Route::post('/maintenance/{id}/void', [MaintenanceController::class, 'voidMaintenance'])->name('maintenance.void');
 });
 
 require __DIR__ . '/auth.php';

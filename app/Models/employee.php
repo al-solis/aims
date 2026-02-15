@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\employee_id as EmployeeId;
+use App\Models\employee_history as EmployeeHistory;
 class employee extends Model
 {
     protected $table = 'employees';
@@ -40,5 +41,10 @@ class employee extends Model
     public function employeeIds()
     {
         return $this->hasMany(EmployeeId::class);
+    }
+
+    public function employeeHistories()
+    {
+        return $this->hasMany(EmployeeHistory::class, 'employee_id');
     }
 }

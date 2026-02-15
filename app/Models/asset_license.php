@@ -22,6 +22,10 @@ class asset_license extends Model
         'updated_by',
     ];
 
+    protected $casts = [
+        'issue_date' => 'date',
+        'expiration_date' => 'date',
+    ];
     protected $appends = ['status', 'status_label'];
 
     protected function expiringDays(): int

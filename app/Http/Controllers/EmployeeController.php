@@ -11,6 +11,10 @@ use App\Models\Employee;
 use App\Models\Location;
 use App\Models\id_type as IdType;
 use App\Models\employee_id as EmployeeId;
+use App\Models\asset;
+use App\Models\category;
+use App\Models\asset_license;
+
 
 class EmployeeController extends Controller
 {
@@ -384,7 +388,7 @@ class EmployeeController extends Controller
     {
         $request->validate([
             'id_type_id' => 'required|exists:id_types,id',
-            'id_number' => 'required|string|max:50|unique:employee_ids,id_number,' . $employeeId,
+            'id_number' => 'required|string|max:50|unique:employee_ids,id_number,' . $id,
             'issue_date' => 'nullable|date',
             'expiry_date' => 'nullable|date|after_or_equal:issue_date'
         ]);
@@ -423,4 +427,18 @@ class EmployeeController extends Controller
             'message' => 'ID deleted successfully'
         ]);
     }
+
+    public function viewAccountability($id)
+    {
+        $assets = Asset::with(['category', 'location', 'licenses'])
+            ->where('assigned_to', $id)
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'assets' => $assets
+        ]);
+    }
+
 }

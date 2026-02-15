@@ -18,6 +18,7 @@ use App\Models\employee;
 use App\Models\transfer;
 use App\Models\transfer_detail as TransferDetail;
 use App\Models\asset_license as AssetLicense;
+use App\Models\duty_order as DutyOrder;
 
 class AssetController extends Controller
 {
@@ -106,6 +107,7 @@ class AssetController extends Controller
             'model' => $request->model,
             'serial' => $request->serial,
             'assigned_to' => $request->assigned_to ?? null,
+            'status' => $request->assigned_to ? 3 : 2,
             'location_id' => empty($request->location_id)
                 ? null
                 : $request->location_id,
@@ -172,7 +174,10 @@ class AssetController extends Controller
             'manufacturer' => $request->edit_manufacturer,
             'model' => $request->edit_model,
             'serial' => $request->edit_serial,
-            'assigned_to' => $request->hidden_edit_assigned_to ?? null,
+            'assigned_to' => empty($request->hidden_edit_assigned_to)
+                ? $request->edit_assigned_to
+                : $request->hidden_edit_assigned_to,
+            'status' => empty($request->hidden_edit_assigned_to) && empty($request->edit_assigned_to) ? 2 : 3,
             'location_id' => empty($request->hidden_edit_location_id)
                 ? null
                 : $request->hidden_edit_location_id,
@@ -211,5 +216,94 @@ class AssetController extends Controller
     {
         session()->forget('selected_assets');
         return response()->json(['success' => true]);
+    }
+
+    public function printARE(Request $request)
+    {
+        $id = $request->empId;
+
+        $employee = Employee::with('location')
+            ->findOrFail($id);
+
+        $assets = Asset::with('category', 'location')
+            ->where('assigned_to', $id)
+            ->orderBy('name')
+            ->get();
+
+        $pdf = PDF::loadView('reports.are', compact('employee', 'assets'))
+            ->setPaper('letter', 'portrait');
+
+        return $pdf->stream('are.pdf');
+    }
+
+    public function printDutyDetail(Request $request)
+    {
+        $id = $request->empId;
+
+        $employee = Employee::with('location')
+            ->findOrFail($id);
+
+        //generate duty orders for the employee
+        $assetList = Asset::with('licenses')
+            ->where('assigned_to', $id)
+            ->where('category_id', 1)
+            ->whereDoesntHave('duty_orders', function ($query) use ($id) {
+                $query->where('employee_id', $id);
+            })
+            ->get();
+
+        $now = Carbon::now();
+        $lastOrderNo = DutyOrder::whereYear('created_at', $now->year)
+            ->whereMonth('created_at', $now->month)
+            ->lockForUpdate()
+            ->max('order_number');
+
+        if ($assetList->isEmpty()) {
+            // $lastOrder = DutyOrder::with('asset')
+            //     ->where('employee_id', $id)
+            //     ->orderBy('created_at', 'desc')
+            //     ->first();
+            $currentAssets = Asset::where('assigned_to', $id)
+                ->where('category_id', 1)
+                ->pluck('id');
+
+            $lastDutyOrder = DutyOrder::whereIn('asset_id', $currentAssets)
+                ->where('employee_id', $id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            $newOrderNo = $lastDutyOrder ? $lastDutyOrder->order_number : null;
+        } else {
+            $parts = explode('-', $lastOrderNo);
+            $lastOrderId = (int) end($parts);
+            $newOrderNo = $now->format('F Y') . '-' . str_pad(($lastOrderId ?? 0) + 1, 3, '0', STR_PAD_LEFT);
+        }
+
+        foreach ($assetList as $asset) {
+            $expiryDate = $asset->licenses->min('expiration_date');
+            if (!$expiryDate) {
+                $expiryDate = null;
+            }
+
+            DutyOrder::create([
+                'order_number' => $newOrderNo,
+                'employee_id' => $id,
+                'asset_id' => $asset->id,
+                'expiry_date' => $expiryDate ?? null,
+                'created_by' => Auth::id(),
+                'created_at' => now(),
+            ]);
+        }
+
+        $assets = Asset::with('category', 'location', 'licenses', 'duty_orders')
+            ->where('assigned_to', $id)
+            ->where('category_id', 1)
+            ->orderBy('name')
+            ->get();
+
+        $pdf = PDF::loadView('reports.dutydetail', compact('employee', 'assets', 'newOrderNo'))
+            ->setPaper('letter', 'portrait');
+
+        return $pdf->stream('duty_detail.pdf');
     }
 }

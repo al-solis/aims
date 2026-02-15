@@ -51,4 +51,9 @@ class asset extends Model
     {
         return $this->hasMany(asset_license::class, 'asset_id');
     }
+
+    public function duty_orders()
+    {
+        return $this->hasMany(duty_order::class, 'asset_id');
+    }
 }

@@ -193,9 +193,11 @@
                             <td class="px-4 py-2 w-[80px] text-xs font-semibold">
                                 @php
                                     $statuses = [
-                                        0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Inactive'],
-                                        1 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Active'],
-                                        2 => ['color' => 'bg-yellow-100 text-yellow-700', 'label' => 'On Leave'],
+                                        1 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Available'],
+                                        2 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Active'],
+                                        3 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Assigned'],
+                                        4 => ['color' => 'bg-yellow-100 text-yellow-700', 'label' => 'Maintenance'],
+                                        5 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Retired'],
                                     ];
                                     $status = $statuses[$asset->status] ?? [
                                         'color' => 'bg-gray-100 text-gray-600',
@@ -364,7 +366,7 @@
                 <div class="overflow-y-auto max-h-[70vh]">
                     <form action="{{ route('asset.store') }}" method="POST">
                         @csrf
-                        <div class="grid gap-2 mb-4 sm:grid-cols-2">
+                        <div class="grid gap-2 mb-4 sm:grid-cols-2 mr-1 ml-1">
                             <div class="sm:col-span-1">
                                 <label for="name"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Asset
@@ -639,6 +641,7 @@
 
                             <div class="sm:col-span-2">
                                 <input type="hidden" name="hidden_edit_assigned_to" id="hidden_edit_assigned_to">
+                                <input type='hidden' name="hidden_edit_assigned_name" id="hidden_edit_assigned_name">
                                 <label for="edit_assigned_to"
                                     class="select2 block text-xs font-medium text-gray-900 dark:text-white">Assigned
                                     To</label>
@@ -712,6 +715,8 @@
 
         function openEditModal(button) {
             const id = button.getAttribute('data-id');
+            const editAssignedTo = document.getElementById('edit_assigned_to')
+            const assignedTo = button.getAttribute('data-assigned_to');
             document.getElementById('edit_id').value = button.getAttribute('data-id');
             document.getElementById('edit_name').value = button.getAttribute('data-name');
             document.getElementById('edit_description').value = button.getAttribute('data-description');
@@ -723,27 +728,52 @@
             document.getElementById('edit_purchase_date').value = button.getAttribute('data-purchase_date');
             document.getElementById('edit_manufacturer').value = button.getAttribute('data-manufacturer');
             document.getElementById('edit_model').value = button.getAttribute('data-model');
-            document.getElementById('edit_assigned_to').value = button.getAttribute('data-assigned_to');
+            // document.getElementById('edit_assigned_to').value = button.getAttribute('data-assigned_to');
             document.getElementById('edit_sublocation_id').value = button.getAttribute('data-sublocation');
             document.getElementById('edit_warranty').value = button.getAttribute('data-warranty');
 
-            if (document.getElementById('edit_assigned_to').value !== '0' &&
-                document.getElementById('edit_assigned_to').value !== '') {
-                document.getElementById('edit_assigned_to').disabled = true;
-                document.getElementById('edit_location_id').disabled = true;
-                document.getElementById('edit_sublocation_id').disabled = true;
-                document.getElementById('hidden_edit_assigned_to').value = document.getElementById('edit_assigned_to')
-                    .value;
-                document.getElementById('hidden_edit_location_id').value = document.getElementById('edit_location_id')
-                    .value;
-                document.getElementById('hidden_edit_sublocation_id').value = button.getAttribute('data-sublocation');
-            } else {
-                document.getElementById('edit_assigned_to').disabled = false;
-                document.getElementById('hidden_edit_assigned_to').value = '';
-            }
+            $('#edit_assigned_to')
+                .val(assignedTo && assignedTo !== '0' ? assignedTo : null)
+                .trigger('change');
 
-            const form = document.getElementById('editForm');
-            form.action = `/asset/${id}`;
+            const assignedValue = $('#edit_assigned_to').val();
+            if (assignedValue && assignedValue !== '0') {
+
+                $('#edit_assigned_to').prop('disabled', true);
+                $('#edit_location_id').prop('disabled', true);
+                $('#edit_sublocation_id').prop('disabled', true);
+
+                $('#hidden_edit_assigned_to').val(assignedValue);
+                $('#hidden_edit_location_id').val($('#edit_location_id').val());
+                $('#hidden_edit_sublocation_id').val(button.getAttribute('data-sublocation'));
+
+                // $('#edit_assigned_to').parent().addClass('hidden');
+
+            } else {
+
+                $('#edit_assigned_to').prop('disabled', false);
+                $('#hidden_edit_assigned_to').val('');
+                // $('#edit_assigned_to').parent().removeClass('hidden');
+            }
+            // if (document.getElementById('edit_assigned_to').value !== '0' &&
+            //     document.getElementById('edit_assigned_to').value !== '' ||
+            //     document.getElementById('edit_assigned_to' !== null)) {
+            //     document.getElementById('edit_assigned_to').disabled = true;
+            //     document.getElementById('edit_location_id').disabled = true;
+            //     document.getElementById('edit_sublocation_id').disabled = true;
+            //     document.getElementById('hidden_edit_assigned_to').value = document.getElementById('edit_assigned_to')
+            //         .value;
+            //     document.getElementById('hidden_edit_location_id').value = document.getElementById('edit_location_id')
+            //         .value;
+            //     document.getElementById('hidden_edit_sublocation_id').value = button.getAttribute('data-sublocation');
+            //     document.getElementById('hidden_edit_assigned_name').value = document.getElementById('edit_assigned_to')
+            //     document.getElementById('hidden_edit_assigned_name').classList.remove('hidden');
+            //     editAssignedTo.classList.add('hidden');
+            // } else {
+            //     document.getElementById('edit_assigned_to').disabled = false;
+            //     document.getElementById('hidden_edit_assigned_to').value = '';
+            //     editAssignedTo.classList.remove('hidden');
+            // }
 
             const locationId = $(button).data('location');
             const sublocationId = $(button).data('sublocation');
@@ -776,6 +806,9 @@
                     }
                 });
             }
+
+            const form = document.getElementById('editForm');
+            form.action = `/asset/${id}`;
 
         }
 
@@ -861,7 +894,7 @@
         });
 
         //load sub-location when edit modal is shown
-        $('#editModal').on('shown.bs.modal', function() {
+        $('#edit-modal').on('shown.bs.modal', function() {
             $('#edit_location_id').trigger('change');
         });
 

@@ -10,7 +10,8 @@
 
     <style>
         body {
-            font-family: DejaVu Sans, sans-serif;
+            /* font-family: DejaVu Sans, sans-serif; */
+            font-family: Arial, Helvetica, sans-serif;
             font-size: 12px;
             color: #333;
         }
@@ -101,12 +102,15 @@
     {{-- HEADER --}}
     <div class="header">
         <div class="title">{{ env('APP_COMPANY_NAME') }}</div>
-        <div class="sub-title">ASSET TRANSFER REPORT</div>
-        <div class="sub-title">Request No: {{ $transfer->code }} @if ($transfer->cancelled)
-                <span style="color: red; font-weight: bold;">(Cancelled)</span>
-            @endif
-        </div>
-        <div class="sub-title">Date: {{ $transfer->date }}</div>
+        <div class="sub-title">{{ env('APP_COMPANY_ADDRESS') }}</div>
+        <div class="sub-title">{{ env('APP_COMPANY_CONTACT') }}</div>
+        <br\>
+            <div class="sub-title" style="font-weight: bolder; font-size: 15px">ASSET TRANSFER FORM</div>
+            <div class="sub-title">Request No: {{ $transfer->code }} @if ($transfer->cancelled)
+                    <span style="color: red; font-weight: bold;">(Cancelled)</span>
+                @endif
+            </div>
+            <div class="sub-title">Date: {{ $transfer->date }}</div>
     </div>
 
     {{-- TRANSFER INFO --}}
@@ -202,6 +206,7 @@
 
             ___________________________<br>
             <br>
+            <br>
             Authorized Officer
 
         </div>
@@ -212,6 +217,8 @@
             <span style="color:#555;">{{ $transfer->transferDetails->first()->fromEmployee->last_name ?? 'N/A' }},
                 {{ $transfer->transferDetails->first()->fromEmployee->first_name ?? 'N/A' }}
                 {{ $transfer->transferDetails->first()->fromEmployee->middle_name ?? '' }}</span><br>
+            <span
+                style="color:#555;">{{ $transfer->transferDetails->first()->fromEmployee->position ?? '' }}</span><br>
             Employee Signature
         </div>
         <div class="signature">
@@ -221,6 +228,7 @@
             <span style="color:#555;"> {{ $transfer->transferDetails->first()->toEmployee->last_name ?? 'N/A' }},
                 {{ $transfer->transferDetails->first()->toEmployee->first_name ?? 'N/A' }}
                 {{ $transfer->transferDetails->first()->toEmployee->middle_name ?? '' }} </span><br>
+            <span style="color:#555;">{{ $transfer->transferDetails->first()->toEmployee->position ?? '' }}</span><br>
             Employee Signature
         </div>
     </div>

@@ -1,5 +1,8 @@
 @extends('dashboard')
 @section('content')
+    @php
+        use Carbon\Carbon;
+    @endphp
     <div class="max-w-2xl px-4 py-10 sm:px-6 lg:px-8 lg:py-6 mx-auto">
         @if ($errors->any())
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 pt-1">
@@ -59,6 +62,22 @@
                                         aria-controls="idinfo" aria-selected="false">ID Information</button>
                                 </li>
                             @endif
+
+                            <li class="me-2" role="presentation">
+                                <button
+                                    class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                                    id="history-tab" data-tabs-target="#history" type="button" role="tab"
+                                    aria-controls="history" aria-selected="false">Employment History</button>
+                            </li>
+
+                            {{-- @if ($employee)
+                                <li class="me-2" role="presentation">
+                                    <button
+                                        class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                                        id="history-tab" data-tabs-target="#history" type="button" role="tab"
+                                        aria-controls="history" aria-selected="false">Employee History</button>
+                                </li>
+                            @endif --}}
                         </ul>
                     </div>
 
@@ -274,6 +293,7 @@
                         </div>
 
                         @if ($employee)
+                            {{-- ID Information Tab --}}
                             <meta name="csrf-token" content="{{ csrf_token() }}">
                             <div id="employeeIdSection" data-employee-id="{{ $employee->id }}">
                                 <div class="hidden p-1 rounded-lg bg-gray-50 dark:bg-gray-800" id="idinfo"
@@ -398,6 +418,80 @@
                                 </div>
                             </div>
                         @endif
+
+                        @if ($employee)
+                            <div class="hidden p-1 rounded-lg bg-gray-50 dark:bg-gray-800" id="history" role="tabpanel"
+                                aria-labelledby="history-tab">
+                                <p class="text-sm text-body mb-2">Employee's <strong class="font-medium text-heading">Work
+                                        History</strong>.
+                                </p>
+
+                                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                                    <div class="w-full">
+                                        <label for="company_name"
+                                            class="block text-xs font-medium text-gray-900 dark:text-white">Company
+                                            Name*</label>
+                                        <input type="text" name="company_name" id="company_name"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                            placeholder="e.g. ABC Corporation">
+                                    </div>
+                                    <div class="w-full">
+                                        <label for="position_held"
+                                            class="block text-xs font-medium text-gray-900 dark:text-white">Position
+                                            Held*</label>
+                                        <input type="text" name="position_held" id="position_held"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                            placeholder="e.g. Software Engineer">
+                                    </div>
+                                </div>
+                                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
+                                    <div class="w-full">
+                                        <label for="start_date"
+                                            class="block text-xs font-medium text-gray-900 dark:text-white">Start
+                                            Date</label>
+                                        <input type="date" name="start_date" id="start_date"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                            placeholder="e.g. mm/dd/yyyy">
+                                    </div>
+                                    <div class="w-full">
+                                        <label for="end_date"
+                                            class="block text-xs font-medium text-gray-900 dark:text-white">End
+                                            Date</label>
+                                        <input type="date" name="end_date" id="end_date"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                            placeholder="e.g. mm/dd/yyyy">
+                                    </div>
+
+                                    <button id="add-workhistory-btn" type="button"
+                                        class="mt-4 h-fit text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-sm px-4 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                                        Add Work History
+                                    </button>
+                                </div>
+
+                                {{-- Table --}}
+                                <div class="bg-white border rounded-xl overflow-hidden">
+                                    <table class="min-w-full text-xs" id="employeeWorkHistoryTable">
+                                        <thead class="bg-gray-200 text-gray-600">
+                                            <tr>
+                                                <th scope="col" class="px-4 py-3 text-left w-[150px]">Company Name</th>
+                                                <th scope="col" class="px-4 py-3 text-left w-[120px]">Position Held
+                                                </th>
+                                                <th scope="col" class="px-4 py-3 text-left w-[80px]">Start Date</th>
+                                                <th scope="col" class="px-4 py-3 text-left w-[80px]">End Date</th>
+                                                <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody id="employeeWorkHistoryBody" class="divide-y">
+                                            {{-- Work history records will be dynamically added here --}}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        @endif
+
                     </div>
                 </div>
 
@@ -442,6 +536,20 @@
                 uploadedTempPhoto = null;
             }
         }
+
+        function formatDateForInput(dateString) {
+            if (!dateString) return '';
+
+            const date = new Date(dateString);
+            if (isNaN(date)) return '';
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+        }
+
 
         function cleanupTempFile(filePath) {
             if (!filePath) return;
@@ -748,6 +856,12 @@
                 }
             }
 
+            //LOAD EMPLOYEE WORK HISTORY
+            const employeeId = {{ $employee->id ?? 'null' }};
+            if (employeeId) {
+                loadWorkHistory(employeeId);
+            }
+
         });
 
         document.getElementById('idno').addEventListener('blur', function() {
@@ -802,15 +916,21 @@
                         document.getElementById('employee_id_record_id').value = data.id.id;
                         document.getElementById('employee_id_type').value = data.id.id_type_id;
                         document.getElementById('employee_id_number').value = data.id.id_number;
-                        document.getElementById('employee_id_issued_date').value = data.id.issue_date || '';
-                        document.getElementById('employee_id_expiry_date').value = data.id.expiry_date ||
-                            '';
+                        document.getElementById('employee_id_issued_date').value = formatDateForInput(data.id
+                            .issue_date) || '';
+                        document.getElementById('employee_id_expiry_date').value = formatDateForInput(data.id
+                            .expiry_date) || '';
 
                         // Change button to "Update ID"
                         const addBtn = document.getElementById('add-id-btn');
                         addBtn.textContent = 'Update ID';
-                        addBtn.classList.remove('bg-green-700', 'hover:bg-green-800');
-                        addBtn.classList.add('bg-blue-700', 'hover:bg-blue-800');
+                        addBtn.classList.remove('bg-green-700', 'hover:bg-green-800', 'focus:ring-4',
+                            'focus:outline-none', 'focus:ring-green-300', 'font-medium', 'rounded-md', 'text-sm',
+                            'px-4', 'py-2.5', 'text-center', 'dark:bg-green-600', 'dark:hover:bg-green-700',
+                            'dark:focus:ring-green-800');
+                        addBtn.classList.add('bg-blue-700', 'hover:bg-blue-800', 'focus:ring-4', 'focus:outline-none',
+                            'focus:ring-blue-300', 'font-medium', 'rounded-md', 'text-sm', 'px-4', 'py-2.5',
+                            'text-center', 'dark:bg-blue-600', 'dark:hover:bg-blue-700', 'dark:focus:ring-blue-800');
 
                         // Scroll to the form
                         document.getElementById('employee_id_number').focus();
@@ -873,6 +993,249 @@
                     showToast(error.message || 'An error occurred', 'error');
                 });
         }
+
+        //EMPLOYEE HISTORY 
+        function loadWorkHistory(employeeId) {
+
+            fetch(`/employee/${employeeId}/history`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to load work history');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+
+                    const tbody = document.getElementById('employeeWorkHistoryBody');
+                    tbody.innerHTML = '';
+
+                    data.forEach(history => {
+                        appendRow(history);
+                    });
+
+                })
+                .catch(error => {
+                    console.error('Load Error:', error);
+                });
+        }
+
+
+        // Save Work History
+        document.getElementById('add-workhistory-btn').addEventListener('click', function() {
+            const addBtn = this;
+            const recordId = addBtn.getAttribute('data-record-id');
+
+            const companyName = document.getElementById('company_name').value.trim();
+            const positionHeld = document.getElementById('position_held').value.trim();
+            const startDate = document.getElementById('start_date').value;
+            const endDate = document.getElementById('end_date').value;
+
+
+            if (!companyName || !positionHeld) {
+                alert('Company Name and Position Held are required.');
+                return;
+            }
+
+            if (recordId) {
+                updateWorkHistory(recordId);
+                return;
+            }
+
+            fetch('/employee-history/store', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        employee_id: {{ $employee->id ?? 'null' }},
+                        company_name: companyName,
+                        position_held: positionHeld,
+                        start_date: startDate || null,
+                        end_date: endDate || null
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+
+                    appendRow(data);
+
+                    document.getElementById('company_name').value = '';
+                    document.getElementById('position_held').value = '';
+                    document.getElementById('start_date').value = '';
+                    document.getElementById('end_date').value = '';
+
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while saving work history. Please try again.');
+                });
+
+
+        });
+
+        function appendRow(history) {
+            const tableBody = document.getElementById('employeeWorkHistoryBody');
+            const newRow = document.createElement('tr');
+            const startDate = history.start_date ? new Date(history.start_date).toLocaleDateString() : '';
+            const endDate = history.end_date ? new Date(history.end_date).toLocaleDateString() : '';
+            newRow.setAttribute('id', 'row-' + history.id);
+            newRow.classList.add('hover:bg-gray-50');
+            newRow.innerHTML = `
+                <td class="px-2 py-2 font-medium w-[150px]">${history.company}</td>
+                <td class="px-2 py-2 w-[120px]">${history.position}</td>
+                <td class="px-2 py-2 w-[80px]">${startDate || ''}</td>
+                <td class="px-2 py-2 w-[80px]">${endDate || ''}</td>
+                <td class="px-2 py-2 w-[50px]">
+                    <div class="flex items-center justify-center">
+                        <div class="flex items-center justify-center space-x-2">
+                                <button type="button" onclick="editWorkHistory(${history.id})" 
+                                    title="Edit work history: ${history.company} - ${history.position}" 
+                                    class="text-blue-600 hover:text-blue-800 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" 
+                                        fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                    </svg>
+                                </button>
+                                <button type="button" onclick="deleteWorkHistory(${history.id})" 
+                                    title="Delete work history: ${history.company} - ${history.position}" 
+                                    class="text-red-600 hover:text-red-800 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                    </svg>
+                                </button>
+                        </div>
+                    </div>
+                </td>
+            `;
+            tableBody.appendChild(newRow);
+        }
+
+        function deleteWorkHistory(id) {
+            const row = document.getElementById(`row-${id}`);
+            if (!row) return;
+
+            if (!confirm('Are you sure you want to delete this work history record?')) {
+                return;
+            }
+
+            fetch(`/employee-history/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the row from the table
+                        const row = document.getElementById(`row-${id}`);
+                        if (row) {
+                            row.remove();
+                        }
+
+                        showToast(data.message || 'Work history record deleted successfully!', 'success');
+                    } else {
+                        throw new Error(data.message || 'Failed to delete work history record');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast(error.message || 'An error occurred', 'error');
+                });
+        }
+
+        function editWorkHistory(id) {
+            fetch(`/employee-history/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const history = data.history;
+                        document.getElementById('company_name').value = history.company;
+                        document.getElementById('position_held').value = history.position;
+                        document.getElementById('start_date').value = formatDateForInput(history.start_date) || '';
+                        document.getElementById('end_date').value = formatDateForInput(history.end_date) || '';
+
+                        // Change button to "Update Work History"
+                        const addBtn = document.getElementById('add-workhistory-btn');
+                        addBtn.textContent = 'Update Work History';
+                        addBtn.classList.remove('bg-green-700', 'hover:bg-green-800', 'focus:ring-4',
+                            'focus:outline-none', 'focus:ring-green-300', 'font-medium', 'rounded-md', 'text-sm',
+                            'px-4', 'py-2.5', 'text-center', 'dark:bg-green-600', 'dark:hover:bg-green-700',
+                            'dark:focus:ring-green-800');
+                        addBtn.classList.add('bg-blue-700', 'hover:bg-blue-800', 'focus:ring-4', 'focus:outline-none',
+                            'focus:ring-blue-300', 'font-medium', 'rounded-md', 'text-sm', 'px-4', 'py-2.5',
+                            'text-center', 'dark:bg-blue-600', 'dark:hover:bg-blue-700', 'dark:focus:ring-blue-800');
+
+                        // Store the record ID in a hidden field or data attribute
+                        addBtn.setAttribute('data-record-id', history.id);
+
+                        // Scroll to the form
+                        document.getElementById('company_name').focus();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching work history:', error);
+                    showToast('Failed to load work history details', 'error');
+                });
+        }
+
+        function updateWorkHistory(id) {
+
+            fetch(`/employee-history/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        company: document.getElementById('company_name').value,
+                        position: document.getElementById('position_held').value,
+                        start_date: document.getElementById('start_date').value,
+                        end_date: document.getElementById('end_date').value,
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+
+                    document.getElementById('row-' + id).remove();
+                    appendRow(data);
+
+                    resetForm();
+
+                });
+        }
+
+        function resetForm() {
+
+            document.getElementById('company_name').value = '';
+            document.getElementById('position_held').value = '';
+            document.getElementById('start_date').value = '';
+            document.getElementById('end_date').value = '';
+
+            const addBtn = document.getElementById('add-workhistory-btn');
+
+            addBtn.textContent = 'Add Work History';
+            addBtn.classList.remove('bg-blue-700', 'hover:bg-blue-800', 'focus:ring-4', 'focus:outline-none',
+                'focus:ring-blue-300', 'font-medium', 'rounded-md', 'text-sm', 'px-4', 'py-2.5', 'text-center',
+                'dark:bg-blue-600', 'dark:hover:bg-blue-700', 'dark:focus:ring-blue-800');
+            addBtn.classList.add('bg-green-700', 'hover:bg-green-800', 'focus:ring-4', 'focus:outline-none',
+                'focus:ring-green-300', 'font-medium', 'rounded-md', 'text-sm', 'px-4', 'py-2.5', 'text-center',
+                'dark:bg-green-600', 'dark:hover:bg-green-700', 'dark:focus:ring-green-800');
+
+            addBtn.removeAttribute('data-record-id');
+        }
+
+
 
         // Toast notification function
         function showToast(message, type = 'info') {
