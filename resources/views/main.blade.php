@@ -1,5 +1,8 @@
 @extends('dashboard')
 @section('content')
+    @php
+        use Carbon\Carbon;
+    @endphp
     <div class="p-6 space-y-6">
 
         <!-- Header -->
@@ -85,8 +88,72 @@
 
             <!-- Recent Alerts -->
             <div class="bg-white shadow rounded-lg p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-900">Recent Alerts</h2>
+                    <a href="#" class="text-sm text-blue-600 hover:underline">View All</a>
+                </div>
+
+                <ul class="space-y-2">
+
+                    @forelse($alerts as $alert)
+                        @php
+                            $bgColor = match ($alert['severity']) {
+                                4 => 'bg-red-50 border-red-200',
+                                3 => 'bg-orange-50 border-orange-200',
+                                2 => 'bg-yellow-50 border-yellow-200',
+                                default => 'bg-blue-50 border-blue-200',
+                            };
+
+                            $badgeColor = match ($alert['severity']) {
+                                4 => 'bg-red-200 text-red-800',
+                                3 => 'bg-orange-200 text-orange-800',
+                                2 => 'bg-yellow-200 text-yellow-800',
+                                default => 'bg-blue-200 text-blue-800',
+                            };
+
+                            $label = match ($alert['severity']) {
+                                4 => 'Critical',
+                                3 => 'High',
+                                2 => 'Medium',
+                                default => 'Low',
+                            };
+                        @endphp
+
+                        <li>
+                            <a href="{{ $alert['url'] }}"
+                                class="flex items-start gap-3 p-3 border rounded-lg {{ $bgColor }} hover:shadow transition">
+
+                                <i class="bi {{ $alert['icon'] }} mt-1"></i>
+
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-900">
+                                        {{ $alert['type'] }}
+                                        <span class="text-xs px-2 py-0.5 rounded {{ $badgeColor }}">
+                                            {{ $label }}
+                                        </span>
+                                    </p>
+                                    <p class="text-sm text-gray-600">
+                                        {{ $alert['message'] }}
+                                    </p>
+                                </div>
+
+                            </a>
+                        </li>
+
+                    @empty
+                        <li class="text-sm text-gray-500">
+                            No alerts at the moment.
+                        </li>
+                    @endforelse
+
+                </ul>
+            </div>
+
+
+            {{-- <div class="bg-white shadow rounded-lg p-4">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Recent Alerts</h2>
                 <ul class="space-y-2">
+
                     <li class="flex items-start gap-2 p-2 border rounded bg-yellow-50">
                         <i class="fas fa-exclamation-circle text-yellow-500 mt-1"></i>
                         <div>
@@ -120,7 +187,7 @@
                         </div>
                     </li>
                 </ul>
-            </div>
+            </div> --}}
 
         </div>
 
