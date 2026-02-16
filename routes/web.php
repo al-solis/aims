@@ -143,7 +143,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/asset-summary', [ReportController::class, 'assetSummary'])->name('asset.summary');
         Route::get('/odometer', [ReportController::class, 'odometerReport'])->name('odometer');
         Route::get('/maintenance', [ReportController::class, 'maintenanceReport'])->name('maintenance');
-
+        Route::get('/employee', [ReportController::class, 'employeeReport'])->name('employee');
     });
 });
 

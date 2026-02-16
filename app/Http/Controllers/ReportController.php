@@ -24,7 +24,7 @@ class ReportController extends Controller
     {
         // Load data for dropdowns
         $categories = Category::all();
-        $locations = Location::all();
+        $locations = Location::orderBy('name')->get();
         $vehicles = Asset::whereIn('category_id', [2])->get();
 
         return view('reports.index', compact('categories', 'locations', 'vehicles'));
@@ -124,6 +124,86 @@ class ReportController extends Controller
         return $pdf->stream('odometer-readings-' . $asset->asset_number . '.pdf');
     }
 
+    public function employeeReport(Request $request)
+    {
+        $pDateRange = $request->date_range ?? 'this_month';
+        $pFromDate = $request->from_date ?? '';
+        $pToDate = $request->to_date ?? '';
+        $pStatus = $request->status ?? 1;
+        $pLocation = $request->location ? Location::where('id', $request->location)->first() : null;
+        $pLocationName = $pLocation ? $pLocation->name : 'All Locations';
+
+        $statusLabel = [
+            0 => 'Inactive',
+            1 => 'Active',
+            2 => 'On Leave',
+
+        ];
+
+        $statusLabel = $statusLabel[$pStatus] ?? 'All Statuses';
+
+        $query = Employee::query()->with('location');
+        //dd($query->toSql());
+        switch ($pDateRange) {
+            case 'this_month':
+                $query->whereMonth('hire_date', Carbon::now()->month)
+                    ->whereYear('hire_date', Carbon::now()->year);
+                break;
+
+            case 'last_month':
+                $query->whereMonth('hire_date', Carbon::now()->subMonth()->month)
+                    ->whereYear('hire_date', Carbon::now()->subMonth()->year);
+                break;
+
+            case 'this_quarter':
+                $query->whereBetween('hire_date', [
+                    Carbon::now()->startOfQuarter()->format('Y-m-d'),
+                    Carbon::now()->endOfQuarter()->format('Y-m-d')
+                ]);
+                break;
+
+            case 'this_year':
+                $query->whereYear('hire_date', Carbon::now()->year);
+                break;
+
+            case 'custom':
+                if ($pFromDate && $pToDate) {
+                    $query->whereBetween('hire_date', [$pFromDate, $pToDate]);
+                }
+                break;
+        }
+
+        if ($pStatus != null && $pStatus != '') {
+            $query->where('status', $pStatus);
+        }
+
+        if ($request->filled('location')) {
+            $query->where('location_id', $request->location);
+        }
+
+        $sortField = $request->get('sort', 'hire_date');
+        $sortDirection = $request->get('direction', 'desc');
+
+        $employees = $query->orderBy($sortField, $sortDirection)->get();
+        // Generate PDF
+
+        $pdf = Pdf::loadView(
+            'reports.employee',
+            compact(
+                'employees',
+                'pDateRange',
+                'pFromDate',
+                'pToDate',
+                'pLocationName',
+                'statusLabel',
+                'sortField',
+                'sortDirection'
+            )
+        )->setPaper('letter', 'portrait');
+
+        return $pdf->stream('employee-report.pdf');
+    }
+
     public function maintenanceReport(Request $request)
     {
         // Validate request
@@ -139,7 +219,7 @@ class ReportController extends Controller
             $rules['from_date'] = 'required|date';
             $rules['to_date'] = 'required|date|after_or_equal:from_date';
         }
-
+        //dd($request->all());
         // $request->validate($rules); //DISABLED
 
         // Get parameter labels for display

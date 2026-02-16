@@ -96,35 +96,6 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Employee Reports Card -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-                <div class="p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-600 dark:text-yellow-300"
-                                fill="none" width="16" height="16" stroke="currentColor" class="bi bi-people-fill"
-                                viewBox="0 0 16 16">
-                                <path
-                                    d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
-                            </svg>
-                        </div>
-                        <span
-                            class="text-xs font-medium text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900 px-2 py-1 rounded">Employee</span>
-                    </div>
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Employee List</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">View employee details and related information
-                    </p>
-                    <button onclick="openReportModal('employee')"
-                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                        </svg>
-                        Generate Report
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -241,7 +212,7 @@
             <form id="reportForm" class="space-y-4 ml-1 mr-1">
                 <div class="space-y-4">
                     <div>
-                        <label for="asset_id" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Select Vehicle</label>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Select Vehicle</label>
                         <select name="asset_id" id="asset_id" class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white" required>
                             <option value="">Choose a vehicle...</option>
                             @foreach ($vehicles ?? [] as $vehicle)
@@ -270,7 +241,12 @@
                             <input type="radio" id="pdf" name="format" value="pdf" checked
                                 class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 focus:ring-gray-500">
                             <label for="pdf" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">PDF</label>
-                        </div>                        
+                        </div>
+                        <div class="flex items-center">
+                            <input type="radio" id="excel" name="format" value="excel"
+                                class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 focus:ring-gray-500">
+                            <label for="excel" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">Excel</label>
+                        </div>
                     </div>
                 </div>
 
@@ -348,91 +324,12 @@
                     <input type="radio" id="maintenance_pdf" name="format" value="pdf" checked
                         class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 focus:ring-gray-500">
                     <label for="maintenance_pdf" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">PDF</label>
-                </div>                
-            </div>
-
-            <div class="flex items-center justify-end space-x-3 mt-6 pt-4 border-t dark:border-gray-600">
-                <button type="button" onclick="closeReportModal()" 
-                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600">
-                    Cancel
-                </button>
-                <button type="submit" 
-                    class="px-4 py-2 text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 rounded-lg focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700">
-                    Generate Report
-                </button>
-            </div>
-        </form>
-    `
-            },
-            'employee': {
-                title: 'Employee Listing',
-                description: 'Select parameters for employee listing report',
-                form: `
-        <form id="reportForm" class="space-y-4 ml-1 mr-1">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="sm:col-span-2">
-                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Date Range</label>
-                    <select name="date_range" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
-                        <option value="this_month">This Month</option>
-                        <option value="last_month">Last Month</option>
-                        <option value="this_quarter">This Quarter</option>
-                        <option value="this_year">This Year</option>
-                        <option value="custom">Custom Range</option>
-                    </select>
                 </div>
-                <div class="sm:col-span-2">
-                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Employee Status</label>
-                    <select name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
-                        <option value="">All Statuses</option>
-                        <option value="0">Inactive</option>
-                        <option value="1">Active</option>
-                        <option value="2">On Leave</option>
-                    </select>
-                </div>
-
-                <div class="sm:col-span-2">
-                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Location/ Department</label>
-                        <select name="location" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
-                            <option value="">All Locations</option>
-                            @foreach ($locations ?? [] as $location)
-                                <option value="{{ $location->id }}">{{ $location->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="sm:col-span-1">
-                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Sort By</label>
-                        <select name="sort" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
-                            <option value="last_name">Last Name</option>
-                            <option value="hire_date">Date Hired</option>                                                                                   
-                        </select>
-                    </div>
-                    <div class="sm:col-span-1">
-                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Direction</label>
-                        <select name="direction" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
-                            <option value="asc">Ascending</option>
-                            <option value="desc">Descending</option>                                                                                   
-                        </select>
-                    </div>
-            </div>
-
-            <div id="customDateRange" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Hired From</label>
-                    <input type="date" name="from_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Hired To</label>
-                    <input type="date" name="to_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
-                </div>
-            </div>            
-
-            <!-- Add format selection like employee report -->
-            <div class="flex items-center space-x-4 mt-4">
                 <div class="flex items-center">
-                    <input type="radio" id="employee_pdf" name="format" value="pdf" checked
+                    <input type="radio" id="maintenance_excel" name="format" value="excel"
                         class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 focus:ring-gray-500">
-                    <label for="employee_pdf" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">PDF</label>
-                </div>                
+                    <label for="maintenance_excel" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">Excel</label>
+                </div>
             </div>
 
             <div class="flex items-center justify-end space-x-3 mt-6 pt-4 border-t dark:border-gray-600">
@@ -472,7 +369,7 @@
             document.getElementById('reportModal').classList.add('flex');
 
             // Add event listener for custom date range toggle if needed
-            if (reportType === 'maintenance' || reportType === 'employee') {
+            if (reportType === 'maintenance') {
                 const dateRangeSelect = document.querySelector('select[name="date_range"]');
                 if (dateRangeSelect) {
                     dateRangeSelect.addEventListener('change', function() {
@@ -505,8 +402,6 @@
             // Build query string
             const queryString = new URLSearchParams(params).toString();
 
-            //alert('Report parameters: ' + queryString); // For debugging
-
             // Generate report URL based on type
             let url;
             switch (reportType) {
@@ -518,9 +413,6 @@
                     break;
                 case 'maintenance':
                     url = `/reports/maintenance?${queryString}`;
-                    break;
-                case 'employee':
-                    url = `/reports/employee?${queryString}`;
                     break;
             }
 
