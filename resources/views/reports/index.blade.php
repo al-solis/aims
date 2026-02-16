@@ -8,7 +8,7 @@
         </div>
 
         <!-- Reports Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Asset Reports Card -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                 <div class="p-6">
@@ -113,7 +113,8 @@
                             class="text-xs font-medium text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900 px-2 py-1 rounded">Employee</span>
                     </div>
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Employee List</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">View employee details and related information
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate employee listing per location, status
+                        and date range.
                     </p>
                     <button onclick="openReportModal('employee')"
                         class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
