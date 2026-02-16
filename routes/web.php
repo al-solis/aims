@@ -20,6 +20,7 @@ use App\Http\Controllers\EmployeeHistoryController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\OdometerController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -135,6 +136,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/maintenance/{id}/mark-complete', [MaintenanceController::class, 'markAsComplete'])->name('maintenance.mark-complete');
     Route::post('/maintenance/{id}/mark-in-progress', [MaintenanceController::class, 'markAsInProgress'])->name('maintenance.mark-in-progress');
     Route::post('/maintenance/{id}/void', [MaintenanceController::class, 'voidMaintenance'])->name('maintenance.void');
+
+    // web.php    
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/asset-summary', [ReportController::class, 'assetSummary'])->name('asset.summary');
+        Route::get('/odometer', [ReportController::class, 'odometerReport'])->name('odometer');
+        Route::get('/maintenance', [ReportController::class, 'maintenanceReport'])->name('maintenance');
+
+    });
 });
 
 require __DIR__ . '/auth.php';

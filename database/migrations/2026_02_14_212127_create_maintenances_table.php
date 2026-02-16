@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->foreign('asset_id')->references('id')->on('assets');
             $table->integer('type'); // 1=Preventive, 2=Corrective, 3=Emergency, 4=Inspection
             $table->string('description')->nullable();
-            $table->dateTime('scheduled_date')->nullable();
+            $table->date('scheduled_date')->nullable();
             $table->integer('priority'); // 1=Low, 2=Medium, 3=High, 4=Critical
             $table->string('technician')->nullable();
             $table->decimal('cost', 10, 2)->nullable();

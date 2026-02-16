@@ -1,0 +1,437 @@
+@extends('dashboard')
+@section('content')
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Reports</h1>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Select a report to generate</p>
+        </div>
+
+        <!-- Reports Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Asset Reports Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                                </path>
+                            </svg>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">Asset</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Asset Summary Report</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate summary of all assets with their
+                        current status and location</p>
+                    <button onclick="openReportModal('asset-summary')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Odometer Readings Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+                            <svg class="w-6 h-6 text-green-600 dark:text-green-300" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900 px-2 py-1 rounded">Odometer</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Odometer Readings Report</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Track vehicle usage with detailed odometer
+                        readings by date range</p>
+                    <button onclick="openReportModal('odometer')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Maintenance Reports Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+                            <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-300" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                                </path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900 px-2 py-1 rounded">Maintenance</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Maintenance History</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">View maintenance records with cost analysis and
+                        schedules</p>
+                    <button onclick="openReportModal('maintenance')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Parameter Modal -->
+    <div id="reportModal" tabindex="-1" aria-hidden="true"
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
+        <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
+            <!-- Modal content -->
+            <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+                <!-- Modal header -->
+                <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+                    <div>
+                        <h3 id="modalTitle" class="text-lg font-semibold text-gray-900 dark:text-white">
+                            Report Parameters
+                        </h3>
+                        <p id="modalDescription" class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            Set parameters to generate your report
+                        </p>
+                    </div>
+                    <button type="button" onclick="closeReportModal()"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+
+                <!-- Dynamic Form Container -->
+                <div id="formContainer" class="overflow-y-auto max-h-[70vh]">
+                    <!-- Forms will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Report configurations
+        const reportConfigs = {
+            'asset-summary': {
+                title: 'Asset Summary Report',
+                description: 'Select parameters for asset summary',
+                form: `
+            <form id="reportForm" class="space-y-4 ml-1 mr-1">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Asset Category</label>
+                        <select name="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                            <option value="">All Categories</option>
+                            @foreach ($categories ?? [] as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Status</label>
+                        <select name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                            <option value="">All Status</option>
+                            <option value="1">Available</option>
+                            <option value="2">Active</option>
+                            <option value="3">Assigned</option>
+                            <option value="4">Under Maintenance</option>
+                            <option value="5">Retired</option>
+                            <option value="6">Lost</option>
+                            <option value="7">Damaged</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Location</label>
+                        <select name="location" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                            <option value="">All Locations</option>
+                            @foreach ($locations ?? [] as $location)
+                                <option value="{{ $location->id }}">{{ $location->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Sort By</label>
+                        <select name="sort" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                            <option value="name">Asset Name</option>
+                            <option value="purchase_date">Purchase Date</option>
+                            <option value="cost">Cost</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-2 mt-4">
+                    <input type="checkbox" id="include_subcategories" name="include_subcategories" 
+                        class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500">
+                    <label for="include_subcategories" class="text-sm font-medium text-gray-900 dark:text-white">
+                        Include subcategories
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3 mt-6 pt-4 border-t dark:border-gray-600">
+                    <button type="button" onclick="closeReportModal()" 
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                        class="px-4 py-2 text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 rounded-lg focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700">
+                        Generate Report
+                    </button>
+                </div>
+            </form>
+        `
+            },
+            'odometer': {
+                title: 'Odometer Readings Report',
+                description: 'Select date range for odometer readings',
+                form: `
+            <form id="reportForm" class="space-y-4 ml-1 mr-1">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Select Vehicle</label>
+                        <select name="asset_id" id="asset_id" class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white" required>
+                            <option value="">Choose a vehicle...</option>
+                            @foreach ($vehicles ?? [] as $vehicle)
+                                <option value="{{ $vehicle->id }}">{{ $vehicle->name }} - {{ $vehicle->asset_code }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">From Date</label>
+                            <input type="date" name="from_date" 
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white" 
+                                required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">To Date</label>
+                            <input type="date" name="to_date" 
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white" 
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <input type="radio" id="pdf" name="format" value="pdf" checked
+                                class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 focus:ring-gray-500">
+                            <label for="pdf" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">PDF</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="radio" id="excel" name="format" value="excel"
+                                class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 focus:ring-gray-500">
+                            <label for="excel" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">Excel</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3 mt-6 pt-4 border-t dark:border-gray-600">
+                    <button type="button" onclick="closeReportModal()" 
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                        class="px-4 py-2 text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 rounded-lg focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700">
+                        Generate Report
+                    </button>
+                </div>
+            </form>
+        `
+            },
+            'maintenance': {
+                title: 'Maintenance History Report',
+                description: 'Select parameters for maintenance report',
+                form: `
+        <form id="reportForm" class="space-y-4 ml-1 mr-1">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Date Range</label>
+                    <select name="date_range" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                        <option value="this_month">This Month</option>
+                        <option value="last_month">Last Month</option>
+                        <option value="this_quarter">This Quarter</option>
+                        <option value="this_year">This Year</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Maintenance Type</label>
+                    <select name="type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                        <option value="0">All Types</option>
+                        <option value="1">Preventive</option>
+                        <option value="2">Corrective</option>
+                        <option value="3">Emergency</option>
+                        <option value="4">Inspection</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="customDateRange" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">From Date</label>
+                    <input type="date" name="from_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">To Date</label>
+                    <input type="date" name="to_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Include in Report</label>
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="include_costs" name="include_costs" checked
+                            class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500">
+                        <label for="include_costs" class="ml-2 text-sm text-gray-900 dark:text-white">Cost breakdown</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="include_technicians" name="include_technicians"
+                            class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500">
+                        <label for="include_technicians" class="ml-2 text-sm text-gray-900 dark:text-white">Technician details</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add format selection like odometer report -->
+            <div class="flex items-center space-x-4 mt-4">
+                <div class="flex items-center">
+                    <input type="radio" id="maintenance_pdf" name="format" value="pdf" checked
+                        class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 focus:ring-gray-500">
+                    <label for="maintenance_pdf" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">PDF</label>
+                </div>
+                <div class="flex items-center">
+                    <input type="radio" id="maintenance_excel" name="format" value="excel"
+                        class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 focus:ring-gray-500">
+                    <label for="maintenance_excel" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">Excel</label>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 mt-6 pt-4 border-t dark:border-gray-600">
+                <button type="button" onclick="closeReportModal()" 
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600">
+                    Cancel
+                </button>
+                <button type="submit" 
+                    class="px-4 py-2 text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 rounded-lg focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700">
+                    Generate Report
+                </button>
+            </div>
+        </form>
+    `
+            }
+        };
+
+        $(document).ready(function() {
+            $('#asset_id').select2({
+                placeholder: "Select vehicle",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+
+        // Modal functions
+        function openReportModal(reportType) {
+            const config = reportConfigs[reportType];
+            if (!config) return;
+
+            document.getElementById('modalTitle').textContent = config.title;
+            document.getElementById('modalDescription').textContent = config.description;
+            document.getElementById('formContainer').innerHTML = config.form;
+
+            // Show modal
+            document.getElementById('reportModal').classList.remove('hidden');
+            document.getElementById('reportModal').classList.add('flex');
+
+            // Add event listener for custom date range toggle if needed
+            if (reportType === 'maintenance') {
+                const dateRangeSelect = document.querySelector('select[name="date_range"]');
+                if (dateRangeSelect) {
+                    dateRangeSelect.addEventListener('change', function() {
+                        const customRange = document.getElementById('customDateRange');
+                        customRange.classList.toggle('hidden', this.value !== 'custom');
+                    });
+                }
+            }
+
+            // Add form submit handler
+            const form = document.getElementById('reportForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    generateReport(reportType, new FormData(this));
+                });
+            }
+        }
+
+        function closeReportModal() {
+            document.getElementById('reportModal').classList.add('hidden');
+            document.getElementById('reportModal').classList.remove('flex');
+            document.getElementById('formContainer').innerHTML = '';
+        }
+
+        function generateReport(reportType, formData) {
+            // Convert FormData to object
+            const params = Object.fromEntries(formData.entries());
+
+            // Build query string
+            const queryString = new URLSearchParams(params).toString();
+
+            // Generate report URL based on type
+            let url;
+            switch (reportType) {
+                case 'asset-summary':
+                    url = `/reports/asset-summary?${queryString}`;
+                    break;
+                case 'odometer':
+                    url = `/reports/odometer?${queryString}`;
+                    break;
+                case 'maintenance':
+                    url = `/reports/maintenance?${queryString}`;
+                    break;
+            }
+
+            // Open in new tab for PDF preview
+            if (params.format === 'excel') {
+                window.location.href = url; // Download Excel
+            } else {
+                window.open(url, '_blank'); // Preview PDF
+            }
+
+            closeReportModal();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('reportModal');
+            if (event.target === modal) {
+                closeReportModal();
+            }
+        }
+    </script>
+@endsection

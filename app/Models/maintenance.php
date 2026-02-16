@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class maintenance extends Model
+class Maintenance extends Model
 {
     protected $table = 'maintenances';
 
@@ -23,6 +23,9 @@ class maintenance extends Model
         'updated_by'
     ];
 
+    protected $casts = [
+        'scheduled_date' => 'date',
+    ];
     public function asset()
     {
         return $this->belongsTo(Asset::class, 'asset_id');

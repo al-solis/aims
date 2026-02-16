@@ -45,7 +45,7 @@
                         Print Selected (<span id="selected-count">0</span>)
                     </a>
 
-                    <a id="transfer-selected-btn" href="#" target="_blank"
+                    {{-- <a id="transfer-selected-btn" href="#" target="_blank"
                         class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-folder-symlink" viewBox="0 0 16 16">
@@ -55,7 +55,7 @@
                                 d="m.5 3 .04.87a2 2 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14h10.348a2 2 0 0 0 1.991-1.819l.637-7A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2m.694 2.09A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09l-.636 7a1 1 0 0 1-.996.91H2.826a1 1 0 0 1-.995-.91zM6.172 2a1 1 0 0 1 .707.293L7.586 3H2.19q-.362.002-.683.12L1.5 2.98a1 1 0 0 1 1-.98z" />
                         </svg>
                         Transfer Selected (<span id="selected-count">0</span>)
-                    </a>
+                    </a> --}}
 
                     <button onclick="clearSelection()"
                         class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200">

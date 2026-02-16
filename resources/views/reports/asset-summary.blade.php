@@ -6,7 +6,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Odometer Report</title>
+    <title>Asset Summary Report</title>
 
     <style>
         body {
@@ -54,6 +54,7 @@
             border: 1px solid #ccc;
             padding: 6px;
             text-align: left;
+            font-size: 9px;
         }
 
         table th {
@@ -66,6 +67,17 @@
 
         .footer {
             margin-top: 40px;
+        }
+
+        .page-number {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 8px;
+            color: #666;
+            padding: 5px 0;
+            border-top: 1px solid #ddd;
         }
 
         .signature {
@@ -106,62 +118,79 @@
         <div class="sub-title">{{ env('APP_COMPANY_CONTACT') }}</div>
         <br>
         <br>
-        <div class="sub-title" style="font-weight: bolder; font-size: 15px">ODOMETER REPORT</div>
-        <div class="sub-title">Asset: {{ $asset->asset_code }} : {{ $asset->name }}</div>
-        <div class="sub-title">Date Range: {{ Carbon::parse($fromDate)->format('F d, Y') }} -
-            {{ Carbon::parse($toDate)->format('F d, Y') }}</div>
+        <div class="sub-title" style="font-weight: bolder; font-size: 15px">ASSET SUMMARY REPORT</div>
         <div class="sub-title">Generated on: {{ now()->format('F d, Y') }}</div>
+        <div class="sub-title">Category: {{ $pCategory }}</div>
+        <div class="sub-title">Location: {{ $pLocation }}</div>
+        <div class="sub-title">Status: {{ $pStatus }}</div>
+        <div class="sub-title">Sort: {{ ucfirst($sortField) }}</div>
     </div>
 
     {{-- DETAILS --}}
     <div class="section">
         {{-- <div class="section-title">Report Details</div> --}}
-
         <table>
             <thead>
                 <tr>
-                    <th>Employee</th>
-                    <th>Date</th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Reading</th>
-                    <th>Remarks</th>
+                    <th>Asset ID</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Location</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                    <th>Purchase Date</th>
+                    <th>Cost</th>
                 </tr>
             </thead>
             <tbody>
                 @php $grandTotal = 0; @endphp
 
-                @foreach ($odometerReadings as $reading)
+                @foreach ($assets as $asset)
                     @php
-                        $grandTotal += $reading->to_reading - $reading->from_reading;
-                    @endphp
+                        $grandTotal += $asset->cost;
 
+                        $statuses = [
+                            1 => 'Available',
+                            2 => 'Active',
+                            3 => 'Assigned',
+                            4 => 'Maintenance',
+                            5 => 'Retired',
+                            6 => 'Lost',
+                            7 => 'Damaged',
+                        ];
+                    @endphp
                     <tr>
-                        <td>{{ $reading->employee->last_name ?? 'N/A' }}, {{ $reading->employee->first_name ?? 'N/A' }}
-                            {{ $reading->employee->middle_name ?? 'N/A' }}</td>
-                        <td>{{ Carbon::parse($reading->date)->format('m/d/Y') }}</td>
-                        <td class="text-right">{{ number_format($reading->from_reading, 0) }}</td>
-                        <td class="text-right">{{ number_format($reading->to_reading, 0) }}</td>
-                        <td class="text-right">{{ number_format($reading->to_reading - $reading->from_reading, 0) }}
+                        <td>{{ $asset->asset_code }}</td>
+                        <td>{{ $asset->name }}</td>
+                        <td>{{ $asset->category->name ?? 'N/A' }}</td>
+                        <td>{{ $asset->location->name ?? 'N/A' }}</td>
+                        <td>{{ $asset->assigned_user ? $asset->assigned_user->last_name . ', ' . $asset->assigned_user->first_name . ' ' . $asset->assigned_user->middle_name : '' }}
                         </td>
-                        <td>{{ $reading->remarks ?? '' }}</td>
+                        <td>{{ $statuses[$asset->status] ?? 'Unknown' }}</td>
+                        <td>{{ $asset->purchase_date ? Carbon::parse($asset->purchase_date)->format('m/d/Y') : 'N/A' }}
+                        </td>
+                        <td class="text-right">{{ $asset->cost ? number_format($asset->cost, 2) : 'N/A' }}</td>
+
                     </tr>
                 @endforeach
 
-                @if ($odometerReadings->isEmpty())
+                @if ($assets->isEmpty())
                     <tr>
-                        <td colspan="6" style="text-align: center; font-size: 11px; color: #555">No odometer readings
-                            found.</td>
+                        <td colspan="8" style="text-align: center; font-size: 11px; color: #555">No assets found.
+                        </td>
                     </tr>
                 @endif
                 <tr>
-                    <td colspan="4" class="text-right"><strong>Grand Total</strong></td>
+                    <td colspan="7" class="text-right"><strong>Grand Total</strong></td>
                     <td class="text-right"><strong>{{ number_format($grandTotal, 0) }}</strong></td>
-                    <td></td>
                 </tr>
             </tbody>
         </table>
         <p style="text-align: center; font-size: 8px; color:#555"><i>***Nothing Follows***</i></p>
+
+        {{-- <div class="page-number">
+            Page {PAGE_NUM} of {PAGE_COUNT} | Generated on {{ now()->format('F d, Y') }}
+        </div> --}}
 </body>
 
 </html>
