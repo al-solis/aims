@@ -77,10 +77,12 @@ class MainController extends Controller
 
             $daysLeft = $today->diffInDays($license->expiration_date, false);
 
+            $dayLabel = $daysLeft == 1 ? " day" : " days";
+
             $alerts->push([
                 'type' => 'License Expiry',
                 'message' => $license->asset->asset_code .
-                    ($daysLeft < 0 ? " expired" : " expires in {$daysLeft} days"),
+                    ($daysLeft < 0 ? " expired" : " expires in {$daysLeft} {$dayLabel}"),
                 'date' => $license->expiration_date,
                 'severity' => $daysLeft < 0 ? 4 : ($daysLeft <= 7 ? 3 : 2),
                 'icon' => 'bi-credit-card-2-front',
@@ -99,10 +101,20 @@ class MainController extends Controller
 
             $daysLeft = $today->diffInDays($clearance->expected_date, false);
 
+            if ($daysLeft < 0) {
+                $overdueDays = abs($daysLeft);
+                $dayLabel = $overdueDays == 1 ? "day" : "days";
+                $message = $clearance->employee->first_name .
+                    " clearance overdue by {$overdueDays} {$dayLabel}";
+            } else {
+                $dayLabel = $daysLeft == 1 ? "day" : "days";
+                $message = $clearance->employee->first_name .
+                    " clearance due in {$daysLeft} {$dayLabel}";
+            }
+
             $alerts->push([
                 'type' => 'Clearance Due',
-                'message' => $clearance->employee->first_name .
-                    " clearance due in {$daysLeft} days",
+                'message' => $message,
                 'date' => $clearance->expected_date,
                 'severity' => $daysLeft <= 3 ? 3 : 2,
                 'icon' => 'bi-person-bounding-box',
@@ -121,10 +133,20 @@ class MainController extends Controller
 
             $daysLeft = $today->diffInDays($maintenance->scheduled_date, false);
 
+            if ($daysLeft < 0) {
+                $overdueDays = abs($daysLeft);
+                $dayLabel = $overdueDays == 1 ? "day" : "days";
+                $message = $clearance->employee->first_name .
+                    " clearance overdue by {$overdueDays} {$dayLabel}";
+            } else {
+                $dayLabel = $daysLeft == 1 ? "day" : "days";
+                $message = $clearance->employee->first_name .
+                    " clearance due in {$daysLeft} {$dayLabel}";
+            }
+
             $alerts->push([
                 'type' => 'Maintenance Due',
-                'message' => $maintenance->asset->asset_code .
-                    " scheduled in {$daysLeft} days",
+                'message' => $message,
                 'date' => $maintenance->scheduled_date,
                 'severity' => $daysLeft <= 3 ? 3 : 2,
                 'icon' => 'bi-tools',

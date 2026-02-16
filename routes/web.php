@@ -101,6 +101,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/asset/{assetId}/odometer-readings', [OdometerController::class, 'getOdometerReadings'])->name('asset.odometer.readings');
     Route::delete('/asset/odometer/{id}', [OdometerController::class, 'destroy'])->name('asset.odometer.destroy');
     Route::get('/asset/odometer/{id}', [OdometerController::class, 'getReading'])->name('asset.odometer.get');
+    Route::get('/asset/{assetId}/odometer/print', [OdometerController::class, 'printOdometer'])->name('asset.odometer.print');
 
     Route::get('/validate-transfer-date', [TransferController::class, 'validateTransferDate'])->name('asset.transfer.validate-date');
     Route::get('/get-last-transfer-code/{assetId}', [TransferController::class, 'getLastTransferCode'])->name('asset.transfer.last-code');

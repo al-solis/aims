@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Odometer;
 use App\Models\Asset;
 use App\Models\Employee;
@@ -30,10 +31,15 @@ class OdometerController extends Controller
 
     public function getOdometerReadings($assetId)
     {
-        $odometerReadings = Odometer::with('employee:id,first_name,middle_name,last_name')
+        $odometerReadings = Odometer::with('employee:id,first_name,middle_name,last_name', 'asset')
             ->where('asset_id', $assetId)
             ->orderBy('date', 'desc')
+            ->orderBy('from_reading', 'desc')
             ->get();
+
+        $odometerReadings->each(function ($reading) {
+            $reading->can_be_transferred = $reading->asset ? $reading->asset->canBeTransferred() : false;
+        });
 
         return response()->json([
             'odometer' => $odometerReadings
@@ -42,8 +48,10 @@ class OdometerController extends Controller
 
     public function getReading($id)
     {
-        $odometer = Odometer::with('employee:id,first_name,middle_name,last_name')
+        $odometer = Odometer::with('employee:id,first_name,middle_name,last_name', 'asset')
             ->findOrFail($id);
+
+        $odometer->can_be_transferred = $odometer->asset ? $odometer->asset->canBeTransferred() : false;
 
         return response()->json([
             'success' => true,
@@ -81,7 +89,8 @@ class OdometerController extends Controller
             'created_at' => now(),
         ]);
 
-        $odometer->load('employee:id,first_name,middle_name,last_name');
+        $odometer->load('employee:id,first_name,middle_name,last_name', 'asset');
+        $odometer->can_be_transferred = $odometer->asset ? $odometer->asset->canBeTransferred() : false;
 
         return response()->json([
             'message' => 'Odometer reading added successfully',
@@ -119,7 +128,8 @@ class OdometerController extends Controller
             'updated_at' => now(),
         ]);
 
-        $odometer->load('employee:id,first_name,middle_name,last_name');
+        $odometer->load('employee:id,first_name,middle_name,last_name', 'asset');
+        $odometer->can_be_transferred = $odometer->asset ? $odometer->asset->canBeTransferred() : false;
 
         return response()->json(
             ['odometer' => $odometer]
@@ -131,4 +141,44 @@ class OdometerController extends Controller
         Odometer::findOrFail($id)->delete();
         return response()->json(['success' => true]);
     }
+
+    public function printOdometer(Request $request, $assetId)
+    {
+        $request->validate([
+            'from_date' => 'required|date',
+            'to_date' => 'required|date|after_or_equal:from_date',
+        ]);
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+
+        $asset = Asset::findOrFail($assetId);
+
+        $query = Odometer::with('employee:id,first_name,middle_name,last_name')
+            ->where('asset_id', $assetId);
+
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $query->whereBetween('date', [
+                $request->from_date,
+                $request->to_date
+            ]);
+        }
+
+        $odometerReadings = $query->orderBy('date', 'desc')->get();
+
+        $pdf = Pdf::loadView(
+            'reports.odometer',
+            compact(
+                'asset',
+                'odometerReadings',
+                'fromDate',
+                'toDate'
+            )
+        )
+            ->setPaper('letter', 'portrait');
+
+        return $pdf->stream('odometer-readings-' . $asset->asset_number . '.pdf');
+
+        //return $pdf->download('odometer-readings.pdf');
+    }
+
 }
