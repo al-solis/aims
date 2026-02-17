@@ -21,6 +21,7 @@ use App\Http\Controllers\MainController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\OdometerController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SuppliesCategoryController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -56,11 +57,9 @@ Route::middleware('auth')->group(function () {
     })->name('setup.index');
 
     Route::resource('setup/category', CategoryController::class)->except(['destroy']);
-
     Route::resource('setup/license', LicenseTypeController::class)->except(['destroy']);
-
     Route::resource('setup/idtype', IdTypeController::class)->except(['destroy']);
-
+    Route::resource('setup/supplies-category', SuppliesCategoryController::class)->except(['destroy']);
     // Route::post('/employee/{employee}/ids', [EmployeeIdController::class, 'store'])
     //     ->name('employee.ids.store');
 
