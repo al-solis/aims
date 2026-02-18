@@ -22,6 +22,9 @@ use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\OdometerController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SuppliesCategoryController;
+use App\Http\Controllers\UomController;
+use App\Http\Controllers\SuppliesController;
+use App\Http\Controllers\SupplierController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -60,6 +63,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('setup/license', LicenseTypeController::class)->except(['destroy']);
     Route::resource('setup/idtype', IdTypeController::class)->except(['destroy']);
     Route::resource('setup/supplies-category', SuppliesCategoryController::class)->except(['destroy']);
+    Route::resource('setup/uom', UomController::class)->except(['destroy']);
+    Route::resource('setup/supplier', SupplierController::class)->except(['destroy']);
     // Route::post('/employee/{employee}/ids', [EmployeeIdController::class, 'store'])
     //     ->name('employee.ids.store');
 
@@ -107,6 +112,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-last-transfer-code/{assetId}', [TransferController::class, 'getLastTransferCode'])->name('asset.transfer.last-code');
     Route::post('/transfer/{transferId}/void', [TransferController::class, 'voidTransfer'])->name('asset.transfer.void');
     Route::put('/asset/transfer/update/{id}', [TransferController::class, 'update'])->name('asset.transfer.update');
+
+    Route::post('/supplies/{id}', [SuppliesController::class, 'update'])->name('supplies.update');
+    Route::resource('supplies', SuppliesController::class)->except(['destroy']);
 
     Route::get('/licenses', [AssetLicenseController::class, 'index'])->name('licenses.index');
     Route::post('/licenses', [AssetLicenseController::class, 'store'])->name('licenses.store');
