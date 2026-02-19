@@ -8,9 +8,9 @@
         {{-- Header --}}
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-semibold text-gray-900">Recieve Supplies</h1>
+                <h1 class="text-2xl font-semibold text-gray-900">Supplies Issuance</h1>
                 <p class="text-sm text-gray-500">
-                    Receive supplies and update inventory.
+                    Issue supplies to employees and update inventory.
                 </p>
             </div>
             <div class="flex items-center gap-2 mt-0">
@@ -22,12 +22,12 @@
                     Back
                 </a>
 
-                <a href ="{{ route('receiving.create') }}"
+                <a href ="{{ route('issuance.create') }}"
                     class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
-                    Receive Item
+                    Issue Supplies
                 </a>
             </div>
         </div>
@@ -63,20 +63,6 @@
                 </div>
 
                 <div class="md:w-1/3 w-full">
-                    <select id="searchsupplier" name="searchsupplier"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                        onchange="this.form.submit()">
-                        <option value="">All Suppliers</option>
-                        @foreach ($suppliers as $supplier)
-                            <option value="{{ $supplier->id }}"
-                                {{ request('searchsupplier') == $supplier->id ? 'selected' : '' }}>
-                                {{ $supplier->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="md:w-1/3 w-full">
                     <select id="searchemployee" name="searchemployee" tooltip="Filter by employee who received the items"
                         data-tooltip-placement="top"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
@@ -90,6 +76,22 @@
                         @endforeach
                     </select>
                 </div>
+
+                <div class="md:w-1/3 w-full">
+                    <select id="searchlocation" name="searchlocation" tooltip="Filter by location"
+                        data-tooltip-placement="top"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                        onchange="this.form.submit()">
+                        <option value="">All Locations</option>
+                        @foreach ($locations as $location)
+                            <option value="{{ $location->id }}"
+                                {{ request('searchlocation') == $location->id ? 'selected' : '' }}>
+                                {{ $location->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
 
                 {{-- <div class="md:w-1/3 w-full">
                     <select id="status" name="status"
@@ -115,35 +117,37 @@
                 <thead class="bg-gray-200 text-gray-600">
                     <tr>
                         <th scope="col" class="px-4 py-3 text-left w-[120px]">Code</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Description</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Purpose</th>
                         <th scope="col" class="px-4 py-3 text-left w-[120px]">Date Created</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[120px]">Date Received</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Reference</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Supplier</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Received By</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[120px]">Date Issued</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Issued To</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Location</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Remarks</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
                 </thead>
 
                 <tbody class="divide-y">
-                    @forelse($receivings as $receiving)
+                    @forelse($issuances as $issuance)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 w-[120px]">{{ $receiving->transaction_number }}</td>
-                            <td class="px-4 py-3 w-[150px]">{{ $receiving->description }}</td>
+                            <td class="px-4 py-3 w-[120px]">{{ $issuance->issuance_number }}</td>
+                            <td class="px-4 py-3 w-[150px]">{{ $issuance->purpose }}</td>
                             <td class="px-4 py-3 w-[120px]">
-                                {{ Carbon::parse($receiving->created_at)->format(format: 'Y-m-d') }}</td>
+                                {{ Carbon::parse($issuance->created_at)->format(format: 'Y-m-d') }}</td>
                             <td class="px-4 py-3 w-[120px]">
-                                {{ Carbon::parse($receiving->received_date)->format(format: 'Y-m-d') }}</td>
-                            <td class="px-4 py-3 w-[150px]">{{ $receiving->reference }}</td>
-                            <td class="px-4 py-3 w-[150px]">{{ $receiving->supplier->name }}</td>
+                                {{ Carbon::parse($issuance->issuance_date)->format(format: 'Y-m-d') }}</td>
                             <td class="px-4 py-3 w-[150px]">
-                                {{ $receiving->received_by ? $receiving->receiver->last_name . ', ' . $receiving->receiver->first_name . ' ' . $receiving->receiver->middle_name : '' }}
+                                {{ $issuance->issued_to ? $issuance->issuedTo->last_name . ', ' . $issuance->issuedTo->first_name . ' ' . $issuance->issuedTo->middle_name : '' }}
+                            </td>
+                            <td class="px-4 py-3 w-[150px]">{{ $issuance->location ? $issuance->location->name : '' }}</td>
+                            <td class="px-4 py-3 w-[150px]">
+                                {{ $issuance->received_by ? $issuance->receiver->last_name . ', ' . $issuance->receiver->first_name . ' ' . $issuance->receiver->middle_name : '' }}
                             </td>
                             <td class="px-4 py-3 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
-                                    <button type="button" title="View Receiving : {{ $receiving->transaction_number }}"
+                                    <button type="button" title="View Issuance : {{ $issuance->issuance_number }}"
                                         data-modal-target="view-modal" data-modal-toggle="view-modal"
-                                        onclick="viewReceiving({{ $receiving->id }})"
+                                        onclick="viewIssuance({{ $issuance->id }})"
                                         class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -155,8 +159,8 @@
                                         {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
                                     </button>
 
-                                    <a href="{{ route('receiving.print', $receiving->id) }}" type="button" target="_blank"
-                                        title="Print receipt : {{ $receiving->transaction_number }}"
+                                    <a href="" type="button" target="_blank"
+                                        title="Print issuance : {{ $issuance->issuance_number }}"
                                         class="group flex space-x-1 text-gray-500 hover:text-yellow-600 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
@@ -166,10 +170,9 @@
                                         </svg>
                                     </a>
 
-                                    @if ($receiving->status == 2)
-                                        <button type="button"
-                                            title="Voided already : {{ $receiving->transaction_number }}" disabled
-                                            class="group flex space-x-1 text-gray-300 cursor-not-allowed">
+                                    @if ($issuance->status == 0)
+                                        <button type="button" title="Voided already : {{ $issuance->issuance_number }}"
+                                            disabled class="group flex space-x-1 text-gray-300 cursor-not-allowed">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                                                 <path
@@ -180,12 +183,9 @@
                                             {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
                                         </button>
                                     @else
-                                        <button type="button"
-                                            title="Void Receiving : {{ $receiving->transaction_number }}"
-                                            data-id="{{ $receiving->id }}"
-                                            data-code="{{ $receiving->transaction_number }}"
-                                            data-description="{{ $receiving->description }}"
-                                            onclick="voidReceiving(this)"
+                                        <button type="button" title="Void Issuance : {{ $issuance->issuance_number }}"
+                                            data-id="{{ $issuance->id }}" data-code="{{ $issuance->issuance_number }}"
+                                            data-description="{{ $issuance->purpose }}" onclick="voidIssuance(this)"
                                             class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -203,7 +203,7 @@
                     @empty
                         <tr>
                             <td colspan="9" class="px-4 py-6 text-center text-gray-500">
-                                No received items found.
+                                No issued items found.
                             </td>
                         </tr>
                     @endforelse
@@ -213,7 +213,7 @@
         <!-- Pagination Links -->
         <div
             class="w-full md:w-auto text-xs flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0 mb-2">
-            {{ $receivings->links() }}
+            {{ $issuances->links() }}
         </div>
     </div>
 
@@ -251,51 +251,45 @@
 
                             <!-- ================= LEFT SIDE (HEADER INFO) ================= -->
                             <div>
-                                <h3 class="text-sm font-semibold mb-3">Receipt Information</h3>
+                                <h3 class="text-sm font-semibold mb-3">Issuance Information</h3>
 
                                 <!-- HEADER 2 COLUMN GRID -->
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
                                     <div>
-                                        <label class="block text-xs font-medium">Receipt No</label>
+                                        <label class="block text-xs font-medium">Issuance No</label>
                                         <input type="text" id="view_code"
                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
                                     </div>
 
                                     <div>
-                                        <label class="block text-xs font-medium">Receipt Date</label>
+                                        <label class="block text-xs font-medium">Issuance Date</label>
                                         <input type="date" id="view_date"
                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
                                     </div>
 
-                                    <div>
-                                        <label class="block text-xs font-medium">Description</label>
-                                        <input type="text" id="view_description"
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-medium">Purpose</label>
+                                        <input type="text" id="view_purpose"
                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
                                     </div>
 
                                     <div>
-                                        <label class="block text-xs font-medium">Reference</label>
-                                        <input type="text" id="view_reference"
+                                        <label class="block text-xs font-medium">Issued To</label>
+                                        <input type="text" id="view_issued_to"
                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
                                     </div>
 
                                     <div>
-                                        <label class="block text-xs font-medium">Supplier</label>
-                                        <input type="text" id="view_supplier"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-xs font-medium">Received By</label>
-                                        <input type="text" id="view_received_by"
+                                        <label class="block text-xs font-medium">Location</label>
+                                        <input type="text" id="view_location"
                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
                                     </div>
 
                                     <div class="sm:col-span-2">
                                         <label class="block text-xs font-medium">Remarks</label>
                                         <textarea id="view_remarks" rows="3"
-                                            class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"></textarea>
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"></textarea>
                                     </div>
 
                                 </div>
@@ -306,7 +300,7 @@
                             <div>
                                 <div class="border rounded-lg p-3">
 
-                                    <h3 class="text-sm font-semibold mb-2">Receipt Details</h3>
+                                    <h3 class="text-sm font-semibold mb-2">Issuance Details</h3>
 
                                     <div class="overflow-x-auto">
                                         <table class="w-full text-xs text-left border">
@@ -372,10 +366,10 @@
             return `${year}-${month}-${day}`;
         }
 
-        function viewReceiving(id) {
+        function viewIssuance(id) {
 
             $.ajax({
-                url: '/receiving/' + id,
+                url: '/issuance/' + id,
                 type: 'GET',
                 success: function(response) {
 
@@ -383,17 +377,17 @@
 
                         let data = response.data;
                         $(document.getElementById('formLabel')).text(
-                            `View Receiving Details ${data.status == 2 ? '(Voided)' : ''}`
+                            `View Issuance Details ${data.status == 0 ? '(Voided)' : ''}`
                         );
                         // ================= HEADER =================
                         $('#view_id').val(data.id);
-                        $('#view_code').val(data.transaction_number);
-                        $('#view_date').val(formatDateForInput(data.received_date));
+                        $('#view_code').val(data.issuance_number);
+                        $('#view_date').val(formatDateForInput(data.issuance_date));
+                        $('#view_purpose').val(data.purpose);
                         $('#view_reference').val(data.reference);
-                        $('#view_description').val(data.description);
-                        $('#view_supplier').val(data.supplier ? data.supplier.name : '');
-                        $('#view_received_by').val(data.received_by ? data.receiver.last_name + ', ' + data
-                            .receiver.first_name + ' ' + data.receiver.middle_name : '');
+                        $('#view_issued_to').val(data.issued_to ? data.issued_to.last_name + ', ' + data
+                            .issued_to.first_name + ' ' + data.issued_to.middle_name : '');
+                        $('#view_location').val(data.location ? data.location.name : '');
                         $('#view_remarks').val(data.remarks);
 
                         // ================= DETAILS TABLE =================
@@ -402,15 +396,15 @@
 
                         data.details.forEach(function(item) {
 
-                            grandTotal += parseFloat(item.total_price);
+                            grandTotal += parseFloat(item.total_cost);
 
                             rows += `
                         <tr>
-                            <td class="border px-3 py-2">${item.product.name}</td>
+                            <td class="border px-3 py-2">${item.supply.name}</td>
                             <td class="border px-3 py-2 text-right">${parseFloat(item.quantity).toFixed(2)}</td>
                             <td class="border px-3 py-2">${item.uom.name}</td>
-                            <td class="border px-3 py-2 text-right">${parseFloat(item.unit_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                            <td class="border px-3 py-2 text-right">${parseFloat(item.total_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            <td class="border px-3 py-2 text-right">${parseFloat(item.unit_cost).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            <td class="border px-3 py-2 text-right">${parseFloat(item.total_cost).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                         </tr>
                     `;
                         });
@@ -431,16 +425,16 @@
 
         }
 
-        function voidReceiving(button) {
-            const receivingId = button.getAttribute('data-id');
+        function voidIssuance(button) {
+            const issuanceId = button.getAttribute('data-id');
             const description = button.getAttribute('data-description');
             const code = button.getAttribute('data-code');
 
             if (confirm(
-                    `Are you sure you want to void the receiving: "${code} - ${description}"? This action cannot be undone.`
+                    `Are you sure you want to void the issuance: "${code} - ${description}"? This action cannot be undone.`
                 )) {
                 $.ajax({
-                    url: `/receiving/${receivingId}/void`,
+                    url: `/issuance/${issuanceId}/void`,
                     type: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}'

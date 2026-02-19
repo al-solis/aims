@@ -26,6 +26,7 @@ use App\Http\Controllers\UomController;
 use App\Http\Controllers\SuppliesController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ReceivingController;
+use App\Http\Controllers\IssuanceController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -119,11 +120,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/receiving/{id}/print', [ReceivingController::class, 'print'])->name('receiving.print');
     Route::post('/receiving/{id}/void', [ReceivingController::class, 'void'])->name('receiving.void');
 
+    Route::get('/issuance/create', [IssuanceController::class, 'create'])->name('issuance.create');
+    Route::get('/issuance/{id}', [IssuanceController::class, 'show']);
+    Route::get('/issuance/{id}/print', [IssuanceController::class, 'print'])->name('issuance.print');
+    Route::post('/issuance/{id}/void', [IssuanceController::class, 'void'])->name('issuance.void');
+    Route::get('/issuance', [IssuanceController::class, 'index'])->name('issuance.index');
+
+    Route::post('/issuance', [IssuanceController::class, 'store'])->name('issuance.store');
+
     Route::resource('/supplies/receiving', ReceivingController::class)->except(['destroy']);
     Route::post('/supplies/{id}', [SuppliesController::class, 'update'])->name('supplies.update');
 
     Route::resource('supplies', SuppliesController::class)->except(['destroy']);
-
 
 
     Route::get('/licenses', [AssetLicenseController::class, 'index'])->name('licenses.index');

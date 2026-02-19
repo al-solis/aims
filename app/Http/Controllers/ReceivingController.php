@@ -117,7 +117,6 @@ class ReceivingController extends Controller
                     'total_price' => $item['total_price'],
                 ]);
 
-                // Update inventory (if you have inventory tracking)
                 $this->updateInventory($item['supplies_id'], $item['quantity']);
             }
 
@@ -159,8 +158,8 @@ class ReceivingController extends Controller
     {
         $supply = Supplies::find($productId);
         if ($supply) {
-            $supply->available_stock += $quantity;
-            $supply->total_stock += $quantity;
+            $supply->available_stock -= $quantity;
+            $supply->total_stock -= $quantity;
             $supply->save();
         }
     }

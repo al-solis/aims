@@ -42,7 +42,7 @@
                     Receiving
                 </a>
 
-                <a href =""
+                <a href ="{{ route('issuance.index') }}"
                     class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-folder-symlink" viewBox="0 0 16 16">

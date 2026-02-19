@@ -29,65 +29,59 @@
         <div class="bg-white rounded-xl shadow-xs p-3 sm:p-8">
             <div class="text-center mb-4">
                 <h2 class="text-2xl md:text-3xl font-bold text-gray-800">
-                    Supply Receiving
+                    Supplies Issuance
                 </h2>
                 <p class="text-sm text-gray-600">
-                    Receive items to update inventory.
+                    Issue items to update inventory.
                 </p>
             </div>
             <hr style="border: 0; height: 1px; background-color: #ccc; margin: 10px 0;">
 
-            <form action="{{ route('receiving.store') }}" method="POST" id="receivingForm">
+            <form action="{{ route('issuance.store') }}" method="POST" id="issuanceForm">
                 @csrf
                 <div class="grid ml-1 mr-1 mt-2 gap-2 mb-2 sm:grid-cols-2">
                     <div class="sm:col-span-1">
-                        <label for="description"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Description*</label>
-                        <input type="text" name="description" id="description"
+                        <label for="purpose"
+                            class="block text-xs font-medium text-gray-900 dark:text-white">Purpose*</label>
+                        <input type="text" name="purpose" id="purpose"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="Type receiving description." required></input>
+                            placeholder="Purpose of item issuance" required></input>
                     </div>
 
                     <div class="sm:col-span-1">
-                        <label for="received_date" class="block text-xs font-medium text-gray-900 dark:text-white">Received
+                        <label for="issuance_date" class="block text-xs font-medium text-gray-900 dark:text-white">Issuance
                             Date*</label>
-                        <input type="date" name="received_date" id="received_date" max="{{ now()->format('Y-m-d') }}"
+                        <input type="date" name="issuance_date" id="issuance_date" max="{{ now()->format('Y-m-d') }}"
                             value="{{ now()->format('Y-m-d') }}"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                             required></input>
                     </div>
 
                     <div class="sm:col-span-1">
-                        <label for="reference_no" class="block text-xs font-medium text-gray-900 dark:text-white">Reference
-                            No*</label>
-                        <input type="text" name="reference_no" id="reference_no"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="Type reference/ PO number." required></input>
-                    </div>
-
-                    <div class="sm:col-span-1">
-                        <label for="supplier_id"
-                            class="select2 block text-xs font-medium text-gray-900 dark:text-white">Supplier*</label>
-                        <select id="supplier_id" name="supplier_id"
+                        <label for="issued_to"
+                            class="select2 block text-xs font-medium text-gray-900 dark:text-white">Issued To*</label>
+                        <select id="issued_to" name="issued_to"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                             required>
-                            <option value="">Select supplier</option>
-                            @foreach ($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                            <option value="">Select employee</option>
+                            @foreach ($employees as $employee)
+                                <option value="{{ $employee->id }}" data-loc="{{ $employee->location_id }}">
+                                    {{ $employee->last_name }}, {{ $employee->first_name }}
+                                    {{ $employee->middle_name }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     <div class="sm:col-span-1">
-                        <label for="employee_id"
-                            class="select2 block text-xs font-medium text-gray-900 dark:text-white">Received By*</label>
-                        <select id="employee_id" name="employee_id"
+                        <input type="hidden" name="location_id" id="location_id">
+                        <label for="location_name"
+                            class="select2 block text-xs font-medium text-gray-900 dark:text-white">Location*</label>
+                        <select id="location_name" name="location_name"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                             required>
-                            <option value="">Select employee</option>
-                            @foreach ($employees as $employee)
-                                <option value="{{ $employee->id }}">{{ $employee->last_name }}, {{ $employee->first_name }}
-                                    {{ $employee->middle_name }}</option>
+                            <option value="">Select location</option>
+                            @foreach ($locations as $location)
+                                <option value="{{ $location->id }}">{{ $location->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -97,10 +91,13 @@
                             class="block text-xs font-medium text-gray-900 dark:text-white">Remarks</label>
                         <textarea name="remarks" id="remarks" rows="3"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="Provide receiving details, etc."></textarea>
+                            placeholder="Provide issuance details, etc."></textarea>
                     </div>
 
-                    <div class="sm:col-span-1">
+                </div>
+
+                <div class="grid ml-1 mr-1 mt-2 gap-2 mb-2 sm:grid-cols-4">
+                    <div class="sm:col-span-2">
                         <label for="supplies_id"
                             class="select2 block text-xs font-medium text-gray-900 dark:text-white">Product*</label>
                         <select id="supplies_id" name="supplies_id"
@@ -108,13 +105,16 @@
                             <option value="">Select item</option>
                             @foreach ($supplies as $supply)
                                 <option value="{{ $supply->id }}" data-name="{{ $supply->name }}"
-                                    data-code="{{ $supply->code }}" data-uom="{{ $supply->uom_id }}">{{ $supply->code }}
+                                    data-code="{{ $supply->code }}" data-uom="{{ $supply->uom_id }}"
+                                    data-price="{{ $supply->unit_price }}">
+                                    {{ $supply->code }}
                                     ({{ $supply->name }})
                                 </option>
                             @endforeach
                         </select>
                     </div>
 
+                    <input type="hidden" name="unit_price" id="unit_price">
                     <div class="sm:col-span-1">
                         <input type="hidden" name="uom_id" id="uom_id">
                         <label for="uom_name"
@@ -131,15 +131,7 @@
                     <div class="sm:col-span-1">
                         <label for="quantity"
                             class="block text-xs font-medium text-gray-900 dark:text-white">Quantity*</label>
-                        <input type="number" name="quantity" id="quantity" step="0.01" min="0.01"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="0.00">
-                    </div>
-
-                    <div class="sm:col-span-1">
-                        <label for="unit_price" class="block text-xs font-medium text-gray-900 dark:text-white">Unit
-                            Price*</label>
-                        <input type="number" name="unit_price" id="unit_price" step="0.01" min="0"
+                        <input type="number" name="quantity" id="quantity" step="0.01" min="0"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                             placeholder="0.00">
                     </div>
@@ -150,9 +142,10 @@
                             Add Item
                         </button>
                     </div>
+
                 </div>
 
-                <h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">Item/s Received</h3>
+                <h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">Item/s Issued</h3>
                 <div class="bg-white border rounded-xl overflow-x-auto overflow-y-auto md:overflow-visible scroll-smooth">
                     <table class="min-w-full text-xs">
                         <thead class="bg-gray-200 text-gray-600">
@@ -166,7 +159,7 @@
                             </tr>
                         </thead>
 
-                        <tbody id="receivingBody" class="divide-y">
+                        <tbody id="issuanceBody" class="divide-y">
                             {{-- Dynamic rows will be added here via JavaScript --}}
                         </tbody>
                         <tfoot>
@@ -184,7 +177,7 @@
 
                 <hr style="border: 0; height: 1px; background-color: #ccc; margin: 10px 0;">
                 <div class="mt-5 flex justify-end gap-x-2">
-                    <a href="{{ route('receiving.index') }}" type="button" id="closeButton"
+                    <a href="{{ route('issuance.index') }}" type="button" id="closeButton"
                         class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 ">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -257,6 +250,8 @@
 
             $('#supplies_id').on('change', function() {
                 let uomId = $(this).find(':selected').data('uom');
+                let price = $(this).find(':selected').data('price');
+                $('#unit_price').val(price);
 
                 if (uomId) {
                     $('#uom_id').val(uomId);
@@ -265,10 +260,17 @@
                 $('#uom_name').prop('disabled', true);
             });
 
-            $('#employee_id').select2({
+            $('#issued_to').select2({
                 placeholder: "Select employee",
                 allowClear: true,
                 width: '100%'
+            });
+
+            $('#issued_to').on('change', function() {
+                let locId = $(this).find(':selected').data('loc');
+                $('#location_id').val(locId);
+                $('#location_name').val(locId).trigger('change');
+                $('#location_name').prop('disabled', true);
             });
 
             $('#supplier_id').select2({
@@ -358,7 +360,7 @@
         }
 
         function renderTable() {
-            const tbody = $('#receivingBody');
+            const tbody = $('#issuanceBody');
             tbody.empty();
 
             if (items.length === 0) {
@@ -379,10 +381,7 @@
                                 onchange="updateItem(${item.id}, 'quantity', this.value)">
                         </td>
                         <td class="px-4 py-2">${item.uom_text}</td>
-                        <td class="px-4 py-2">
-                            <input type="number" step="0.01" min="0" value="${item.unit_price}" 
-                                class="price-input w-24 px-2 py-1 border rounded text-xs" 
-                                onchange="updateItem(${item.id}, 'unit_price', this.value)">
+                        <td class="px-4 py-2">${item.unit_price}</td>
                         </td>
                         <td class="px-4 py-2 total-cell">${formatNumber(item.total_price)}</td>
                         <td class="px-4 py-2">
@@ -465,7 +464,7 @@
         }
 
         // Form submission validation
-        $('#receivingForm').submit(function(e) {
+        $('#issuanceForm').submit(function(e) {
             if (items.length === 0) {
                 e.preventDefault();
                 showToast('Please add at least one item', 'error');
@@ -473,13 +472,11 @@
             }
 
             // Validate main form fields
-            const description = $('#description').val();
-            const receivedDate = $('#received_date').val();
-            const referenceNo = $('#reference_no').val();
-            const supplierId = $('#supplier_id').val();
-            const employeeId = $('#employee_id').val();
+            const purpose = $('#purpose').val();
+            const issuanceDate = $('#issuance_date').val();
+            const issuedTo = $('#issued_to').val();
 
-            if (!description || !receivedDate || !referenceNo || !supplierId || !employeeId) {
+            if (!purpose || !issuanceDate || !issuedTo) {
                 e.preventDefault();
                 showToast('Please fill in all required fields', 'error');
                 return false;

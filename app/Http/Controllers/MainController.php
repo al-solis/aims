@@ -14,6 +14,7 @@ use App\Models\clearance_header as ClearanceHeader;
 use App\Models\clearance_detail as ClearanceDetail;
 use App\Models\employee;
 use App\Models\setting;
+use App\Models\Supplies;
 
 
 class MainController extends Controller
@@ -45,23 +46,6 @@ class MainController extends Controller
             ->map(function ($group) {
                 return $group->count();
             });
-
-        // $today = Carbon::today();
-        // $alertDays = (int) setting::where('key', 'license_expiring_days')->first()->value ?? 30;
-
-        // $licenseExpirations = AssetLicense::with('asset')
-        //     ->whereDate('expiration_date', '<=', $today->copy()->addDays($alertDays))
-        //     ->get();
-
-        // $clearanceExpirations = ClearanceHeader::with('employee')
-        //     ->whereIn('status', [0, 1, 3])
-        //     ->whereDate('expected_date', '<=', $today->copy()->addDays($alertDays))
-        //     ->get();
-
-        // $maintenanceAlerts = Maintenance::with('asset')
-        //     ->whereIn('status', [1, 2])
-        //     ->whereDate('scheduled_date', '<=', $today->copy()->addDays($alertDays))
-        //     ->get();
 
         $today = Carbon::today();
         $alertDays = (int) (setting::where('key', 'license_expiring_days')->first()->value ?? 30);
@@ -155,10 +139,31 @@ class MainController extends Controller
             ]);
         }
 
+        /* ================= SUPPLIES ALERTS ================= */
+        $suppliesAlert = Supplies::where('status', [1])
+            ->whereColumn('available_stock', '<=', 'reorder_quantity')
+            ->get();
+
+        foreach ($suppliesAlert as $supplies) {
+            $severity = $supplies->available_stock == 0 ? 5 : 3;
+
+            $alerts->push([
+                'type' => 'Supplies Alert',
+                'message' => $supplies->available_stock == 0
+                    ? $supplies->name . " is OUT OF STOCK"
+                    : $supplies->name . " is below reorder level",
+                'date' => $supplies->updated_at,
+                'severity' => $severity,
+                'icon' => 'bi-cart-x',
+                'color' => $supplies->available_stock == 0 ? 'dark' : 'red',
+                'url' => route('supplies.index')
+            ]);
+        }
+
         /* ================= SORT + LIMIT ================= */
         $alerts = $alerts
             ->sortBy('date')
-            ->take(5)
+            ->take(10)
             ->values();
 
 
