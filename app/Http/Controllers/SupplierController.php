@@ -75,7 +75,7 @@ class SupplierController extends Controller
             'edit_address' => 'nullable|string|max:255',
             'edit_status' => 'required|boolean',
         ]);
-
+        // dd($request->all());
         $supplier = Supplier::findOrFail($id);
         $supplier->update([
             'name' => $request->edit_name,

@@ -25,6 +25,7 @@ use App\Http\Controllers\SuppliesCategoryController;
 use App\Http\Controllers\UomController;
 use App\Http\Controllers\SuppliesController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\ReceivingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -113,8 +114,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/transfer/{transferId}/void', [TransferController::class, 'voidTransfer'])->name('asset.transfer.void');
     Route::put('/asset/transfer/update/{id}', [TransferController::class, 'update'])->name('asset.transfer.update');
 
+    Route::resource('/supplies/receiving', ReceivingController::class)->except(['destroy']);
     Route::post('/supplies/{id}', [SuppliesController::class, 'update'])->name('supplies.update');
+
     Route::resource('supplies', SuppliesController::class)->except(['destroy']);
+
+
 
     Route::get('/licenses', [AssetLicenseController::class, 'index'])->name('licenses.index');
     Route::post('/licenses', [AssetLicenseController::class, 'store'])->name('licenses.store');

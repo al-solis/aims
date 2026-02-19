@@ -27,7 +27,7 @@ return new class extends Migration {
             $table->decimal('allocated_stock', 10, 2)->default(0);
             $table->decimal('available_stock', 10, 2)->default(0);
             $table->decimal('total_stock', 10, 2)->default(0);
-            $table->integer('status')->default(1);
+            $table->integer('status')->default(1); // 0 = inactive, 1 = active
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users');
             $table->unsignedBigInteger('updated_by')->nullable();
