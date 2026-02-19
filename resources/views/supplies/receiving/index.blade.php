@@ -76,6 +76,21 @@
                     </select>
                 </div>
 
+                <div class="md:w-1/3 w-full">
+                    <select id="searchemployee" name="searchemployee" tooltip="Filter by employee who received the items"
+                        data-tooltip-placement="top"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                        onchange="this.form.submit()">
+                        <option value="">All Employees</option>
+                        @foreach ($employees as $employee)
+                            <option value="{{ $employee->id }}"
+                                {{ request('searchemployee') == $employee->id ? 'selected' : '' }}>
+                                {{ $employee->last_name }}, {{ $employee->first_name }} {{ $employee->middle_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 {{-- <div class="md:w-1/3 w-full">
                     <select id="status" name="status"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
@@ -101,7 +116,8 @@
                     <tr>
                         <th scope="col" class="px-4 py-3 text-left w-[120px]">Code</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Description</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[200px]">Received Date</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[120px]">Date Created</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[120px]">Date Received</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Reference</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Supplier</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Received By</th>
@@ -114,7 +130,9 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3 w-[120px]">{{ $receiving->transaction_number }}</td>
                             <td class="px-4 py-3 w-[150px]">{{ $receiving->description }}</td>
-                            <td class="px-4 py-3 w-[200px]">
+                            <td class="px-4 py-3 w-[120px]">
+                                {{ Carbon::parse($receiving->created_at)->format(format: 'Y-m-d') }}</td>
+                            <td class="px-4 py-3 w-[120px]">
                                 {{ Carbon::parse($receiving->received_date)->format(format: 'Y-m-d') }}</td>
                             <td class="px-4 py-3 w-[150px]">{{ $receiving->reference }}</td>
                             <td class="px-4 py-3 w-[150px]">{{ $receiving->supplier->name }}</td>
@@ -125,15 +143,7 @@
                                 <div class="flex items-center justify-center space-x-2">
                                     <button type="button" title="View Receiving : {{ $receiving->transaction_number }}"
                                         data-modal-target="view-modal" data-modal-toggle="view-modal"
-                                        data-id="{{ $receiving->id }}" data-description="{{ $receiving->description }}"
-                                        data-received_date="{{ $receiving->received_date }}"
-                                        data-reference="{{ $receiving->reference }}"
-                                        data-supplier_id="{{ $receiving->supplier_id }}"
-                                        data-received_by="{{ $receiving->received_by }}"
-                                        data-unit_price="{{ $receiving->unit_price }}"
-                                        data-reorder_quantity="{{ $receiving->reorder_quantity }}"
-                                        data-available_stock="{{ $receiving->available_stock }}"
-                                        onclick="openViewModal(this)"
+                                        onclick="viewReceiving({{ $receiving->id }})"
                                         class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -145,20 +155,37 @@
                                         {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
                                     </button>
 
-                                    <button type="button" title="Void Receiving : {{ $receiving->transaction_number }}"
-                                        data-id="{{ $receiving->id }}" data-description="{{ $receiving->description }}"
-                                        onclick="voidReceiving(this)"
-                                        class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                            <<path
-                                                d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                                            <path
-                                                d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-                                        </svg>
-                                        {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
-                                    </button>
-
+                                    @if ($receiving->status == 2)
+                                        <button type="button"
+                                            title="Voided already : {{ $receiving->transaction_number }}" disabled
+                                            class="group flex space-x-1 text-gray-300 cursor-not-allowed">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                                <path
+                                                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                            </svg>
+                                            {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
+                                        </button>
+                                    @else
+                                        <button type="button"
+                                            title="Void Receiving : {{ $receiving->transaction_number }}"
+                                            data-id="{{ $receiving->id }}"
+                                            data-code="{{ $receiving->transaction_number }}"
+                                            data-description="{{ $receiving->description }}"
+                                            onclick="voidReceiving(this)"
+                                            class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                                <path
+                                                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                            </svg>
+                                            {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -179,6 +206,132 @@
         </div>
     </div>
 
+    <!-- Modal  View-->
+    <div id="view-modal" tabindex="-1" aria-hidden="true"
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-4xl max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+                <!-- Modal header -->
+                <div
+                    class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+                    <h3 name="formLabel" id="formLabel" class="text-lg font-semibold text-gray-900 dark:text-white">
+
+                    </h3>
+                    <button type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        data-modal-toggle="view-modal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Close</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="overflow-y-auto max-h-[70vh]">
+                    <form id="viewForm" class="p-4 md:p-5" method="POST">
+                        @csrf
+                        <input type="hidden" name="view_id" id="view_id">
+
+                        <!-- MAIN 2 COLUMN LAYOUT -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                            <!-- ================= LEFT SIDE (HEADER INFO) ================= -->
+                            <div>
+                                <h3 class="text-sm font-semibold mb-3">Receipt Information</h3>
+
+                                <!-- HEADER 2 COLUMN GRID -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+                                    <div>
+                                        <label class="block text-xs font-medium">Receipt No</label>
+                                        <input type="text" id="view_code"
+                                            class="w-full text-xs rounded-lg border p-2.5">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs font-medium">Receipt Date</label>
+                                        <input type="date" id="view_date"
+                                            class="w-full text-xs rounded-lg border p-2.5">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs font-medium">Reference</label>
+                                        <input type="text" id="view_reference"
+                                            class="w-full text-xs rounded-lg border p-2.5">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs font-medium">Supplier</label>
+                                        <input type="text" id="view_supplier"
+                                            class="w-full text-xs rounded-lg border p-2.5">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs font-medium">Received By</label>
+                                        <input type="text" id="view_received_by"
+                                            class="w-full text-xs rounded-lg border p-2.5">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs font-medium">Description</label>
+                                        <input type="text" id="view_description"
+                                            class="w-full text-xs rounded-lg border p-2.5">
+                                    </div>
+
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-medium">Remarks</label>
+                                        <textarea id="view_remarks" rows="3" class="w-full text-xs rounded-lg border p-2.5"></textarea>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <!-- ================= RIGHT SIDE (DETAILS TABLE) ================= -->
+                            <div>
+                                <div class="border rounded-lg p-3">
+
+                                    <h3 class="text-sm font-semibold mb-2">Receipt Details</h3>
+
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-xs text-left border">
+                                            <thead class="bg-gray-100">
+                                                <tr>
+                                                    <th class="px-3 py-2 border">Item</th>
+                                                    <th class="px-3 py-2 border">Qty</th>
+                                                    <th class="px-3 py-2 border">UOM</th>
+                                                    <th class="px-3 py-2 border">Unit Cost</th>
+                                                    <th class="px-3 py-2 border">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="viewDetailsTable">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="mt-6">
+                            <button type="button" id="closeButton" data-modal-toggle="view-modal"
+                                class="px-4 py-2 text-xs border rounded-lg bg-gray-100 hover:bg-gray-200">
+                                Close
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End view modal -->
+
     <script>
         function clearModalFields() {
             // Clear all form fields
@@ -192,6 +345,111 @@
                     successMessage.remove();
                 }
             }, 3000);
+        }
+
+        function formatDateForInput(dateString) {
+            if (!dateString) return '';
+
+            const date = new Date(dateString);
+            if (isNaN(date)) return '';
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+        }
+
+        function viewReceiving(id) {
+
+            $.ajax({
+                url: '/receiving/' + id,
+                type: 'GET',
+                success: function(response) {
+
+                    if (response.success) {
+
+                        let data = response.data;
+                        $(document.getElementById('formLabel')).text(
+                            `View Receiving Details ${data.status == 2 ? '(Voided)' : ''}`
+                        );
+                        // ================= HEADER =================
+                        $('#view_id').val(data.id);
+                        $('#view_code').val(data.transaction_number);
+                        $('#view_date').val(formatDateForInput(data.received_date));
+                        $('#view_reference').val(data.reference);
+                        $('#view_description').val(data.description);
+                        $('#view_supplier').val(data.supplier ? data.supplier.name : '');
+                        $('#view_received_by').val(data.received_by ? data.receiver.last_name + ', ' + data
+                            .receiver.first_name + ' ' + data.receiver.middle_name : '');
+                        $('#view_remarks').val(data.remarks);
+
+                        // ================= DETAILS TABLE =================
+                        let rows = '';
+                        let grandTotal = 0;
+
+                        data.details.forEach(function(item) {
+
+                            grandTotal += parseFloat(item.total_price);
+
+                            rows += `
+                        <tr>
+                            <td class="border px-3 py-2">${item.product.name}</td>
+                            <td class="border px-3 py-2 text-right">${parseFloat(item.quantity).toFixed(2)}</td>
+                            <td class="border px-3 py-2">${item.uom.name}</td>
+                            <td class="border px-3 py-2 text-right">${parseFloat(item.unit_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            <td class="border px-3 py-2 text-right">${parseFloat(item.total_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        </tr>
+                    `;
+                        });
+                        rows += `
+                    <tr class="bg-gray-100 font-semibold">
+                        <td colspan="4" class="border px-3 py-2 text-right">Grand Total</td>
+                        <td class="border px-3 py-2 text-right">${grandTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    </tr>
+                `;
+
+                        $('#viewDetailsTable').html(rows);
+
+                        // Open modal
+                        $('#view-modal').removeClass('hidden');
+                    }
+                }
+            });
+
+        }
+
+        function voidReceiving(button) {
+            const receivingId = button.getAttribute('data-id');
+            const description = button.getAttribute('data-description');
+            const code = button.getAttribute('data-code');
+
+            if (confirm(
+                    `Are you sure you want to void the receiving: "${code} - ${description}"? This action cannot be undone.`
+                )) {
+                $.ajax({
+                    url: `/receiving/${receivingId}/void`,
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            alert(xhr.responseJSON.message);
+                        } else {
+                            alert('An unexpected error occurred.');
+                        }
+                    }
+                });
+            }
         }
     </script>
 @endsection

@@ -114,6 +114,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/transfer/{transferId}/void', [TransferController::class, 'voidTransfer'])->name('asset.transfer.void');
     Route::put('/asset/transfer/update/{id}', [TransferController::class, 'update'])->name('asset.transfer.update');
 
+    Route::get('/receiving/{id}', [ReceivingController::class, 'show']);
+    Route::post('/receiving/{id}/void', [ReceivingController::class, 'void'])->name('receiving.void');
+
     Route::resource('/supplies/receiving', ReceivingController::class)->except(['destroy']);
     Route::post('/supplies/{id}', [SuppliesController::class, 'update'])->name('supplies.update');
 

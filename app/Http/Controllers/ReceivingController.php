@@ -18,24 +18,38 @@ class ReceivingController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $query = receiving_header::with('supplier');
+        $searchsupplier = $request->input('searchsupplier');
+        $searchemployee = $request->input('searchemployee');
+        $query = receiving_header::with('supplier', 'receiver');
 
         $suppliers = Supplier::orderBy('name')->get();
+        $employees = employee::orderBy('last_name')->get();
         $uoms = UOM::orderBy('name')->get();
 
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('transaction_number', 'like', '%' . $search . '%')
                     ->orWhere('reference', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
                     ->orWhereHas('supplier', function ($q2) use ($search) {
                         $q2->where('name', 'like', '%' . $search . '%');
                     });
             });
         }
 
-        $receivings = $query->orderBy('created_at', 'desc')->paginate(config('app.paginate'));
+        if ($searchemployee != null) {
+            $query->where('received_by', $searchemployee);
+        }
 
-        return view('supplies.receiving.index', compact('receivings', 'suppliers', 'uoms'));
+        if ($searchsupplier != null) {
+            $query->where('supplier_id', $searchsupplier);
+        }
+
+        $receivings = $query->orderBy('created_at', 'desc')->paginate(config('app.paginate'))
+            ->appends($request->only('search', 'searchemployee', 'searchsupplier'))
+        ;
+
+        return view('supplies.receiving.index', compact('receivings', 'suppliers', 'uoms', 'employees'));
     }
 
     public function create()
@@ -150,4 +164,71 @@ class ReceivingController extends Controller
         }
     }
 
+    public function show($id)
+    {
+        $receiving = receiving_header::with([
+            'details.product',
+            'details.uom',
+            'supplier',
+            'receiver'
+        ])->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'data' => $receiving
+        ]);
+    }
+
+    public function void($id)
+    {
+        $receiving = receiving_header::findOrFail($id);
+
+        if ($receiving->status == 2) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Receiving transaction is already voided.'
+            ]);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($receiving->details as $detail) {
+                $supply = Supplies::find($detail->product_id);
+                if ($supply) {
+                    if ($supply->available_stock < $detail->quantity) {
+                        DB::rollBack();
+
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Cannot void receiving transaction because it would result in negative stock for product: ' . $supply->code . ' - ' . $supply->name
+                        ]);
+                    }
+                }
+            }
+
+            $receiving->status = 2;
+            $receiving->save();
+
+            // Reverse inventory updates
+            foreach ($receiving->details as $detail) {
+                $this->updateInventory($detail->product_id, -$detail->quantity);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Receiving transaction #' . $receiving->transaction_number . ' has been voided successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to void transaction. ' . $e->getMessage()
+            ]);
+        }
+    }
 }
