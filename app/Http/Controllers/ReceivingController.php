@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use App\Models\Supplies;
 use App\Models\UOM;
@@ -230,5 +231,20 @@ class ReceivingController extends Controller
                 'message' => 'Failed to void transaction. ' . $e->getMessage()
             ]);
         }
+    }
+
+    public function print($id)
+    {
+        $receiving = receiving_header::with([
+            'details.product',
+            'details.uom',
+            'supplier',
+            'receiver'
+        ])->findOrFail($id);
+
+        $pdf = Pdf::loadView('reports.receiving', compact('receiving'))
+            ->setPaper('letter', 'portrait');
+
+        return $pdf->stream('receiving_' . $receiving->transaction_number . '.pdf');
     }
 }

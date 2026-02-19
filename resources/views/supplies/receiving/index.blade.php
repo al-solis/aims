@@ -155,6 +155,17 @@
                                         {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
                                     </button>
 
+                                    <a href="{{ route('receiving.print', $receiving->id) }}" type="button" target="_blank"
+                                        title="Print receipt : {{ $receiving->transaction_number }}"
+                                        class="group flex space-x-1 text-gray-500 hover:text-yellow-600 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+                                            <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1" />
+                                            <path
+                                                d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1" />
+                                        </svg>
+                                    </a>
+
                                     @if ($receiving->status == 2)
                                         <button type="button"
                                             title="Voided already : {{ $receiving->transaction_number }}" disabled
@@ -258,6 +269,12 @@
                                     </div>
 
                                     <div>
+                                        <label class="block text-xs font-medium">Description</label>
+                                        <input type="text" id="view_description"
+                                            class="w-full text-xs rounded-lg border p-2.5">
+                                    </div>
+
+                                    <div>
                                         <label class="block text-xs font-medium">Reference</label>
                                         <input type="text" id="view_reference"
                                             class="w-full text-xs rounded-lg border p-2.5">
@@ -272,12 +289,6 @@
                                     <div>
                                         <label class="block text-xs font-medium">Received By</label>
                                         <input type="text" id="view_received_by"
-                                            class="w-full text-xs rounded-lg border p-2.5">
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-xs font-medium">Description</label>
-                                        <input type="text" id="view_description"
                                             class="w-full text-xs rounded-lg border p-2.5">
                                     </div>
 
