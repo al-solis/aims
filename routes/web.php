@@ -68,7 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('setup/supplies-category', SuppliesCategoryController::class)->except(['destroy']);
     Route::resource('setup/uom', UomController::class)->except(['destroy']);
     Route::resource('setup/supplier', SupplierController::class)->except(['destroy']);
-    Route::resource('setup/user', UserController::class)->except(['destroy']);
+    Route::resource('setup/user', RegisteredUserController::class)->except(['destroy']);
     // Route::post('/employee/{employee}/ids', [EmployeeIdController::class, 'store'])
     //     ->name('employee.ids.store');
 

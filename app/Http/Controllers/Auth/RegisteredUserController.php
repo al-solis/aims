@@ -45,14 +45,63 @@ class RegisteredUserController extends Controller
             'mname' => $request->mname,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 0,
-            'is_active' => true,
+            'role' => $request->role ?? 0,
+            'is_active' => $request->is_active ?? false,
         ]);
 
-        event(new Registered($user));
+        // event(new Registered($user));
 
-        Auth::login($user);
+        // Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // return redirect(route('dashboard', absolute: false));
+        return redirect()->route('user.index')->with('success', 'User created successfully.');
+    }
+
+    public function index(Request $request)
+    {
+        $search = $request->query('search');
+        $status = $request->query('status');
+
+        $totalUsers = User::count();
+        $activeUsers = User::where('is_active', true)->count();
+        $inactiveUsers = User::where('is_active', false)->count();
+
+        $users = User::latest();
+
+        if ($search) {
+            $users = $users->where(function ($query) use ($search) {
+                $query->where('lname', 'like', "%{$search}%")
+                    ->orWhere('fname', 'like', "%{$search}%")
+                    ->orWhere('mname', 'like', "%{$search}%");
+            });
+        }
+
+        if ($status !== null && $status !== '') {
+            $users = $users->where('is_active', (bool) $status);
+        }
+
+        $users = $users->paginate(config('app.paginate'))
+            ->appends([
+                'search' => $search,
+                'status' => $status,
+            ]);
+
+        return view('setup.user.index', compact('users', 'totalUsers', 'activeUsers', 'inactiveUsers'));
+    }
+
+    public function update($id)
+    {
+        $user = User::findOrFail($id);
+
+        $user->update([
+            'lname' => request('edit_lname'),
+            'fname' => request('edit_fname'),
+            'mname' => request('edit_mname'),
+            'email' => request('edit_email'),
+            'role' => request('edit_role'),
+            'is_active' => request('edit_is_active'),
+        ]);
+
+        return redirect()->route('user.index')->with('success', 'User updated successfully.');
     }
 }
