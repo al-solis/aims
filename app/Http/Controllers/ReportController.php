@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Supplies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,8 @@ use App\Models\Employee;
 use App\Models\Category;
 use App\Models\Location;
 use App\Models\Maintenance;
+use App\Models\SuppliesCategory;
+use App\Models\Supplier;
 
 
 class ReportController extends Controller
@@ -24,10 +27,12 @@ class ReportController extends Controller
     {
         // Load data for dropdowns
         $categories = Category::all();
+        $suppliesCategories = SuppliesCategory::all();
         $locations = Location::orderBy('name')->get();
         $vehicles = Asset::whereIn('category_id', [2])->get();
+        $suppliers = Supplier::orderBy('name')->get();
 
-        return view('reports.index', compact('categories', 'locations', 'vehicles'));
+        return view('reports.index', compact('categories', 'suppliesCategories', 'locations', 'vehicles', 'suppliers'));
     }
 
     public function assetSummary(Request $request)
@@ -86,18 +91,6 @@ class ReportController extends Controller
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
 
-        // $readings = Odometer::with('employee')
-        //     ->where('asset_id', $request->asset_id)
-        //     ->whereBetween('date', [$request->from_date, $request->to_date])
-        //     ->orderBy('date')
-        //     ->get();
-
-        // // if ($request->format === 'excel') {
-        // //     return $this->exportOdometerExcel($asset, $readings);
-        // // }
-
-        // $pdf = PDF::loadView('reports.odometer', compact('asset', 'readings'));
-        // return $pdf->download('odometer-readings.pdf');        
         $query = Odometer::with('employee:id,first_name,middle_name,last_name')
             ->where('asset_id', $asset->id);
 
@@ -137,7 +130,6 @@ class ReportController extends Controller
             0 => 'Inactive',
             1 => 'Active',
             2 => 'On Leave',
-
         ];
 
         $statusLabel = $statusLabel[$pStatus] ?? 'All Statuses';
@@ -202,6 +194,65 @@ class ReportController extends Controller
         )->setPaper('letter', 'portrait');
 
         return $pdf->stream('employee-report.pdf');
+    }
+
+    public function suppliesReport(Request $request)
+    {
+        // dd($request->all());
+        $pCategory = SuppliesCategory::find($request->category)->name ?? 'All Categories';
+        $pSupplier = Supplier::find($request->supplier)->name ?? 'All Suppliers';
+        $statuses = [
+            0 => 'Inactive',
+            1 => 'Active',
+        ];
+
+        $balanceLabel = [
+            'balance' => 'With Balance',
+            'zero_balance' => 'Zero Balance',
+            'reorder' => 'At or Below Reorder Level',
+        ];
+
+        $pBalance = $balanceLabel[$request->balance] ?? '';
+        $pStatus = $statuses[$request->status] ?? 'All Statuses';
+
+        $query = Supplies::with(['category', 'uom', 'supplier']);
+
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('supplier')) {
+            $query->where('supplier_id', $request->supplier);
+        }
+
+        if ($request->filled('balance')) {
+            if ($request->balance == 'balance') {
+                $query->where('available_stock', '>', 0);
+            } elseif ($request->balance == 'zero_balance') {
+                $query->where('available_stock', '=', 0);
+            } elseif ($request->balance == 'reorder') {
+                $query->whereColumn('available_stock', '<=', 'reorder_quantity');
+            }
+        }
+
+        $sortField = $request->get('sort', 'name');
+        $supplies = $query->orderBy($sortField)->get();
+
+        // Generate PDF or Excel
+        // if ($request->format === 'excel') {
+        //     return $this->exportAssetSummaryExcel($assets);
+        // }
+
+        $pdf = PDF::loadView(
+            'reports.supplies-summary',
+            compact('supplies', 'pCategory', 'pStatus', 'pSupplier', 'sortField', 'pBalance')
+        )
+            ->setPaper('letter', 'landscape');
+        return $pdf->stream('supplies-summary.pdf');
     }
 
     public function maintenanceReport(Request $request)

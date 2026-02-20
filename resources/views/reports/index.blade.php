@@ -102,7 +102,7 @@
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-4">
                         <div class="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-600 dark:text-yellow-300"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-orange-600 dark:text-orange-300"
                                 fill="none" width="16" height="16" stroke="currentColor" class="bi bi-people-fill"
                                 viewBox="0 0 16 16">
                                 <path
@@ -126,6 +126,37 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Supplies Reports Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-purple-600 dark:text-purple-300"
+                                fill="none" width="16" height="16" stroke="currentColor"
+                                class="bi bi-people-fill" viewBox="0 0 16 16">
+                                <path
+                                    d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
+                            </svg>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">Supplies</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Supplies Summary Report</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate supplies balance summary with
+                        filtering by category, supplier and status.
+                    </p>
+                    <button onclick="openReportModal('supplies')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -414,7 +445,7 @@
                             <option value="desc">Descending</option>                                                                                   
                         </select>
                     </div>
-            </div>
+                </div>
 
             <div id="customDateRange" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div>
@@ -448,6 +479,69 @@
             </div>
         </form>
     `
+            },
+            'supplies': {
+                title: 'Supplies Summary Report',
+                description: 'Select parameters for supplies summary',
+                form: `
+            <form id="reportForm" class="space-y-4 ml-1 mr-1">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Supplies Category</label>
+                        <select name="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                            <option value="">All Categories</option>
+                            @foreach ($suppliesCategories ?? [] as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Status</label>
+                        <select name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                            <option value="">All Status</option>
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>                            
+                        </select>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Supplier</label>
+                        <select name="supplier" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                            <option value="">All Suppliers</option>
+                            @foreach ($suppliers ?? [] as $supplier)
+                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Balance</label>
+                        <select name="balance" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                            <option value="balance">With Balance</option>
+                            <option value="zero_balance">Zero Balance</option>
+                            <option value="reorder"><= Reorder Qty</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Sort By</label>
+                        <select name="sort" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                            <option value="name">Name</option>
+                            <option value="supplier_id">Supplier</option>
+                            <option value="available_stock">Balance</option>
+                        </select>
+                    </div>
+                </div>              
+                
+                <div class="flex items-center justify-end space-x-3 mt-6 pt-4 border-t dark:border-gray-600">
+                    <button type="button" onclick="closeReportModal()" 
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                        class="px-4 py-2 text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 rounded-lg focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700">
+                        Generate Report
+                    </button>
+                </div>
+            </form>
+        `
             }
         };
 
@@ -522,6 +616,9 @@
                     break;
                 case 'employee':
                     url = `/reports/employee?${queryString}`;
+                    break;
+                case 'supplies':
+                    url = `/reports/supplies-summary?${queryString}`;
                     break;
             }
 

@@ -20,6 +20,7 @@ class SuppliesController extends Controller
         $search = $request->input('search');
         $searchcat = $request->input('searchcat');
         $searchsupplier = $request->input('searchsupplier');
+        $searchstatus = $request->input('status');
 
         $uoms = UOM::orderBy('name')->get();
         $categories = SuppliesCategory::orderBy('name')->get();
@@ -44,6 +45,10 @@ class SuppliesController extends Controller
 
         if ($searchsupplier != '' && $searchsupplier != null) {
             $query->where('supplier_id', $searchsupplier);
+        }
+
+        if ($searchstatus != '' && $searchstatus != null) {
+            $query->where('status', $searchstatus);
         }
 
         $supplies = $query->paginate(config('app.paginate'))
@@ -95,7 +100,7 @@ class SuppliesController extends Controller
 
     public function update(Request $request, $id)
     {
-        dd($request->all());
+        // dd($request->all());
         $supply = Supplies::findOrFail($id);
 
         $request->validate([
@@ -105,6 +110,7 @@ class SuppliesController extends Controller
             'edit_uom_id' => 'required|exists:uoms,id',
             'edit_unit_price' => 'required|numeric|min:0',
             'edit_supplier_id' => 'nullable|exists:suppliers,id',
+            'edit_status' => 'required|in:0,1',
         ]);
 
         $supply->update([
@@ -115,6 +121,7 @@ class SuppliesController extends Controller
             'uom_id' => $request->edit_uom_id,
             'reorder_quantity' => $request->edit_reorder_quantity ?? 0,
             'unit_price' => $request->edit_unit_price,
+            'status' => $request->edit_status,
             'updated_by' => Auth::id(),
             'updated_at' => Carbon::now(),
         ]);

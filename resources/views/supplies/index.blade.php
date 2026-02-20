@@ -114,18 +114,15 @@
                     </select>
                 </div>
 
-                {{-- <div class="md:w-1/3 w-full">
+                <div class="md:w-1/3 w-full">
                     <select id="status" name="status"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                         onchange="this.form.submit()">
                         <option value="">All Status</option>
-                        <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Pending</option>
-                        <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>In-progress</option>
-                        <option value="2" {{ request('status') === '2' ? 'selected' : '' }}>Completed</option>
-                        <option value="3" {{ request('status') === '3' ? 'selected' : '' }}>Overdue</option>
-                        <option value="4" {{ request('status') === '4' ? 'selected' : '' }}>Cancelled</option>
+                        <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Active</option>
+                        <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Inactive</option>
                     </select>
-                </div> --}}
+                </div>
 
             </div>
             <button type="submit"
@@ -145,7 +142,7 @@
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">UOM</th>
                         <th scope="col" class="px-4 py-3 text-right w-[100px]">Unit Price</th>
                         <th scope="col" class="px-4 py-3 text-right w-[100px]">Re-order Qty</th>
-                        <th scope="col" class="px-4 py-3 text-right w-[100px]">Allocated Qty</th>
+                        {{-- <th scope="col" class="px-4 py-3 text-right w-[100px]">Allocated Qty</th> --}}
                         <th scope="col" class="px-4 py-3 text-right w-[100px]">Available Qty</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
@@ -168,9 +165,9 @@
                             <td class="px-4 py-3 text-right w-[100px]">
                                 {{ number_format($supply->reorder_quantity, 2) }}
                             </td>
-                            <td class="px-4 py-3 text-right w-[100px]">
+                            {{-- <td class="px-4 py-3 text-right w-[100px]">
                                 {{ number_format($supply->allocated_stock, 2) }}
-                            </td>
+                            </td> --}}
                             <td class="px-4 py-3 text-right w-[100px]">
                                 {{ number_format($supply->available_stock, 2) }}
                             </td>
@@ -185,7 +182,7 @@
                                         data-uom_id="{{ $supply->uom_id }}" data-unit_price="{{ $supply->unit_price }}"
                                         data-reorder_quantity="{{ $supply->reorder_quantity }}"
                                         data-available_stock="{{ $supply->available_stock }}"
-                                        onclick="openEditModal(this)"
+                                        data-status="{{ $supply->status }}" onclick="openEditModal(this)"
                                         class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -438,7 +435,9 @@
                                     @endforeach
                                 </select>
                             </div>
+                        </div>
 
+                        <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-3">
                             <div class="w-full md:col-span-1">
                                 <label for="edit_unit_price"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Unit Price*</label>
@@ -458,6 +457,18 @@
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="100">
                                 </input>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_status"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
+                                <select name="edit_status" id="edit_status"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    required>
+                                    <option value="" selected>Select Status</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
                             </div>
                         </div>
 
@@ -540,6 +551,7 @@
             document.getElementById('edit_uom_id').value = button.getAttribute('data-uom_id');
             document.getElementById('edit_unit_price').value = button.getAttribute('data-unit_price');
             document.getElementById('edit_reorder_quantity').value = button.getAttribute('data-reorder_quantity');
+            document.getElementById('edit_status').value = button.getAttribute('data-status');
 
             const form = document.getElementById('editForm');
             form.action = `/supplies/${id}`;
