@@ -120,12 +120,14 @@ class MainController extends Controller
             if ($daysLeft < 0) {
                 $overdueDays = abs($daysLeft);
                 $dayLabel = $overdueDays == 1 ? "day" : "days";
-                $message = $clearance->employee->first_name .
-                    " clearance overdue by {$overdueDays} {$dayLabel}";
+                $message = $maintenance->asset->name .
+                    " maintenance overdue by {$overdueDays} {$dayLabel}";
+            } else if ($daysLeft == 0) {
+                $message = $maintenance->asset->name . " maintenance is due today";
             } else {
                 $dayLabel = $daysLeft == 1 ? "day" : "days";
-                $message = $clearance->employee->first_name .
-                    " clearance due in {$daysLeft} {$dayLabel}";
+                $message = $maintenance->asset->name .
+                    " maintenance due in {$daysLeft} {$dayLabel}";
             }
 
             $alerts->push([

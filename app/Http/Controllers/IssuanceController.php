@@ -229,4 +229,18 @@ class IssuanceController extends Controller
             ]);
         }
     }
+
+    public function print($id)
+    {
+        $issuances = issuance_header::with([
+            'details.supply',
+            'details.uom',
+            'issuedTo'
+        ])->findOrFail($id);
+
+        $pdf = Pdf::loadView('reports.issuance', compact('issuances'))
+            ->setPaper('letter', 'portrait');
+
+        return $pdf->stream('issuance_' . $issuances->issuance_number . '.pdf');
+    }
 }

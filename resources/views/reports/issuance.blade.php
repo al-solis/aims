@@ -6,7 +6,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Supplies Receiving Form</title>
+    <title>Supplies Issuance Form</title>
 
     <style>
         body {
@@ -86,6 +86,7 @@
             border-top: 1px solid #ddd;
         }
 
+
         .status-returned {
             color: green;
             font-weight: bold;
@@ -116,47 +117,44 @@
         <div class="sub-title">{{ env('APP_COMPANY_ADDRESS') }}</div>
         <div class="sub-title">{{ env('APP_COMPANY_CONTACT') }}</div>
         <br\>
-            <div class="sub-title" style="font-weight: bolder; font-size: 15px">SUPPLIES RECEIVING FORM</div>
-            <div class="sub-title">Receiving No: {{ $receiving->transaction_number }} @if ($receiving->status == 2)
+            <div class="sub-title" style="font-weight: bolder; font-size: 15px">SUPPLIES ISSUANCE FORM</div>
+            <div class="sub-title">Issuance No: {{ $issuances->issuance_number }} @if ($issuances->status == 0)
                     <span style="color: red; font-weight: bold;">(Voided)</span>
                 @endif
             </div>
-            <div class="sub-title">Date: {{ Carbon::parse($receiving->received_date)->format('F j, Y') }}</div>
+            <div class="sub-title">Date: {{ Carbon::parse($issuances->issuance_date)->format('F j, Y') }}</div>
     </div>
 
     {{-- TRANSFER INFO --}}
     <div class="section">
-        <div class="section-title">Receiving Information</div>
+        <div class="section-title">Issuance Information</div>
         <table>
             <tr>
-                <td width="25%"><strong>Description:</strong></td>
+                <td width="25%"><strong>Issued To:</strong></td>
                 <td width="75%">
-                    {{ $receiving->description ?? '' }}
+                    {{ $issuances->issuedTo->last_name ?? '' }}, {{ $issuances->issuedTo->first_name ?? '' }}
+                    {{ $issuances->issuedTo->middle_name ?? '' }}
                 </td>
 
-                <td width="25%"><strong>Reference:</strong></td>
+                <td width="25%"><strong>Location:</strong></td>
                 <td width="75%">
-                    {{ $receiving->reference ?? '' }}
+                    {{ $issuances->Location->name ?? '' }}
                 </td>
             </tr>
             <tr>
-                <td><strong>Supplier:</strong></td>
-                <td>{{ $receiving->supplier_id ? $receiving->supplier->name : '' }}</td>
-
-                <td><strong>Received By:</strong></td>
-                <td>{{ $receiving->received_by ? $receiving->receiver->last_name . ', ' . $receiving->receiver->first_name . ' ' . $receiving->receiver->middle_name : '' }}
-                </td>
+                <td><strong>Purpose:</strong></td>
+                <td colspan="3">{{ $issuances->purpose ?? '' }}</td>
             </tr>
             <tr>
                 <td><strong>Additional Information:</strong></td>
-                <td colspan="3">{{ $receiving->remarks ?? '' }}</td>
+                <td colspan="3">{{ $issuances->remarks ?? '' }}</td>
             </tr>
         </table>
     </div>
 
     {{-- TRANSFER DETAILS --}}
     <div class="section">
-        <div class="section-title">Receipt Details</div>
+        <div class="section-title">Issuance Details</div>
 
         <table>
             <thead>
@@ -172,24 +170,24 @@
             <tbody>
                 @php $grandTotal = 0; @endphp
 
-                @foreach ($receiving->details as $detail)
+                @foreach ($issuances->details as $detail)
                     @php
-                        $grandTotal += $detail->total_price;
+                        $grandTotal += $detail->total_cost;
                     @endphp
 
                     <tr>
-                        <td>{{ $detail->product->code ?? '' }}</td>
-                        <td>{{ $detail->product->name ?? '' }}</td>
+                        <td>{{ $detail->supply->code ?? '' }}</td>
+                        <td>{{ $detail->supply->name ?? '' }}</td>
                         <td class="text-right">{{ number_format($detail->quantity, 2) }}</td>
                         <td>{{ $detail->uom->name ?? 'N/A' }}</td>
-                        <td class="text-right">{{ number_format($detail->unit_price, 2) }}</td>
-                        <td class="text-right">{{ number_format($detail->total_price, 2) }}</td>
+                        <td class="text-right">{{ number_format($detail->unit_cost, 2) }}</td>
+                        <td class="text-right">{{ number_format($detail->total_cost, 2) }}</td>
                     </tr>
                 @endforeach
 
-                @if ($receiving->details->isEmpty())
+                @if ($issuances->details->isEmpty())
                     <tr>
-                        <td colspan="6" style="text-align: center; font-size: 11px; color: #555">No receipt
+                        <td colspan="6" style="text-align: center; font-size: 11px; color: #555">No issuance
                             details found.</td>
                     </tr>
                 @endif

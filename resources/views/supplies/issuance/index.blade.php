@@ -159,7 +159,7 @@
                                         {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
                                     </button>
 
-                                    <a href="" type="button" target="_blank"
+                                    <a href="{{ route('issuance.print', $issuance->id) }}" type="button" target="_blank"
                                         title="Print issuance : {{ $issuance->issuance_number }}"
                                         class="group flex space-x-1 text-gray-500 hover:text-yellow-600 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
