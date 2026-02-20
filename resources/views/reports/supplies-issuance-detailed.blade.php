@@ -6,7 +6,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Supplies Receiving Detailed Report</title>
+    <title>Supplies Issuance Detailed Report</title>
 
     <style>
         body {
@@ -118,10 +118,10 @@
         <div class="sub-title">{{ env('APP_COMPANY_CONTACT') }}</div>
         <br>
         <br>
-        <div class="sub-title" style="font-weight: bolder; font-size: 15px">SUPPLIES RECEIVING DETAILED REPORT</div>
+        <div class="sub-title" style="font-weight: bolder; font-size: 15px">SUPPLIES ISSUANCE DETAILED REPORT</div>
         <div class="sub-title">Range: {{ $pDateRange != 'custom' ? $pDateRange : $pFromDate . ' to ' . $pToDate }}</div>
-        <div class="sub-title">Supplier: {{ $pSupplier }}</div>
-        <div class="sub-title">Received By: {{ $pEmployee }}</div>
+        <div class="sub-title">Location: {{ $pLocation }}</div>
+        <div class="sub-title">Issued To: {{ $pEmployee }}</div>
     </div>
 
     {{-- DETAILS --}}
@@ -130,11 +130,11 @@
         <table>
             <thead>
                 <tr>
-                    <th>Received Date</th>
+                    <th>Issuance Date</th>
                     <th>Trx No</th>
-                    <th>Description</th>
-                    <th>Reference</th>
-                    <th>Supplier</th>
+                    <th>Purpose</th>
+                    <th>Issued To</th>
+                    <th>Location</th>
                     <th>Item</th>
                     <th>Description</th>
                     <th>UOM</th>
@@ -148,29 +148,30 @@
                     $grandTotal = 0;
                 $grandTotalQty = 0; @endphp
 
-                @foreach ($receiving as $receive)
+                @foreach ($issued as $issue)
                     @php
-                        $grandTotal += $receive->details->sum('total_price');
-                        $grandTotalQty += $receive->details->sum('quantity');
+                        $grandTotal += $issue->details->sum('total_cost');
+                        $grandTotalQty += $issue->details->sum('quantity');
                     @endphp
-                    @foreach ($receive->details as $detail)
+                    @foreach ($issue->details as $detail)
                         <tr>
-                            <td>{{ Carbon::parse($receive->received_date)->format('Y-m-d') }}</td>
-                            <td>{{ $receive->transaction_number }}</td>
-                            <td>{{ $receive->description ?? '' }}</td>
-                            <td>{{ $receive->reference }}</td>
-                            <td>{{ $receive->supplier->name ?? '' }}</td>
-                            <td>{{ $detail->product->code ?? '' }}</td>
-                            <td>{{ $detail->product->name ?? '' }}</td>
-                            <td>{{ $detail->product->uom->code ?? '' }}</td>
+                            <td>{{ Carbon::parse($issue->issuance_date)->format('Y-m-d') }}</td>
+                            <td>{{ $issue->issuance_number }}</td>
+                            <td>{{ $issue->purpose ?? '' }}</td>
+                            <td>{{ $issue->issued_to ? $issue->issuedTo->last_name . ', ' . $issue->issuedTo->first_name . ' ' . $issue->issuedTo->middle_name : '' }}
+                            </td>
+                            <td>{{ $issue->location->name ?? '' }}</td>
+                            <td>{{ $detail->supply->code ?? '' }}</td>
+                            <td>{{ $detail->supply->name ?? '' }}</td>
+                            <td>{{ $detail->supply->uom->code ?? '' }}</td>
                             <td class="text-right">{{ $detail->quantity }}</td>
-                            <td class="text-right">{{ number_format($detail->unit_price, 2) }}</td>
-                            <td class="text-right">{{ number_format($detail->total_price, 2) }}</td>
+                            <td class="text-right">{{ number_format($detail->unit_cost, 2) }}</td>
+                            <td class="text-right">{{ number_format($detail->total_cost, 2) }}</td>
                         </tr>
                     @endforeach
                 @endforeach
 
-                @if ($receiving->isEmpty())
+                @if ($issued->isEmpty())
                     <tr>
                         <td colspan="11" style="text-align: center; font-size: 11px; color: #555">No supplies found.
                         </td>

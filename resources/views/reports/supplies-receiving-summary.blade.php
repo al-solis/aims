@@ -131,7 +131,7 @@
             <thead>
                 <tr>
                     <th>Received Date</th>
-                    <th>Receipt Code</th>
+                    <th>Trx No</th>
                     <th>Description</th>
                     <th>Reference</th>
                     <th>Supplier</th>

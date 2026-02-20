@@ -173,6 +173,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/employee', [ReportController::class, 'employeeReport'])->name('employee');
         Route::get('/supplies-summary', [ReportController::class, 'suppliesReport'])->name('supplies.summary');
         Route::get('/supplies-receiving', [ReportController::class, 'suppliesReceivingReport'])->name('supplies.receiving');
+        Route::get('/supplies-issuance', [ReportController::class, 'suppliesIssuanceReport'])->name('supplies.issuance');
     });
 });
 

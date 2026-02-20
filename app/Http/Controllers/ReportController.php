@@ -20,6 +20,8 @@ use App\Models\SuppliesCategory;
 use App\Models\Supplier;
 use App\Models\receiving_header;
 use App\Models\receiving_detail;
+use App\Models\issuance_header;
+use App\Models\issuance_detail;
 
 class ReportController extends Controller
 {
@@ -281,7 +283,7 @@ class ReportController extends Controller
         $orientation = $pType == 'summary' ? 'portrait' : 'landscape';
 
         $query = receiving_header::query()->with('details.product', 'supplier', 'receiver', 'details.uom');
-        //dd($query->toSql());
+
         switch ($pDateRange) {
             case 'this_month':
                 $query->whereMonth('received_date', Carbon::now()->month)
@@ -311,9 +313,6 @@ class ReportController extends Controller
                 break;
         }
 
-        // dd($query->toSql());
-
-
         if ($request->filled('supplier')) {
             $query->where('supplier_id', $request->supplier);
         }
@@ -322,8 +321,8 @@ class ReportController extends Controller
             $query->where('received_by', $request->employee);
         }
 
-        $query->where('status', 1); // Only include completed receiving records       
-        // dd($query->toSql());
+        $query->where('status', 1);
+
         $receiving = $query->orderBy('received_date', 'desc')->get();
         // Generate PDF
 
@@ -341,6 +340,87 @@ class ReportController extends Controller
         )->setPaper('letter', $orientation);
 
         return $pdf->stream('supplies-receiving-report.pdf');
+    }
+
+    public function suppliesIssuanceReport(Request $request)
+    {
+        // dd($request->all());
+        $pDateRange = $request->date_range ?? 'this_month';
+        $pFromDate = $request->from_date ?? '';
+        $pToDate = $request->to_date ?? '';
+        $pType = $request->reptype ?? 'summary';
+        $pSupplier = Supplier::find($request->supplier)->name ?? 'All Suppliers';
+        $pLocation = Location::find($request->location)->name ?? 'All Locations';
+        $pEmployee = Employee::find($request->employee)->last_name ?? 'All Employees';
+
+        $dateRangeLabels = [
+            'this_month' => 'This Month',
+            'last_month' => 'Last Month',
+            'this_quarter' => 'This Quarter',
+            'this_year' => 'This Year',
+            'custom' => 'custom',
+        ];
+        $pDateRange = $dateRangeLabels[$pDateRange] ?? 'Custom Range';
+        $orientation = $pType == 'summary' ? 'portrait' : 'landscape';
+
+        $query = issuance_header::query()->with('details.supply', 'location', 'issuedTo', 'details.uom');
+
+        switch ($pDateRange) {
+            case 'this_month':
+                $query->whereMonth('issuance_date', Carbon::now()->month)
+                    ->whereYear('issuance_date', Carbon::now()->year);
+                break;
+
+            case 'last_month':
+                $query->whereMonth('issuance_date', Carbon::now()->subMonth()->month)
+                    ->whereYear('issuance_date', Carbon::now()->subMonth()->year);
+                break;
+
+            case 'this_quarter':
+                $query->whereBetween('issuance_date', [
+                    Carbon::now()->startOfQuarter()->format('Y-m-d'),
+                    Carbon::now()->endOfQuarter()->format('Y-m-d')
+                ]);
+                break;
+
+            case 'this_year':
+                $query->whereYear('issuance_date', Carbon::now()->year);
+                break;
+
+            case 'custom':
+                if ($pFromDate && $pToDate) {
+                    $query->whereBetween('issuance_date', [$pFromDate, $pToDate]);
+                }
+                break;
+        }
+
+        if ($request->filled('location')) {
+            $query->where('location_id', $request->location);
+        }
+
+        if ($request->filled('employee')) {
+            $query->where('issued_to', $request->employee);
+        }
+
+        $query->where('status', 1);
+
+        $issued = $query->orderBy('issuance_date', 'desc')->get();
+        // Generate PDF
+
+        $pdf = Pdf::loadView(
+            'reports.supplies-issuance-' . strtolower($pType),
+            compact(
+                'issued',
+                'pDateRange',
+                'pFromDate',
+                'pToDate',
+                'pLocation',
+                'pEmployee',
+                'pType'
+            )
+        )->setPaper('letter', $orientation);
+
+        return $pdf->stream('supplies-issuance-report.pdf');
     }
 
     public function maintenanceReport(Request $request)

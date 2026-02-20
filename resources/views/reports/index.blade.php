@@ -145,7 +145,7 @@
                     </div>
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Supplies Summary Report</h3>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate supplies balance summary with
-                        filtering by category, supplier and status.
+                        filtering by category and supplier.
                     </p>
                     <button onclick="openReportModal('supplies')"
                         class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
@@ -178,9 +178,42 @@
                     </div>
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Supplies Receiving Report</h3>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate detailed and summary supplies
-                        receiving report. Filtered by supplier, date range and status.
+                        receiving report. Filtered by supplier and date range.
                     </p>
                     <button onclick="openReportModal('supplies-receiving')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Supplies Issuance Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-red-100 dark:bg-red-900 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-600 dark:text-red-300"
+                                fill="none" width="16" height="16" stroke="currentColor"
+                                class="bi bi-folder-symlink" viewBox="0 0 16 16">
+                                <path
+                                    d="m11.798 8.271-3.182 1.97c-.27.166-.616-.036-.616-.372V9.1s-2.571-.3-4 2.4c.571-4.8 3.143-4.8 4-4.8v-.769c0-.336.346-.538.616-.371l3.182 1.969c.27.166.27.576 0 .742" />
+                                <path
+                                    d="m.5 3 .04.87a2 2 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14h10.348a2 2 0 0 0 1.991-1.819l.637-7A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2m.694 2.09A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09l-.636 7a1 1 0 0 1-.996.91H2.826a1 1 0 0 1-.995-.91zM6.172 2a1 1 0 0 1 .707.293L7.586 3H2.19q-.362.002-.683.12L1.5 2.98a1 1 0 0 1 1-.98z" />
+                            </svg>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900 px-2 py-1 rounded">Supplies
+                            Issuance</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Supplies Issuance Report</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate detailed and summary supplies
+                        issuance report. Filtered by location, date range and status.
+                    </p>
+                    <button onclick="openReportModal('supplies-issuance')"
                         class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -652,6 +685,82 @@
             </div>
         </form>
     `
+            },
+            'supplies-issuance': {
+                title: 'Supplies Issuance Report',
+                description: 'Select parameters for supplies issuance report',
+                form: `
+        <form id="reportForm" class="space-y-4 ml-1 mr-1">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Date Range</label>
+                    <select name="date_range" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                        <option value="this_month">This Month</option>
+                        <option value="last_month">Last Month</option>
+                        <option value="this_quarter">This Quarter</option>
+                        <option value="this_year">This Year</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Location</label>
+                    <select name="location" class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                        <option value="">All Locations</option>
+                        @foreach ($locations ?? [] as $location)
+                            <option value="{{ $location->id }}">{{ $location->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Issued To</label>
+                    <select name="employee" id="employee" class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                        <option value="">All Employees</option>
+                        @foreach ($employees ?? [] as $employee)
+                            <option value="{{ $employee->id }}">{{ $employee->last_name }}, {{ $employee->first_name }} {{ $employee->middle_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Report Type</label>
+                    <select name="reptype" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                        <option value="summary">Summary</option>
+                        <option value="detailed">Detailed</option>                        
+                    </select>
+                </div>
+            </div>
+
+            <div id="customDateRange" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">From Date</label>
+                    <input type="date" name="from_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">To Date</label>
+                    <input type="date" name="to_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                </div>
+            </div>            
+
+            <!-- Add format selection like supplies receiving report -->
+            <div class="flex items-center space-x-4 mt-4">
+                <div class="flex items-center">
+                    <input type="radio" id="supplies_issuance_pdf" name="format" value="pdf" checked
+                        class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 focus:ring-gray-500">
+                    <label for="supplies_issuance_pdf" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">PDF</label>
+                </div>                
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 mt-6 pt-4 border-t dark:border-gray-600">
+                <button type="button" onclick="closeReportModal()" 
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600">
+                    Cancel
+                </button>
+                <button type="submit" 
+                    class="px-4 py-2 text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 rounded-lg focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700">
+                    Generate Report
+                </button>
+            </div>
+        </form>
+    `
             }
         };
 
@@ -674,6 +783,12 @@
                     allowClear: true,
                     width: '100%'
                 });
+
+                $('#location').select2({
+                    placeholder: "Select location",
+                    allowClear: true,
+                    width: '100%'
+                });
             });
         });
 
@@ -691,7 +806,8 @@
             document.getElementById('reportModal').classList.add('flex');
 
             // Add event listener for custom date range toggle if needed
-            if (reportType === 'maintenance' || reportType === 'employee' || reportType === 'supplies-receiving') {
+            if (reportType === 'maintenance' || reportType === 'employee' || reportType === 'supplies-receiving' ||
+                reportType === 'supplies-issuance') {
                 const dateRangeSelect = document.querySelector('select[name="date_range"]');
                 if (dateRangeSelect) {
                     dateRangeSelect.addEventListener('change', function() {
@@ -746,6 +862,9 @@
                     break;
                 case 'supplies-receiving':
                     url = `/reports/supplies-receiving?${queryString}`;
+                    break;
+                case 'supplies-issuance':
+                    url = `/reports/supplies-issuance?${queryString}`;
                     break;
             }
 

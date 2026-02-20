@@ -157,7 +157,7 @@
 
                 @if ($assets->isEmpty())
                     <tr>
-                        <td colspan="6" style="text-align: center; font-size: 11px; color: #555">No asset
+                        <td colspan="5" style="text-align: center; font-size: 11px; color: #555">No asset
                             details found.</td>
                     </tr>
                 @endif
