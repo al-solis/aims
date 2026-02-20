@@ -45,7 +45,17 @@ return new class extends Migration {
             'fname' => 'Al',
             'mname' => 'B.',
             'email' => 'gunch1258@yahoo.com',
-            'password' => bcrypt('gunch1258'), // Make sure to hash the password
+            'password' => bcrypt('gunch1258'),
+            'role' => 1, // Set role to admin
+            'is_active' => true,
+        ]);
+
+        DB::table('users')->insert([
+            'lname' => 'Admin',
+            'fname' => 'Admin',
+            'mname' => 'B.',
+            'email' => 'admin@yahoo.com',
+            'password' => bcrypt('admin123'),
             'role' => 1, // Set role to admin
             'is_active' => true,
         ]);
