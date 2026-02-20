@@ -172,6 +172,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/maintenance', [ReportController::class, 'maintenanceReport'])->name('maintenance');
         Route::get('/employee', [ReportController::class, 'employeeReport'])->name('employee');
         Route::get('/supplies-summary', [ReportController::class, 'suppliesReport'])->name('supplies.summary');
+        Route::get('/supplies-receiving', [ReportController::class, 'suppliesReceivingReport'])->name('supplies.receiving');
     });
 });
 

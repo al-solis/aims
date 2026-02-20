@@ -18,7 +18,8 @@ use App\Models\Location;
 use App\Models\Maintenance;
 use App\Models\SuppliesCategory;
 use App\Models\Supplier;
-
+use App\Models\receiving_header;
+use App\Models\receiving_detail;
 
 class ReportController extends Controller
 {
@@ -31,8 +32,12 @@ class ReportController extends Controller
         $locations = Location::orderBy('name')->get();
         $vehicles = Asset::whereIn('category_id', [2])->get();
         $suppliers = Supplier::orderBy('name')->get();
+        $employees = Employee::orderBy('last_name')->get();
 
-        return view('reports.index', compact('categories', 'suppliesCategories', 'locations', 'vehicles', 'suppliers'));
+        return view(
+            'reports.index',
+            compact('categories', 'suppliesCategories', 'locations', 'vehicles', 'suppliers', 'employees')
+        );
     }
 
     public function assetSummary(Request $request)
@@ -255,6 +260,89 @@ class ReportController extends Controller
         return $pdf->stream('supplies-summary.pdf');
     }
 
+    public function suppliesReceivingReport(Request $request)
+    {
+        // dd($request->all());
+        $pDateRange = $request->date_range ?? 'this_month';
+        $pFromDate = $request->from_date ?? '';
+        $pToDate = $request->to_date ?? '';
+        $pType = $request->reptype ?? 'summary';
+        $pSupplier = Supplier::find($request->supplier)->name ?? 'All Suppliers';
+        $pEmployee = Employee::find($request->employee)->last_name ?? 'All Employees';
+
+        $dateRangeLabels = [
+            'this_month' => 'This Month',
+            'last_month' => 'Last Month',
+            'this_quarter' => 'This Quarter',
+            'this_year' => 'This Year',
+            'custom' => 'custom',
+        ];
+        $pDateRange = $dateRangeLabels[$pDateRange] ?? 'Custom Range';
+        $orientation = $pType == 'summary' ? 'portrait' : 'landscape';
+
+        $query = receiving_header::query()->with('details.product', 'supplier', 'receiver', 'details.uom');
+        //dd($query->toSql());
+        switch ($pDateRange) {
+            case 'this_month':
+                $query->whereMonth('received_date', Carbon::now()->month)
+                    ->whereYear('received_date', Carbon::now()->year);
+                break;
+
+            case 'last_month':
+                $query->whereMonth('received_date', Carbon::now()->subMonth()->month)
+                    ->whereYear('received_date', Carbon::now()->subMonth()->year);
+                break;
+
+            case 'this_quarter':
+                $query->whereBetween('received_date', [
+                    Carbon::now()->startOfQuarter()->format('Y-m-d'),
+                    Carbon::now()->endOfQuarter()->format('Y-m-d')
+                ]);
+                break;
+
+            case 'this_year':
+                $query->whereYear('received_date', Carbon::now()->year);
+                break;
+
+            case 'custom':
+                if ($pFromDate && $pToDate) {
+                    $query->whereBetween('received_date', [$pFromDate, $pToDate]);
+                }
+                break;
+        }
+
+        // dd($query->toSql());
+
+
+        if ($request->filled('supplier')) {
+            $query->where('supplier_id', $request->supplier);
+        }
+
+        if ($request->filled('employee')) {
+            $query->where('received_by', $request->employee);
+        }
+
+        $query->where('status', 1); // Only include completed receiving records       
+        // dd($query->toSql());
+        $receiving = $query->orderBy('received_date', 'desc')->get();
+        // Generate PDF
+
+        $pdf = Pdf::loadView(
+            'reports.supplies-receiving-' . strtolower($pType),
+            compact(
+                'receiving',
+                'pDateRange',
+                'pFromDate',
+                'pToDate',
+                'pSupplier',
+                'pEmployee',
+                'pType'
+            )
+        )->setPaper('letter', $orientation);
+
+        return $pdf->stream('supplies-receiving-report.pdf');
+    }
+
     public function maintenanceReport(Request $request)
     {
         // Validate request
@@ -369,7 +457,7 @@ class ReportController extends Controller
             return $pdf->stream($filename);
 
         } catch (\Exception $e) {
-            dd($e->getMessage());
+            // dd($e->getMessage());
             return back()->with('error', 'PDF generation failed: ' . $e->getMessage());
         }
     }
