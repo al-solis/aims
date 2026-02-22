@@ -1021,64 +1021,61 @@
 
 
         // Save Work History
-        var employeeId = {{ $employee->id ?? 'null' }};
-        if (!employeeId) {
-            document.getElementById('add-workhistory-btn').addEventListener('click', function() {
-                const addBtn = this;
-                const recordId = addBtn.getAttribute('data-record-id');
+        document.getElementById('add-workhistory-btn').addEventListener('click', function() {
+            const addBtn = this;
+            const recordId = addBtn.getAttribute('data-record-id');
 
-                const companyName = document.getElementById('company_name').value.trim();
-                const positionHeld = document.getElementById('position_held').value.trim();
-                const startDate = document.getElementById('start_date').value;
-                const endDate = document.getElementById('end_date').value;
+            const companyName = document.getElementById('company_name').value.trim();
+            const positionHeld = document.getElementById('position_held').value.trim();
+            const startDate = document.getElementById('start_date').value;
+            const endDate = document.getElementById('end_date').value;
 
 
-                if (!companyName || !positionHeld) {
-                    alert('Company Name and Position Held are required.');
-                    return;
-                }
+            if (!companyName || !positionHeld) {
+                alert('Company Name and Position Held are required.');
+                return;
+            }
 
-                if (recordId) {
-                    updateWorkHistory(recordId);
-                    return;
-                }
+            if (recordId) {
+                updateWorkHistory(recordId);
+                return;
+            }
 
-                fetch('/employee-history/store', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            employee_id: {{ $employee->id ?? 'null' }},
-                            company_name: companyName,
-                            position_held: positionHeld,
-                            start_date: startDate || null,
-                            end_date: endDate || null
-                        })
+            fetch('/employee-history/store', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        employee_id: {{ $employee->id ?? 'null' }},
+                        company_name: companyName,
+                        position_held: positionHeld,
+                        start_date: startDate || null,
+                        end_date: endDate || null
                     })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
 
-                        appendRow(data);
+                    appendRow(data);
 
-                        document.getElementById('company_name').value = '';
-                        document.getElementById('position_held').value = '';
-                        document.getElementById('start_date').value = '';
-                        document.getElementById('end_date').value = '';
+                    document.getElementById('company_name').value = '';
+                    document.getElementById('position_held').value = '';
+                    document.getElementById('start_date').value = '';
+                    document.getElementById('end_date').value = '';
 
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred while saving work history. Please try again.');
-                    });
-            });
-        }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while saving work history. Please try again.');
+                });
+        });
 
 
         function appendRow(history) {

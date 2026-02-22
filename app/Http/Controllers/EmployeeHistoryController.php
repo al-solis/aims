@@ -24,9 +24,7 @@ class EmployeeHistoryController extends Controller
 
     public function show($id)
     {
-        $history = EmployeeHistory::findOrFail($id)
-            ->orderByDesc('start_date')
-            ->get();
+        $history = EmployeeHistory::where('id', $id)->firstOrFail();
 
         return response()->json([
             'success' => true,
