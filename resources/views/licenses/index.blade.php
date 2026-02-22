@@ -289,7 +289,8 @@
                         <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-1">
                             <div class="sm:col-span-1">
                                 <label for="alert_days_before"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">License Number*</label>
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Days Before
+                                    Expiry*</label>
                                 <input type="number" name="alert_days_before" id="alert_days_before"
                                     value="{{ $licenseExpiringDays }}"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"

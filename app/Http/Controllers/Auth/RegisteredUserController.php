@@ -54,7 +54,7 @@ class RegisteredUserController extends Controller
         // Auth::login($user);
 
         // return redirect(route('dashboard', absolute: false));
-        return redirect()->route('user.index')->with('success', 'User created successfully.');
+        return redirect()->route('user.index')->with('success', 'Account created successfully! Please wait for administrator approval before logging in.');
     }
 
     public function index(Request $request)

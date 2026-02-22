@@ -158,8 +158,8 @@ class ReceivingController extends Controller
     {
         $supply = Supplies::find($productId);
         if ($supply) {
-            $supply->available_stock -= $quantity;
-            $supply->total_stock -= $quantity;
+            $supply->available_stock += $quantity;
+            $supply->total_stock += $quantity;
             $supply->save();
         }
     }
