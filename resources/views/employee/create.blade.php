@@ -52,7 +52,7 @@
                             <li class="me-2" role="presentation">
                                 <button class="inline-block p-4 border-b-2 rounded-t-lg" id="basic-tab"
                                     data-tabs-target="#basic" type="button" role="tab" aria-controls="basic"
-                                    aria-selected="false">Basic Information</button>
+                                    aria-selected="true">Basic Information</button>
                             </li>
                             @if ($employee)
                                 <li class="me-2" role="presentation">
@@ -61,15 +61,15 @@
                                         id="idinfo-tab" data-tabs-target="#idinfo" type="button" role="tab"
                                         aria-controls="idinfo" aria-selected="false">ID Information</button>
                                 </li>
+
+
+                                <li class="me-2" role="presentation">
+                                    <button
+                                        class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                                        id="history-tab" data-tabs-target="#history" type="button" role="tab"
+                                        aria-controls="history" aria-selected="false">Employment History</button>
+                                </li>
                             @endif
-
-                            <li class="me-2" role="presentation">
-                                <button
-                                    class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
-                                    id="history-tab" data-tabs-target="#history" type="button" role="tab"
-                                    aria-controls="history" aria-selected="false">Employment History</button>
-                            </li>
-
                             {{-- @if ($employee)
                                 <li class="me-2" role="presentation">
                                     <button
@@ -82,7 +82,7 @@
                     </div>
 
                     <div id="employee-tab-content">
-                        <div class="hidden p-1 rounded-lg bg-gray-50 dark:bg-gray-800" id="basic" role="tabpanel"
+                        <div class="p-1 rounded-lg bg-gray-50 dark:bg-gray-800" id="basic" role="tabpanel"
                             aria-labelledby="basic-tab">
                             <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">Please fill the following information
                                 <strong class="font-medium text-gray-800 dark:text-white">Basic Information tab's associated
@@ -1021,63 +1021,65 @@
 
 
         // Save Work History
-        document.getElementById('add-workhistory-btn').addEventListener('click', function() {
-            const addBtn = this;
-            const recordId = addBtn.getAttribute('data-record-id');
+        var employeeId = {{ $employee->id ?? 'null' }};
+        if (!employeeId) {
+            document.getElementById('add-workhistory-btn').addEventListener('click', function() {
+                const addBtn = this;
+                const recordId = addBtn.getAttribute('data-record-id');
 
-            const companyName = document.getElementById('company_name').value.trim();
-            const positionHeld = document.getElementById('position_held').value.trim();
-            const startDate = document.getElementById('start_date').value;
-            const endDate = document.getElementById('end_date').value;
+                const companyName = document.getElementById('company_name').value.trim();
+                const positionHeld = document.getElementById('position_held').value.trim();
+                const startDate = document.getElementById('start_date').value;
+                const endDate = document.getElementById('end_date').value;
 
 
-            if (!companyName || !positionHeld) {
-                alert('Company Name and Position Held are required.');
-                return;
-            }
+                if (!companyName || !positionHeld) {
+                    alert('Company Name and Position Held are required.');
+                    return;
+                }
 
-            if (recordId) {
-                updateWorkHistory(recordId);
-                return;
-            }
+                if (recordId) {
+                    updateWorkHistory(recordId);
+                    return;
+                }
 
-            fetch('/employee-history/store', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        employee_id: {{ $employee->id ?? 'null' }},
-                        company_name: companyName,
-                        position_held: positionHeld,
-                        start_date: startDate || null,
-                        end_date: endDate || null
+                fetch('/employee-history/store', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            employee_id: {{ $employee->id ?? 'null' }},
+                            company_name: companyName,
+                            position_held: positionHeld,
+                            start_date: startDate || null,
+                            end_date: endDate || null
+                        })
                     })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
 
-                    appendRow(data);
+                        appendRow(data);
 
-                    document.getElementById('company_name').value = '';
-                    document.getElementById('position_held').value = '';
-                    document.getElementById('start_date').value = '';
-                    document.getElementById('end_date').value = '';
+                        document.getElementById('company_name').value = '';
+                        document.getElementById('position_held').value = '';
+                        document.getElementById('start_date').value = '';
+                        document.getElementById('end_date').value = '';
 
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while saving work history. Please try again.');
-                });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while saving work history. Please try again.');
+                    });
+            });
+        }
 
-
-        });
 
         function appendRow(history) {
             const tableBody = document.getElementById('employeeWorkHistoryBody');
