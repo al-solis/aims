@@ -28,6 +28,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ReceivingController;
 use App\Http\Controllers\IssuanceController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\UploadedFileController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -90,6 +91,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/employee-history/{id}', [EmployeeHistoryController::class, 'update']);
     Route::delete('/employee-history/{id}', [EmployeeHistoryController::class, 'destroy']);
 
+    Route::post('/employee/{empId}/upload', [UploadedFileController::class, 'uploadFiles'])->name('employee.upload.files');
+    Route::get('/employee/{empId}/uploaded-files', [UploadedFileController::class, 'getFiles'])->name('employee.files');
 
     Route::get('/get-sublocations/{location}', [LocationController::class, 'getSublocations']);
     Route::get('/asset/labels', [AssetController::class, 'printAssetLabel'])->name('asset.labels');

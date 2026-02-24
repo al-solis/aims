@@ -225,6 +225,22 @@
                                         </svg>
                                         {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
                                     </button>
+
+                                    <button type="button"
+                                        title="Upload file to {{ $employee->last_name }}, {{ $employee->first_name }} {{ $employee->middle_name }}"
+                                        data-modal-target="upload-file-modal" data-modal-toggle="upload-file-modal"
+                                        data-name="{{ $employee->last_name }}, {{ $employee->first_name }} {{ $employee->middle_name }}"
+                                        data-id="{{ $employee->id }}" onclick="loadUploadModal(this)"
+                                        class="group flex space-x-1 text-gray-500 hover:text-indigo-600 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-cloud-arrow-up" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd"
+                                                d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708z" />
+                                            <path
+                                                d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383m.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z" />
+                                        </svg>
+                                        {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -325,61 +341,164 @@
     </div>
     <!-- End view assest modal -->
 
-    <script>
-        function clearModalFields() {
-            // Clear all form fields
-            const form = document.querySelector('form');
-            form.reset();
+    <!-- Upload file modal -->
+    <div id="upload-file-modal" tabindex="-1" aria-hidden="true"
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
+        <div class="relative p-4 w-full max-w-4xl h-full md:h-auto">
+            <!-- Modal content -->
+            <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+                <!-- Modal header -->
+                <div class="flex justify-between items-center pb-4 mb-2 rounded-t border-b sm:mb-5 dark:border-gray-600">
+                    <h3 class="text-md font-semibold text-gray-900 dark:text-white">
+                        Upload File
+                    </h3>
+                    <button type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        data-modal-toggle="upload-file-modal">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="overflow-y-auto max-h-[70vh]">
+                    <form id="uploadFileForm" class="p-4 md:p-2" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="upload_emp_id" id="upload_emp_id">
 
-            // Remove any success messages after a delay
-            setTimeout(() => {
-                const successMessage = document.querySelector('[data-success]');
-                if (successMessage) {
-                    successMessage.remove();
+                        <!-- MAIN 2 COLUMN LAYOUT -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                            <!-- ================= LEFT SIDE (HEADER INFO) ================= -->
+                            <div>
+                                <h3 class="text-sm font-semibold mb-3">File Information</h3>
+
+                                <!-- HEADER 2 COLUMN GRID -->
+                                <div class="grid md:grid-cols-2 sm:grid-cols-2 gap-3">
+                                    <div class="w-full sm:col-span-2">
+                                        <input name="upload_employee_name" id="upload_employee_name"
+                                            class="text-md font-semibold bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"></input>
+                                    </div>
+                                    <div class="w-full sm:col-span-2">
+                                        <label class="block text-xs font-medium">Note</label>
+                                        <textarea id="note" name="note" rows="3"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"></textarea>
+                                    </div>
+
+                                    <!-- File Upload (PDF, Excel, etc.) -->
+                                    <div class="sm:col-span-2">
+                                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Upload
+                                            Files</label>
+                                        <input type="file" name="files[]" multiple
+                                            accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.zip,.rar"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ================= RIGHT SIDE (DETAILS TABLE) ================= -->
+                            <div>
+                                <div class="border rounded-lg p-3">
+
+                                    <h3 class="text-sm font-semibold mb-2">Uploaded Files</h3>
+
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-xs text-left border">
+                                            <thead class="bg-gray-100">
+                                                <tr>
+                                                    <th class="px-3 py-2 border">Date</th>
+                                                    <th class="px-3 py-2 border">File Name</th>
+                                                    <th class="px-3 py-2 border">File</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="viewDetailsTable">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="mt-6 flex full-width justify-end space-x-2">
+                            <button type="button" id="saveButton" data-modal-toggle="upload-file-modal"
+                                onclick="submitUploadFileForm()"
+                                class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                                Save
+                            </button>
+
+                            <button type="button" id="closeButton" data-modal-toggle="upload-file-modal"
+                                class="px-4 py-2 text-xs border rounded-lg bg-gray-100 hover:bg-gray-200">
+                                Close
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+            <!-- End upload modal -->
+
+            <script>
+                function clearModalFields() {
+                    // Clear all form fields
+                    const form = document.querySelector('form');
+                    form.reset();
+
+                    // Remove any success messages after a delay
+                    setTimeout(() => {
+                        const successMessage = document.querySelector('[data-success]');
+                        if (successMessage) {
+                            successMessage.remove();
+                        }
+                    }, 3000);
                 }
-            }, 3000);
-        }
 
-        function openAssetModal(button) {
-            const id = button.getAttribute('data-id');
-            document.getElementById('empId').value = id
-            document.getElementById('employee_name').innerText = button.getAttribute('data-name');
-            const statusMap = {
-                1: 'Available',
-                2: 'Active',
-                3: 'Assigned',
-                4: 'Maintenance',
-                5: 'Retired'
-            };
+                function openAssetModal(button) {
+                    const id = button.getAttribute('data-id');
+                    document.getElementById('empId').value = id
+                    document.getElementById('employee_name').innerText = button.getAttribute('data-name');
+                    const statusMap = {
+                        1: 'Available',
+                        2: 'Active',
+                        3: 'Assigned',
+                        4: 'Maintenance',
+                        5: 'Retired'
+                    };
 
-            fetch(`/employee/${id}/accountability`)
-                .then(response => response.json())
-                .then(data => {
+                    fetch(`/employee/${id}/accountability`)
+                        .then(response => response.json())
+                        .then(data => {
 
-                    const tbody = document.getElementById('assetTableBody');
-                    tbody.innerHTML = '';
+                            const tbody = document.getElementById('assetTableBody');
+                            tbody.innerHTML = '';
 
-                    if (data.assets.length === 0) {
-                        tbody.innerHTML = `
+                            if (data.assets.length === 0) {
+                                tbody.innerHTML = `
                     <tr>
                         <td colspan="5" class="text-center py-4 text-gray-500">
                             No assigned assets found.
                         </td>
                     </tr>
                 `;
-                        return;
-                    }
+                                return;
+                            }
 
-                    data.assets.forEach(asset => {
+                            data.assets.forEach(asset => {
 
-                        const statusLabel = statusMap[asset.status] || 'Available'
+                                const statusLabel = statusMap[asset.status] || 'Available'
 
-                        let expirationDate = asset.licenses ?
-                            asset.licenses.map(l => new Date(l.expiration_date).toLocaleDateString())
-                            .join('<br>') :
-                            '';
+                                let expirationDate = asset.licenses ?
+                                    asset.licenses.map(l => new Date(l.expiration_date).toLocaleDateString())
+                                    .join('<br>') :
+                                    '';
 
-                        tbody.innerHTML += `
+                                tbody.innerHTML += `
                     <tr class="border-b">
                         <td class="px-2 py-2">${asset.asset_code ?? ''}</td>
                         <td class="px-2 py-2">${asset.name ?? ''}</td>
@@ -388,33 +507,120 @@
                         <td class="px-2 py-2">${expirationDate}</td>
                     </tr>
                 `;
-                    });
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-        }
+                            });
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+                }
 
-        function printARE() {
-            const empId = document.getElementById('empId').value
-            if (!empId) {
-                alert('Employee must be selected.');
-                return;
-            }
+                function printARE() {
+                    const empId = document.getElementById('empId').value
+                    if (!empId) {
+                        alert('Employee must be selected.');
+                        return;
+                    }
 
-            let url = "{{ route('are.print') }}" + "?empId=" + empId;
-            window.open(url, '_blank');
-        }
+                    let url = "{{ route('are.print') }}" + "?empId=" + empId;
+                    window.open(url, '_blank');
+                }
 
-        function printDutyDetail() {
-            const empId = document.getElementById('empId').value
-            if (!empId) {
-                alert('Employee must be selected.');
-                return;
-            }
+                function printDutyDetail() {
+                    const empId = document.getElementById('empId').value
+                    if (!empId) {
+                        alert('Employee must be selected.');
+                        return;
+                    }
 
-            let url = "{{ route('duty.detail.print') }}" + "?empId=" + empId;
-            window.open(url, '_blank');
-        }
-    </script>
-@endsection
+                    let url = "{{ route('duty.detail.print') }}" + "?empId=" + empId;
+                    window.open(url, '_blank');
+                }
+
+                function loadUploadModal(button) {
+                    const id = button.getAttribute('data-id');
+                    document.getElementById('upload_emp_id').value = id;
+                    document.getElementById('upload_employee_name').value = button.getAttribute('data-name');
+                    const empName = button.getAttribute('data-name');
+
+                    // make sure the elements exist
+                    const empIdInput = document.getElementById('upload_emp_id');
+                    const empNameInput = document.getElementById('upload_employee_name');
+
+                    if (empIdInput && empNameInput) {
+                        empIdInput.value = id; // hidden input
+                        empNameInput.value = empName; // visible input
+                    }
+
+                    loadUploadedFiles(id);
+                }
+
+
+                function submitUploadFileForm() {
+                    const empId = document.getElementById('upload_emp_id').value;
+                    const form = document.getElementById('uploadFileForm');
+                    const formData = new FormData(form);
+
+                    fetch(`/employee/${empId}/upload`, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('Files uploaded successfully!');
+                                form.reset();
+                                // Optionally, refresh the uploaded files table here
+                                loadUploadedFiles(empId);
+                            } else {
+                                alert('Error uploading files: ' + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while uploading files.');
+                        });
+                }
+
+                function loadUploadedFiles(empId) {
+                    fetch(`/employee/${empId}/uploaded-files`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const tableBody = document.getElementById('viewDetailsTable');
+                            tableBody.innerHTML = '';
+
+                            if (data.files.length === 0) {
+                                tableBody.innerHTML = `
+                                    <tr>
+                                        <td colspan="3" class="text-center py-4 text-gray-500">
+                                            No files uploaded.
+                                        </td>
+                                    </tr>
+                                `;
+                                return;
+                            }
+
+                            data.files.forEach(file => {
+                                const uploadDate = new Date(file.created_at).toLocaleDateString();
+                                tableBody.innerHTML += `
+                                    <tr class="border-b">
+                                        <td class="px-3 py-2">${uploadDate}</td>
+                                        <td class="px-3 py-2">${file.file_name}</td>
+                                        <td class="px-3 py-2">
+                                            <a href="/storage/${file.path}" target="_blank" class="text-blue-600 hover:underline">
+                                                View File
+                                            </a>
+                                        </td>
+                                    </tr>
+                                `;
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while loading uploaded files.');
+                        });
+                }
+            </script>
+        @endsection

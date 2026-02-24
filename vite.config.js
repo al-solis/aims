@@ -10,7 +10,7 @@ export default defineConfig({
                 "resources/js/flowbite.min.js",
                 "resources/js/preline.js",
                 "resources/js/select2.min.js",
-                "resources/js/chat.js",
+                "resources/js/chart.js",
             ],
             refresh: true,
         }),

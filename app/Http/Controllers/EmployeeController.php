@@ -14,7 +14,7 @@ use App\Models\employee_id as EmployeeId;
 use App\Models\asset;
 use App\Models\category;
 use App\Models\asset_license;
-
+use App\Models\uploaded_file as UploadedFile;
 
 class EmployeeController extends Controller
 {
@@ -440,5 +440,32 @@ class EmployeeController extends Controller
             'assets' => $assets
         ]);
     }
+
+    // public function uploadFiles(Request $request, $empId)
+    // {
+    //     $employee = Employee::findOrFail($empId);
+
+    //     if ($request->hasFile('files')) {
+    //         $uploadedFiles = [];
+
+    //         foreach ($request->file('files') as $file) {
+    //             $fileName = 'employee_' . $empId . '_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+    //             $path = $file->storeAs('employee_files', $fileName, 'public');
+
+    //             $uploadedFiles[] = [
+    //                 'file_name' => $fileName,
+    //                 'file_path' => $path,
+    //                 'url' => asset('storage/' . $path)
+    //             ];
+    //         }
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'files' => $uploadedFiles
+    //         ]);
+    //     }
+
+    //     return response()->json(['error' => 'No files uploaded'], 400);
+    // }
 
 }
