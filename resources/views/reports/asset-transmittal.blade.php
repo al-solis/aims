@@ -6,7 +6,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Accountability Form</title>
+    <title>Asset Transmittal Form</title>
 
     <style>
         body {
@@ -107,17 +107,15 @@
         <br>
         <br>
         <br>
-        <div class="sub-title mb-4" style="font-weight: bolder; font-size: 15px">ACCOUNTABILITY FORM
-        </div>
+        <div class="sub-title mb-4" style="font-weight: bolder; font-size: 15px">TRANSMITTAL NO.
+            {{ $transmittal->transmittal_code }}</div>
 
         {{-- <p style="text-align: right">Date: <strong><u>{{ today()->format('j F Y') }}</u></strong></p> --}}
     </div>
+
+    {{-- <p style="text-align: right">Date: <strong><u>{{ today()->format('j F Y') }}</u></strong></p> --}}
+    </div>
     <br>
-    <p style="text-align: justify">This accountability form does not automatically imply salary deduction in the event of
-        damaged or malfunctioning equipment. In cases where an item is reported as defective or broken. An incident
-        report or letter of report must first be conducted and submitted to properly assess the cause of the damage. The
-        management will review the findings of the report to determine responsibility, ensuring that any action taken is
-        fair, justified, and based on verified facts rather than assumptions.</p>
 
     <div class="section">
         {{-- <div class="section-title">Accountability Information</div> --}}
