@@ -101,16 +101,25 @@
 
     {{-- HEADER --}}
     <div class="header">
-        <div class="title">{{ env('APP_COMPANY_NAME') }}</div>
-        <div class="sub-title">{{ env('APP_COMPANY_ADDRESS') }}</div>
-        <div class="sub-title">{{ env('APP_COMPANY_CONTACT') }}</div>
-        <br\>
-            <div class="sub-title" style="font-weight: bolder; font-size: 15px">ASSET TRANSFER FORM</div>
-            <div class="sub-title">Request No: {{ $transfer->code }} @if ($transfer->cancelled)
-                    <span style="color: red; font-weight: bold;">(Cancelled)</span>
-                @endif
-            </div>
-            <div class="sub-title">Date: {{ $transfer->date }}</div>
+        <table width="100%" style="border:0;">
+            <tr>
+                <td width="7%" style="border:0;">
+                    <img src="{{ public_path('images/logo.PNG') }}" style="width:80px;">
+                </td>
+                <td width="93%" style="border:0; text-align:center;">
+                    <div class="title">{{ env('APP_COMPANY_NAME') }}</div>
+                    <div class="sub-title">{{ env('APP_COMPANY_ADDRESS') }}</div>
+                    <div class="sub-title">{{ env('APP_COMPANY_CONTACT') }}</div>
+                </td>
+            </tr>
+        </table>
+        <br>
+        <div class="sub-title" style="font-weight: bolder; font-size: 15px">ASSET TRANSFER FORM</div>
+        <div class="sub-title">Request No: {{ $transfer->code }} @if ($transfer->cancelled)
+                <span style="color: red; font-weight: bold;">(Cancelled)</span>
+            @endif
+        </div>
+        <div class="sub-title">Date: {{ $transfer->date }}</div>
     </div>
 
     {{-- TRANSFER INFO --}}

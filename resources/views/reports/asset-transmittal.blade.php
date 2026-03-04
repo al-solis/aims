@@ -101,21 +101,22 @@
 
     {{-- HEADER --}}
     <div class="header">
-        <div class="title">{{ env('APP_COMPANY_NAME') }}</div>
-        <div class="sub-title">{{ env('APP_COMPANY_ADDRESS') }}</div>
-        <div class="sub-title">{{ env('APP_COMPANY_CONTACT') }}</div>
-        <br>
-        <br>
+        <table width="100%" style="border:0;">
+            <tr>
+                <td width="7%" style="border:0;">
+                    <img src="{{ public_path('images/logo.PNG') }}" style="width:80px;">
+                </td>
+                <td width="93%" style="border:0; text-align:center;">
+                    <div class="title">{{ env('APP_COMPANY_NAME') }}</div>
+                    <div class="sub-title">{{ env('APP_COMPANY_ADDRESS') }}</div>
+                    <div class="sub-title">{{ env('APP_COMPANY_CONTACT') }}</div>
+                </td>
+            </tr>
+        </table>
         <br>
         <div class="sub-title mb-4" style="font-weight: bolder; font-size: 15px">TRANSMITTAL NO.
             {{ $transmittal->transmittal_code }}</div>
-
-        {{-- <p style="text-align: right">Date: <strong><u>{{ today()->format('j F Y') }}</u></strong></p> --}}
     </div>
-
-    {{-- <p style="text-align: right">Date: <strong><u>{{ today()->format('j F Y') }}</u></strong></p> --}}
-    </div>
-    <br>
 
     <div class="section">
         {{-- <div class="section-title">Accountability Information</div> --}}

@@ -243,4 +243,18 @@ class IssuanceController extends Controller
 
         return $pdf->stream('issuance_' . $issuances->issuance_number . '.pdf');
     }
+
+    public function printTransmittal($id)
+    {
+        $issuances = issuance_header::with([
+            'details.supply',
+            'details.uom',
+            'issuedTo'
+        ])->findOrFail($id);
+
+        $pdf = Pdf::loadView('reports.supplies-transmittal', compact('issuances'))
+            ->setPaper('letter', 'portrait');
+
+        return $pdf->stream('transmittal_' . $issuances->issuance_number . '.pdf');
+    }
 }

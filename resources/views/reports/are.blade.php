@@ -101,19 +101,25 @@
 
     {{-- HEADER --}}
     <div class="header">
-        <div class="title">{{ env('APP_COMPANY_NAME') }}</div>
-        <div class="sub-title">{{ env('APP_COMPANY_ADDRESS') }}</div>
-        <div class="sub-title">{{ env('APP_COMPANY_CONTACT') }}</div>
+        <table width="100%" style="border:0;">
+            <tr>
+                <td width="7%" style="border:0;">
+                    <img src="{{ public_path('images/logo.PNG') }}" style="width:80px;">
+                </td>
+                <td width="93%" style="border:0; text-align:center;">
+                    <div class="title">{{ env('APP_COMPANY_NAME') }}</div>
+                    <div class="sub-title">{{ env('APP_COMPANY_ADDRESS') }}</div>
+                    <div class="sub-title">{{ env('APP_COMPANY_CONTACT') }}</div>
+                </td>
+            </tr>
+        </table>
         <br>
-        <br>
-        <br>
-        <div class="sub-title mb-4" style="font-weight: bolder; font-size: 15px">ACCOUNTABILITY FORM
-        </div>
-
-        {{-- <p style="text-align: right">Date: <strong><u>{{ today()->format('j F Y') }}</u></strong></p> --}}
+        <div class="sub-title" style="font-weight: bolder; font-size: 15px">ACCOUNTABILITY FORM</div>
     </div>
+
     <br>
-    <p style="text-align: justify">This accountability form does not automatically imply salary deduction in the event of
+    <p style="text-align: justify">This accountability form does not automatically imply salary deduction in the event
+        of
         damaged or malfunctioning equipment. In cases where an item is reported as defective or broken. An incident
         report or letter of report must first be conducted and submitted to properly assess the cause of the damage. The
         management will review the findings of the report to determine responsibility, ensuring that any action taken is

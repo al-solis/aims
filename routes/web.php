@@ -128,6 +128,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/issuance/create', [IssuanceController::class, 'create'])->name('issuance.create');
     Route::get('/issuance/{id}', [IssuanceController::class, 'show']);
     Route::get('/issuance/{id}/print', [IssuanceController::class, 'print'])->name('issuance.print');
+    Route::get('/issuance/{id}/print-transmittal', [IssuanceController::class, 'printTransmittal'])->name('issuance.print-transmittal');
     Route::post('/issuance/{id}/void', [IssuanceController::class, 'void'])->name('issuance.void');
     Route::get('/issuance', [IssuanceController::class, 'index'])->name('issuance.index');
 

@@ -6,7 +6,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Supplies Issuance Form</title>
+    <title>Supplies Transmittal</title>
 
     <style>
         body {
@@ -126,36 +126,42 @@
             </tr>
         </table>
         <br>
-        <div class="sub-title" style="font-weight: bolder; font-size: 15px">SUPPLIES ISSUANCE FORM</div>
-        <div class="sub-title">Issuance No: {{ $issuances->issuance_number }} @if ($issuances->status == 0)
+        <div class="sub-title" style="font-weight: bolder; font-size: 15px">TRANSMITTAL NO.
+            {{ $issuances->issuance_number }} @if ($issuances->status == 0)
                 <span style="color: red; font-weight: bold;">(Voided)</span>
             @endif
         </div>
-        <div class="sub-title">Date: {{ Carbon::parse($issuances->issuance_date)->format('F j, Y') }}</div>
     </div>
 
     {{-- TRANSFER INFO --}}
     <div class="section">
-        <div class="section-title">Issuance Information</div>
+        {{-- <div class="section-title">Issuance Information</div> --}}
         <table>
             <tr>
-                <td width="25%"><strong>Issued To:</strong></td>
-                <td width="75%">
+                <td width="25%"><strong>Date:</strong></td>
+                <td colspan="3">
+                    {{ Carbon::parse($issuances->issuance_date)->format('F j, Y') }}
+                </td>
+            </tr>
+            <tr>
+                <td width="25%"><strong>Transmitted To:</strong></td>
+                <td colspan="3">
                     {{ $issuances->issuedTo->last_name ?? '' }}, {{ $issuances->issuedTo->first_name ?? '' }}
                     {{ $issuances->issuedTo->middle_name ?? '' }}
                 </td>
-
+            </tr>
+            <tr>
                 <td width="25%"><strong>Location:</strong></td>
-                <td width="75%">
+                <td colspan="3">
                     {{ $issuances->Location->name ?? '' }}
                 </td>
             </tr>
             <tr>
-                <td><strong>Purpose:</strong></td>
+                <td width="25%"><strong>Purpose:</strong></td>
                 <td colspan="3">{{ $issuances->purpose ?? '' }}</td>
             </tr>
             <tr>
-                <td><strong>Additional Information:</strong></td>
+                <td width="25%"><strong>Additional Information:</strong></td>
                 <td colspan="3">{{ $issuances->remarks ?? '' }}</td>
             </tr>
         </table>
@@ -163,17 +169,15 @@
 
     {{-- TRANSFER DETAILS --}}
     <div class="section">
-        <div class="section-title">Issuance Details</div>
+        <div class="section-title">Particulars</div>
 
         <table>
             <thead>
                 <tr>
                     <th>Item</th>
                     <th>Description</th>
-                    <th>Qty</th>
                     <th>UOM</th>
-                    <th class="text-right">Purchase Cost</th>
-                    <th class="text-right">Total</th>
+                    <th>Qty</th>
                 </tr>
             </thead>
             <tbody>
@@ -187,10 +191,8 @@
                     <tr>
                         <td>{{ $detail->supply->code ?? '' }}</td>
                         <td>{{ $detail->supply->name ?? '' }}</td>
-                        <td class="text-right">{{ number_format($detail->quantity, 2) }}</td>
                         <td>{{ $detail->uom->name ?? 'N/A' }}</td>
-                        <td class="text-right">{{ number_format($detail->unit_cost, 2) }}</td>
-                        <td class="text-right">{{ number_format($detail->total_cost, 2) }}</td>
+                        <td class="text-right">{{ number_format($detail->quantity, 2) }}</td>
                     </tr>
                 @endforeach
 
@@ -200,10 +202,10 @@
                             details found.</td>
                     </tr>
                 @endif
-                <tr>
+                {{-- <tr>
                     <td colspan="5" class="text-right"><strong>Grand Total</strong></td>
                     <td class="text-right"><strong>{{ number_format($grandTotal, 2) }}</strong></td>
-                </tr>
+                </tr> --}}
             </tbody>
         </table>
     </div>
@@ -211,6 +213,31 @@
     {{-- <p style="text-align: center; font-size: 11px; color:#555">This clearance certificate is valid only when properly
         signed
         and dated.</p> --}}
+    {{-- SIGNATURES --}}
+    <div class="footer">
+        <div class="signature">
+            Prepared By:<br><br>
+            <br>
+            <strong><u>{{ env('ARE_PREPARED_BY') }}</u></strong><br>
+            {{ env('ARE_PREPARED_BY_POSITION') }}
+        </div>
+
+        <div class="signature">
+            Transmitted By:<br><br>
+            <br>
+            ___________________________<br>
+            Signature Over Printed Name
+        </div>
+
+        <div class="signature" style="right;">
+            Received By:<br><br>
+            <br>
+            ___________________________<br>
+            Signature Over Printed Name
+            <br>
+        </div>
+    </div>
+
     <div class="page-number">
         Generated on {{ now()->format('F d, Y') }}
     </div>
