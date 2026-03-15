@@ -60,13 +60,15 @@
             <!-- Asset Distribution -->
             <div class="lg:col-span-2 bg-white shadow rounded-lg p-4">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Asset Distribution by Location</h2>
-                <canvas id="assetChart" class="h-64"></canvas>
+                {{-- <canvas id="assetChart" class="h-64"></canvas> --}}
+                <div id="assetChart" class="h-64"></div>
             </div>
 
             <!-- Asset Status -->
             <div class="bg-white shadow rounded-lg p-4">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Asset Status</h2>
-                <canvas id="statusChart" class="h-64"></canvas>
+                {{-- <canvas id="statusChart" class="h-64"></canvas> --}}
+                <div id="statusChart" class="h-64"></div>
             </div>
         </div>
 
@@ -194,55 +196,93 @@
     </div>
 
     <!-- Charts Script -->
-    {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
-    <script src="{{ asset('assets/js/chart.js') }}"></script>
+    <script src="{{ asset('assets/js/apexcharts.min.js') }}"></script>
+
     <script>
-        const ctx = document.getElementById('assetChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: {!! json_encode($locationLabels) !!},
-                datasets: [{
-                    label: 'Assets',
-                    data: {!! json_encode($assetData) !!},
-                    backgroundColor: '#1F2937'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
+        var colors = ['#1F2937', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6'];
+        var options = {
+            series: [{
+                name: 'Assets',
+                data: {!! json_encode($assetData) !!}
+            }],
+            chart: {
+                height: 350,
+                type: 'bar',
+                events: {
+                    click: function(chart, w, e) {
+                        // console.log(chart, w, e)
                     }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
+                }
+            },
+            colors: colors,
+            plotOptions: {
+                bar: {
+                    columnWidth: '45%',
+                    distributed: true,
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            legend: {
+                show: false
+            },
+            xaxis: {
+                categories: {!! json_encode($locationLabels) !!},
+                labels: {
+                    style: {
+                        colors: colors,
+                        fontSize: '12px'
                     }
                 }
             }
-        });
+        };
 
-        const ctxStatus = document.getElementById('statusChart').getContext('2d');
-        new Chart(ctxStatus, {
-            type: 'doughnut',
-            data: {
-                labels: ['Active', 'Assigned', 'Maintenance', 'Retired'],
-                datasets: [{
-                    data: [{{ $activeAssets }}, {{ $assignedAssets }}, {{ $maintenanceAssets }},
-                        {{ $retiredAssets }}
-                    ],
-                    backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#EF4444']
-                }]
+        var chart = new ApexCharts(document.querySelector("#assetChart"), options);
+        chart.render();
+
+        var options = {
+            labels: ['Active', 'Assigned', 'Maintenance', 'Retired'],
+            series: [{{ $activeAssets }}, {{ $assignedAssets }}, {{ $maintenanceAssets }}, {{ $retiredAssets }}],
+            chart: {
+                type: 'donut',
             },
-            options: {
-                responsive: true,
-                plugins: {
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: 200
+                    },
                     legend: {
                         position: 'bottom'
                     }
                 }
-            }
-        });
+            }]
+        };
+
+        var chart = new ApexCharts(document.querySelector("#statusChart"), options);
+        chart.render();
+
+        // const ctxStatus = document.getElementById('statusChart').getContext('2d');
+        // new Chart(ctxStatus, {
+        //     type: 'doughnut',
+        //     data: {
+        //         labels: ['Active', 'Assigned', 'Maintenance', 'Retired'],
+        //         datasets: [{
+        //             data: [{{ $activeAssets }}, {{ $assignedAssets }}, {{ $maintenanceAssets }},
+        //                 {{ $retiredAssets }}
+        //             ],
+        //             backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#EF4444']
+        //         }]
+        //     },
+        //     options: {
+        //         responsive: true,
+        //         plugins: {
+        //             legend: {
+        //                 position: 'bottom'
+        //             }
+        //         }
+        //     }
+        // });
     </script>
 @endsection
