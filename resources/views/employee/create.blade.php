@@ -52,14 +52,22 @@
                             <li class="me-2" role="presentation">
                                 <button class="inline-block p-4 border-b-2 rounded-t-lg" id="basic-tab"
                                     data-tabs-target="#basic" type="button" role="tab" aria-controls="basic"
-                                    aria-selected="true">Basic Information</button>
+                                    aria-selected="true">Basic Info</button>
                             </li>
+
+                            <li class="me-2" role="presentation">
+                                <button
+                                    class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                                    id="employment-tab" data-tabs-target="#employment" type="button" role="tab"
+                                    aria-controls="employment" aria-selected="false">Employment Details</button>
+                            </li>
+
                             @if ($employee)
                                 <li class="me-2" role="presentation">
                                     <button
                                         class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
                                         id="idinfo-tab" data-tabs-target="#idinfo" type="button" role="tab"
-                                        aria-controls="idinfo" aria-selected="false">ID Information</button>
+                                        aria-controls="idinfo" aria-selected="false">ID Info</button>
                                 </li>
 
 
@@ -88,7 +96,7 @@
                                 <strong class="font-medium text-gray-800 dark:text-white">Basic Information tab's associated
                                     content</strong>.
                             </p>
-                            <div class="grid gap-2 sm:grid-cols-2 sm:gap-2 mb-2">
+                            <div class="grid gap-2 sm:grid-cols-3 sm:gap-2 mb-2">
                                 <input type="hidden" id="id" name="id"
                                     value="{{ old('id', $employee->id ?? '') }}">
 
@@ -113,35 +121,73 @@
                                     </p>
                                 </div>
 
-                                <div class="w-full">
-                                    <label for="idno" class="block text-xs font-medium text-gray-900 dark:text-white">ID
-                                        No*</label>
-                                    <input type="text" name="idno" id="idno"
-                                        value="{{ old('idno', $employee->employee_code ?? '') }}"
-                                        class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                        placeholder="e.g. 001-26, 2026-00001" required>
-                                    <small id="id-feedback" class="text-red-500 text-xs mb-1 hidden">
-                                        ID number already exists in another record.
-                                    </small>
+                                <div class="sm:col-span-2">
+                                    <div class="sm:col-span-2">
+                                        <label for="idno"
+                                            class="block text-xs font-medium text-gray-900 dark:text-white">ID
+                                            No*</label>
+                                        <input type="text" name="idno" id="idno"
+                                            value="{{ old('idno', $employee->employee_code ?? '') }}"
+                                            class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                            placeholder="e.g. 001-26, 2026-00001" required>
+                                        <small id="id-feedback" class="text-red-500 text-xs mb-1 hidden">
+                                            ID number already exists in another record.
+                                        </small>
+                                    </div>
 
-                                    <label for="date"
-                                        class="block text-xs font-medium text-gray-900 dark:text-white">Date
-                                        Hired*</label>
-                                    <input type="date" name="date" id="date"
-                                        value="{{ old('date', $employee->hire_date ?? '') }}"
-                                        class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                        placeholder="e.g. 04/08/1984" required>
+                                    <div class="sm:col-span-2">
 
-                                    <label for="status"
-                                        class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                                    <select id="status" name="status"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                        required>
-                                        <option value="1" @selected(old('status', $employee->status ?? 1) == 1)>Active</option>
-                                        <option value="0" @selected(old('status', $employee->status ?? 1) == 0)>Inactive</option>
-                                        <option value="2" @selected(old('status', $employee->status ?? 1) == 2)>On leave</option>
-                                    </select>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label for="date"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Date
+                                                Hired*</label>
+                                            <input type="date" name="date" id="date"
+                                                value="{{ old('date', $employee->hire_date ?? '') }}"
+                                                class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                                placeholder="e.g. 04/08/1984" required>
+                                        </div>
+
+                                        <div>
+                                            <label for="status"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
+                                            <select id="status" name="status"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5"
+                                                required>
+                                                <option value="1" @selected(old('status', $employee->status ?? 1) == 1)>Active</option>
+                                                <option value="0" @selected(old('status', $employee->status ?? 1) == 0)>Inactive</option>
+                                                <option value="2" @selected(old('status', $employee->status ?? 1) == 2)>On leave</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label for="gender"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Gender*</label>
+                                            <select id="gender" name="gender"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5"
+                                                required>
+                                                <option value="1" @selected(old('gender', $employee->gender ?? 1) == 1)>Male</option>
+                                                <option value="2" @selected(old('gender', $employee->gender ?? 1) == 2)>Female</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label for="marital_status"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Marital
+                                                Status*</label>
+                                            <select id="marital_status" name="marital_status"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5"
+                                                required>
+                                                <option value="1" @selected(old('marital_status', $employee->marital_status ?? 1) == 1)>Single</option>
+                                                <option value="2" @selected(old('marital_status', $employee->marital_status ?? 1) == 2)>Married</option>
+                                                <option value="3" @selected(old('marital_status', $employee->marital_status ?? 1) == 3)>Widowed</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
+
                             </div>
 
                             <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
@@ -202,7 +248,7 @@
                                 </div>
                             </div>
 
-                            <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                            {{-- <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
                                 <div class="w-full">
                                     <label for="position"
                                         class="block text-xs font-medium text-gray-900 dark:text-white">Position</label>
@@ -224,7 +270,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <label for="address"
                                 class="block text-xs font-medium text-gray-900 dark:text-white">Address*</label>
@@ -272,6 +318,44 @@
 
                             <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
                                 <div class="w-full">
+                                    <label for="highest_education"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Highest
+                                        Education</label>
+                                    <input type="text" name="highest_education" id="highest_education"
+                                        value="{{ old('highest_education', $employee->highest_education ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. College Graduate">
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="school"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">School</label>
+                                    <input type="text" name="school" id="school"
+                                        value="{{ old('school', $employee->school ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. University of the Philippines">
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="course"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Course</label>
+                                    <input type="text" name="course" id="course"
+                                        value="{{ old('course', $employee->course ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Bachelor of Science in Computer Science">
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="year_attended"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Year Attended/
+                                        Graduated</label>
+                                    <input type="text" name="year_attended" id="year_attended"
+                                        value="{{ old('year_attended', $employee->year_attended ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 2024-2025">
+                                </div>
+
+                                <div class="w-full">
                                     <label for="emergency"
                                         class="block text-xs font-medium text-gray-900 dark:text-white">Emergency
                                         Contact</label>
@@ -289,6 +373,103 @@
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                         placeholder="e.g. 09xxxxxxxxx">
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="p-1 rounded-lg bg-gray-50 dark:bg-gray-800" id="employment" role="tabpanel"
+                            aria-labelledby="employment-tab">
+                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">Please fill the following information
+                                <strong class="font-medium text-gray-800 dark:text-white">Employment Details tab's
+                                    associated
+                                    content</strong>.
+                            </p>
+
+                            <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                                <div class="w-full">
+                                    <label for="position"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Position</label>
+                                    <input type="text" name="position" id="position"
+                                        value="{{ old('position', $employee->position ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Manager">
+                                </div>
+                                <div class="w-full">
+                                    <label for="department"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Department</label>
+                                    <select name="department" id="department"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                        <option selected="" value="">Select Department/ Location</option>
+                                        @foreach ($locations as $location)
+                                            <option value="{{ $location->id }}"
+                                                {{ old('department', $employee->location_id ?? '') == $location->id ? 'selected' : '' }}>
+                                                {{ $location->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                                <div>
+                                    <label for="employment_type"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Employment
+                                        Type*</label>
+                                    <select id="employment_type" name="employment_type"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5"
+                                        required>
+                                        <option value="1" @selected(old('employment_type', $employee->employment_type ?? 1) == 1)>Regular</option>
+                                        <option value="2" @selected(old('employment_type', $employee->employment_type ?? 1) == 2)>Contractual</option>
+                                        <option value="3" @selected(old('employment_type', $employee->employment_type ?? 1) == 3)>Probationary</option>
+                                    </select>
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="monthly_salary"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Monthly
+                                        Salary</label>
+                                    <input type="number" name="monthly_salary" id="monthly_salary"
+                                        value="{{ old('monthly_salary', $employee->monthly_salary ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 50000">
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="daily_rate"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Daily Rate</label>
+                                    <input type="number" name="daily_rate" id="daily_rate"
+                                        value="{{ old('daily_rate', $employee->daily_rate ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 2000">
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="sss_rate"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">SSS Rate</label>
+                                    <input type="number" name="sss_rate" id="sss_rate"
+                                        value="{{ old('sss_rate', $employee->sss_rate ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 500">
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="philhealth_rate"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">PhilHealth
+                                        Rate</label>
+                                    <input type="number" name="philhealth_rate" id="philhealth_rate"
+                                        value="{{ old('philhealth_rate', $employee->philhealth_rate ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 250">
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="pagibig_rate"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">PAGIBIG
+                                        Rate</label>
+                                    <input type="number" name="pagibig_rate" id="pagibig_rate"
+                                        value="{{ old('pagibig_rate', $employee->pagibig_rate ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 250">
+                                </div>
+
                             </div>
                         </div>
 

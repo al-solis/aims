@@ -126,6 +126,8 @@ class ReportController extends Controller
 
     public function employeeReport(Request $request)
     {
+        $reportType = $request->input('report_type', '1'); // Default to 1 if not provided
+        $reportFile = $reportType == '2' ? 'employee-disposition' : 'employee';
         $pDateRange = $request->date_range ?? 'this_month';
         $pFromDate = $request->from_date ?? '';
         $pToDate = $request->to_date ?? '';
@@ -139,37 +141,47 @@ class ReportController extends Controller
             2 => 'On Leave',
         ];
 
+        $dateRangeLabels = [
+            'this_month' => Carbon::now()->format('F Y'),
+            'last_month' => Carbon::now()->subMonth()->format('F Y'),
+            'this_quarter' => Carbon::now()->startOfQuarter()->format('F Y') . ' - ' . Carbon::now()->endOfQuarter()->format('F Y'),
+            'this_year' => Carbon::now()->format('Y'),
+            'custom' => 'custom',
+        ];
+
         $statusLabel = $statusLabel[$pStatus] ?? 'All Statuses';
 
         $query = Employee::query()->with('location');
         //dd($query->toSql());
-        switch ($pDateRange) {
-            case 'this_month':
-                $query->whereMonth('hire_date', Carbon::now()->month)
-                    ->whereYear('hire_date', Carbon::now()->year);
-                break;
+        if ($reportType == '1') {
+            switch ($pDateRange) {
+                case 'this_month':
+                    $query->whereMonth('hire_date', Carbon::now()->month)
+                        ->whereYear('hire_date', Carbon::now()->year);
+                    break;
 
-            case 'last_month':
-                $query->whereMonth('hire_date', Carbon::now()->subMonth()->month)
-                    ->whereYear('hire_date', Carbon::now()->subMonth()->year);
-                break;
+                case 'last_month':
+                    $query->whereMonth('hire_date', Carbon::now()->subMonth()->month)
+                        ->whereYear('hire_date', Carbon::now()->subMonth()->year);
+                    break;
 
-            case 'this_quarter':
-                $query->whereBetween('hire_date', [
-                    Carbon::now()->startOfQuarter()->format('Y-m-d'),
-                    Carbon::now()->endOfQuarter()->format('Y-m-d')
-                ]);
-                break;
+                case 'this_quarter':
+                    $query->whereBetween('hire_date', [
+                        Carbon::now()->startOfQuarter()->format('Y-m-d'),
+                        Carbon::now()->endOfQuarter()->format('Y-m-d')
+                    ]);
+                    break;
 
-            case 'this_year':
-                $query->whereYear('hire_date', Carbon::now()->year);
-                break;
+                case 'this_year':
+                    $query->whereYear('hire_date', Carbon::now()->year);
+                    break;
 
-            case 'custom':
-                if ($pFromDate && $pToDate) {
-                    $query->whereBetween('hire_date', [$pFromDate, $pToDate]);
-                }
-                break;
+                case 'custom':
+                    if ($pFromDate && $pToDate) {
+                        $query->whereBetween('hire_date', [$pFromDate, $pToDate]);
+                    }
+                    break;
+            }
         }
 
         if ($pStatus != null && $pStatus != '') {
@@ -185,9 +197,9 @@ class ReportController extends Controller
 
         $employees = $query->orderBy($sortField, $sortDirection)->get();
         // Generate PDF
-
+        $pDateRange = $dateRangeLabels[$pDateRange] ?? 'Custom Range';
         $pdf = Pdf::loadView(
-            'reports.employee',
+            'reports.' . $reportFile,
             compact(
                 'employees',
                 'pDateRange',
@@ -198,7 +210,7 @@ class ReportController extends Controller
                 'sortField',
                 'sortDirection'
             )
-        )->setPaper('letter', 'portrait');
+        )->setPaper('letter', $reportType == '2' ? 'landscape' : 'portrait');
 
         return $pdf->stream('employee-report.pdf');
     }
@@ -264,7 +276,7 @@ class ReportController extends Controller
 
     public function suppliesReceivingReport(Request $request)
     {
-        // dd($request->all());
+        //dd($request->all());
         $pDateRange = $request->date_range ?? 'this_month';
         $pFromDate = $request->from_date ?? '';
         $pToDate = $request->to_date ?? '';
@@ -273,13 +285,13 @@ class ReportController extends Controller
         $pEmployee = Employee::find($request->employee)->last_name ?? 'All Employees';
 
         $dateRangeLabels = [
-            'this_month' => 'This Month',
-            'last_month' => 'Last Month',
-            'this_quarter' => 'This Quarter',
-            'this_year' => 'This Year',
+            'this_month' => Carbon::now()->format('F Y'),
+            'last_month' => Carbon::now()->subMonth()->format('F Y'),
+            'this_quarter' => Carbon::now()->startOfQuarter()->format('F Y') . ' - ' . Carbon::now()->endOfQuarter()->format('F Y'),
+            'this_year' => Carbon::now()->format('Y'),
             'custom' => 'custom',
         ];
-        $pDateRange = $dateRangeLabels[$pDateRange] ?? 'Custom Range';
+
         $orientation = $pType == 'summary' ? 'portrait' : 'landscape';
 
         $query = receiving_header::query()->with('details.product', 'supplier', 'receiver', 'details.uom');
@@ -325,6 +337,7 @@ class ReportController extends Controller
 
         $receiving = $query->orderBy('received_date', 'desc')->get();
         // Generate PDF
+        $pDateRange = $dateRangeLabels[$pDateRange] ?? 'Custom Range';
 
         $pdf = Pdf::loadView(
             'reports.supplies-receiving-' . strtolower($pType),
@@ -354,13 +367,13 @@ class ReportController extends Controller
         $pEmployee = Employee::find($request->employee)->last_name ?? 'All Employees';
 
         $dateRangeLabels = [
-            'this_month' => 'This Month',
-            'last_month' => 'Last Month',
-            'this_quarter' => 'This Quarter',
-            'this_year' => 'This Year',
+            'this_month' => Carbon::now()->format('F Y'),
+            'last_month' => Carbon::now()->subMonth()->format('F Y'),
+            'this_quarter' => Carbon::now()->startOfQuarter()->format('F Y') . ' - ' . Carbon::now()->endOfQuarter()->format('F Y'),
+            'this_year' => Carbon::now()->format('Y'),
             'custom' => 'custom',
         ];
-        $pDateRange = $dateRangeLabels[$pDateRange] ?? 'Custom Range';
+
         $orientation = $pType == 'summary' ? 'portrait' : 'landscape';
 
         $query = issuance_header::query()->with('details.supply', 'location', 'issuedTo', 'details.uom');
@@ -406,6 +419,7 @@ class ReportController extends Controller
 
         $issued = $query->orderBy('issuance_date', 'desc')->get();
         // Generate PDF
+        $pDateRange = $dateRangeLabels[$pDateRange] ?? 'Custom Range';
 
         $pdf = Pdf::loadView(
             'reports.supplies-issuance-' . strtolower($pType),
@@ -443,10 +457,10 @@ class ReportController extends Controller
 
         // Get parameter labels for display
         $dateRangeLabels = [
-            'this_month' => 'This Month',
-            'last_month' => 'Last Month',
-            'this_quarter' => 'This Quarter',
-            'this_year' => 'This Year',
+            'this_month' => Carbon::now()->format('F Y'),
+            'last_month' => Carbon::now()->subMonth()->format('F Y'),
+            'this_quarter' => Carbon::now()->startOfQuarter()->format('F Y') . ' - ' . Carbon::now()->endOfQuarter()->format('F Y'),
+            'this_year' => Carbon::now()->format('Y'),
             'custom' => 'Custom Range',
         ];
 

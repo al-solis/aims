@@ -87,6 +87,15 @@ return new class extends Migration {
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'name' => 'LESP',
+                'description' => 'License to Exercise Security Profession',
+                'is_active' => true,
+                'created_by' => 1,
+                'updated_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 

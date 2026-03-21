@@ -12,6 +12,8 @@ class location extends Model
         'code',
         'name',
         'description',
+        'address',
+        'contact_number',
         'status',
         'created_by',
         'updated_by',

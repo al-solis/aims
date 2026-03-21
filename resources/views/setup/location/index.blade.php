@@ -139,9 +139,11 @@
                     <tr>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Code</th>
                         <th scope="col" class="px-4 py-3 text-left w-[200px]">Name</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[350px]">Description</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Sub-Locations</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Status</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[250px]">Description</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[350px]">Address</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Contact Number</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Sub-Locations</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
                 </thead>
@@ -151,15 +153,17 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3 font-medium w-[100px]">{{ $location->code }}</td>
                             <td class="px-4 py-3 w-[200px]">{{ $location->name }}</td>
-                            <td class="px-4 py-3 w-[350px]">{{ $location->description }}</td>
-                            <td class="px-4 py-3 w-[100px]">
+                            <td class="px-4 py-3 w-[250px]">{{ $location->description }}</td>
+                            <td class="px-4 py-3 w-[350px]">{{ $location->address }}</td>
+                            <td class="px-4 py-3 w-[100px]">{{ $location->contact_number }}</td>
+                            <td class="px-4 py-3 w-[150px]">
                                 <a href="{{ route('location.sublocation.index', $location->id) }}"
                                     class="font-semibold text-gray-600 hover:underline">
                                     ({{ $location->sublocations_count }})
                                     sub-locations
                                 </a>
                             </td>
-                            <td class="px-4 py-3 w-[100px] text-xs font-semibold">
+                            <td class="px-4 py-3 w-[150px] text-xs font-semibold">
                                 @php
                                     $statuses = [
                                         0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Inactive'],
@@ -185,6 +189,8 @@
                                         data-modal-target="edit-modal" data-modal-toggle="edit-modal"
                                         data-id="{{ $location->id }}" data-name="{{ $location->name }}"
                                         data-code="{{ $location->code }}" data-description="{{ $location->description }}"
+                                        data-address="{{ $location->address }}"
+                                        data-contact="{{ $location->contact_number }}"
                                         data-status="{{ $location->status }}" onclick="openEditModal(this)"
                                         class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -263,25 +269,43 @@
                             <div class="sm:col-span-2">
                                 <label for="description"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                <textarea type="text" name="description" id="description" rows="3"
+                                <textarea type="text" name="description" id="description" rows="2"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="Location description or address"></textarea>
+                                    placeholder="Location long description"></textarea>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="status"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                                <select id="status" name="status"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    required>
-                                    {{-- <option selected="">Select product type</option> --}}
-                                    <option value="1">Active</option>
-                                    <option value="0">Inactive</option>
-                                    <option value="2">Under Maintenance</option>
-                                </select>
+                                <label for="address"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Address</label>
+                                <textarea type="text" name="address" id="address" rows="3"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Location address"></textarea>
                             </div>
+                            <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-3">
+                                <div class="sm:col-span-2">
+                                    <label for="contact_number"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Contact
+                                        Number</label>
+                                    <input type="text" name="contact_number" id="contact_number"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 123-456-7890" required>
+                                </div>
 
+                                <div class="sm:col-span-1">
+                                    <label for="status"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
+                                    <select id="status" name="status"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        required>
+                                        {{-- <option selected="">Select product type</option> --}}
+                                        <option value="1">Active</option>
+                                        <option value="0">Inactive</option>
+                                        <option value="2">Under Maintenance</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
+
                         <button type="submit"
                             class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
                             <svg class="mr-1 -ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
@@ -349,23 +373,43 @@
                             <div class="sm:col-span-2">
                                 <label for="edit_description"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                <textarea type="text" name="edit_description" id="edit_description" rows="3"
+                                <textarea type="text" name="edit_description" id="edit_description" rows="2"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="Location description"></textarea>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="edit_status"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                                <select id="edit_status" name="edit_status"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    required>
-                                    {{-- <option selected="">Select product type</option> --}}
-                                    <option value="1">Active</option>
-                                    <option value="0">Inactive</option>
-                                    <option value="2">Under Maintenance</option>
-                                </select>
+                                <label for="edit_address"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Address</label>
+                                <textarea type="text" name="edit_address" id="edit_address" rows="2"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Location address"></textarea>
                             </div>
+
+                            <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-3">
+                                <div class="sm:col-span-2">
+                                    <label for="edit_contact_number"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Contact
+                                        Number</label>
+                                    <input type="text" name="edit_contact_number" id="edit_contact_number"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 123-456-7890" required>
+                                </div>
+
+                                <div class="sm:col-span-1">
+                                    <label for="edit_status"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
+                                    <select id="edit_status" name="edit_status"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        required>
+                                        {{-- <option selected="">Select product type</option> --}}
+                                        <option value="1">Active</option>
+                                        <option value="0">Inactive</option>
+                                        <option value="2">Under Maintenance</option>
+                                    </select>
+                                </div>
+                            </div>
+
                         </div>
 
                         <button type="submit"
@@ -401,6 +445,8 @@
             document.getElementById('edit_code').value = button.getAttribute('data-code');
             document.getElementById('edit_name').value = button.getAttribute('data-name');
             document.getElementById('edit_description').value = button.getAttribute('data-description');
+            document.getElementById('edit_address').value = button.getAttribute('data-address');
+            document.getElementById('edit_contact_number').value = button.getAttribute('data-contact');
             document.getElementById('edit_status').value = button.getAttribute('data-status');
 
             const form = document.getElementById('editForm');

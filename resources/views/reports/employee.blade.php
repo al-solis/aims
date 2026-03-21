@@ -113,13 +113,13 @@
 
     {{-- HEADER --}}
     @php
-        $dateRangeLabels = [
-            'this_month' => 'This Month',
-            'last_month' => 'Last Month',
-            'this_year' => 'This Year',
-            'last_year' => 'Last Year',
-            'custom' => 'Custom Range',
-        ];
+        // $dateRangeLabels = [
+        //     'this_month' => 'This Month',
+        //     'last_month' => 'Last Month',
+        //     'this_year' => 'This Year',
+        //     'last_year' => 'Last Year',
+        //     'custom' => 'Custom Range',
+        // ];
 
         $sortLabels = [
             'last_name' => 'Last Name',
@@ -145,7 +145,7 @@
         <div class="sub-title">Generated on: {{ now()->format('F d, Y') }}</div>
         <div class="sub-title">Location: {{ $pLocationName }}</div>
         <div class="sub-title">Date Range:
-            {{ $pDateRange == 'custom' ? $pFromDate . ' to ' . $pToDate : $dateRangeLabels[$pDateRange] }}</div>
+            {{ $pDateRange == 'custom' ? $pFromDate . ' to ' . $pToDate : $pDateRange }}</div>
         <div class="sub-title">Status: {{ $statusLabel }}</div>
         <div class="sub-title">Sort By: {{ $sortLabels[$sortField] ?? $sortField }} ({{ $sortDirection }})</div>
     </div>

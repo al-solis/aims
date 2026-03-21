@@ -194,7 +194,7 @@
                         <td>{{ $employee->position ?? 'N/A' }}</td>
                         <td>{{ $employee->location->name ?? 'N/A' }}
                             <br>
-                            {{ $employee->location->description ?? '' }}
+                            {{ $employee->location->address ?? '' }}
                         </td>
                         <td></td>
                         <td></td>

@@ -29,6 +29,8 @@ class LocationController extends Controller
                 $q->where('name', 'like', '%' . $search . '%');
                 $q->orWhere('code', 'like', '%' . $search . '%');
                 $q->orWhere('description', 'like', '%' . $search . '%');
+                $q->orWhere('address', 'like', '%' . $search . '%');
+                $q->orWhere('contact_number', 'like', '%' . $search . '%');
             });
         }
 
@@ -48,6 +50,8 @@ class LocationController extends Controller
             'code' => 'required|string|max:15|unique:locations,code',
             'name' => 'required|string|max:60',
             'description' => 'nullable|string',
+            'address' => 'nullable|string',
+            'contact_number' => 'nullable|string|max:20',
             'status' => 'required|integer|in:0,1,2',
         ]);
 
@@ -55,6 +59,8 @@ class LocationController extends Controller
             'code' => $request->code,
             'name' => $request->name,
             'description' => $request->description,
+            'address' => $request->address,
+            'contact_number' => $request->contact_number,
             'status' => $request->status,
             'created_by' => Auth::id(),
         ]);
@@ -70,6 +76,8 @@ class LocationController extends Controller
             'edit_code' => 'required|string|max:15|unique:locations,code,' . $location->id,
             'edit_name' => 'required|string|max:60',
             'edit_description' => 'nullable|string',
+            'edit_address' => 'nullable|string',
+            'edit_contact_number' => 'nullable|string|max:20',
             'edit_status' => 'required|integer|in:0,1,2',
         ]);
 
@@ -77,6 +85,8 @@ class LocationController extends Controller
             'code' => $request->edit_code,
             'name' => $request->edit_name,
             'description' => $request->edit_description,
+            'address' => $request->edit_address,
+            'contact_number' => $request->edit_contact_number,
             'status' => $request->edit_status,
             'updated_by' => Auth::id(),
         ]);

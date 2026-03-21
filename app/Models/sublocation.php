@@ -13,6 +13,8 @@ class sublocation extends Model
         'location_id',
         'name',
         'description',
+        'address',
+        'contact_number',
         'status',
         'created_by',
         'updated_by',

@@ -143,7 +143,7 @@
             <tr>
                 <td><strong>Location/ Post:</strong></td>
                 <td colspan="3">
-                    {{ $employee->location->name ? $employee->location->name . ' / ' . $employee->location->description : '' }}
+                    {{ $employee->location->name ? $employee->location->name . ' / ' . $employee->location->address : '' }}
                 </td>
             </tr>
         </table>
