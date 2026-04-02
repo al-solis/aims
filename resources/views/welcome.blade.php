@@ -25,13 +25,13 @@
             <nav class="flex items-center justify-end gap-4">
                 @auth
                     <a class="py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg 
-                            bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none"
+                            bg-gray-900 text-white hover:bg-gray-800 focus:outline-none"
                         href="{{ url('/dashboard') }}">
                         Dashboard
                     </a>
                 @else
                     <a class="py-3 px-4 w-[120px] inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg 
-                                bg-blue-600 text-white hover:bg-blue-700 focus:outline-none"
+                                bg-gray-900 text-white hover:bg-gray-800 focus:outline-none"
                         href="{{ route('login') }}">
                         Login
                     </a>

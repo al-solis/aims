@@ -29,6 +29,7 @@ use App\Http\Controllers\ReceivingController;
 use App\Http\Controllers\IssuanceController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\UploadedFileController;
+use App\Http\Controllers\MdrHeaderController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -70,6 +71,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('setup/uom', UomController::class)->except(['destroy']);
     Route::resource('setup/supplier', SupplierController::class)->except(['destroy']);
     Route::resource('setup/user', RegisteredUserController::class)->except(['destroy']);
+    Route::resource('setup/mdr', MdrHeaderController::class)->except(['destroy', 'update']);
+    Route::put('setup/mdr/{mdr}', [MdrHeaderController::class, 'update'])->name('mdr.update');
+    Route::get('/mdr/get-employees-by-location', [MdrHeaderController::class, 'getEmployeesByLocation']);
+    Route::post('mdr/location/copy', [MdrHeaderController::class, 'copyLocationSetup'])->name('mdr.location.copy');
     // Route::post('/employee/{employee}/ids', [EmployeeIdController::class, 'store'])
     //     ->name('employee.ids.store');
 
@@ -179,6 +184,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/supplies-receiving', [ReportController::class, 'suppliesReceivingReport'])->name('supplies.receiving');
         Route::get('/supplies-issuance', [ReportController::class, 'suppliesIssuanceReport'])->name('supplies.issuance');
     });
+
+
 });
 
 require __DIR__ . '/auth.php';

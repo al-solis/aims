@@ -159,7 +159,7 @@
 
                     <th rowspan="2">SSS NO</th>
 
-                    <th colspan="3" style="text-align: center">FIREARMS ISSUED</th>
+                    <th colspan="3" style="text-align: center">FIREARMS ISSUED <br>(BASED ON DDO)</th>
 
                     <th colspan="2" style="text-align: center">INSURANCE POLICY</th>
 
@@ -183,7 +183,9 @@
                 </tr>
             </thead>
             <tbody>
-
+                @php
+                    $prevloc = null;
+                @endphp
                 @foreach ($employees as $employee)
                     @php
                         $statuses = [
@@ -193,8 +195,14 @@
                         ];
                     @endphp
                     <tr>
-                        <td>{{ $employee->location->name ?? 'N/A' }}<br>{{ $employee->location->address ?? '' }} <br>
-                            {{ $employee->location->contact_number ?? '' }}</td>
+                        @if ($prevloc != $employee->location_id)
+                            <td>{{ $employee->location->name ?? 'N/A' }}<br>{{ $employee->location->address ?? '' }}
+                                <br>
+                                {{ $employee->location->contact_number ?? '' }}
+                            </td>
+                        @else
+                            <td></td>
+                        @endif
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $employee->last_name }}, {{ $employee->first_name }} {{ $employee->middle_name }}</td>
                         <td>{{ $employee->gender == 1 ? 'M' : 'F' }}</td>
@@ -210,6 +218,10 @@
                         <td style="text-align: right">509.40</td>
                         <td style="text-align: right">{{ number_format($employee->sss_rate, 2) }}</td>
                     </tr>
+
+                    @php
+                        $prevLoc = $employee->location_id;
+                    @endphp
                 @endforeach
 
                 @if ($employees->isEmpty())

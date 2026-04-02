@@ -153,6 +153,24 @@
                 </div>
             </div>
 
+            {{-- MDR --}}
+            <div
+                class="p-6 hover:bg-green-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-green-800 dark:border-green-700 transition">
+                <div class="flex flex-col items-center text-center">
+                    <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full mb-4">
+                        <i class="bi bi-file-earmark-text text-green-600 dark:text-green-300 text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">MDR</h3>
+                    <p class="text-gray-500 dark:text-gray-400 mb-4">
+                        Setup and manage MDR records.
+                    </p>
+                    <a href="{{ route('mdr.index') }}"
+                        class="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition">
+                        Open MDR
+                    </a>
+                </div>
+            </div>
+
             {{-- User --}}
             @if (Auth::user()->role == 1)
                 <div
@@ -175,6 +193,8 @@
                     </div>
                 </div>
             @endif
+
+
 
         </div>
     </div>
