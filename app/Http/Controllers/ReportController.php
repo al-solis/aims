@@ -24,6 +24,7 @@ use App\Models\issuance_header;
 use App\Models\issuance_detail;
 use App\Models\ddo_header;
 use App\Models\ddo_detail;
+use App\Models\numseq;
 
 class ReportController extends Controller
 {
@@ -222,6 +223,7 @@ class ReportController extends Controller
 
     public function dutyDetailOrderReport(Request $request)
     {
+        // dd($request->all());
         $pLocation = Location::find($request->location)->name ?? 'All Locations';
         $pFromDate = $request->from_date ?? '';
         $pToDate = $request->to_date ?? '';
@@ -337,6 +339,32 @@ class ReportController extends Controller
 
         $employees = $query->groupBy('employee_id');
 
+        if ($request->draft) {
+            $ddoFormatted = 'DRAFT - ' . Carbon::now()->format('F Y');
+        } else {
+            $ddoseq = numseq::where('name', 'ddo')
+                ->where('month', Carbon::now()->month)
+                ->where('year', Carbon::now()->year)
+                ->first();
+
+            if ($ddoseq) {
+                $ddoseq->current_number += 1;
+                $ddoseq->save();
+            } else {
+                $ddoseq = numseq::create([
+                    'name' => 'ddo',
+                    'month' => Carbon::now()->month,
+                    'year' => Carbon::now()->year,
+                    'current_number' => 1,
+                ]);
+            }
+
+            $monthYear = Carbon::now()->format('F Y'); // April 2026
+            $sequence = str_pad($ddoseq->current_number, 3, '0', STR_PAD_LEFT); // 004
+
+            $ddoFormatted = $monthYear . '-' . $sequence;
+        }
+
 
         $pdf = Pdf::loadView(
             'reports.duty-detail-order',
@@ -344,7 +372,8 @@ class ReportController extends Controller
                 'employees',
                 'pFromDate',
                 'pToDate',
-                'pLocation'
+                'pLocation',
+                'ddoFormatted'
             )
         )->setPaper('letter', 'portrait');
 

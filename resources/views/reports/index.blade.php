@@ -811,54 +811,62 @@
                 title: 'Duty Detail Order Report',
                 description: 'Select location and date range to generate DDO report',
                 form: `
-            <form id="reportForm" class="space-y-4 ml-1 mr-1">
-                <div class="space-y-4">
-                    <div>
-                        <label for="location" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Select Location</label>
-                        <select name="location" id="location" class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white" required>
-                            <option value="">Choose a location...</option>
-                            @foreach ($locations ?? [] as $location)
-                                <option value="{{ $location->id }}">{{ $location->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form id="reportForm" class="space-y-4 ml-1 mr-1">
+                    <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">From Date</label>
-                            <input type="date" name="from_date" value="{{ date('Y-m-d') }}"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white" 
-                                required>
+                            <label for="location" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Select Location</label>
+                            <select name="location" id="location" class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white" required>
+                                <option value="">Choose a location...</option>
+                                @foreach ($locations ?? [] as $location)
+                                    <option value="{{ $location->id }}">{{ $location->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">To Date</label>
-                            <input type="date" name="to_date" value="{{ \Carbon\Carbon::now()->endOfMonth()->format('Y-m-d') }}"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white" 
-                                required>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">From Date</label>
+                                <input type="date" name="from_date" value="{{ date('Y-m-d') }}"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white" 
+                                    required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">To Date</label>
+                                <input type="date" name="to_date" value="{{ \Carbon\Carbon::now()->endOfMonth()->format('Y-m-d') }}"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white" 
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="draft" name="draft" checked
+                                    class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500">
+                                <label for="draft" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">
+                                    Draft Report
+                                </label>
+                            </div>
+
+                            <div class="flex items-center">
+                                <input type="radio" id="pdf" name="format" value="pdf" checked
+                                    class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 focus:ring-gray-500">
+                                <label for="pdf" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">PDF</label>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="flex items-center space-x-4">
-                        <div class="flex items-center">
-                            <input type="radio" id="pdf" name="format" value="pdf" checked
-                                class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 focus:ring-gray-500">
-                            <label for="pdf" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">PDF</label>
-                        </div>                        
+                    <div class="flex items-center justify-end space-x-3 mt-6 pt-4 border-t dark:border-gray-600">
+                        <button type="button" onclick="closeReportModal()" 
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                            class="px-4 py-2 text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 rounded-lg focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700">
+                            Generate Report
+                        </button>
                     </div>
-                </div>
-
-                <div class="flex items-center justify-end space-x-3 mt-6 pt-4 border-t dark:border-gray-600">
-                    <button type="button" onclick="closeReportModal()" 
-                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600">
-                        Cancel
-                    </button>
-                    <button type="submit" 
-                        class="px-4 py-2 text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 rounded-lg focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700">
-                        Generate Report
-                    </button>
-                </div>
-            </form>
-        `
+                </form>
+            `
             },
         };
 

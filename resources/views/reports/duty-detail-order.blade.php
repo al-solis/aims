@@ -125,7 +125,7 @@
         <div>
             <strong>
                 DUTY DETAIL ORDER NO.
-                {{-- <u>{{ $newOrderNo }}</u> --}}
+                <u>{{ $ddoFormatted }}</u>
             </strong>
         </div>
 
