@@ -129,6 +129,7 @@ class ReportController extends Controller
 
     public function employeeReport(Request $request)
     {
+        // dd($request->all());
         $reportType = $request->input('report_type', '1'); // Default to 1 if not provided
         $reportFile = $reportType == '2' ? 'employee-disposition' : 'employee';
         $pDateRange = $request->date_range ?? 'this_month';
@@ -157,9 +158,10 @@ class ReportController extends Controller
 
         $statusLabel = $statusLabel[$pStatus] ?? 'All Statuses';
 
-        $query = Employee::query()->with('location');
         //dd($query->toSql());
         if ($reportType == '1') {
+            $query = Employee::query()->with('location');
+
             switch ($pDateRange) {
                 case 'this_month':
                     $query->whereMonth('hire_date', Carbon::now()->month)
@@ -188,35 +190,240 @@ class ReportController extends Controller
                     }
                     break;
             }
+
+            if ($request->filled('location')) {
+                $query->where('location_id', $request->location);
+            }
+            if ($pStatus != null && $pStatus != '') {
+                $query->where('status', $pStatus);
+            }
+
+            $sortField = $request->get('sort', 'hire_date');
+            $sortDirection = $request->get('direction', 'desc');
+
+            $employees = $query->orderBy($sortField, $sortDirection)->get();
+            // Generate PDF
+            $pDateRange = $dateRangeLabels[$pDateRange] ?? 'Custom Range';
+
+            $pdf = Pdf::loadView(
+                'reports.' . $reportFile,
+                compact(
+                    'employees',
+                    'pDateRange',
+                    'pFromDate',
+                    'pToDate',
+                    'pLocationName',
+                    'statusLabel',
+                    'sortField',
+                    'sortDirection'
+                )
+            )->setPaper('letter', $reportType == '2' ? 'landscape' : 'portrait');
+
+        } else {
+            $query = DB::table('employees as e')
+                ->join('locations as l', 'e.location_id', '=', 'l.id')
+                ->leftJoin('assets as a', function ($join) {
+                    $join->on('a.assigned_to', '=', 'e.id')
+                        ->where('a.category_id', 1); // firearms only
+                })
+                ->leftJoin('employee_ids as ids', function ($join) {
+                    $join->on('e.id', '=', 'ids.employee_id')
+                        ->where('ids.id_type_id', 8); // LESP ID
+                })
+                ->leftJoin('employee_ids as ids2', function ($join) {
+                    $join->on('e.id', '=', 'ids2.employee_id')
+                        ->where('ids2.id_type_id', 1); // SSS Id
+                })
+                ->where('e.status', 1) // Only active employees                
+                ->select(
+                    'l.name as location_name',
+                    'l.address as location_address',
+                    'ids.id_number as license_no',
+                    'ids.expiry_date as license_expiry',
+                    'ids2.id_number as sss_no',
+                    'e.id as employee_id',
+                    'e.first_name',
+                    'e.middle_name',
+                    'e.last_name',
+                    'e.gender',
+                    'e.highest_education',
+                    'e.position',
+                    'e.sss_rate',
+                    'a.manufacturer as asset_kind',
+                    'a.model as asset_make',
+                    'a.serial as asset_serial',
+                    DB::raw("FORMAT(MAX(ids.expiry_date), 'MMMM d, yyyy') as id_expiration")
+                );
+
+            if ($request->filled('location')) {
+                $query->where('e.location_id', $request->location);
+            }
+
+            $employees = $query
+                ->groupBy(
+                    'l.name',
+                    'l.address',
+                    'ids.id_number',
+                    'ids.expiry_date',
+                    'ids2.id_number',
+                    'e.id',
+                    'e.first_name',
+                    'e.middle_name',
+                    'e.last_name',
+                    'e.gender',
+                    'e.highest_education',
+                    'e.position',
+                    'e.sss_rate',
+                    'a.manufacturer',
+                    'a.model',
+                    'a.serial'
+                )
+                ->get()
+                ->groupBy('location_name') // FIX: use location_name, not location_id
+                ->map(function ($locGroup) {
+                    return $locGroup->groupBy('employee_id');
+                });
+
+            $sortField = $request->get('sort', 'hire_date');
+            $sortDirection = $request->get('direction', 'desc');
+
+            //employee gains
+            $queryGains = DB::table('employees as e')
+                ->join('locations as l', 'e.location_id', '=', 'l.id')
+
+                ->leftJoinSub(
+                    DB::table('employee_history')
+                        ->select('employee_id', DB::raw('MAX(end_date) as max_end_date'))
+                        ->groupBy('employee_id'),
+                    'h_max',
+                    'e.id',
+                    '=',
+                    'h_max.employee_id'
+                )
+
+                ->leftJoin('employee_history as h', function ($join) {
+                    $join->on('e.id', '=', 'h.employee_id')
+                        ->on('h.end_date', '=', 'h_max.max_end_date');
+                })
+
+                ->where('e.status', 1);
+
+            $queryLosses = DB::table('employees as e')
+                ->join('locations as l', 'e.location_id', '=', 'l.id')
+                ->whereIn('e.status', [3, 4, 5]) // resigned, retired, terminated
+                ->whereNotNull('e.termination_date'); // Ensure termination_date is not null
+
+            switch ($pDateRange) {
+                case 'this_month':
+                    $queryGains->whereMonth('hire_date', Carbon::now()->month)
+                        ->whereYear('hire_date', Carbon::now()->year);
+
+                    $queryLosses->whereMonth('termination_date', Carbon::now()->month)
+                        ->whereYear('termination_date', Carbon::now()->year);
+                    break;
+
+                case 'last_month':
+                    $queryGains->whereMonth('hire_date', Carbon::now()->subMonth()->month)
+                        ->whereYear('hire_date', Carbon::now()->subMonth()->year);
+
+                    $queryLosses->whereMonth('termination_date', Carbon::now()->subMonth()->month)
+                        ->whereYear('termination_date', Carbon::now()->subMonth()->year);
+                    break;
+
+                case 'this_quarter':
+                    $queryGains->whereBetween('hire_date', [
+                        Carbon::now()->startOfQuarter()->format('Y-m-d'),
+                        Carbon::now()->endOfQuarter()->format('Y-m-d')
+                    ]);
+
+                    $queryLosses->whereBetween('termination_date', [
+                        Carbon::now()->startOfQuarter()->format('Y-m-d'),
+                        Carbon::now()->endOfQuarter()->format('Y-m-d')
+                    ]);
+                    break;
+
+                case 'this_year':
+                    $queryGains->whereYear('hire_date', Carbon::now()->year);
+                    $queryLosses->whereYear('termination_date', Carbon::now()->year);
+                    break;
+
+                case 'custom':
+                    if ($pFromDate && $pToDate) {
+                        $queryGains->whereBetween('hire_date', [$pFromDate, $pToDate]);
+
+                        $queryLosses->whereBetween('termination_date', [$pFromDate, $pToDate]);
+                    }
+                    break;
+            }
+
+            $queryGains = $queryGains->select(
+                'l.name as location_name',
+                DB::raw("FORMAT(MAX(h.end_date), 'MMMM d, yyyy') as end_date"),
+                'e.first_name',
+                'e.middle_name',
+                'e.last_name',
+                'e.position',
+                'e.hire_date',
+                'h.company as previous_employer',
+            );
+
+            $queryLosses = $queryLosses->select(
+                'l.name as location_name',
+                DB::raw("FORMAT(MAX(e.termination_date), 'MMMM d, yyyy') as end_date"),
+                'e.first_name',
+                'e.middle_name',
+                'e.last_name',
+                'e.position',
+                'e.termination_date',
+                'e.status'
+            );
+
+            $gains = $queryGains->groupBy(
+                'l.name',
+                'e.first_name',
+                'e.middle_name',
+                'e.last_name',
+                'e.position',
+                'e.hire_date',
+                'h.company'
+            )->get();
+
+            $losses = $queryLosses->groupBy(
+                'l.name',
+                'e.first_name',
+                'e.middle_name',
+                'e.last_name',
+                'e.position',
+                'e.termination_date',
+                'e.status'
+            )->get();
+
+            $dateRangeLabels = $dateRangeLabels[$pDateRange] ?? 'custom';
+
+            $pdf = Pdf::loadView(
+                'reports.' . $reportFile,
+                compact(
+                    'employees',
+                    'pDateRange',
+                    'dateRangeLabels',
+                    'pFromDate',
+                    'pToDate',
+                    'pLocationName',
+                    'statusLabel',
+                    'sortField',
+                    'sortDirection',
+                    'gains',
+                    'losses'
+                )
+            )->setPaper('letter', $reportType == '2' ? 'landscape' : 'portrait')
+                ->setOptions([
+                    'defaultFont' => 'sans-serif',
+                    'isPhpEnabled' => true,
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => true,
+                    'chroot' => public_path(),
+                ]);
         }
-
-        if ($pStatus != null && $pStatus != '') {
-            $query->where('status', $pStatus);
-        }
-
-        if ($request->filled('location')) {
-            $query->where('location_id', $request->location);
-        }
-
-        $sortField = $request->get('sort', 'hire_date');
-        $sortDirection = $request->get('direction', 'desc');
-
-        $employees = $query->orderBy($sortField, $sortDirection)->get();
-        // Generate PDF
-        $pDateRange = $dateRangeLabels[$pDateRange] ?? 'Custom Range';
-        $pdf = Pdf::loadView(
-            'reports.' . $reportFile,
-            compact(
-                'employees',
-                'pDateRange',
-                'pFromDate',
-                'pToDate',
-                'pLocationName',
-                'statusLabel',
-                'sortField',
-                'sortDirection'
-            )
-        )->setPaper('letter', $reportType == '2' ? 'landscape' : 'portrait');
 
         return $pdf->stream('employee-report.pdf');
     }
@@ -232,20 +439,12 @@ class ReportController extends Controller
             ->exists();
 
         if ($withDDOSetup) {
-            // $query = DB::table('ddo_headers as a')
-            //     ->join('ddo_details as b', 'a.id', '=', 'b.ddo_header_id')
-            //     ->join('employees as c', 'b.employee_id', '=', 'c.id')
-            //     ->leftJoin('assets as d', 'd.assigned_to', '=', 'c.id')
-            //     ->leftJoin('asset_licenses as e', 'e.asset_id', '=', 'd.id')
-            //     ->where('a.location_id', $request->location)
-            //     ->orderBy('b.type')
-            //     ->orderBy('c.last_name');
             // DB::statement("SET SESSION group_concat_max_len = 1000000");
 
             $query = DB::table('ddo_headers as a')
                 ->join('ddo_details as b', 'a.id', '=', 'b.ddo_header_id')
                 ->join('employees as c', 'b.employee_id', '=', 'c.id')
-                ->leftJoin('locations as l', 'c.location_id', '=', 'l.id')
+                ->leftJoin('locations as l', 'a.location_id', '=', 'l.id')
                 ->leftJoin('assets as d', 'd.assigned_to', '=', 'c.id')
                 ->leftJoin('categories as cat', 'd.category_id', '=', 'cat.id')
                 ->leftJoin('asset_licenses as e', 'e.asset_id', '=', 'd.id')
@@ -295,13 +494,14 @@ class ReportController extends Controller
                 ->get();
         } else {
             $query = DB::table('employees as c')
-                ->leftjoin('locations as l', 'c.location_id', '=', 'l.id')
-                ->leftJoin('assets as d', 'd.assigned_to', '=', 'c.id')
-                ->leftJoin('categories as cat', 'd.category_id', '=', 'cat.id')
+                ->join('locations as l', 'c.location_id', '=', 'l.id')
+                ->leftJoin('assets as d', function ($join) {
+                    $join->on('d.assigned_to', '=', 'c.id')
+                        ->where('d.category_id', 1); // firearm filter HERE
+                })
                 ->leftJoin('asset_licenses as e', 'e.asset_id', '=', 'd.id')
                 ->where('c.status', 1)
                 ->where('c.location_id', $request->location)
-                ->where('cat.id', 1)
 
                 ->select(
                     'c.id as employee_id',
@@ -337,7 +537,14 @@ class ReportController extends Controller
                 ->get();
         }
 
-        $employees = $query->groupBy('employee_id');
+        // $employees = $query->groupBy('employee_id');       
+        $employees = $query
+            ->groupBy('location_name')
+            ->map(function ($locGroup) {
+                return $locGroup->groupBy('employee_id');
+            });
+
+        // dd($employees);
 
         if ($request->draft) {
             $ddoFormatted = 'DRAFT - ' . Carbon::now()->format('F Y');
@@ -364,7 +571,6 @@ class ReportController extends Controller
 
             $ddoFormatted = $monthYear . '-' . $sequence;
         }
-
 
         $pdf = Pdf::loadView(
             'reports.duty-detail-order',

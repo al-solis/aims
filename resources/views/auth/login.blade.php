@@ -1,7 +1,21 @@
 <x-guest-layout>
+    <style>
+        body {
+            background-image: url('{{ asset('images/wallpaper.jpeg') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            opacity: 0.95;
+        }
+
+        /* Reset opacity for content */
+        .bg-opacity-reset {
+            opacity: 1;
+        }
+    </style>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
-
     <form method="POST" action="{{ route('login') }}">
         @csrf
 

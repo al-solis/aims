@@ -176,7 +176,7 @@
                 </tr>
                 </tr>
             </thead>
-            <tbody>
+            {{-- <tbody>
                 @forelse ($employees as $empId => $empRows)
 
                     @php
@@ -210,6 +210,65 @@
                             <td>{{ $row->expiration_date ?? '' }}</td>
 
                         </tr>
+                    @endforeach
+
+                @empty
+                    <tr>
+                        <td colspan="8" style="text-align:center;">No data found</td>
+                    </tr>
+                @endforelse
+            </tbody> --}}
+            <tbody>
+                @forelse ($employees as $location => $empGroup)
+
+                    @php
+                        $locationRowspan = $empGroup->flatten()->count();
+                        $locationFirst = true;
+                    @endphp
+
+                    @foreach ($empGroup as $empId => $empRows)
+                        @php
+                            $empRowspan = $empRows->count();
+                        @endphp
+
+                        @foreach ($empRows as $index => $row)
+                            <tr>
+
+                                {{-- EMPLOYEE (only once per employee) --}}
+                                @if ($index == 0)
+                                    <td rowspan="{{ $empRowspan }}">
+                                        {{ $row->last_name }},
+                                        {{ $row->first_name }}
+                                        {{ $row->middle_name }}
+                                    </td>
+
+                                    <td rowspan="{{ $empRowspan }}">
+                                        {{ $row->position ?? '' }}
+                                    </td>
+                                @endif
+
+                                {{-- LOCATION (only once) --}}
+                                @if ($locationFirst)
+                                    <td rowspan="{{ $locationRowspan }}">
+                                        {{ $row->location_name }}<br>
+                                        {{ $row->location_address }}
+                                    </td>
+                                    @php $locationFirst = false; @endphp
+                                @endif
+
+                                {{-- TIME OF SHIFT (empty for now) --}}
+                                @if ($index == 0)
+                                    <td rowspan="{{ $empRowspan }}"></td>
+                                @endif
+
+                                {{-- FIREARM --}}
+                                <td>{{ $row->model ?? '' }}</td>
+                                <td>{{ $row->asset_name ?? '' }}</td>
+                                <td>{{ $row->serial ?? '' }}</td>
+                                <td>{{ $row->expiration_date ?? '' }}</td>
+
+                            </tr>
+                        @endforeach
                     @endforeach
 
                 @empty

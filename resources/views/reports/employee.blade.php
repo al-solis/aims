@@ -172,9 +172,12 @@
                 @foreach ($employees as $employee)
                     @php
                         $statuses = [
-                            1 => 'Inactive',
-                            2 => 'Active',
-                            3 => 'On Leave',
+                            0 => 'Inactive',
+                            1 => 'Active',
+                            2 => 'On Leave',
+                            3 => 'Resigned',
+                            4 => 'Retired',
+                            5 => 'Terminated',
                         ];
                     @endphp
                     <tr>

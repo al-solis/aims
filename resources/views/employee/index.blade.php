@@ -165,6 +165,7 @@
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Location</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Email</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Phone</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Date Hired</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
@@ -181,6 +182,8 @@
                             </td>
                             <td class="px-4 py-3 w-[100px]">{{ $employee->email }}</td>
                             <td class="px-4 py-3 w-[100px]">{{ $employee->mobile }}</td>
+                            <td class="px-4 py-3 w-[100px]">
+                                {{ $employee->hire_date ? Carbon::parse($employee->hire_date)->format('m/d/Y') : '' }}</td>
                             <td class="px-4 py-3 w-[80px] text-xs font-semibold">
                                 @php
                                     $statuses = [
