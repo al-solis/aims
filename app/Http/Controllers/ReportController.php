@@ -22,6 +22,8 @@ use App\Models\receiving_header;
 use App\Models\receiving_detail;
 use App\Models\issuance_header;
 use App\Models\issuance_detail;
+use App\Models\ddo_header;
+use App\Models\ddo_detail;
 
 class ReportController extends Controller
 {
@@ -139,6 +141,9 @@ class ReportController extends Controller
             0 => 'Inactive',
             1 => 'Active',
             2 => 'On Leave',
+            3 => 'Resigned',
+            4 => 'Retired',
+            5 => 'Terminated',
         ];
 
         $dateRangeLabels = [
@@ -214,6 +219,138 @@ class ReportController extends Controller
 
         return $pdf->stream('employee-report.pdf');
     }
+
+    public function dutyDetailOrderReport(Request $request)
+    {
+        $pLocation = Location::find($request->location)->name ?? 'All Locations';
+        $pFromDate = $request->from_date ?? '';
+        $pToDate = $request->to_date ?? '';
+
+        $withDDOSetup = ddo_header::where('location_id', $request->location)
+            ->exists();
+
+        if ($withDDOSetup) {
+            // $query = DB::table('ddo_headers as a')
+            //     ->join('ddo_details as b', 'a.id', '=', 'b.ddo_header_id')
+            //     ->join('employees as c', 'b.employee_id', '=', 'c.id')
+            //     ->leftJoin('assets as d', 'd.assigned_to', '=', 'c.id')
+            //     ->leftJoin('asset_licenses as e', 'e.asset_id', '=', 'd.id')
+            //     ->where('a.location_id', $request->location)
+            //     ->orderBy('b.type')
+            //     ->orderBy('c.last_name');
+            // DB::statement("SET SESSION group_concat_max_len = 1000000");
+
+            $query = DB::table('ddo_headers as a')
+                ->join('ddo_details as b', 'a.id', '=', 'b.ddo_header_id')
+                ->join('employees as c', 'b.employee_id', '=', 'c.id')
+                ->leftJoin('locations as l', 'c.location_id', '=', 'l.id')
+                ->leftJoin('assets as d', 'd.assigned_to', '=', 'c.id')
+                ->leftJoin('categories as cat', 'd.category_id', '=', 'cat.id')
+                ->leftJoin('asset_licenses as e', 'e.asset_id', '=', 'd.id')
+
+                ->where('c.status', 1)
+                ->where('a.location_id', $request->location)
+                ->where('cat.id', 1)
+                ->select(
+                    'c.id as employee_id',
+                    'c.last_name',
+                    'c.first_name',
+                    'c.middle_name',
+                    'c.position',
+
+                    'l.name as location_name',
+                    'l.address as location_address',
+
+                    'd.id as asset_id',
+                    'd.manufacturer',
+                    'd.model',
+                    'd.name as asset_name',
+                    'd.serial',
+
+                    DB::raw("
+            FORMAT(MAX(e.expiration_date), 'MMMM d, yyyy') as expiration_date
+        ")
+                )
+
+                ->groupBy(
+                    'c.id',
+                    'c.last_name',
+                    'c.first_name',
+                    'c.middle_name',
+                    'c.position',
+                    'l.name',
+                    'l.address',
+                    'd.id',
+                    'd.model',
+                    'd.manufacturer',
+                    'd.name',
+                    'd.serial'
+                )
+
+                ->orderBy('c.last_name')
+                ->orderBy('d.name')
+
+                ->get();
+        } else {
+            $query = DB::table('employees as c')
+                ->leftjoin('locations as l', 'c.location_id', '=', 'l.id')
+                ->leftJoin('assets as d', 'd.assigned_to', '=', 'c.id')
+                ->leftJoin('categories as cat', 'd.category_id', '=', 'cat.id')
+                ->leftJoin('asset_licenses as e', 'e.asset_id', '=', 'd.id')
+                ->where('c.status', 1)
+                ->where('c.location_id', $request->location)
+                ->where('cat.id', 1)
+
+                ->select(
+                    'c.id as employee_id',
+                    'c.last_name',
+                    'c.first_name',
+                    'c.middle_name',
+                    'c.position',
+                    'l.name as location_name',
+                    'l.address as location_address',
+                    'd.id as asset_id',
+                    'd.manufacturer',
+                    'd.model',
+                    'd.name as asset_name',
+                    'd.serial',
+
+                    DB::raw("FORMAT(MAX(e.expiration_date), 'MMMM d, yyyy') as expiration_date")
+                )
+                ->groupBy(
+                    'c.id',
+                    'c.last_name',
+                    'c.first_name',
+                    'c.middle_name',
+                    'c.position',
+                    'l.name',
+                    'l.address',
+                    'd.id',
+                    'd.model',
+                    'd.manufacturer',
+                    'd.name',
+                    'd.serial'
+                )
+                ->orderBy('c.last_name')
+                ->get();
+        }
+
+        $employees = $query->groupBy('employee_id');
+
+
+        $pdf = Pdf::loadView(
+            'reports.duty-detail-order',
+            compact(
+                'employees',
+                'pFromDate',
+                'pToDate',
+                'pLocation'
+            )
+        )->setPaper('letter', 'portrait');
+
+        return $pdf->stream('duty-detail-order.pdf');
+    }
+
 
     public function suppliesReport(Request $request)
     {

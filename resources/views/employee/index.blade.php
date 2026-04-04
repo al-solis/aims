@@ -144,6 +144,9 @@
                         <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Active</option>
                         <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Inactive</option>
                         <option value="2" {{ request('status') === '2' ? 'selected' : '' }}>On Leave</option>
+                        <option value="3" {{ request('status') === '3' ? 'selected' : '' }}>Resigned</option>
+                        <option value="4" {{ request('status') === '4' ? 'selected' : '' }}>Retired</option>
+                        <option value="5" {{ request('status') === '5' ? 'selected' : '' }}>Terminated</option>
                     </select>
                 </div>
             </div>
@@ -184,6 +187,9 @@
                                         0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Inactive'],
                                         1 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Active'],
                                         2 => ['color' => 'bg-yellow-100 text-yellow-700', 'label' => 'On Leave'],
+                                        3 => ['color' => 'bg-purple-100 text-purple-700', 'label' => 'Resigned'],
+                                        4 => ['color' => 'bg-blue-100 text-blue-700', 'label' => 'Retired'],
+                                        5 => ['color' => 'bg-red-100 text-red-700', 'label' => 'Terminated'],
                                     ];
                                     $status = $statuses[$employee->status] ?? [
                                         'color' => 'bg-gray-100 text-gray-600',

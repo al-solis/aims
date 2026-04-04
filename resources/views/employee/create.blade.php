@@ -122,24 +122,22 @@
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <div class="sm:col-span-2">
-                                        <label for="idno"
-                                            class="block text-xs font-medium text-gray-900 dark:text-white">ID
-                                            No*</label>
-                                        <input type="text" name="idno" id="idno"
-                                            value="{{ old('idno', $employee->employee_code ?? '') }}"
-                                            class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                            placeholder="e.g. 001-26, 2026-00001" required>
-                                        <small id="id-feedback" class="text-red-500 text-xs mb-1 hidden">
-                                            ID number already exists in another record.
-                                        </small>
-                                    </div>
 
-                                    <div class="sm:col-span-2">
-
-                                    </div>
 
                                     <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label for="idno"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">ID
+                                                No*</label>
+                                            <input type="text" name="idno" id="idno"
+                                                value="{{ old('idno', $employee->employee_code ?? '') }}"
+                                                class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                                placeholder="e.g. 001-26, 2026-00001" required>
+                                            <small id="id-feedback" class="text-red-500 text-xs mb-1 hidden">
+                                                ID number already exists in another record.
+                                            </small>
+                                        </div>
+
                                         <div>
                                             <label for="date"
                                                 class="block text-xs font-medium text-gray-900 dark:text-white">Date
@@ -157,9 +155,21 @@
                                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5"
                                                 required>
                                                 <option value="1" @selected(old('status', $employee->status ?? 1) == 1)>Active</option>
-                                                <option value="0" @selected(old('status', $employee->status ?? 1) == 0)>Inactive</option>
-                                                <option value="2" @selected(old('status', $employee->status ?? 1) == 2)>On leave</option>
+                                                <option value="0" @selected(old('status', $employee->status ?? 0) == 0)>Inactive</option>
+                                                <option value="2" @selected(old('status', $employee->status ?? 2) == 2)>On leave</option>
+                                                <option value="3" @selected(old('status', $employee->status ?? 3) == 3)>Resigned</option>
+                                                <option value="4" @selected(old('status', $employee->status ?? 4) == 4)>Retired</option>
+                                                <option value="5" @selected(old('status', $employee->status ?? 5) == 5)>Terminated</option>
                                             </select>
+                                        </div>
+
+                                        <div>
+                                            <label for="termination_date"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Termination
+                                                Date</label>
+                                            <input type="date" name="termination_date" id="termination_date"
+                                                value="{{ old('termination_date', $employee->termination_date ?? '') }}"
+                                                class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
                                         </div>
 
                                         <div>
@@ -169,7 +179,7 @@
                                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5"
                                                 required>
                                                 <option value="1" @selected(old('gender', $employee->gender ?? 1) == 1)>Male</option>
-                                                <option value="2" @selected(old('gender', $employee->gender ?? 1) == 2)>Female</option>
+                                                <option value="2" @selected(old('gender', $employee->gender ?? 2) == 2)>Female</option>
                                             </select>
                                         </div>
 
@@ -181,8 +191,8 @@
                                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5"
                                                 required>
                                                 <option value="1" @selected(old('marital_status', $employee->marital_status ?? 1) == 1)>Single</option>
-                                                <option value="2" @selected(old('marital_status', $employee->marital_status ?? 1) == 2)>Married</option>
-                                                <option value="3" @selected(old('marital_status', $employee->marital_status ?? 1) == 3)>Widowed</option>
+                                                <option value="2" @selected(old('marital_status', $employee->marital_status ?? 2) == 2)>Married</option>
+                                                <option value="3" @selected(old('marital_status', $employee->marital_status ?? 3) == 3)>Widowed</option>
                                             </select>
                                         </div>
                                     </div>

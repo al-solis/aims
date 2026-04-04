@@ -4,25 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class mdr_detail extends Model
+class ddo_detail extends Model
 {
-    protected $table = 'mdr_details';
+    protected $table = 'ddo_details';
 
     protected $fillable = [
-        'mdr_header_id',
+        'ddo_header_id',
         'employee_id',
         'type',
         'created_by',
         'updated_by',
     ];
 
-    public function mdrHeader()
+    public function ddoHeader()
     {
-        return $this->belongsTo(mdr_header::class, 'mdr_header_id');
+        return $this->belongsTo(ddo_header::class, 'ddo_header_id');
     }
 
     public function employee()
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
+
 }

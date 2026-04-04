@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class mdr_header extends Model
+class ddo_header extends Model
 {
-    protected $table = 'mdr_headers';
+    protected $table = 'ddo_headers';
 
     protected $fillable = [
         'location_id',
@@ -22,9 +22,9 @@ class mdr_header extends Model
         return $this->belongsTo(Location::class);
     }
 
-    public function mdrDetails()
+    public function ddoDetails()
     {
-        return $this->hasMany(mdr_detail::class, 'mdr_header_id');
+        return $this->hasMany(ddo_detail::class, 'ddo_header_id');
     }
 
 }

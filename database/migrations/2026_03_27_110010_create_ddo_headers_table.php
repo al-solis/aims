@@ -10,17 +10,17 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('mdr_details', function (Blueprint $table) {
+        Schema::create('ddo_headers', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('mdr_header_id');
-            $table->foreign('mdr_header_id')->references('id')->on('mdr_headers');
+            $table->unsignedBigInteger('location_id');
+            $table->foreign('location_id')->references('id')->on('locations');
+            $table->text('remarks')->nullable();
+            $table->integer('count')->default(0);
+            $table->integer('status')->default(1); // 1 active, 0 inactive
 
-            $table->unsignedBigInteger('employee_id');
-            $table->foreign('employee_id')->references('id')->on('employees');
-
-            $table->integer('type')->default(1); // 1 regular, 2 reliever
             $table->unsignedBigInteger('created_by');
             $table->foreign('created_by')->references('id')->on('users');
+
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->foreign('updated_by')->references('id')->on('users');
             $table->timestamps();
@@ -32,6 +32,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('mdr_details');
+        Schema::dropIfExists('ddo_headers');
     }
 };

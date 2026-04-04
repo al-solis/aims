@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->string('middle_name', 50)->nullable();
             $table->string('last_name', 50);
             $table->date('hire_date')->nullable();
+            $table->date('termination_date')->nullable();
             $table->integer('gender')->default(1); // 1: Male, 2: Female
             $table->integer('marital_status')->default(1); // 1: Single, 2: Married, 3: Widowed
             $table->date('date_of_birth')->nullable();
@@ -47,7 +48,7 @@ return new class extends Migration {
             $table->string('emergency_contact', 50)->nullable();
             $table->string('emergency_phone', 15)->nullable();
 
-            $table->integer('status')->default(1); // 0: Inactive, 1: Active, 2: On Leave
+            $table->integer('status')->default(1); // 0: Inactive, 1: Active, 2: On Leave, 3: Resigned, 4: Retired, 5: Terminated
             $table->string('photo_path')->nullable();
 
             $table->unsignedBigInteger('created_by');

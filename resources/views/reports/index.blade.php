@@ -1,9 +1,9 @@
 @extends('dashboard')
 @section('content')
     <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="container mx-auto px-2 sm:px-2 lg:px-2 py-2">
         <!-- Header -->
-        <div class="mb-6">
+        <div class="mb-2">
             <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Reports</h1>
             <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Select a report to generate</p>
         </div>
@@ -134,10 +134,10 @@
                     <div class="flex items-center justify-between mb-4">
                         <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-purple-600 dark:text-purple-300"
-                                fill="none" width="16" height="16" stroke="currentColor"
-                                class="bi bi-people-fill" viewBox="0 0 16 16">
+                                fill="none" width="16" height="16" stroke="currentColor" class="bi bi-cart"
+                                viewBox="0 0 16 16">
                                 <path
-                                    d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
+                                    d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
                             </svg>
                         </div>
                         <span
@@ -165,11 +165,13 @@
                         <div class="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-indigo-600 dark:text-indigo-300"
                                 fill="none" width="16" height="16" stroke="currentColor"
-                                class="bi bi-receipt" viewBox="0 0 16 16">
+                                class="bi bi-clipboard-check" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0" />
                                 <path
-                                    d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27m.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0z" />
+                                    d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z" />
                                 <path
-                                    d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5" />
+                                    d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z" />
                             </svg>
                         </div>
                         <span
@@ -214,6 +216,38 @@
                         issuance report. Filtered by location, date range and status.
                     </p>
                     <button onclick="openReportModal('supplies-issuance')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Duty Detail Order Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600 dark:text-blue-300"
+                                fill="none" width="16" height="16" stroke="currentColor"
+                                class="bi bi-file-person" viewBox="0 0 16 16">
+                                <path
+                                    d="M12 1a1 1 0 0 1 1 1v10.755S12 11 8 11s-5 1.755-5 1.755V2a1 1 0 0 1 1-1zM4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                                <path d="M8 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+                            </svg>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">Duty
+                            Detail Order</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Duty Detail Order Report</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate duty detail order report with
+                        location filtering and date range.
+                    </p>
+                    <button onclick="openReportModal('duty-detail-order')"
                         class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -494,6 +528,9 @@
                         <option value="0">Inactive</option>
                         <option value="1">Active</option>
                         <option value="2">On Leave</option>
+                        <option value="3">Resigned</option>
+                        <option value="4">Retired</option>
+                        <option value="5">Terminated</option>
                     </select>
                 </div>
 
@@ -769,7 +806,60 @@
             </div>
         </form>
     `
-            }
+            },
+            'duty-detail-order': {
+                title: 'Duty Detail Order Report',
+                description: 'Select location and date range to generate DDO report',
+                form: `
+            <form id="reportForm" class="space-y-4 ml-1 mr-1">
+                <div class="space-y-4">
+                    <div>
+                        <label for="location" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Select Location</label>
+                        <select name="location" id="location" class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white" required>
+                            <option value="">Choose a location...</option>
+                            @foreach ($locations ?? [] as $location)
+                                <option value="{{ $location->id }}">{{ $location->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">From Date</label>
+                            <input type="date" name="from_date" value="{{ date('Y-m-d') }}"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white" 
+                                required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">To Date</label>
+                            <input type="date" name="to_date" value="{{ \Carbon\Carbon::now()->endOfMonth()->format('Y-m-d') }}"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white" 
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <input type="radio" id="pdf" name="format" value="pdf" checked
+                                class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 focus:ring-gray-500">
+                            <label for="pdf" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">PDF</label>
+                        </div>                        
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3 mt-6 pt-4 border-t dark:border-gray-600">
+                    <button type="button" onclick="closeReportModal()" 
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                        class="px-4 py-2 text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 rounded-lg focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700">
+                        Generate Report
+                    </button>
+                </div>
+            </form>
+        `
+            },
         };
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -873,6 +963,9 @@
                     break;
                 case 'supplies-issuance':
                     url = `/reports/supplies-issuance?${queryString}`;
+                    break;
+                case 'duty-detail-order':
+                    url = `/reports/duty-detail-order?${queryString}`;
                     break;
             }
 

@@ -28,35 +28,35 @@
         <div class="bg-white rounded-xl shadow-xs p-3 sm:p-8">
             <div class="text-center mb-4">
                 <h2 class="text-2xl md:text-3xl font-bold text-gray-800">
-                    MDR Setup
+                    DDO Setup
                 </h2>
                 <p class="mt-1 text-sm text-gray-600">
-                    Setup your MDR regular and reliever employees here. Please fill out the form below to create a new MDR
+                    Setup your DDO regular and reliever employees here. Please fill out the form below to create a new DDO
                     transaction.
                 </p>
             </div>
             <hr style="border: 0; height: 1px; background-color: #ccc; margin: 10px 0;">
 
-            <form method="POST" action="{{ $mdr ? route('mdr.update', $mdr) : route('mdr.store') }}"
+            <form method="POST" action="{{ $ddo ? route('ddo.update', $ddo) : route('ddo.store') }}"
                 enctype="multipart/form-data" id="employeeForm">
                 @csrf
-                @if ($mdr)
+                @if ($ddo)
                     @method('PUT')
                 @endif
                 <div class="grid gap-2 mb-1 sm:grid-cols-4">
                     {{-- <div class="sm:col-span-2">
-                        @if ($mdr)
-                            <input type="hidden" name="location_id" value="{{ $mdr->location_id }}">
+                        @if ($ddo)
+                            <input type="hidden" name="location_id" value="{{ $ddo->location_id }}">
                         @endif
 
                         <label for="location_id" class="block mb-1 text-xs font-medium text-gray-900">Location</label>
-                        <select name="location_id" id="location_id" {{ $mdr ? 'disabled' : '' }}
+                        <select name="location_id" id="location_id" {{ $ddo ? 'disabled' : '' }}
                             class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            value="{{ old('location_id', $mdr->location_id ?? '') }}" required>
+                            value="{{ old('location_id', $ddo->location_id ?? '') }}" required>
                             <option value="">Select a location</option>
                             @foreach ($locations as $location)
                                 <option value="{{ $location->id }}"
-                                    {{ old('location_id', $mdr->location_id ?? '') == $location->id ? 'selected' : '' }}>
+                                    {{ old('location_id', $ddo->location_id ?? '') == $location->id ? 'selected' : '' }}>
                                     {{ $location->name }}
                                 </option>
                             @endforeach
@@ -65,16 +65,16 @@
 
                     <div class="sm:col-span-2">
                         <label for="location_id" class="block mb-1 text-xs font-medium text-gray-900">Location</label>
-                        @if ($mdr)
-                            <input type="hidden" name="location_id" value="{{ $mdr->location_id }}">
+                        @if ($ddo)
+                            <input type="hidden" name="location_id" value="{{ $ddo->location_id }}">
                         @endif
-                        <select name="location_id_display" id="location_id" {{ $mdr ? 'disabled' : '' }}
+                        <select name="location_id_display" id="location_id" {{ $ddo ? 'disabled' : '' }}
                             class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            {{ $mdr ? '' : 'required' }}>
+                            {{ $ddo ? '' : 'required' }}>
                             <option value="">Select a location</option>
                             @foreach ($locations as $location)
                                 <option value="{{ $location->id }}"
-                                    {{ old('location_id', $mdr->location_id ?? '') == $location->id ? 'selected' : '' }}>
+                                    {{ old('location_id', $ddo->location_id ?? '') == $location->id ? 'selected' : '' }}>
                                     {{ $location->name }}
                                 </option>
                             @endforeach
@@ -85,7 +85,7 @@
                         <label for="remarks" class="block mb-1 text-xs font-medium text-gray-900">Remarks</label>
                         <input type="text" name="remarks" id="remarks"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            value="{{ old('remarks', $mdr->remarks ?? '') }}">
+                            value="{{ old('remarks', $ddo->remarks ?? '') }}">
                     </div>
 
                     <div class="sm:col-span-2">
@@ -95,7 +95,7 @@
                             <option value="">Select an employee</option>
                             @foreach ($employees as $employee)
                                 <option value="{{ $employee->id }}"
-                                    {{ old('employee_id', $mdr->employee_id ?? '') == $employee->id ? 'selected' : '' }}>
+                                    {{ old('employee_id', $ddo->employee_id ?? '') == $employee->id ? 'selected' : '' }}>
                                     {{ $employee->last_name }}, {{ $employee->first_name }} {{ $employee->middle_name }}
                                 </option>
                             @endforeach
@@ -107,9 +107,9 @@
                         <select type="text" name="type" id="type"
                             class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
                             <option value="">Select a type</option>
-                            <option value="1" {{ old('type', $mdr->type ?? '') == '1' ? 'selected' : '' }}>
+                            <option value="1" {{ old('type', $ddo->type ?? '') == '1' ? 'selected' : '' }}>
                                 Regular</option>
-                            <option value="2" {{ old('type', $mdr->type ?? '') == '2' ? 'selected' : '' }}>
+                            <option value="2" {{ old('type', $ddo->type ?? '') == '2' ? 'selected' : '' }}>
                                 Reliever</option>
                         </select>
                     </div>
@@ -141,7 +141,7 @@
 
                 <hr style="border: 0; height: 1px; background-color: #ccc; margin: 10px 0;">
                 <div class="mt-5 flex justify-end gap-x-2">
-                    <a href="{{ route('mdr.index') }}" type="button" id="closeButton"
+                    <a href="{{ route('ddo.index') }}" type="button" id="closeButton"
                         class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 ">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -188,8 +188,8 @@
         }
 
         $(document).ready(function() {
-            @if ($mdr && $mdr->mdrDetails)
-                let existingEmployees = @json($mdr->mdrDetails);
+            @if ($ddo && $ddo->ddoDetails)
+                let existingEmployees = @json($ddo->ddoDetails);
 
                 existingEmployees.forEach(emp => {
                     window.employeeList.push({
@@ -220,7 +220,7 @@
                 if (!locationId) return;
 
                 $.ajax({
-                    url: "{{ url('/mdr/get-employees-by-location') }}",
+                    url: "{{ url('/ddo/get-employees-by-location') }}",
                     type: "GET",
                     data: {
                         location_id: locationId
@@ -234,7 +234,7 @@
                         employeeSelect.empty();
                         employeeSelect.append('<option value="">Select an employee</option>');
 
-                        data.forEach(emp => {
+                        data.employees.forEach(emp => {
                             employeeSelect.append(
                                 `<option value="${emp.id}">
                             ${emp.last_name}, ${emp.first_name} ${emp.middle_name ?? ''}
@@ -243,6 +243,18 @@
                         });
 
                         employeeSelect.trigger('change'); // refresh select2
+
+                        window.employeeList = [];
+
+                        data.employeeInLocation.forEach(emp => {
+                            window.employeeList.push({
+                                employee_id: emp.id,
+                                name: `${emp.last_name}, ${emp.first_name} ${emp.middle_name ?? ''}`,
+                                type: 1
+                            });
+                        });
+
+                        renderTable();
                     }
                 });
             });

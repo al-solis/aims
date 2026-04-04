@@ -5,9 +5,9 @@
         {{-- Header --}}
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-semibold text-gray-900">MDR Location Setup</h1>
+                <h1 class="text-2xl font-semibold text-gray-900">DDO Location Setup</h1>
                 <p class="text-sm text-gray-500">
-                    Manage employees and reliever for MDR locations.
+                    Manage employees and reliever for DDO locations.
                 </p>
             </div>
             <div class="flex items-center gap-2 mt-0">
@@ -19,7 +19,7 @@
                     Back
                 </a>
 
-                <a href="{{ route('mdr.create') }}"
+                <a href="{{ route('ddo.create') }}"
                     class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -161,7 +161,7 @@
                             <td class="px-4 py-3 font-medium w-[100px]">{{ $setup->id }}</td>
                             <td class="px-4 py-3 w-[200px]">{{ $setup->location->name }}</td>
                             <td class="px-4 py-3 w-[300px]">{{ $setup->remarks }}</td>
-                            <td class="px-4 py-3 w-[100px]">{{ $setup->mdrDetails->count() }}</td>
+                            <td class="px-4 py-3 w-[100px]">{{ $setup->ddoDetails->count() }}</td>
                             <td class="px-4 py-3 w-[150px] text-xs font-semibold">
                                 @php
                                     $statuses = [
@@ -180,7 +180,7 @@
                             </td>
                             <td class="px-4 py-3 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
-                                    <a href="{{ route('mdr.edit', $setup->id) }}"
+                                    <a href="{{ route('ddo.edit', $setup->id) }}"
                                         title="Edit location {{ $setup->location->name }}" data-id="{{ $setup->id }}"
                                         data-status="{{ $setup->status }}"
                                         class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
@@ -199,7 +199,7 @@
                     @empty
                         <tr>
                             <td colspan="9" class="px-4 py-6 text-center text-gray-500">
-                                No MDR setup found.
+                                No DDO setup found.
                             </td>
                         </tr>
                     @endforelse
@@ -347,7 +347,7 @@
 
 
             $.ajax({
-                url: '{{ route('mdr.location.copy') }}',
+                url: '{{ route('ddo.location.copy') }}',
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
