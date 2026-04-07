@@ -30,6 +30,7 @@ use App\Http\Controllers\IssuanceController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\UploadedFileController;
 use App\Http\Controllers\DdoHeaderController;
+use App\Http\Controllers\ClearanceRoutingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -72,6 +73,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('setup/supplier', SupplierController::class)->except(['destroy']);
     Route::resource('setup/user', RegisteredUserController::class)->except(['destroy']);
     Route::resource('setup/ddo', DdoHeaderController::class)->except(['destroy', 'update']);
+    Route::get('setup/clearance-routing', [ClearanceRoutingController::class, 'index'])->name('clearance-routing.index');
+    Route::get('setup/clearance-routing/list', [ClearanceRoutingController::class, 'viewRouting']);
+    Route::post('setup/clearance-routing', [ClearanceRoutingController::class, 'store']);
+    Route::put('setup/clearance-routing/{id}', [ClearanceRoutingController::class, 'update']);
+    Route::delete('setup/clearance-routing/{id}', [ClearanceRoutingController::class, 'destroy']);
     Route::put('setup/ddo/{ddo}', [DdoHeaderController::class, 'update'])->name('ddo.update');
     Route::get('/ddo/get-employees-by-location', [DdoHeaderController::class, 'getEmployeesByLocation']);
     Route::post('ddo/location/copy', [DdoHeaderController::class, 'copyLocationSetup'])->name('ddo.location.copy');

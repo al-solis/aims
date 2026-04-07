@@ -16,4 +16,7 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        cors: true,
+    },
 });

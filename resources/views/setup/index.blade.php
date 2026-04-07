@@ -4,11 +4,11 @@
         use Illuminate\Support\Facades\Auth;
     @endphp
     <div class="py-5">
-        <div class="max-w-7xl mx-auto px-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="max-w-7xl mx-auto px-2 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
 
             {{-- Location --}}
             <div
-                class="p-6 hover:bg-blue-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">
+                class="p-3 hover:bg-blue-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">
                 <div class="flex flex-col items-center text-center">
                     <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full mb-4">
                         {{-- <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-blue-600 dark:text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -29,7 +29,7 @@
 
             {{-- Category --}}
             <div
-                class="p-6 hover:bg-yellow-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">
+                class="p-3 hover:bg-yellow-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">
                 <div class="flex flex-col items-center text-center">
                     <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full mb-4">
                         {{-- <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-yellow-600 dark:text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -50,7 +50,7 @@
 
             {{-- License Type --}}
             <div
-                class="p-6 hover:bg-green-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">
+                class="p-3 hover:bg-green-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">
                 <div class="flex flex-col items-center text-center">
                     <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full mb-4">
                         {{-- <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600 dark:text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -71,7 +71,7 @@
 
             {{-- Employee ID Type --}}
             <div
-                class="p-6 hover:bg-orange-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">
+                class="p-3 hover:bg-orange-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">
                 <div class="flex flex-col items-center text-center">
                     <div class="p-3 bg-orange-100 dark:bg-orange-900 rounded-full mb-4">
                         {{-- <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-orange-600 dark:text-orange-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -85,14 +85,14 @@
                     </p>
                     <a href="{{ route('idtype.index') }}"
                         class="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition">
-                        Open Government ID Type
+                        Open ID Type
                     </a>
                 </div>
             </div>
 
             {{-- Supplies Category --}}
             <div
-                class="p-6 hover:bg-indigo-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">
+                class="p-3 hover:bg-indigo-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">
                 <div class="flex flex-col items-center text-center">
                     <div class="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-full mb-4">
                         {{-- <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-indigo-600 dark:text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -113,7 +113,7 @@
 
             {{-- UOM --}}
             <div
-                class="p-6 hover:bg-gray-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">
+                class="p-3 hover:bg-gray-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">
                 <div class="flex flex-col items-center text-center">
                     <div class="p-3 bg-gray-100 dark:bg-gray-900 rounded-full mb-4">
                         {{-- <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -134,7 +134,7 @@
 
             {{-- Supplier --}}
             <div
-                class="p-6 hover:bg-purple-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-purple-800 dark:border-purple-700 transition">
+                class="p-3 hover:bg-purple-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-purple-800 dark:border-purple-700 transition">
                 <div class="flex flex-col items-center text-center">
                     <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-full mb-4">
                         {{-- <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-purple-600 dark:text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -155,7 +155,7 @@
 
             {{-- DDO --}}
             <div
-                class="p-6 hover:bg-green-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-green-800 dark:border-green-700 transition">
+                class="p-3 hover:bg-green-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-green-800 dark:border-green-700 transition">
                 <div class="flex flex-col items-center text-center">
                     <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full mb-4">
                         <i class="bi bi-file-earmark-text text-green-600 dark:text-green-300 text-4xl"></i>
@@ -171,10 +171,31 @@
                 </div>
             </div>
 
+            {{-- Clearance Routing --}}
+            <div
+                class="p-3 hover:bg-indigo-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">
+                <div class="flex flex-col items-center text-center">
+                    <div class="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-full mb-4">
+                        {{-- <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-indigo-600 dark:text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                        </svg> --}}
+                        <i class="bi bi-card-checklist text-indigo-600 dark:text-indigo-300 text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Clearance Routing</h3>
+                    <p class="text-gray-500 dark:text-gray-400 mb-4">
+                        Setup and manage clearance routing.
+                    </p>
+                    <a href="{{ route('clearance-routing.index') }}"
+                        class="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition">
+                        Open Clearance Routing
+                    </a>
+                </div>
+            </div>
+
             {{-- User --}}
             @if (Auth::user()->role == 1)
                 <div
-                    class="p-6 hover:bg-red-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-red-800 dark:border-red-700 transition">
+                    class="p-3 hover:bg-red-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-red-800 dark:border-red-700 transition">
                     <div class="flex flex-col items-center text-center">
                         <div class="p-3 bg-red-100 dark:bg-red-900 rounded-full mb-4">
                             {{-- <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-purple-600 dark:text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
