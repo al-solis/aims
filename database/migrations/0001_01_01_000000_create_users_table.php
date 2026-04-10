@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('lname', 30);
             $table->string('fname', 30);
             $table->string('mname', 30)->nullable();
+            $table->string('employee_code', 20)->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
@@ -45,6 +46,7 @@ return new class extends Migration {
             'lname' => 'Solis',
             'fname' => 'Al',
             'mname' => 'B.',
+            'employee_code' => '3780',
             'email' => 'gunch1258@yahoo.com',
             'password' => bcrypt('gunch1258'),
             'role' => 1, // Set role to admin

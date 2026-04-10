@@ -15,6 +15,9 @@ class clearance_header extends Model
         'expected_date',
         'status',
         'remarks',
+        'approval_status',
+        'approval_level',
+        'current_approver',
         'created_by',
         'updated_by',
     ];
@@ -27,6 +30,16 @@ class clearance_header extends Model
     public function clearance_details()
     {
         return $this->hasMany(clearance_detail::class, 'clearance_header_id');
+    }
+
+    public function clearance_approver()
+    {
+        return $this->belongsTo(location::class, 'current_approver');
+    }
+
+    public function approvalHistory()
+    {
+        return $this->hasMany(clearance_approval::class, 'clearance_id');
     }
 
 }

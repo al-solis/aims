@@ -4,7 +4,6 @@
         use Carbon\Carbon;
     @endphp
     <div class="p-6 space-y-6">
-
         {{-- Header --}}
         <div class="flex items-center justify-between">
             <div>
@@ -169,7 +168,9 @@
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Type</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Expected Date</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Status</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Assets</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[120px]">Approver</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Current Approver</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[60px]">Assets</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Value</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
@@ -223,7 +224,25 @@
                                     {{ $status['label'] }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-right w-[80px]">{{ $clearanceHeader->clearance_details->count() }}
+                            <td class="px-4 py-3 text-left w-[120px]">
+                                @if ($clearanceHeader->status == '0')
+                                    <span
+                                        class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-600">Not
+                                        Submitted</span>
+                                @endif
+                                @if ($clearanceHeader->status == '2' && $clearanceHeader->approvalHistory->last()->approved == '0')
+                                    <span
+                                        class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-600">Rejected</span>
+                                @elseif ($clearanceHeader->status == '2' && $clearanceHeader->approvalHistory->last()->approved == '1')
+                                    <span
+                                        class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-600">Approved</span>
+                                @endif
+
+                            </td>
+                            <td class="px-4 py-3 w-[150px]">
+                                {{ $clearanceHeader->clearance_approver ? $clearanceHeader->clearance_approver->name : '' }}
+                            </td>
+                            <td class="px-4 py-3 text-right w-[60px]">{{ $clearanceHeader->clearance_details->count() }}
                             </td>
                             <td class="px-4 py-3 text-right w-[80px]">
                                 {{ number_format($clearanceHeader->clearance_details->sum('total'), 2) }}</td>
@@ -271,11 +290,9 @@
                                             class="group flex space-x-1 text-gray-300 cursor-not-allowed"
                                             onclick="voidClearance({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}' )">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                                fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
                                                 <path
-                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                                                <path
-                                                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
                                             </svg>
                                         </button>
                                     @elseif ($clearanceHeader->status == 4)
@@ -284,11 +301,9 @@
                                             title="Request : {{ $clearanceHeader->request_number }} is already voided"
                                             class="group flex space-x-1 text-gray-300 cursor-not-allowed">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+                                                fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
                                                 <path
-                                                    d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0" />
-                                                <path
-                                                    d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z" />
+                                                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
                                             </svg>
                                         </button>
 
@@ -297,16 +312,29 @@
                                             class="group flex space-x-1 text-gray-300 cursor-not-allowed"
                                             onclick="voidClearance({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}' )">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                                fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
                                                 <path
-                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                                                <path
-                                                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
                                             </svg>
                                         </button>
-                                    @else
-                                        {{-- Mark as complete --}}
+                                    @elseif ($clearanceHeader->status == 0)
+                                        {{-- Submit for approval --}}
                                         <button type="button"
+                                            title="Submit for approval : {{ $clearanceHeader->request_number }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors"
+                                            onclick="submitForApproval({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}' )">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-send-check-fill" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 1.59 2.498C8 14 8 13 8 12.5a4.5 4.5 0 0 1 5.026-4.47zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
+                                                <path
+                                                    d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0m-1.993-1.679a.5.5 0 0 0-.686.172l-1.17 1.95-.547-.547a.5.5 0 0 0-.708.708l.774.773a.75.75 0 0 0 1.174-.144l1.335-2.226a.5.5 0 0 0-.172-.686" />
+                                            </svg>
+                                        </button>
+
+
+                                        {{-- Mark as complete --}}
+                                        {{-- <button type="button"
                                             title="Mark as complete : {{ $clearanceHeader->request_number }}"
                                             class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors"
                                             onclick="markAsComplete({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}' )">
@@ -317,23 +345,50 @@
                                                 <path
                                                     d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z" />
                                             </svg>
-                                        </button>
+                                        </button> --}}
 
                                         <button type="button"
                                             title="Void clearance : {{ $clearanceHeader->request_number }}"
                                             class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors"
                                             onclick="voidClearance({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}' )">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                                fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
                                                 <path
-                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                                                <path
-                                                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
                                             </svg>
                                         </button>
                                     @endif
 
+                                    @if ($clearanceHeader->current_approver == $userLocation->location_id)
+                                        {{-- Approve request --}}
+                                        <button type="button"
+                                            title="Approve request : {{ $clearanceHeader->request_number }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors"
+                                            onclick="approveRequest({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}', '{{ $clearanceHeader->approval_level }}' )">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0" />
+                                                <path
+                                                    d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z" />
+                                            </svg>
+                                        </button>
 
+
+                                        {{-- Reject request --}}
+                                        <button type="button"
+                                            title="Reject request : {{ $clearanceHeader->request_number }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors"
+                                            onclick="rejectRequest({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}', '{{ $clearanceHeader->approval_level }}' )">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                                <path
+                                                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 1 1 .708.708L8.707 8l2.647 2.646a.5.5 0 1 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 1 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                            </svg>
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -466,6 +521,85 @@
                 width: '100%'
             });
         });
+
+        function submitForApproval(id, requestNumber) {
+            if (confirm(
+                    `Are you sure you want to submit clearance ${requestNumber} for approval?`
+                )) {
+                $.ajax({
+                    url: `/clearance/${id}/submit`,
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        alert(response.message);
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('An error occurred while submitting for approval.');
+                    }
+                });
+            }
+        }
+
+        function approveRequest(id, requestNumber, approvalLevel) {
+            if (confirm(
+                    `Are you sure you want to approve clearance ${requestNumber}?`
+                )) {
+                let remarks = prompt("Enter remarks/comments (optional):");
+
+                if (remarks === null) {
+                    return;
+                }
+
+                $.ajax({
+                    url: `/clearance/${id}/approve`,
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        remarks: remarks,
+                        approval_level: approvalLevel
+                    },
+                    success: function(response) {
+                        alert(response.message);
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('An error occurred while approving the request.');
+                    }
+                });
+            }
+        }
+
+        function rejectRequest(id, requestNumber, approvalLevel) {
+            if (confirm(
+                    `Are you sure you want to reject clearance ${requestNumber}?`
+                )) {
+                let remarks = prompt("Enter remarks/comments for rejection (optional):");
+
+                if (remarks === null) {
+                    return;
+                }
+
+                $.ajax({
+                    url: `/clearance/${id}/reject`,
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        remarks: remarks,
+                        approval_level: approvalLevel
+                    },
+                    success: function(response) {
+                        alert(response.message);
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('An error occurred while rejecting the request.');
+                    }
+                });
+            }
+        }
 
         function markAsComplete(id, requestNumber) {
             if (confirm(

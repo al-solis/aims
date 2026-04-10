@@ -160,6 +160,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 
     Route::resource('clearance', ClearanceHeaderController::class)->except(['destroy']);
+
+    Route::post('/clearance/{id}/submit', [ClearanceHeaderController::class, 'submitForApproval'])->name('clearance.submit');
+    Route::post('/clearance/{id}/approve', [ClearanceHeaderController::class, 'approveClearance'])->name('clearance.approve');
+    Route::post('/clearance/{id}/reject', [ClearanceHeaderController::class, 'rejectClearance'])->name('clearance.reject');
     Route::put('/clearance/{id}/details', [ClearanceHeaderController::class, 'updateDetails'])
         ->name('clearance.update-details');
 

@@ -156,6 +156,70 @@
                             placeholder="Enter remarks">{{ old('remarks', $clearanceHeader->remarks) }}</textarea>
                     </div>
                 </div>
+                <h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">Approval History</h3>
+                <div class="bg-white border rounded-xl overflow-x-auto overflow-y-auto md:overflow-visible scroll-smooth">
+                    <table class="min-w-full text-xs">
+                        <thead class="bg-gray-200 text-gray-600">
+                            <tr class="rounded-xl">
+                                <th class="px-4 py-3 text-left w-[200px]">Location</th>
+                                <th class="px-4 py-3 text-left w-[200px]">Approver</th>
+                                <th class="px-4 py-3 text-left w-[150px]">Action</th>
+                                <th class="px-4 py-3 text-left w-[150px]">Date</th>
+                                <th class="px-4 py-3 text-left w-[200px]">Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            @foreach ($approvalHistory as $approval)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 w-[200px]">
+                                        {{ $approval->location ? $approval->location->description : 'N/A' }}
+                                    </td>
+                                    <td class="px-4 py-3 w-[200px]">
+                                        {{ $approval->approver ? $approval->approver->lname . ', ' . $approval->approver->fname . ' ' . $approval->approver->mname : 'N/A' }}
+                                    </td>
+                                    <td class="px-4 py-3 w-[150px]">
+                                        @if ($approval->approved == 1)
+                                            <span
+                                                class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded">
+                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M13.78 4.22a.75.75 0 0 0-1.06 0L6.5 10.44l-2.72-2.72a.75.75 0 1 0-1.06 1.06l3.25 3.25a.75.75 0 0 0 1.06 0l7.25-7.25a.75.75 0 0 0 0-1.06z" />
+                                                </svg>
+                                                Approved
+                                            </span>
+                                        @elseif ($approval->approved == 0)
+                                            <span
+                                                class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded">
+                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                                    <path
+                                                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                </svg>
+                                                Rejected
+                                            </span>
+                                        @else
+                                            <span
+                                                class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded">
+                                                {{ $approval->action }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-3 w-[150px]">
+                                        {{ $approval->created_at ? Carbon::parse($approval->created_at)->format('M d, Y h:i A') : 'N/A' }}
+                                    </td>
+                                    <td class="px-4 py-3 w-[200px]">{{ $approval->remarks ?? '-' }}</td>
+                                </tr>
+                            @endforeach
+                            @if ($approvalHistory->isEmpty())
+                                <tr>
+                                    <td colspan="5" class="px-4 py-3 text-center text-gray-600">
+                                        No approval history found.
+                                    </td>
+                                </tr>
+                            @endif
+                    </table>
+                </div>
 
                 <h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">Clearance Details</h3>
 
@@ -186,7 +250,8 @@
                                             class="qty w-full text-xs border rounded px-2 py-1"
                                             value="{{ $detail->quantity }}" readonly>
                                     </td>
-                                    <td class="px-4 py-3 w-[140px]">{{ number_format($detail->purchase_cost, 2) }}</td>
+                                    <td class="px-4 py-3 w-[140px]">{{ number_format($detail->purchase_cost, 2) }}
+                                    </td>
 
                                     <td class="px-4 py-3 w-[150px]">
                                         <input type="number" step="0.01" name="actual[]"
@@ -241,12 +306,14 @@
                         </svg>
                         Back
                     </a>
-                    @if ($clearanceHeader->status != 2)
+                    {{-- Show when pending --}}
+                    @if ($clearanceHeader->status == 0 || $clearanceHeader->current_approver == $userLocation->location_id)
                         <button type="submit" id="saveBtn"
                             class="py-1.5 sm:py-2 px-3 inline-flex items-center gap-x-2 border text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
                             Save Changes
                         </button>
                     @endif
+
                 </div>
         </div>
 

@@ -19,6 +19,9 @@ return new class extends Migration {
             $table->datetime('expected_date')->nullable();
             $table->integer('status')->default(0); //0=Pending, 1=In-Progress, 2=Completed, 3=Overdue, 4=Cancelled
             $table->string('remarks')->nullable();
+            $table->integer('approval_status')->default(0); //0=Pending, 1=Approved, 2=Rejected
+            $table->integer('approval_level')->default(0); //0=No Approver, 1=Level 1, 2=Level 2, etc.
+            $table->integer('current_approver')->default(0); //0=No Approver, Department ID of current approver
             $table->unsignedBigInteger('created_by');
             $table->foreign('created_by')->references('id')->on('users');
             $table->unsignedBigInteger('updated_by')->nullable();

@@ -132,6 +132,7 @@
             <table class="min-w-full text-xs">
                 <thead class="bg-gray-200 text-gray-600">
                     <tr>
+                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Emp Code</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Last Name</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">First Name</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Middle Name</th>
@@ -145,6 +146,7 @@
                 <tbody class="divide-y">
                     @forelse($users as $user)
                         <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 w-[80px]">{{ $user->employee_code }}</td>
                             <td class="px-4 py-3 w-[80px]">{{ $user->lname }}</td>
                             <td class="px-4 py-3 w-[80px]">{{ $user->fname }}</td>
                             <td class="px-4 py-3 w-[80px]">{{ $user->mname }}</td>
@@ -171,10 +173,11 @@
                                     <button type="button"
                                         title="Edit user : {{ $user->lname }}, {{ $user->fname }} {{ $user->mname }}"
                                         data-modal-target="edit-modal" data-modal-toggle="edit-modal"
-                                        data-id="{{ $user->id }}" data-lname="{{ $user->lname }}"
-                                        data-fname="{{ $user->fname }}" data-mname="{{ $user->mname }}"
-                                        data-role="{{ $user->role }}" data-email="{{ $user->email }}"
-                                        data-status="{{ $user->is_active }}" onclick="openEditModal(this)"
+                                        data-id="{{ $user->id }}" data-employee_code="{{ $user->employee_code }}"
+                                        data-lname="{{ $user->lname }}" data-fname="{{ $user->fname }}"
+                                        data-mname="{{ $user->mname }}" data-role="{{ $user->role }}"
+                                        data-email="{{ $user->email }}" data-status="{{ $user->is_active }}"
+                                        onclick="openEditModal(this)"
                                         class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -233,6 +236,14 @@
                     <form action="{{ route('user.store') }}" method="POST">
                         @csrf
                         <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-2">
+                            <div class="sm:col-span-2">
+                                <label for="employee_code"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Employee Code*</label>
+                                <input type="text" name="employee_code" id="employee_code"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. EMP001">
+                            </div>
+
                             <div class="sm:col-span-2">
                                 <label for="lname" class="block text-xs font-medium text-gray-900 dark:text-white">Last
                                     Name*</label>
@@ -355,6 +366,14 @@
 
                         <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-2">
                             <div class="sm:col-span-2">
+                                <label for="edit_employee_code"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Employee Code*</label>
+                                <input type="text" name="edit_employee_code" id="edit_employee_code"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. EMP001">
+                            </div>
+
+                            <div class="sm:col-span-2">
                                 <label for="edit_lname"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Last
                                     Name*</label>
@@ -442,6 +461,7 @@
         function openEditModal(button) {
             const id = button.getAttribute('data-id');
             document.getElementById('edit_id').value = button.getAttribute('data-id');
+            document.getElementById('edit_employee_code').value = button.getAttribute('data-employee_code');
             document.getElementById('edit_lname').value = button.getAttribute('data-lname');
             document.getElementById('edit_fname').value = button.getAttribute('data-fname');
             document.getElementById('edit_mname').value = button.getAttribute('data-mname');
