@@ -107,6 +107,12 @@
             color: gray;
             font-weight: bold;
         }
+
+        .no-space p {
+            margin: 0;
+            padding: 0;
+            text-align: left;
+        }
     </style>
 </head>
 
@@ -129,6 +135,7 @@
                 <td width="93%" style="border:0; text-align:center;">
                     <div class="title">{{ env('APP_COMPANY_NAME') }}</div>
                     <div class="sub-title">{{ env('APP_COMPANY_ADDRESS') }}</div>
+                    <div class="sub-title">{{ env('APP_COMPANY_EMAIL') }}</div>
                     <div class="sub-title">{{ env('APP_COMPANY_CONTACT') }}</div>
                 </td>
             </tr>
@@ -143,7 +150,265 @@
         <div class="sub-title">Sort By: {{ $sortLabels[$sortField] ?? $sortField }} ({{ $sortDirection }})</div> --}}
     </div>
 
+    {{-- HEADER --}}
+    <div class="no-space">
+        <p><strong>TO : C, SOCIA</strong></p>
+        <p><strong>SUBJECT : MONTHLY DISPOSITION REPORT</strong></p>
+        <p><strong>DATE : {{ now()->format('F d, Y') }}</strong></p>
+        <br>
+        <p style="font-size: 10px;">Submitted herewith is the Disposition of Clients, Guards and Firearms for the month
+            of
+            {{ $dateRangeLabels == 'custom' ? Carbon::parse($pFromDate)->format('F Y') : $dateRangeLabels }}.</p>
+    </div>
+
+    {{-- <div class="section">
+        <p style="font-bold">1. RECAPITULATION</p>
+        <table>
+            <tr>
+                <td width="25%">NO. OF CLIENTS</td>
+                <td width="75%"></td>
+            </tr>
+            <tr>
+                <td width="25%">NO. OF SECURITY GUARDS</td>
+                <td width="5%"></td>
+                <td width="20%">MALE</td>
+                <td width="10%">50</td>
+                <td width="20%">LADY GUARD</td>
+                <td width="10%">100</td>
+                <td width="10%"></td>
+            </tr>
+            <tr>
+                <td width="25%">NO. OF SECURITY OFFICER</td>
+                <td width="5%"></td>
+                <td width="20%"></td>
+                <td width="10%">43</td>
+                <td width="20%"></td>
+                <td width="10%">1</td>
+                <td width="10%"></td>
+            </tr>
+            <tr>
+                <td width="25%">NO. OF PRIVATE DETECTIVE</td>
+                <td width="5%"></td>
+                <td width="20%"></td>
+                <td width="10%">43</td>
+                <td width="20%"></td>
+                <td width="10%">1</td>
+                <td width="10%"></td>
+            </tr>
+            <tr>
+                <td width="25%">NO. OF SECURITY CONSULTANT</td>
+                <td width="75%">1</td>
+            </tr>
+            <tr>
+                <td width="25%">NO. OF SPECIAL PROTECTION AGENT</td>
+                <td width="75%"></td>
+            </tr>
+            <tr>
+                <td width="25%">NO. OF TRAINING DIRECTOR</td>
+                <td width="5%">1</td>
+                <td width="50%">NO. OF TRAINING OFFICER</td>
+                <td width="10%">1</td>
+                <td width="10%"></td>
+            </tr>
+            <tr>
+                <td width="25%"><strong>TOTAL</strong></td>
+                <td width="75%">630</td>
+            </tr>
+        </table>
+    </div> --}}
+
+    {{-- <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        td {
+            border: 1px solid #000;
+            padding: 4px;
+        }
+
+        .no-border {
+            border: none;
+        } --}}
+    </style>
+
+    {{-- RECAPITULATION TABLE --}}
+    <table>
+        <thead>
+            <tr>
+                <th colspan="7">1. RECAPITULATION</th>
+            </tr>
+        </thead>
+        <!-- ROW 1 -->
+        <tr>
+            <td colspan="2">NO. OF CLIENTS</td>
+            <td colspan="5">121</td>
+        </tr>
+
+        <!-- ROW 2 -->
+        <tr>
+            <td colspan="2">NO. OF SECURITY GUARDS</td>
+            <td></td>
+            <td>MALE</td>
+            <td>517</td>
+            <td>LADY GUARD</td>
+            <td>69</td>
+        </tr>
+
+        <!-- ROW 3 -->
+        <tr>
+            <td colspan="2">NO. OF SECURITY OFFICER</td>
+            <td></td>
+            <td></td>
+            <td>43</td>
+            <td></td>
+            <td>1</td>
+        </tr>
+
+        <!-- ROW 4 -->
+        <tr>
+            <td colspan="2">NO. OF PRIVATE DETECTIVE</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <!-- ROW 5 -->
+        <tr>
+            <td colspan="2">NO. OF SECURITY CONSULTANT</td>
+            <td colspan="5">1</td>
+        </tr>
+
+        <!-- ROW 6 -->
+        <tr>
+            <td colspan="2">NO. OF SPECIAL PROTECTION AGENT</td>
+            <td colspan="5"></td>
+        </tr>
+
+        <!-- ROW 7 -->
+        <tr>
+            <td colspan="2">NO. OF TRAINING DIRECTOR</td>
+            <td>1</td>
+            <td colspan="2">NO. OF TRAINING OFFICER</td>
+            <td colspan="2">1</td>
+        </tr>
+
+        <!-- TOTAL -->
+        <tr>
+            <td colspan="2"><strong>TOTAL</strong></td>
+            <td colspan="5">630</td>
+        </tr>
+    </table>
+
+    {{-- NO OF FIREARMS --}}
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th colspan="15">2. NUMBER OF FIREARMS</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th colspan="7" style="text-align: center">LIGHT ARMS</th>
+                <th colspan="7" style="text-align: center">LOW ARMS</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th style="text-align: center">0.45</th>
+                <th style="text-align: center">M16</th>
+                <th style="text-align: center">0.357</th>
+                <th style="text-align: center">AK47</th>
+                <th style="text-align: center">0.44</th>
+                <th style="text-align: center">ECT.</th>
+                <th style="text-align: center">TOTAL</th>
+                <th style="text-align: center">.9MM</th>
+                <th style="text-align: center">.38</th>
+                <th style="text-align: center">.380</th>
+                <th style="text-align: center">.32</th>
+                <th style="text-align: center">12 GA</th>
+                <th style="text-align: center">.22</th>
+                <th style="text-align: center">TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ISSUED TO SG/DEPLOYED</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>NO. FA'S IN VAULT FOR SAFEKEEPING</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>TURN OVER TO FED FOR STORAGE</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><strong>GRAND TOTAL</strong></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
     {{-- DETAILS --}}
+    <br>
+    <br>
     <div class="section">
         {{-- <div class="section-title">Report Details</div> --}}
         <table>
@@ -202,12 +467,19 @@
                             <tr>
 
                                 {{-- LOCATION (only once) --}}
-                                @if ($locationFirst)
+                                {{-- @if ($locationFirst)
                                     <td rowspan="{{ $locationRowspan }}">
                                         {{ $employee->location_name ?? 'N/A' }}<br>
                                         {{ $employee->location_address ?? '' }}
                                     </td>
                                     @php $locationFirst = false; @endphp
+                                @endif --}}
+                                {{-- CLIENT (repeat per EMPLOYEE, not per LOCATION) --}}
+                                @if ($index == 0)
+                                    <td rowspan="{{ $empRowspan }}">
+                                        {{ $employee->location_name ?? 'N/A' }}<br>
+                                        {{ $employee->location_address ?? '' }}
+                                    </td>
                                 @endif
 
                                 {{-- EMPLOYEE DETAILS (only once per employee) --}}
@@ -304,7 +576,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" style="text-align:center;">No employees found.</td>
+                        <td colspan="6" style="text-align:center;">No new employees found.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -342,7 +614,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" style="text-align:center;">No employees found.</td>
+                        <td colspan="5" style="text-align:center;">No resigned/ terminated employees found.</td>
                     </tr>
                 @endforelse
             </tbody>
