@@ -154,11 +154,11 @@
                             <td class="px-4 py-3 w-[120px]">{{ $supply->code }}</td>
                             <td class="px-4 py-3 w-[150px]">{{ $supply->name }}</td>
                             <td class="px-4 py-3 w-[200px]">{{ $supply->description }}</td>
-                            <td class="px-4 py-3 w-[150px]">{{ $supply->supplier->name }}</td>
-                            <td class="px-4 py-3 w-[150px]">{{ $supply->category ? $supply->category->name : 'N/A' }}</td>
+                            <td class="px-4 py-3 w-[150px]">{{ $supply->supplier_id ? $supply->supplier->name : '' }}</td>
+                            <td class="px-4 py-3 w-[150px]">{{ $supply->category_id ? $supply->category->name : 'N/A' }}
                             </td>
+
                             <td class="px-4 py-3 w-[80px]">{{ $supply->uom ? $supply->uom->name : 'N/A' }}</td>
-                            </td>
                             <td class="px-4 py-3 text-right w-[100px]">
                                 {{ number_format($supply->unit_price, 2) }}
                             </td>

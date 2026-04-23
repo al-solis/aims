@@ -218,8 +218,17 @@
         <div class="signature">
             Prepared By:<br><br>
             <br>
-            <strong><u>{{ env('ARE_PREPARED_BY') }}</u></strong><br>
-            {{ env('ARE_PREPARED_BY_POSITION') }}
+            {{-- <strong><u>{{ env('ARE_PREPARED_BY') }}</u></strong><br> --}}
+            {{-- {{ env('ARE_PREPARED_BY_POSITION') }} --}}
+            @if ($preparedBy)
+                <strong><u>{{ $preparedBy->first_name ?? '' }} {{ ucfirst($preparedBy->middle_name) ?? '' }}.
+                        {{ $preparedBy->last_name ?? '' }}</u></strong><br>
+                {{ $preparedBy->position ?? '' }}
+            @else
+                <strong><u>{{ env('ARE_PREPARED_BY') }}</u></strong><br>
+                {{ env('ARE_PREPARED_BY_POSITION') }}
+            @endif
+
         </div>
 
         <div class="signature">

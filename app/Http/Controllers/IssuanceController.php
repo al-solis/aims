@@ -246,13 +246,17 @@ class IssuanceController extends Controller
 
     public function printTransmittal($id)
     {
+        $empCode = Auth::user()->employee_code;
+
+        $preparedBy = employee::where('employee_code', $empCode)->first();
+
         $issuances = issuance_header::with([
             'details.supply',
             'details.uom',
             'issuedTo'
         ])->findOrFail($id);
 
-        $pdf = Pdf::loadView('reports.supplies-transmittal', compact('issuances'))
+        $pdf = Pdf::loadView('reports.supplies-transmittal', compact('issuances', 'preparedBy'))
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream('transmittal_' . $issuances->issuance_number . '.pdf');
