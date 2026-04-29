@@ -154,12 +154,15 @@
                                             <select id="status" name="status"
                                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5"
                                                 required>
-                                                <option value="1" @selected(old('status', $employee->status ?? 1) == 1)>Active</option>
                                                 <option value="0" @selected(old('status', $employee->status ?? 0) == 0)>Inactive</option>
+                                                <option value="1" @selected(old('status', $employee->status ?? 1) == 1)>Active</option>
                                                 <option value="2" @selected(old('status', $employee->status ?? 2) == 2)>On leave</option>
                                                 <option value="3" @selected(old('status', $employee->status ?? 3) == 3)>Resigned</option>
                                                 <option value="4" @selected(old('status', $employee->status ?? 4) == 4)>Retired</option>
                                                 <option value="5" @selected(old('status', $employee->status ?? 5) == 5)>Terminated</option>
+                                                <option value="6" @selected(old('status', $employee->status ?? 6) == 6)>AWOL</option>
+                                                <option value="7" @selected(old('status', $employee->status ?? 7) == 7)>Deceased</option>
+                                                <option value="8" @selected(old('status', $employee->status ?? 8) == 8)>Dropped</option>
                                             </select>
                                         </div>
 
