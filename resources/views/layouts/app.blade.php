@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+@php
+    use Illuminate\Support\Facades\Auth;
+@endphp
 
 <head>
     <meta charset="utf-8">
@@ -53,7 +56,7 @@
                 class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium 
             text-white transition-opacity duration-300 
             bg-gray-900 rounded-lg shadow-xs opacity-0 whitespace-nowrap tooltip">
-                Sign out
+                Sign out ({{ Auth::user()->fname }} {{ Auth::user()->lname }})
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
