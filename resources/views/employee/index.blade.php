@@ -2,6 +2,8 @@
 @section('content')
     @php
         use Carbon\Carbon;
+        use Illuminate\Support\Str;
+        use Illuminate\Support\Facades\Auth;
     @endphp
     <div class="p-6 space-y-6">
 
@@ -15,8 +17,8 @@
             </div>
 
             <a href="{{ route('employee.create') }}">
-                <button
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
+                <button @if (Auth::user()->role == 2) disabled @endif
+                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 {{ Auth::user()->role == 2 ? 'cursor-not-allowed' : '' }}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -50,7 +52,7 @@
                         </svg>',
                 ],
                 [
-                    'title' => 'On Leave',
+                    'title' => 'On Leave/ Floating',
                     'value' => $onleaveEmployees,
                     'color' => 'yellow',
                     'icon' => '
@@ -119,7 +121,9 @@
                     <input type="text" id="simple-search" name="search"
                         placeholder="Search by name, code, or position..."
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                        value = "{{ request()->query('search') }}" oninput="this.form.submit()">
+                        value = "{{ request()->query('search') }}">
+
+                    {{-- oninput="this.form.submit()" --}}
                 </div>
 
                 <div class="md:w-1/3 w-full">
@@ -150,6 +154,8 @@
                         <option value="6" {{ request('status') === '6' ? 'selected' : '' }}>AWOL</option>
                         <option value="7" {{ request('status') === '7' ? 'selected' : '' }}>Deceased</option>
                         <option value="8" {{ request('status') === '8' ? 'selected' : '' }}>Dropped</option>
+                        <option value="9" {{ request('status') === '9' ? 'selected' : '' }}>Labor</option>
+                        <option value="10" {{ request('status') === '10' ? 'selected' : '' }}>Floating</option>
                     </select>
                 </div>
             </div>
@@ -199,6 +205,8 @@
                                         6 => ['color' => 'bg-gray-100 text-gray-600', 'label' => 'AWOL'],
                                         7 => ['color' => 'bg-gray-100 text-gray-600', 'label' => 'Deceased'],
                                         8 => ['color' => 'bg-gray-100 text-gray-600', 'label' => 'Dropped'],
+                                        9 => ['color' => 'bg-indigo-100 text-indigo-700', 'label' => 'Labor'],
+                                        10 => ['color' => 'bg-yellow-100 text-yellow-700', 'label' => 'Floating'],
                                     ];
                                     $status = $statuses[$employee->status] ?? [
                                         'color' => 'bg-gray-100 text-gray-600',
@@ -454,9 +462,9 @@
                         </div>
 
                         <div class="mt-6 flex full-width justify-end space-x-2">
-                            <button type="button" id="saveButton" data-modal-toggle="upload-file-modal"
-                                onclick="submitUploadFileForm()"
-                                class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                            <button @if (Auth::user()->role == 2) disabled @endif type="button" id="saveButton"
+                                data-modal-toggle="upload-file-modal" onclick="submitUploadFileForm()"
+                                class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800 {{ Auth::user()->role == 2 ? 'cursor-not-allowed opacity-50' : '' }}">
                                 Save
                             </button>
 
@@ -472,6 +480,19 @@
             <!-- End upload modal -->
 
             <script>
+                let searchTimer;
+
+                const searchInput = document.getElementById('simple-search');
+                const form = searchInput.closest('form');
+
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimer);
+
+                    searchTimer = setTimeout(() => {
+                        form.submit();
+                    }, 800); // change to 5000 for 5 seconds
+                });
+
                 function clearModalFields() {
                     // Clear all form fields
                     const form = document.querySelector('form');

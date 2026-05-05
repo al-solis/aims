@@ -1,3 +1,6 @@
+@php
+    use Illuminate\Support\Facades\Auth;
+@endphp
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center gap-3">
@@ -76,12 +79,14 @@
                         alt="pie-chart-report-script" />
                     Reports
                 </a>
-                <a href="{{ route('setup.index') }}"
-                    class="py-1.5 px-2.5 flex flex-col items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700  hover:bg-gray-200">
-                    <img width="48" height="48" src="https://img.icons8.com/bubbles/100/settings.png"
-                        alt="settings" />
-                    Setup
-                </a>
+                @if (Auth::user()->role != 2)
+                    <a href="{{ route('setup.index') }}"
+                        class="py-1.5 px-2.5 flex flex-col items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700  hover:bg-gray-200">
+                        <img width="48" height="48" src="https://img.icons8.com/bubbles/100/settings.png"
+                            alt="settings" />
+                        Setup
+                    </a>
+                @endif
                 {{-- <form method="POST" action="{{ route('logout') }}" class="inline">
                     @csrf
                     <button type="submit"

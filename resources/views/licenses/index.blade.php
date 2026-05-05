@@ -2,6 +2,7 @@
 @section('content')
     @php
         use Carbon\Carbon;
+        use Illuminate\Support\Facades\Auth;
     @endphp
     <div class="p-6 space-y-6">
         {{-- Header --}}
@@ -13,8 +14,9 @@
                 </p>
             </div>
             <div class="flex items-center gap-2 mt-0">
-                <button data-modal-target="alert-modal" data-modal-toggle="alert-modal"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 ">
+                <button @if (Auth::user()->role == 2) disabled @endif data-modal-target="alert-modal"
+                    data-modal-toggle="{{ Auth::user()->role == 2 ? '' : 'alert-modal' }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 {{ Auth::user()->role == 2 ? 'bg-gray-100 hover:bg-gray-100 cursor-not-allowed' : 'bg-white hover:bg-gray-100' }} rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-bell" viewBox="0 0 16 16">
                         <path
@@ -23,8 +25,9 @@
                     Setup Alerts
                 </button>
 
-                <button data-modal-target="add-modal" data-modal-toggle="add-modal"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
+                <button @if (Auth::user()->role == 2) disabled @endif data-modal-target="add-modal"
+                    data-modal-toggle="{{ Auth::user()->role == 2 ? '' : 'add-modal' }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white {{ Auth::user()->role == 2 ? 'bg-gray-600 hover:bg-gray-600 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-800' }} rounded-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -169,7 +172,9 @@
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Expiration Date</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Alert</th>
-                        <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
+                        @if (Auth::user()->role != 2)
+                            <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
+                        @endif
                     </tr>
                 </thead>
 
@@ -217,30 +222,32 @@
                                     {{ $assetLicense->status_label['label'] }}
                                 @endif
                             </td>
-                            <td class="px-4 py-3 w-[50px]">
-                                <div class="flex items-center justify-center space-x-2">
-                                    <button type="button" title="Edit license {{ $assetLicense->asset->name }}"
-                                        data-modal-target="edit-modal" data-modal-toggle="edit-modal"
-                                        data-id="{{ $assetLicense->id }}"
-                                        data-license_type_id="{{ $assetLicense->license_type_id }}"
-                                        data-asset_id="{{ $assetLicense->asset_id }}"
-                                        data-license_number="{{ $assetLicense->license_number }}"
-                                        data-issuing_authority="{{ $assetLicense->issuing_authority }}"
-                                        data-issue_date="{{ $assetLicense->issue_date ? Carbon::parse($assetLicense->issue_date)->format('Y-m-d') : '' }}"
-                                        data-expiration_date="{{ $assetLicense->expiration_date ? Carbon::parse($assetLicense->expiration_date)->format('Y-m-d') : '' }}"
-                                        data-status="{{ $assetLicense->status }}" onclick="openEditModal(this)"
-                                        class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                            <path
-                                                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                            <path fill-rule="evenodd"
-                                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                                        </svg>
-                                        {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
-                                    </button>
-                                </div>
-                            </td>
+                            @if (Auth::user()->role != 2)
+                                <td class="px-4 py-3 w-[50px]">
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <button type="button" title="Edit license {{ $assetLicense->asset->name }}"
+                                            data-modal-target="edit-modal" data-modal-toggle="edit-modal"
+                                            data-id="{{ $assetLicense->id }}"
+                                            data-license_type_id="{{ $assetLicense->license_type_id }}"
+                                            data-asset_id="{{ $assetLicense->asset_id }}"
+                                            data-license_number="{{ $assetLicense->license_number }}"
+                                            data-issuing_authority="{{ $assetLicense->issuing_authority }}"
+                                            data-issue_date="{{ $assetLicense->issue_date ? Carbon::parse($assetLicense->issue_date)->format('Y-m-d') : '' }}"
+                                            data-expiration_date="{{ $assetLicense->expiration_date ? Carbon::parse($assetLicense->expiration_date)->format('Y-m-d') : '' }}"
+                                            data-status="{{ $assetLicense->status }}" onclick="openEditModal(this)"
+                                            class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                                <path fill-rule="evenodd"
+                                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                            </svg>
+                                            {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
+                                        </button>
+                                    </div>
+                                </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>

@@ -48,7 +48,7 @@ return new class extends Migration {
             $table->string('emergency_contact', 50)->nullable();
             $table->string('emergency_phone', 15)->nullable();
 
-            $table->integer('status')->default(1); // 0: Inactive, 1: Active, 2: On Leave, 3: Resigned, 4: Retired, 5: Terminated, 6: AWOL, 7: Deceased, 8: Dropped
+            $table->integer('status')->default(1); // 0: Inactive, 1: Active, 2: On Leave, 3: Resigned, 4: Retired, 5: Terminated, 6: AWOL, 7: Deceased, 8: Dropped, 9: Labor, 10: Floating
             $table->string('photo_path')->nullable();
 
             $table->unsignedBigInteger('created_by');

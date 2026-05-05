@@ -30,8 +30,8 @@ class EmployeeController extends Controller
         $query = Employee::query();
         $totalEmployees = Employee::count();
         $activeEmployees = Employee::where('status', 1)->count();
-        $onleaveEmployees = Employee::where('status', 2)->count();
-        $inactiveEmployees = Employee::whereIn('status', [0, 3, 4, 5, 6, 7, 8])->count();
+        $onleaveEmployees = Employee::whereIn('status', [2, 10])->count();
+        $inactiveEmployees = Employee::whereIn('status', [0, 3, 4, 5, 6, 7, 8, 9])->count();
 
         // If status or location is selected and search exists, redirect without search
         if (($status || $searchloc) && $search) {
@@ -138,7 +138,7 @@ class EmployeeController extends Controller
             'year_attended' => 'nullable|string|max:50',
             'emergency' => 'nullable|string|max:50',
             'e_no' => 'nullable|string|max:15',
-            'status' => 'required|integer|in:0,1,2,3,4,5,6,7,8',
+            'status' => 'required|integer|in:0,1,2,3,4,5,6,7,8,9,10',
             'employee_path' => 'nullable|string'
         ]);
 
@@ -242,7 +242,7 @@ class EmployeeController extends Controller
             'zip' => 'nullable|string|max:20',
             'emergency' => 'nullable|string|max:50',
             'e_no' => 'nullable|string|max:15',
-            'status' => 'required|integer|in:0,1,2,3,4,5,6,7,8',
+            'status' => 'required|integer|in:0,1,2,3,4,5,6,7,8,9,10',
             'employee_path' => 'nullable|string',
             'highest_education' => 'nullable|string|max:150',
             'school' => 'nullable|string|max:150',

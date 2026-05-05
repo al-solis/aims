@@ -1,5 +1,9 @@
 @extends('dashboard')
 @section('content')
+    @php
+        use Carbon\Carbon;
+        use Illuminate\Support\Facades\Auth;
+    @endphp
 
     <style>
         .custom-checkbox {
@@ -79,13 +83,33 @@
                     Bulk UPC Generate
                 </a> --}}
 
-                <button data-modal-target="add-modal" data-modal-toggle="add-modal"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
+                <button @if (Auth::user()->role == 2) disabled @endif data-modal-target="add-modal"
+                    data-modal-toggle="{{ Auth::user()->role == 2 ? '' : 'add-modal' }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white 
+                    {{ Auth::user()->role == 2 ? 'bg-gray-600 hover:bg-gray-600 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-800' }} rounded-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
                     Add Asset
                 </button>
+
+                {{-- @if (Auth::user()->role != 2)
+                    <button data-modal-target="add-modal" data-modal-toggle="add-modal"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add Asset
+                    </button>
+                @else
+                    <button disabled
+                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-600 cursor-not-allowed">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add Asset
+                    </button>
+                @endif --}}
             </div>
         </div>
 
@@ -257,29 +281,33 @@
                             </td>
                             <td class="px-4 py-2 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
-                                    <button type="button" title="Edit asset: {{ $asset->asset_code }}"
-                                        data-modal-target="edit-modal" data-modal-toggle="edit-modal"
-                                        data-id="{{ $asset->id }}" data-code="{{ $asset->asset_code }}"
-                                        data-name="{{ $asset->name }}" data-description="{{ $asset->description }}"
-                                        data-category="{{ $asset->category_id }}"
-                                        data-subcategory="{{ $asset->subcategory }}" data-serial="{{ $asset->serial }}"
-                                        data-cost="{{ $asset->cost }}" data-status="{{ $asset->status }}"
-                                        data-purchase_date="{{ $asset->purchase_date }}"
-                                        data-manufacturer="{{ $asset->manufacturer }}" data-model="{{ $asset->model }}"
-                                        data-serial="{{ $asset->serial }}" data-assigned_to="{{ $asset->assigned_to }}"
-                                        data-location="{{ $asset->location_id }}"
-                                        data-sublocation="{{ $asset->subloc_id }}"
-                                        data-warranty="{{ $asset->warranty }}" onclick="openEditModal(this)"
-                                        class="group flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+                                    @if (Auth::user()->role != 2)
+                                        <button type="button" title="Edit asset: {{ $asset->asset_code }}"
+                                            data-modal-target="edit-modal" data-modal-toggle="edit-modal"
+                                            data-id="{{ $asset->id }}" data-code="{{ $asset->asset_code }}"
+                                            data-name="{{ $asset->name }}" data-description="{{ $asset->description }}"
+                                            data-category="{{ $asset->category_id }}"
+                                            data-subcategory="{{ $asset->subcategory }}"
+                                            data-serial="{{ $asset->serial }}" data-cost="{{ $asset->cost }}"
+                                            data-status="{{ $asset->status }}"
+                                            data-purchase_date="{{ $asset->purchase_date }}"
+                                            data-manufacturer="{{ $asset->manufacturer }}"
+                                            data-model="{{ $asset->model }}" data-serial="{{ $asset->serial }}"
+                                            data-assigned_to="{{ $asset->assigned_to }}"
+                                            data-location="{{ $asset->location_id }}"
+                                            data-sublocation="{{ $asset->subloc_id }}"
+                                            data-warranty="{{ $asset->warranty }}" onclick="openEditModal(this)"
+                                            class="group flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
 
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                            <path
-                                                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                            <path fill-rule="evenodd"
-                                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                                        </svg>
-                                    </button>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                                <path fill-rule="evenodd"
+                                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                            </svg>
+                                        </button>
+                                    @endif
 
                                     <a href="{{ route('transfer.show', $asset->id) }}"
                                         title="Transfer asset: {{ $asset->asset_code }}"
@@ -319,7 +347,7 @@
                                             <path d="M12 9h2V8h-2z" />
                                         </svg>
                                     </a> --}}
-                                    @if ($asset->category_id == 2)
+                                    @if ($asset->category_id == 2 && Auth::user()->role != 2)
                                         <a href="{{ route('asset.odometer.show', $asset->id) }}" type="button"
                                             title="Add odometer reading : {{ $asset->asset_code }}"
                                             data-id="{{ $asset->id }}" data-code="{{ $asset->asset_code }}"
@@ -349,17 +377,19 @@
                                         </button>
                                     @endif
 
-                                    <button type="button" title="Retire asset: {{ $asset->asset_code }}"
-                                        data-id="{{ $asset->id }}" data-code="{{ $asset->asset_code }}"
-                                        onclick="retireAsset(this)"
-                                        class="group flex items-center space-x-1 text-gray-500 hover:text-gray-900 transition-colors">
+                                    @if (Auth::user()->role != 2)
+                                        <button type="button" title="Retire asset: {{ $asset->asset_code }}"
+                                            data-id="{{ $asset->id }}" data-code="{{ $asset->asset_code }}"
+                                            onclick="retireAsset(this)"
+                                            class="group flex items-center space-x-1 text-gray-500 hover:text-gray-900 transition-colors">
 
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-archive" viewBox="0 0 16 16">
-                                            <path
-                                                d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5zm13-3H1v2h14zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
-                                        </svg>
-                                    </button>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-archive" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5zm13-3H1v2h14zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
+                                            </svg>
+                                        </button>
+                                    @endif
 
                                     {{-- <button type="button"
                                         title="View assigned assets to {{ $employee->last_name }}, {{ $employee->first_name }} {{ $employee->middle_name }}"

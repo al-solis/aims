@@ -2,6 +2,7 @@
 @section('content')
     @php
         use Carbon\Carbon;
+        use Illuminate\Support\Facades\Auth;
     @endphp
     <div class="max-w-3xl px-4 py-10 sm:px-6 lg:px-8 lg:py-6 mx-auto">
         @if ($errors->any())
@@ -308,8 +309,8 @@
                     </a>
                     {{-- Show when pending --}}
                     @if ($clearanceHeader->status == 0 || $clearanceHeader->current_approver == $userLocation->location_id)
-                        <button type="submit" id="saveBtn"
-                            class="py-1.5 sm:py-2 px-3 inline-flex items-center gap-x-2 border text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
+                        <button type="submit" id="saveBtn" @if (Auth::user()->role == 2) disabled @endif
+                            class="py-1.5 sm:py-2 px-3 inline-flex items-center gap-x-2 border text-xs font-medium text-white {{ Auth::user()->role == 2 ? 'bg-gray-600 hover:bg-gray-600 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-800' }} rounded-lg">
                             Save Changes
                         </button>
                     @endif

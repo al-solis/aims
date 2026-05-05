@@ -2,6 +2,7 @@
 @section('content')
     @php
         use Carbon\Carbon;
+        use Illuminate\Support\Facades\Auth;
     @endphp
     <div class="max-w-2xl px-4 py-10 sm:px-6 lg:px-8 lg:py-6 mx-auto">
         @if ($errors->any())
@@ -163,6 +164,8 @@
                                                 <option value="6" @selected(old('status', $employee->status ?? 6) == 6)>AWOL</option>
                                                 <option value="7" @selected(old('status', $employee->status ?? 7) == 7)>Deceased</option>
                                                 <option value="8" @selected(old('status', $employee->status ?? 8) == 8)>Dropped</option>
+                                                <option value="9" @selected(old('status', $employee->status ?? 9) == 9)>Labor</option>
+                                                <option value="10" @selected(old('status', $employee->status ?? 10) == 10)>Floating</option>
                                             </select>
                                         </div>
 
@@ -542,7 +545,8 @@
                                         </div>
 
                                         <button id="add-id-btn" type="button"
-                                            class="mt-4 h-fit text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-sm px-4 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                                            @if (Auth::user()->role == 2) disabled @endif
+                                            class="mt-4 h-fit text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-sm px-4 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 {{ Auth::user()->role == 2 ? 'cursor-not-allowed' : '' }}">
                                             Add ID
                                         </button>
                                     </div>
@@ -657,7 +661,8 @@
                                     </div>
 
                                     <button id="add-workhistory-btn" type="button"
-                                        class="mt-4 h-fit text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-sm px-4 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                                        @if (Auth::user()->role == 2) disabled @endif
+                                        class="mt-4 h-fit text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-sm px-4 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 {{ Auth::user()->role == 2 ? 'cursor-not-allowed' : '' }}">
                                         Add Work History
                                     </button>
                                 </div>
@@ -698,8 +703,8 @@
                         </svg>
                         Back
                     </a>
-                    <button type="submit" id="saveBtn"
-                        class="py-1.5 sm:py-2 px-3 inline-flex items-center gap-x-2 border text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
+                    <button type="submit" id="saveBtn" @if (Auth::user()->role == 2) disabled @endif
+                        class="py-1.5 sm:py-2 px-3 inline-flex items-center gap-x-2 border text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 {{ Auth::user()->role == 2 ? 'cursor-not-allowed' : '' }}">
                         @if ($employee)
                             Save changes
                         @else

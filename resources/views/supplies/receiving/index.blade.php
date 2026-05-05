@@ -2,6 +2,7 @@
 @section('content')
     @php
         use Carbon\Carbon;
+        use Illuminate\Support\Facades\Auth;
     @endphp
     <div class="p-6 space-y-6">
 
@@ -22,8 +23,8 @@
                     Back
                 </a>
 
-                <a href ="{{ route('receiving.create') }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
+                <a href ="{{ route('receiving.create') }}" @if (Auth::user()->role == 2) disabled @endif
+                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white {{ Auth::user()->role == 2 ? 'bg-gray-600 hover:bg-gray-600 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-800' }} rounded-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -166,10 +167,10 @@
                                         </svg>
                                     </a>
 
-                                    @if ($receiving->status == 2)
+                                    @if ($receiving->status == 2 || Auth::user()->role == 2)
                                         <button type="button"
-                                            title="Voided already : {{ $receiving->transaction_number }}" disabled
-                                            class="group flex space-x-1 text-gray-300 cursor-not-allowed">
+                                            title="{{ Auth::user()->role == 2 ? 'Unable to void' : 'Voideded already' }} : {{ $receiving->transaction_number }}"
+                                            disabled class="group flex space-x-1 text-gray-300 cursor-not-allowed">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                                                 <path

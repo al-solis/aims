@@ -151,7 +151,8 @@
                             <td class="px-4 py-3 w-[80px]">{{ $user->fname }}</td>
                             <td class="px-4 py-3 w-[80px]">{{ $user->mname }}</td>
                             <td class="px-4 py-3 w-[80px]">{{ $user->email }}</td>
-                            <td class="px-4 py-3 w-[80px]">{{ $user->role == 1 ? 'Admin' : 'User' }}</td>
+                            <td class="px-4 py-3 w-[80px]">
+                                {{ $user->role == 1 ? 'Admin' : ($user->role == 2 ? 'Viewer' : 'User') }}</td>
                             <td class="px-4 py-3 w-[100px] text-xs font-semibold">
                                 @php
                                     $statuses = [
@@ -208,7 +209,7 @@
         </div>
     </div>
 
-    <!-- Create Supplier modal -->
+    <!-- Create user modal -->
     <div id="add-modal" tabindex="-1" aria-hidden="true"
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
         <div class="relative p-4 w-full max-w-md h-full md:h-auto">
@@ -302,6 +303,7 @@
                                     {{-- <option selected="">Select product type</option> --}}
                                     <option value='0'>User</option>
                                     <option value='1'>Admin</option>
+                                    <option value='2'>Viewer</option>
                                 </select>
                             </div>
 
@@ -415,6 +417,7 @@
                                     {{-- <option selected="">Select product type</option> --}}
                                     <option value='0'>User</option>
                                     <option value='1'>Admin</option>
+                                    <option value='2'>Viewer</option>
                                 </select>
                             </div>
 
