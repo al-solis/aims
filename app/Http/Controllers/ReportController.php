@@ -486,12 +486,7 @@ class ReportController extends Controller
                     'd.manufacturer',
                     'd.name',
                     'd.serial'
-                )
-
-                ->orderBy('c.last_name')
-                ->orderBy('d.name')
-
-                ->get();
+                );
         } else {
             $query = DB::table('employees as c')
                 ->join('locations as l', 'c.location_id', '=', 'l.id')
@@ -532,10 +527,67 @@ class ReportController extends Controller
                     'd.manufacturer',
                     'd.name',
                     'd.serial'
-                )
-                ->orderBy('c.last_name')
-                ->get();
+                );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | UNION QUERY
+        |--------------------------------------------------------------------------
+        */
+
+        $unionQuery = DB::table('employees as c')
+            ->leftJoin('assets as d', function ($join) {
+                $join->on('d.assigned_to', '=', 'c.id')
+                    ->where('d.category_id', 1);
+            })
+            ->leftJoin('asset_licenses as e', 'e.asset_id', '=', 'd.id')
+            ->leftJoin('locations as l', 'd.location_id', '=', 'l.id')
+
+            ->where('c.status', 1)
+            ->where('c.employee_code', 99999)
+            ->where('d.location_id', $request->location)
+
+            ->select(
+                'c.id as employee_id',
+                DB::raw("'' as last_name"),
+                DB::raw("'' as first_name"),
+                DB::raw("'' as middle_name"),
+                'c.position',
+
+                'l.name as location_name',
+                'l.address as location_address',
+
+                'd.id as asset_id',
+                'd.manufacturer',
+                'd.model',
+                'd.name as asset_name',
+                'd.serial',
+
+                DB::raw("FORMAT(MAX(e.expiration_date), 'MMMM d, yyyy') as expiration_date")
+            )
+
+            ->groupBy(
+                'c.id',
+                'c.last_name',
+                'c.first_name',
+                'c.middle_name',
+                'c.position',
+                'l.name',
+                'l.address',
+                'd.id',
+                'd.model',
+                'd.manufacturer',
+                'd.name',
+                'd.serial'
+            );
+
+        // APPLY UNION
+        $query = $query
+            ->union($unionQuery)
+            ->orderBy('last_name')
+            ->orderBy('asset_name')
+            ->get();
 
         // $employees = $query->groupBy('employee_id');       
         $employees = $query

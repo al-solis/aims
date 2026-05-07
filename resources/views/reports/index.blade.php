@@ -1,6 +1,5 @@
 @extends('dashboard')
 @section('content')
-    <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
     <div class="container mx-auto px-2 sm:px-2 lg:px-2 py-2">
         <!-- Header -->
         <div class="mb-2">

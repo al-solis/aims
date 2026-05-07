@@ -498,7 +498,7 @@
                                 <label for="location_id"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Location</label>
                                 <select id="location_id" name="location_id" data-target="#sublocation_id"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                    class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
                                     <option value = "" selected disabled>Select location</option>
                                     @foreach ($locations as $location)
                                         <option value="{{ $location->id }}">{{ $location->name }}</option>
@@ -674,7 +674,7 @@
                                 <label for="edit_location_id"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Location</label>
                                 <select id="edit_location_id" name="location_id" data-target="#edit_sublocation_id"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                    class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
                                     <option value = "" selected>Select location</option>
                                     @foreach ($locations as $location)
                                         <option value="{{ $location->id }}">{{ $location->name }}</option>
@@ -796,6 +796,18 @@
 
             $('#edit_assigned_to').select2({
                 placeholder: "Select employee",
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#location_id').select2({
+                placeholder: "Select location",
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#edit_location_id').select2({
+                placeholder: "Select location",
                 allowClear: true,
                 width: '100%'
             });

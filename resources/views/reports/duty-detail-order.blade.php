@@ -237,9 +237,12 @@
                                 {{-- EMPLOYEE (only once per employee) --}}
                                 @if ($index == 0)
                                     <td rowspan="{{ $empRowspan }}">
-                                        {{ $row->last_name }},
-                                        {{ $row->first_name }}
-                                        {{ $row->middle_name }}
+                                        @if ($row->last_name != null)
+                                            {{ $row->last_name }},
+                                            {{ $row->first_name }}
+                                            {{ $row->middle_name }}
+                                        @endif
+
                                     </td>
 
                                     <td rowspan="{{ $empRowspan }}">
