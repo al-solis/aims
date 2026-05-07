@@ -313,14 +313,14 @@
         <div class="signature">
 
             _________________________________________<br>
-            <strong>MARK ELEAZAR P. LIPANA, CSP, CSMS, SIRS</strong> <br>
-            Authorized Bonded Firearms Custodian/ Licensee
+            <strong>{{ env('DDO_SIG1') }}</strong> <br>
+            {{ env('DDO_SIG1_POSITION') }}
         </div>
         <div class="signature" style="float:right;">
 
             _________________________________________<br>
-            <strong>P/COL. EDWIN M. CAPANZANA (RET), CSP, MM</strong><br>
-            Operations Manager
+            <strong>{{ env('DDO_SIG2') }}</strong><br>
+            {{ env('DDO_SIG2_POSITION') }}
         </div>
     </div>
 

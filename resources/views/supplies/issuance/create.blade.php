@@ -131,9 +131,9 @@
                     <div class="sm:col-span-1">
                         <label for="quantity"
                             class="block text-xs font-medium text-gray-900 dark:text-white">Quantity*</label>
-                        <input type="number" name="quantity" id="quantity" step="0.01" min="0"
+                        <input type="number" name="quantity" id="quantity" step="1" min="0"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="0.00">
+                            placeholder="0">
                     </div>
 
                     <div class="sm:col-span-2">
@@ -376,7 +376,7 @@
                     <tr data-id="${item.id}">
                         <td class="px-4 py-2">${item.supplies_text}</td>
                         <td class="px-4 py-2">
-                            <input type="number" step="0.01" min="0.01" value="${item.quantity}" 
+                            <input type="number" step="1" min="1" value="${item.quantity}" 
                                 class="quantity-input w-20 px-2 py-1 border rounded text-xs" 
                                 onchange="updateItem(${item.id}, 'quantity', this.value)">
                         </td>

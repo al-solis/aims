@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\employee_id as EmployeeId;
 use App\Models\EmployeeHistory;
+use App\Models\Location;
 class employee extends Model
 {
     protected $table = 'employees';

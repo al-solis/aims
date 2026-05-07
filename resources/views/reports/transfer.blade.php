@@ -129,24 +129,24 @@
             <tr>
                 <td width="25%"><strong>From:</strong></td>
                 <td width="75%">
-                    {{ $transfer->transferDetails->first()->fromEmployee->last_name ?? 'N/A' }},
-                    {{ $transfer->transferDetails->first()->fromEmployee->first_name ?? 'N/A' }}
+                    {{ $transfer->transferDetails->first()->fromEmployee->last_name ?? '' }},
+                    {{ $transfer->transferDetails->first()->fromEmployee->first_name ?? '' }}
                     {{ $transfer->transferDetails->first()->fromEmployee->middle_name ?? '' }}
                 </td>
 
                 <td width="25%"><strong>To:</strong></td>
                 <td width="75%">
-                    {{ $transfer->transferDetails->first()->toEmployee->last_name ?? 'N/A' }},
-                    {{ $transfer->transferDetails->first()->toEmployee->first_name ?? 'N/A' }}
+                    {{ $transfer->transferDetails->first()->toEmployee->last_name ?? '' }},
+                    {{ $transfer->transferDetails->first()->toEmployee->first_name ?? '' }}
                     {{ $transfer->transferDetails->first()->toEmployee->middle_name ?? '' }}
                 </td>
             </tr>
             <tr>
                 <td><strong>Department:</strong></td>
-                <td>{{ $transfer->transferDetails->first()->fromLocation->description ?? 'N/A' }}</td>
+                <td>{{ $transfer->transferDetails->first()->fromLocation->description ?? '' }}</td>
 
                 <td><strong>Department:</strong></td>
-                <td>{{ $transfer->transferDetails->first()->toLocation->description ?? 'N/A' }}</td>
+                <td>{{ $transfer->transferDetails->first()->toLocation->description ?? '' }}</td>
             </tr>
         </table>
     </div>
@@ -172,13 +172,13 @@
                 @foreach ($transfer->transferDetails as $detail)
                     @php
                         $grandTotal += $detail->asset->cost * 1;
-                    @endphp
+                    @endphpl
 
                     <tr>
-                        <td class="text-right">{{ number_format(1, 2) }}</td>
-                        <td>{{ Carbon::parse($detail->asset->purchase_date)->format('Y-m-d') ?? 'N/A' }}</td>
-                        <td>{{ $detail->asset->asset_code ?? 'N/A' }}</td>
-                        <td>{{ $detail->asset->name ?? 'N/A' }}</td>
+                        <td class="text-right">{{ number_format(1, 0) }}</td>
+                        <td>{{ Carbon::parse($detail->asset->purchase_date)->format('Y-m-d') ?? '' }}</td>
+                        <td>{{ $detail->asset->asset_code ?? '' }}</td>
+                        <td>{{ $detail->asset->name ?? '' }}</td>
                         <td class="text-right">{{ number_format($detail->asset->cost, 2) }}</td>
                         <td class="text-right">{{ number_format($detail->asset->cost, 2) }}</td>
                     </tr>
@@ -202,7 +202,7 @@
     {{-- REASON --}}
     <br>
     <div class="section-title">Reason</div>
-    <div>{{ $transfer->description ?? 'N/A' }}</div>
+    <div>{{ $transfer->description ?? '' }}</div>
 
     {{-- <p style="text-align: center; font-size: 11px; color:#555">This clearance certificate is valid only when properly
         signed
@@ -223,8 +223,8 @@
             Released/ Issued By:
             <br><br>
             ___________________________<br>
-            <span style="color:#555;">{{ $transfer->transferDetails->first()->fromEmployee->last_name ?? 'N/A' }},
-                {{ $transfer->transferDetails->first()->fromEmployee->first_name ?? 'N/A' }}
+            <span style="color:#555;">{{ $transfer->transferDetails->first()->fromEmployee->last_name ?? '' }},
+                {{ $transfer->transferDetails->first()->fromEmployee->first_name ?? '' }}
                 {{ $transfer->transferDetails->first()->fromEmployee->middle_name ?? '' }}</span><br>
             <span
                 style="color:#555;">{{ $transfer->transferDetails->first()->fromEmployee->position ?? '' }}</span><br>
@@ -234,8 +234,8 @@
             Received By:<br><br>
 
             ___________________________<br>
-            <span style="color:#555;"> {{ $transfer->transferDetails->first()->toEmployee->last_name ?? 'N/A' }},
-                {{ $transfer->transferDetails->first()->toEmployee->first_name ?? 'N/A' }}
+            <span style="color:#555;"> {{ $transfer->transferDetails->first()->toEmployee->last_name ?? '' }},
+                {{ $transfer->transferDetails->first()->toEmployee->first_name ?? '' }}
                 {{ $transfer->transferDetails->first()->toEmployee->middle_name ?? '' }} </span><br>
             <span style="color:#555;">{{ $transfer->transferDetails->first()->toEmployee->position ?? '' }}</span><br>
             Employee Signature
