@@ -184,14 +184,14 @@
                     <tr>
                         <td>{{ $asset->asset_code }}</td>
                         <td>{{ $asset->name }}</td>
-                        <td>{{ $asset->category->name ?? 'N/A' }}</td>
-                        <td>{{ $asset->location->name ?? 'N/A' }}</td>
+                        <td>{{ $asset->category->name ?? '' }}</td>
+                        <td>{{ $asset->location->name ?? '' }}</td>
                         <td>{{ $asset->assigned_user ? $asset->assigned_user->last_name . ', ' . $asset->assigned_user->first_name . ' ' . $asset->assigned_user->middle_name : '' }}
                         </td>
                         <td>{{ $statuses[$asset->status] ?? 'Unknown' }}</td>
-                        <td>{{ $asset->purchase_date ? Carbon::parse($asset->purchase_date)->format('m/d/Y') : 'N/A' }}
+                        <td>{{ $asset->purchase_date ? Carbon::parse($asset->purchase_date)->format('m/d/Y') : '' }}
                         </td>
-                        <td class="text-right">{{ $asset->cost ? number_format($asset->cost, 2) : 'N/A' }}</td>
+                        <td class="text-right">{{ $asset->cost ? number_format($asset->cost, 2) : '' }}</td>
 
                     </tr>
                 @endforeach

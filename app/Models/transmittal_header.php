@@ -14,6 +14,7 @@ class transmittal_header extends Model
         'transmitted_to',
         'location_id',
         'remarks',
+        'status',
         'created_by',
         'updated_by'
     ];
@@ -26,5 +27,13 @@ class transmittal_header extends Model
     public function location()
     {
         return $this->belongsTo(Location::class, 'location_id');
+    }
+
+    public function details()
+    {
+        return $this->hasMany(
+            transmittal_detail::class,
+            'transmittal_header_id'
+        );
     }
 }

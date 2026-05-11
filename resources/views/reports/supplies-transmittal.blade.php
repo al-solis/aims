@@ -2,6 +2,7 @@
 <html>
 @php
     use Carbon\Carbon;
+    use Illuminate\Support\Str;
 @endphp
 
 <head>
@@ -127,7 +128,7 @@
         </table>
         <br>
         <div class="sub-title" style="font-weight: bolder; font-size: 15px">TRANSMITTAL NO.
-            {{ $issuances->issuance_number }} @if ($issuances->status == 0)
+            {{ Str::substr($issuances->issuance_number, -12) }} @if ($issuances->status == 0)
                 <span style="color: red; font-weight: bold;">(Voided)</span>
             @endif
         </div>

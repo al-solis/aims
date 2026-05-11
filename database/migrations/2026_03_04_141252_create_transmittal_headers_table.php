@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('location_id')->nullable();
             $table->foreign('location_id')->references('id')->on('locations');
             $table->text('remarks')->nullable();
+            $table->integer('status')->default(1); // 1 for active, 0 for voided
             $table->unsignedBigInteger('created_by');
             $table->foreign('created_by')->references('id')->on('users');
             $table->unsignedBigInteger('updated_by')->nullable();

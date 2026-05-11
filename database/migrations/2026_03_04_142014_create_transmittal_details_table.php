@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('transmittal_header_id');
             $table->foreign('transmittal_header_id')->references('id')->on('transmittal_headers');
             $table->decimal('quantity', 15, 2);
-            $table->string('unit', 50);
+            $table->string('unit', 50)->nullable();
             $table->unsignedBigInteger('item_id')->nullable();
             $table->foreign('item_id')->references('id')->on('supplies');
             $table->unsignedBigInteger('asset_id')->nullable();

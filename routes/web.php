@@ -31,6 +31,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\UploadedFileController;
 use App\Http\Controllers\DdoHeaderController;
 use App\Http\Controllers\ClearanceRoutingController;
+use App\Http\Controllers\TransmittalController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -196,6 +197,18 @@ Route::middleware('auth')->group(function () {
         Route::get('/duty-detail-order', [ReportController::class, 'dutyDetailOrderReport'])->name('duty-detail-order');
     });
 
+    Route::get('/transmittal', [TransmittalController::class, 'index'])
+        ->name('transmittal.index');
+
+    Route::get('/transmittal/create', [TransmittalController::class, 'create'])
+        ->name('transmittal.create');
+
+    Route::post('/transmittal/store', [TransmittalController::class, 'store'])
+        ->name('transmittal.store');
+
+    Route::get('/get-assets/{locationId}', [TransmittalController::class, 'getAssets']);
+    Route::post('/transmittal/{id}/void', [TransmittalController::class, 'voidTransmittal'])->name('transmittal.void');
+    Route::get('/transmittal/{id}/print', [TransmittalController::class, 'printTransmittal'])->name('asset.print-transmittal');
 
 });
 
