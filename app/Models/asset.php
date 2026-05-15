@@ -21,6 +21,7 @@ class asset extends Model
         'purchase_date',
         'status',
         'manufacturer',
+        'caliber',
         'model',
         'serial',
         'assigned_to',
@@ -28,6 +29,7 @@ class asset extends Model
         'subloc_id',
         'condition',
         'warranty',
+        'remarks',
         'created_by',
         'updated_by',
     ]);

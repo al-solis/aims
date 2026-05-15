@@ -24,9 +24,9 @@
                         <span
                             class="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">Asset</span>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Asset Summary Report</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate summary of all assets with their
-                        current status and location</p>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Asset Listing Report</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Select parameters for asset listing report.
+                        Filter by date range, category, status and location.</p>
                     <button onclick="openReportModal('asset-summary')"
                         class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -299,11 +299,28 @@
         // Report configurations
         const reportConfigs = {
             'asset-summary': {
-                title: 'Asset Summary Report',
-                description: 'Select parameters for asset summary',
+                title: 'Asset Listing Report',
+                description: 'Select parameters for asset listing report. Filter by date range, category, status and location.',
                 form: `
             <form id="reportForm" class="space-y-4 ml-1 mr-1">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Purchase Date/ Inventory Date</label>
+                        <select name="date_range" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                            <option value="this_month">This Month</option>
+                            <option value="last_month">Last Month</option>
+                            <option value="this_quarter">This Quarter</option>
+                            <option value="this_year">This Year</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Report Type</label>
+                        <select name="reptype" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                            <option value="summary">Summary</option>
+                            <option value="monthly-inventory">Monthly Inventory</option>
+                        </select>
+                    </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Asset Category</label>
                         <select name="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
@@ -324,6 +341,7 @@
                             <option value="5">Retired</option>
                             <option value="6">Lost</option>
                             <option value="7">Damaged</option>
+                            <option value="8">Vault</option>
                         </select>
                     </div>
                     <div>
@@ -342,6 +360,17 @@
                             <option value="purchase_date">Purchase Date</option>
                             <option value="cost">Cost</option>
                         </select>
+                    </div>
+                </div>
+
+                <div id="customDateRange" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">From Date</label>
+                        <input type="date" name="from_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">To Date</label>
+                        <input type="date" name="to_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
                     </div>
                 </div>
                 
@@ -661,7 +690,7 @@
         <form id="reportForm" class="space-y-4 ml-1 mr-1">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Date Range</label>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Period</label>
                     <select name="date_range" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
                         <option value="this_month">This Month</option>
                         <option value="last_month">Last Month</option>
@@ -706,7 +735,7 @@
                     <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">To Date</label>
                     <input type="date" name="to_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
                 </div>
-            </div>            
+            </div>
 
             <!-- Add format selection like supplies receiving report -->
             <div class="flex items-center space-x-4 mt-4">
@@ -912,7 +941,7 @@
 
             // Add event listener for custom date range toggle if needed
             if (reportType === 'maintenance' || reportType === 'employee' || reportType === 'supplies-receiving' ||
-                reportType === 'supplies-issuance') {
+                reportType === 'supplies-issuance' || reportType === 'asset-summary') {
                 const dateRangeSelect = document.querySelector('select[name="date_range"]');
                 if (dateRangeSelect) {
                     dateRangeSelect.addEventListener('change', function() {

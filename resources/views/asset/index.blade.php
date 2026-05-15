@@ -102,7 +102,7 @@
                         <path
                             d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5" />
                     </svg>
-                    Create Transmittal
+                    Transmittal
                 </a>
 
                 {{-- @if (Auth::user()->role != 2)
@@ -199,6 +199,7 @@
                         <option value="5" {{ request('searchstat') == 5 ? 'selected' : '' }}>Retired</option>
                         <option value="6" {{ request('searchstat') == 6 ? 'selected' : '' }}>Lost</option>
                         <option value="7" {{ request('searchstat') == 7 ? 'selected' : '' }}>Damaged</option>
+                        <option value="8" {{ request('searchstat') == 8 ? 'selected' : '' }}>Vault</option>
                     </select>
                 </div>
 
@@ -250,6 +251,7 @@
                                         5 => ['color' => 'bg-gray-100 text-gray-600', 'label' => 'Retired'],
                                         6 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Lost'],
                                         7 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Damaged'],
+                                        8 => ['color' => 'bg-gray-100 text-gray-600', 'label' => 'Vault'],
                                     ];
                                     $status = $statuses[$asset->status] ?? [
                                         'color' => 'bg-gray-100 text-gray-600',
@@ -303,12 +305,14 @@
                                             data-serial="{{ $asset->serial }}" data-cost="{{ $asset->cost }}"
                                             data-status="{{ $asset->status }}"
                                             data-purchase_date="{{ $asset->purchase_date }}"
+                                            data-caliber="{{ $asset->caliber }}"
                                             data-manufacturer="{{ $asset->manufacturer }}"
                                             data-model="{{ $asset->model }}" data-serial="{{ $asset->serial }}"
                                             data-assigned_to="{{ $asset->assigned_to }}"
                                             data-location="{{ $asset->location_id }}"
                                             data-sublocation="{{ $asset->subloc_id }}"
-                                            data-warranty="{{ $asset->warranty }}" onclick="openEditModal(this)"
+                                            data-warranty="{{ $asset->warranty }}" data-remarks="{{ $asset->remarks }}"
+                                            onclick="openEditModal(this)"
                                             class="group flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
 
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -485,6 +489,14 @@
                                     placeholder="e.g. 0.00" required>
                             </div>
 
+                            <div class="sm:col-span-2">
+                                <label for="description"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
+                                <textarea type="text" name="description" id="description" rows="2"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Additional details about the asset"></textarea>
+                            </div>
+
                             <div class="sm:col-span-1">
                                 <label for="category_id"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Category*</label>
@@ -528,20 +540,28 @@
                             </div>
 
                             <div class="sm:col-span-1">
+                                <label for="purchase_date"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Date
+                                    Purchased*</label>
+                                <input type="date" name="purchase_date" id="purchase_date"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. mm/dd/yyyy" required>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="caliber"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Caliber</label>
+                                <input type="text" name="caliber" id="caliber"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. 9MM">
+                            </div>
+
+                            <div class="sm:col-span-2">
                                 <label for="manufacturer"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Manufacturer</label>
                                 <input type="text" name="manufacturer" id="manufacturer"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. Brand/ Manufacturer">
-                            </div>
-
-                            <div class="sm:col-span-1">
-                                <label for="purchase_date"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Date
-                                    Purchase*</label>
-                                <input type="date" name="purchase_date" id="purchase_date"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="e.g. mm/dd/yyyy" required>
                             </div>
 
                             <div class="sm:col-span-1">
@@ -575,19 +595,19 @@
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="description"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                <textarea type="text" name="description" id="description" rows="2"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="Additional details about the asset"></textarea>
-                            </div>
-
-                            <div class="sm:col-span-2">
                                 <label for="warranty"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Warranty</label>
                                 <textarea type="text" name="warranty" id="warranty" rows="1"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="Warranty details/ expiration"></textarea>
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label for="remarks"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Remarks</label>
+                                <textarea type="text" name="remarks" id="remarks" rows="2"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Remarks"></textarea>
                             </div>
                         </div>
 
@@ -660,6 +680,14 @@
                                     placeholder="e.g. 0.00" required>
                             </div>
 
+                            <div class="sm:col-span-2">
+                                <label for="edit_description"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
+                                <textarea type="text" name="edit_description" id="edit_description" rows="2"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Additional details about the asset"></textarea>
+                            </div>
+
                             <div class="sm:col-span-1">
                                 <label for="edit_category_id"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Category*</label>
@@ -705,14 +733,6 @@
                             </div>
 
                             <div class="sm:col-span-1">
-                                <label for="edit_manufacturer"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Manufacturer</label>
-                                <input type="text" name="edit_manufacturer" id="edit_manufacturer"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="e.g. Brand/ Manufacturer">
-                            </div>
-
-                            <div class="sm:col-span-1">
                                 <input type="hidden" name="asset_transfer_count" id="asset_transfer_count"
                                     value =''>
                                 <label for="edit_purchase_date"
@@ -721,6 +741,22 @@
                                 <input type="date" name="edit_purchase_date" id="edit_purchase_date"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. mm/dd/yyyy" required>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="edit_caliber"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Caliber</label>
+                                <input type="text" name="edit_caliber" id="edit_caliber"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. 9MM">
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label for="edit_manufacturer"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Manufacturer</label>
+                                <input type="text" name="edit_manufacturer" id="edit_manufacturer"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="e.g. Brand/ Manufacturer">
                             </div>
 
                             <div class="sm:col-span-1">
@@ -756,19 +792,19 @@
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="edit_description"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                <textarea type="text" name="edit_description" id="edit_description" rows="2"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="Additional details about the asset"></textarea>
-                            </div>
-
-                            <div class="sm:col-span-2">
                                 <label for="edit_warranty"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Warranty</label>
                                 <textarea type="text" name="edit_warranty" id="edit_warranty" rows="1"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="Warranty details/ expiration"></textarea>
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label for="edit_remarks"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Remarks</label>
+                                <textarea type="text" name="edit_remarks" id="edit_remarks" rows="2"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    placeholder="Remarks"></textarea>
                             </div>
                         </div>
 
@@ -840,9 +876,11 @@
             document.getElementById('edit_purchase_date').value = button.getAttribute('data-purchase_date');
             document.getElementById('edit_manufacturer').value = button.getAttribute('data-manufacturer');
             document.getElementById('edit_model').value = button.getAttribute('data-model');
+            document.getElementById('edit_caliber').value = button.getAttribute('data-caliber');
             // document.getElementById('edit_assigned_to').value = button.getAttribute('data-assigned_to');
             document.getElementById('edit_sublocation_id').value = button.getAttribute('data-sublocation');
             document.getElementById('edit_warranty').value = button.getAttribute('data-warranty');
+            document.getElementById('edit_remarks').value = button.getAttribute('data-remarks');
 
             $('#edit_assigned_to')
                 .val(assignedTo && assignedTo !== '0' ? assignedTo : null)

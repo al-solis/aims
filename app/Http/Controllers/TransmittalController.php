@@ -19,6 +19,7 @@ class TransmittalController extends Controller
     {
         $search = $request->input('search');
         $searchemployee = $request->input('searchemployee');
+        $searchlocation = $request->input('searchlocation');
 
         $query = transmittal_header::with([
             'transmittedTo',
@@ -27,7 +28,7 @@ class TransmittalController extends Controller
         ]);
 
         $employees = Employee::orderBy('last_name')->get();
-        $locations = Location::orderBy('name')->get();
+        $locations = Location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get();
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -38,6 +39,10 @@ class TransmittalController extends Controller
 
         if ($searchemployee != null) {
             $query->where('transmitted_to', $searchemployee);
+        }
+
+        if ($searchlocation != null) {
+            $query->where('location_id', $searchlocation);
         }
 
         $transmittals = $query
@@ -59,7 +64,7 @@ class TransmittalController extends Controller
 
         $locations = Location::orderBy('name')->get();
 
-        return view('asset.transmittal.create', compact(
+        return view('asset.transmittal.show', compact(
             'employees',
             'locations'
         ));
@@ -196,5 +201,104 @@ class TransmittalController extends Controller
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream('transmittal_' . $transmittal->transmittal_number . '.pdf');
+    }
+
+    public function show($id)
+    {
+        $transmittal = transmittal_header::with([
+            'details.asset',
+            'transmittedTo',
+            'location'
+        ])->findOrFail($id);
+
+        $employees = Employee::whereIn('status', [1, 2, 3])
+            ->orderBy('last_name')
+            ->get();
+
+        $locations = Location::orderBy('name')->get();
+        return view('asset.transmittal.show', compact(
+            'transmittal',
+            'employees',
+            'locations'
+        ));
+    }
+
+    public function getTransmittalItems($transmittalId)
+    {
+        $details = transmittal_detail::with('asset')
+            ->where('transmittal_header_id', $transmittalId)
+            ->get();
+
+        $items = [];
+        $itemId = 1;
+
+        foreach ($details as $detail) {
+            $asset = $detail->asset;
+
+            $items[] = [
+                'id' => $itemId++,
+                'asset_id' => $asset->id,
+                'asset_text' => $asset->name
+            ];
+        }
+
+        return response()->json($items);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'date' => 'required|date',
+            'location_id' => 'required',
+            'items' => 'required|array|min:1',
+            'items.*.asset_id' => 'required|exists:assets,id',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+
+            $header = transmittal_header::findOrFail($id);
+
+            $header->update([
+                'transmittal_date' => $request->date,
+                'transmitted_to' => $request->transmit_to,
+                'remarks' => $request->remarks,
+            ]);
+
+            // remove old items
+            transmittal_detail::where(
+                'transmittal_header_id',
+                $header->id
+            )->delete();
+
+            // insert updated items
+            foreach ($request->items as $item) {
+
+                transmittal_detail::create([
+                    'transmittal_header_id' => $header->id,
+                    'asset_id' => $item['asset_id'],
+                    'quantity' => 1,
+                    'tag' => 'A',
+                    'created_by' => Auth::id(),
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('transmittal.index')
+                ->with('success', 'Transmittal updated successfully.');
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'error' => $e->getMessage()
+                ]);
+        }
     }
 }

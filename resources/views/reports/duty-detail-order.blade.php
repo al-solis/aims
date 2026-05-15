@@ -9,6 +9,13 @@
     <title>Duty Detail</title>
 
     <style>
+        @page {
+            margin-top: 0.1in;
+            margin-right: 0.5in;
+            margin-bottom: 0.2in;
+            margin-left: 0.5in;
+        }
+
         body {
             /* font-family: DejaVu Sans, sans-serif;  */
             font-family: Arial, Helvetica, sans-serif;
@@ -18,7 +25,7 @@
 
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .title {
@@ -206,6 +213,7 @@
 
                             <td>{{ $row->model ?? '' }}</td>
                             <td>{{ $row->asset_name ?? '' }}</td>
+                            <td>{{ $row->caliber ?? '' }}</td>
                             <td>{{ $row->serial ?? '' }}</td>
                             <td>{{ $row->expiration_date ?? '' }}</td>
 
@@ -265,8 +273,8 @@
                                 @endif
 
                                 {{-- FIREARM --}}
-                                <td>{{ $row->model ?? '' }}</td>
-                                <td>{{ $row->asset_name ?? '' }}</td>
+                                <td>{{ $row->subcategory ?? '' }}</td>
+                                <td>{{ $row->caliber ?? '' }}</td>
                                 <td>{{ $row->serial ?? '' }}</td>
                                 <td>{{ $row->expiration_date ?? '' }}</td>
 

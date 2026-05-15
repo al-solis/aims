@@ -11,7 +11,7 @@
             <div>
                 <h1 class="text-2xl font-semibold text-gray-900">Asset Transmittal</h1>
                 <p class="text-sm text-gray-500">
-                    Asset transmittal form.
+                    Create, edit and print asset transmittal forms.
                 </p>
             </div>
             <div class="flex items-center gap-2 mt-0">
@@ -145,50 +145,63 @@
                             </td>
                             <td class="px-4 py-3 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
-
-                                    <a href="{{ route('asset.print-transmittal', $transmittal->id) }}" type="button"
-                                        target="_blank" title="Print transmittal : {{ $transmittal->transmittal_number }}"
-                                        class="group flex space-x-1 text-gray-500 hover:text-yellow-600 transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
-                                            <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1" />
-                                            <path
-                                                d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1" />
-                                        </svg>
-                                    </a>
-
-                                    @if ($transmittal->status == 0 || Auth::user()->role == 2)
-                                        <button type="button"
-                                            title="{{ Auth::user()->role == 2 ? 'Unable to void' : 'Voided already' }} : {{ $transmittal->transmittal_number }}"
-                                            disabled class="group flex space-x-1 text-gray-300 cursor-not-allowed">
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <a href="{{ route('transmittal.show', $transmittal->id) }}" type="button"
+                                            title="Edit transmittal : {{ $transmittal->transmittal_number }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                                                 <path
-                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                                                <path
-                                                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                    d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                                <path fill-rule="evenodd"
+                                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
                                             </svg>
-                                            {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
-                                        </button>
-                                    @else
-                                        <button type="button"
-                                            title="Void transmittal : {{ $transmittal->transmittal_number }}"
-                                            data-id="{{ $transmittal->id }}"
-                                            data-code="{{ $transmittal->transmittal_number }}"
-                                            data-description="{{ $transmittal->purpose }}"
-                                            onclick="voidTransmittal(this)"
-                                            class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors">
+                                        </a>
+
+                                        <a href="{{ route('asset.print-transmittal', $transmittal->id) }}" type="button"
+                                            target="_blank"
+                                            title="Print transmittal : {{ $transmittal->transmittal_number }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-yellow-600 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+                                                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1" />
                                                 <path
-                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                                                <path
-                                                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                    d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1" />
                                             </svg>
-                                            {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
-                                        </button>
-                                    @endif
-                                </div>
+                                        </a>
+
+                                        @if ($transmittal->status == 0 || Auth::user()->role == 2)
+                                            <button type="button"
+                                                title="{{ Auth::user()->role == 2 ? 'Unable to void' : 'Voided already' }} : {{ $transmittal->transmittal_number }}"
+                                                disabled class="group flex space-x-1 text-gray-300 cursor-not-allowed">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                                    <path
+                                                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                </svg>
+                                                {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
+                                            </button>
+                                        @else
+                                            <button type="button"
+                                                title="Void transmittal : {{ $transmittal->transmittal_number }}"
+                                                data-id="{{ $transmittal->id }}"
+                                                data-code="{{ $transmittal->transmittal_number }}"
+                                                data-description="{{ $transmittal->purpose }}"
+                                                onclick="voidTransmittal(this)"
+                                                class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                                    <path
+                                                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                </svg>
+                                                {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
+                                            </button>
+                                        @endif
+                                    </div>
                             </td>
                         </tr>
                     @empty
@@ -207,127 +220,6 @@
             {{ $transmittals->links() }}
         </div>
     </div>
-
-    <!-- Modal  View-->
-    <div id="view-modal" tabindex="-1" aria-hidden="true"
-        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-        <div class="relative p-4 w-full max-w-4xl max-h-full">
-            <!-- Modal content -->
-            <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
-                <!-- Modal header -->
-                <div
-                    class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
-                    <h3 name="formLabel" id="formLabel" class="text-lg font-semibold text-gray-900 dark:text-white">
-
-                    </h3>
-                    <button type="button"
-                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                        data-modal-toggle="view-modal">
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                        </svg>
-                        <span class="sr-only">Close</span>
-                    </button>
-                </div>
-                <!-- Modal body -->
-                <div class="overflow-y-auto max-h-[70vh]">
-                    <form id="viewForm" class="p-4 md:p-5" method="POST">
-                        @csrf
-                        <input type="hidden" name="view_id" id="view_id">
-
-                        <!-- MAIN 2 COLUMN LAYOUT -->
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-                            <!-- ================= LEFT SIDE (HEADER INFO) ================= -->
-                            <div>
-                                <h3 class="text-sm font-semibold mb-3">Issuance Information</h3>
-
-                                <!-- HEADER 2 COLUMN GRID -->
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-
-                                    <div>
-                                        <label class="block text-xs font-medium">Issuance No</label>
-                                        <input type="text" id="view_code"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-xs font-medium">Issuance Date</label>
-                                        <input type="date" id="view_date"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                    </div>
-
-                                    <div class="sm:col-span-2">
-                                        <label class="block text-xs font-medium">Purpose</label>
-                                        <input type="text" id="view_purpose"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-xs font-medium">Issued To</label>
-                                        <input type="text" id="view_issued_to"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-xs font-medium">Location</label>
-                                        <input type="text" id="view_location"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                                    </div>
-
-                                    <div class="sm:col-span-2">
-                                        <label class="block text-xs font-medium">Remarks</label>
-                                        <textarea id="view_remarks" rows="3"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"></textarea>
-                                    </div>
-
-                                </div>
-                            </div>
-
-
-                            <!-- ================= RIGHT SIDE (DETAILS TABLE) ================= -->
-                            <div>
-                                <div class="border rounded-lg p-3">
-
-                                    <h3 class="text-sm font-semibold mb-2">Issuance Details</h3>
-
-                                    <div class="overflow-x-auto">
-                                        <table class="w-full text-xs text-left border">
-                                            <thead class="bg-gray-100">
-                                                <tr>
-                                                    <th class="px-3 py-2 border">Item</th>
-                                                    <th class="px-3 py-2 border">Qty</th>
-                                                    <th class="px-3 py-2 border">UOM</th>
-                                                    <th class="px-3 py-2 border">Unit Cost</th>
-                                                    <th class="px-3 py-2 border">Total</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="viewDetailsTable">
-
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="mt-6">
-                            <button type="button" id="closeButton" data-modal-toggle="view-modal"
-                                class="px-4 py-2 text-xs border rounded-lg bg-gray-100 hover:bg-gray-200">
-                                Close
-                            </button>
-                        </div>
-
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- End view modal -->
 
     <script>
         function clearModalFields() {
@@ -355,65 +247,6 @@
             const day = String(date.getDate()).padStart(2, '0');
 
             return `${year}-${month}-${day}`;
-        }
-
-        function viewIssuance(id) {
-
-            $.ajax({
-                url: '/issuance/' + id,
-                type: 'GET',
-                success: function(response) {
-
-                    if (response.success) {
-
-                        let data = response.data;
-                        $(document.getElementById('formLabel')).text(
-                            `View Issuance Details ${data.status == 0 ? '(Voided)' : ''}`
-                        );
-                        // ================= HEADER =================
-                        $('#view_id').val(data.id);
-                        $('#view_code').val(data.issuance_number);
-                        $('#view_date').val(formatDateForInput(data.issuance_date));
-                        $('#view_purpose').val(data.purpose);
-                        $('#view_reference').val(data.reference);
-                        $('#view_issued_to').val(data.issued_to ? data.issued_to.last_name + ', ' + data
-                            .issued_to.first_name + ' ' + data.issued_to.middle_name : '');
-                        $('#view_location').val(data.location ? data.location.name : '');
-                        $('#view_remarks').val(data.remarks);
-
-                        // ================= DETAILS TABLE =================
-                        let rows = '';
-                        let grandTotal = 0;
-
-                        data.details.forEach(function(item) {
-
-                            grandTotal += parseFloat(item.total_cost);
-
-                            rows += `
-                        <tr>
-                            <td class="border px-3 py-2">${item.supply.name}</td>
-                            <td class="border px-3 py-2 text-right">${parseFloat(item.quantity).toFixed(2)}</td>
-                            <td class="border px-3 py-2">${item.uom.name}</td>
-                            <td class="border px-3 py-2 text-right">${parseFloat(item.unit_cost).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                            <td class="border px-3 py-2 text-right">${parseFloat(item.total_cost).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                        </tr>
-                    `;
-                        });
-                        rows += `
-                    <tr class="bg-gray-100 font-semibold">
-                        <td colspan="4" class="border px-3 py-2 text-right">Grand Total</td>
-                        <td class="border px-3 py-2 text-right">${grandTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    </tr>
-                `;
-
-                        $('#viewDetailsTable').html(rows);
-
-                        // Open modal
-                        $('#view-modal').removeClass('hidden');
-                    }
-                }
-            });
-
         }
 
         function voidTransmittal(button) {

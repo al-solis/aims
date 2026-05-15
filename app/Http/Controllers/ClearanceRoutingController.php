@@ -12,7 +12,7 @@ class ClearanceRoutingController extends Controller
 {
     public function index()
     {
-        $locations = Location::where('status', 1)->get();
+        $locations = Location::where('status', 1)->orderByRaw('LTRIM(RTRIM(name)) ASC')->get();
         return view('setup.clearance-routing.index', compact('locations'));
     }
 

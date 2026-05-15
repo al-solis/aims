@@ -26,7 +26,7 @@ class EmployeeController extends Controller
         $status = $request->query('status');
         $searchloc = $request->query('searchloc');
 
-        $locations = Location::get();
+        $locations = Location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get();
         $query = Employee::query();
         $totalEmployees = Employee::count();
         $activeEmployees = Employee::where('status', 1)->count();

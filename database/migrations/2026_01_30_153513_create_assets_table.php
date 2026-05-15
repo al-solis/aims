@@ -23,9 +23,10 @@ return new class extends Migration {
 
             $table->decimal('cost', 10, 2)->nullable();
             $table->date('purchase_date');
-            $table->integer('status')->default('1'); //1: Available, 2: Active, 3: Assigned, 4: Maintenance, 5: Retired, 6: Lost, 7: Damaged
+            $table->integer('status')->default('1'); //1: Available, 2: Active, 3: Assigned, 4: Maintenance, 5: Retired, 6: Lost, 7: Damaged; 8: Vault
 
             $table->string('manufacturer', 50)->nullable();
+            $table->string('caliber', 50)->nullable();
             $table->string('model', 50)->nullable();
             $table->string('serial')->nullable();
 
@@ -38,6 +39,7 @@ return new class extends Migration {
 
             $table->integer('condition')->default('1'); //1: Excellent, 2: Good, 3: Fair, 4: Poor
             $table->string('warranty', 255)->nullable(true);
+            $table->text('remarks')->nullable(true);
 
             $table->unsignedBigInteger('created_by')->nullable(true);
             $table->foreign('created_by')->references('id')->on('users');

@@ -25,7 +25,7 @@ class DdoHeaderController extends Controller
         $totalSetups = ddo_header::count();
         $activeSetups = ddo_header::where('status', 1)->count();
         $totalInactiveSetups = ddo_header::where('status', 0)->count();
-        $locations = Location::orderBy('name')->get();
+        $locations = Location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get();
         $employees = Employee::where('status', 1)
             ->orderBy('last_name')->get();
 

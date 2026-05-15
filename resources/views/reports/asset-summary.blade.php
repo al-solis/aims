@@ -9,6 +9,13 @@
     <title>Asset Summary Report</title>
 
     <style>
+        @page {
+            margin-top: 0.1in;
+            margin-right: 0.5in;
+            margin-bottom: 0.2in;
+            margin-left: 0.5in;
+        }
+
         body {
             /* font-family: DejaVu Sans, sans-serif;  */
             font-family: Arial, Helvetica, sans-serif;
@@ -128,6 +135,7 @@
         <br>
         <div class="sub-title" style="font-weight: bolder; font-size: 15px">ASSET SUMMARY REPORT</div>
         <div class="sub-title">Generated on: {{ now()->format('F d, Y') }}</div>
+        <div class="sub-title">Range: {{ $pDateRange != 'custom' ? $pDateRange : $pFromDate . ' to ' . $pToDate }}</div>
         <div class="sub-title">Category: {{ $pCategory }}</div>
         <div class="sub-title">Location: {{ $pLocation }}</div>
         <div class="sub-title">Status: {{ $pStatus }}</div>

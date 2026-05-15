@@ -1,6 +1,10 @@
 @extends('dashboard')
 
 @section('content')
+    @php
+        use Carbon\Carbon;
+        use Illuminate\Support\Facades\Auth;
+    @endphp
 
     <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
 
@@ -36,9 +40,13 @@
 
             <hr class="my-3">
 
-            <form action="{{ route('transmittal.store') }}" method="POST" id="transmittalForm">
-
+            <form
+                action="{{ isset($transmittal) ? route('transmittal.update', $transmittal->id) : route('transmittal.store') }}"
+                method="POST" id="transmittalForm">
                 @csrf
+                @if (isset($transmittal))
+                    @method('PUT')
+                @endif
 
                 <div class="grid gap-2 mb-4 sm:grid-cols-2">
 
@@ -48,7 +56,7 @@
                         </label>
 
                         <input type="date" name="date" max="{{ now()->format('Y-m-d') }}"
-                            value="{{ now()->format('Y-m-d') }}"
+                            value="{{ isset($transmittal) ? Carbon::parse($transmittal->transmittal_date)->format('Y-m-d') : now()->format('Y-m-d') }}"
                             class="bg-gray-50 border border-gray-300 text-xs rounded-lg block w-full p-2.5" required>
                     </div>
 
@@ -63,7 +71,8 @@
                             <option value="">Select employee</option>
 
                             @foreach ($employees as $employee)
-                                <option value="{{ $employee->id }}">
+                                <option value="{{ $employee->id }}"
+                                    {{ isset($transmittal) && $transmittal->transmitted_to == $employee->id ? 'selected' : '' }}>
                                     {{ $employee->last_name }},
                                     {{ $employee->first_name }}
                                 </option>
@@ -77,15 +86,17 @@
                         <label class="block text-xs font-medium text-gray-900">
                             Location*
                         </label>
-                        <input type="hidden" id="location_id" name="location_id">
-                        <select id="location_name" name="location_name"
+                        <input type="hidden" id="location_id" name="location_id"
+                            value="{{ $transmittal->location_id ?? '' }}">
+                        <select id="location_name" name="location_name" {{ isset($transmittal) ? 'disabled' : '' }}
                             class="select2 bg-gray-50 border border-gray-300 text-xs rounded-lg block w-full p-2.5"
                             required>
 
                             <option value="">Select location</option>
 
                             @foreach ($locations as $location)
-                                <option value="{{ $location->id }}">
+                                <option value="{{ $location->id }}"
+                                    {{ isset($transmittal) && $transmittal->location_id == $location->id ? 'selected' : '' }}>
                                     {{ $location->name }}
                                 </option>
                             @endforeach
@@ -100,12 +111,11 @@
                         </label>
 
                         <textarea name="remarks" rows="3" class="bg-gray-50 border border-gray-300 text-xs rounded-lg block w-full p-2.5"
-                            placeholder="Remarks"></textarea>
+                            placeholder="Remarks">{{ $transmittal->remarks ?? '' }}</textarea>
                     </div>
                 </div>
 
                 <div class="grid gap-2 mb-4 sm:grid-cols-4">
-
                     <div class="sm:col-span-3">
                         <label class="block text-xs font-medium text-gray-900">
                             Asset*
@@ -132,7 +142,6 @@
                 <div class="bg-white border rounded-xl overflow-x-auto">
 
                     <table class="min-w-full text-xs">
-
                         <thead class="bg-gray-200 text-gray-600">
                             <tr>
                                 <th class="px-4 py-3 text-left">
@@ -157,17 +166,17 @@
 
                 <div id="hiddenInputsContainer"></div>
 
-                <hr class="my-4">
-
-                <div class="flex justify-end gap-x-2">
+                <hr class="my-4 mt-4">
+                <div class="mt-4 flex justify-end gap-x-2">
 
                     <a href="{{ route('transmittal.index') }}"
                         class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200">
                         Back
                     </a>
 
-                    <button type="submit"
-                        class="py-2 px-3 inline-flex items-center gap-x-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
+                    <button type="submit" @disabled(Auth::user()->role == 2 || (isset($transmittal) && $transmittal->status == 0))
+                        class="py-2 px-3 inline-flex items-center gap-x-2 text-xs font-medium text-white
+                        {{ Auth::user()->role == 2 || (isset($transmittal) && $transmittal->status == 0) ? 'bg-gray-500 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-800' }} rounded-lg">
                         Save Transaction
                     </button>
                 </div>
@@ -182,8 +191,31 @@
         let items = [];
         let itemId = 0;
 
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            const transmittalId = @json($transmittal->id ?? null);
 
+            if (transmittalId) {
+                $('#location_name').prop('disabled', true);
+
+                $.ajax({
+                    url: `/get-transmittal-items/${transmittalId}`,
+                    type: 'GET',
+                    success: function(data) {
+                        data.forEach(item => {
+                            items.push({
+                                id: itemId++,
+                                asset_id: item.asset_id,
+                                asset_text: item.asset_text
+                            });
+                        });
+
+                        renderTable();
+                    }
+                });
+            }
+        });
+
+        $(document).ready(function() {
             $('.select2').select2({
                 width: '100%'
             });
@@ -196,7 +228,6 @@
             });
 
             $('#location_name').on('change', function() {
-
                 const locationId = $(this).val();
                 $('#location_id').val(locationId);
 
@@ -239,6 +270,14 @@
                 });
             });
 
+            const isEdit = @json(isset($transmittal));
+
+            if (isEdit) {
+                $('#location_name')
+                    .trigger('change')
+                    .prop('disabled', true);
+            }
+
             $('#add-item-btn').click(function() {
                 addItem();
             });
@@ -250,9 +289,7 @@
             const assetText = $('#asset_id option:selected').text();
 
             if (!assetId) {
-
                 showToast('Please select an asset', 'error');
-
                 return;
             }
 
@@ -261,16 +298,14 @@
             );
 
             if (existing) {
-
                 showToast('Asset already added', 'error');
-
                 return;
             }
 
             const newItem = {
                 id: itemId++,
                 asset_id: parseInt(assetId),
-                asset_text: assetText,
+                asset_text: assetText.trim(),
                 quantity: 1
             };
 
@@ -325,9 +360,13 @@
 
                         <td class="px-4 py-2">
                             <button type="button"
+                                title="Remove asset: ${item.asset_text}"
                                 onclick="removeItem(${item.id})"
                                 class="text-red-600 hover:text-red-800">
-                                Remove
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                </svg>
                             </button>
                         </td>
                     </tr>

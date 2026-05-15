@@ -16,6 +16,13 @@
     </title>
 
     <style>
+        @page {
+            margin-top: 0.1in;
+            margin-right: 0.5in;
+            margin-bottom: 0.2in;
+            margin-left: 0.5in;
+        }
+
         body {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 12px;

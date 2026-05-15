@@ -25,7 +25,7 @@ class ClearanceHeaderController extends Controller
         $searchloc = $request->input('searchloc');
 
         $employees = employee::where('status', '1')->get();
-        $locations = location::all();
+        $locations = Location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get();
 
         $userLocation = DB::table('users as u')
             ->leftJoin('employees as e', 'u.employee_code', '=', 'e.employee_code')

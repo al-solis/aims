@@ -25,7 +25,7 @@ class IssuanceController extends Controller
         $query = issuance_header::with('issuedTo', 'Location');
 
         $employees = employee::orderBy('last_name')->get();
-        $locations = location::orderBy('name')->get();
+        $locations = Location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get();
         $uoms = UOM::orderBy('name')->get();
 
         if ($search) {

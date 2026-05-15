@@ -197,19 +197,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/duty-detail-order', [ReportController::class, 'dutyDetailOrderReport'])->name('duty-detail-order');
     });
 
-    Route::get('/transmittal', [TransmittalController::class, 'index'])
-        ->name('transmittal.index');
-
-    Route::get('/transmittal/create', [TransmittalController::class, 'create'])
-        ->name('transmittal.create');
-
-    Route::post('/transmittal/store', [TransmittalController::class, 'store'])
-        ->name('transmittal.store');
-
+    Route::get('/transmittal', [TransmittalController::class, 'index'])->name('transmittal.index');
+    Route::get('/transmittal/create', [TransmittalController::class, 'create'])->name('transmittal.create');
+    Route::get('/transmittal/{id}', [TransmittalController::class, 'show'])->name('transmittal.show');
+    Route::post('/transmittal/store', [TransmittalController::class, 'store'])->name('transmittal.store');
     Route::get('/get-assets/{locationId}', [TransmittalController::class, 'getAssets']);
     Route::post('/transmittal/{id}/void', [TransmittalController::class, 'voidTransmittal'])->name('transmittal.void');
     Route::get('/transmittal/{id}/print', [TransmittalController::class, 'printTransmittal'])->name('asset.print-transmittal');
-
+    Route::get('/get-transmittal-items/{transmittalId}', [TransmittalController::class, 'getTransmittalItems'])->name('transmittal.items');
+    Route::put('/transmittal/{id}', [TransmittalController::class, 'update'])->name('transmittal.update');
 });
 
 require __DIR__ . '/auth.php';

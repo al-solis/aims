@@ -34,7 +34,7 @@ class ReportController extends Controller
         // Load data for dropdowns
         $categories = Category::all();
         $suppliesCategories = SuppliesCategory::all();
-        $locations = Location::orderBy('name')->get();
+        $locations = Location::orderByRaw('LTRIM(RTRIM(name))')->get();
         $vehicles = Asset::whereIn('category_id', [2])->get();
         $suppliers = Supplier::orderBy('name')->get();
         $employees = Employee::orderBy('last_name')->get();
@@ -47,8 +47,14 @@ class ReportController extends Controller
 
     public function assetSummary(Request $request)
     {
+        $pDateRange = $request->date_range ?? 'this_month';
+        $pFromDate = $request->from_date ?? '';
+        $pToDate = $request->to_date ?? '';
+        $pType = $request->reptype ?? 'summary';
         $pCategory = Category::find($request->category)->name ?? 'All Categories';
         $pLocation = Location::find($request->location)->name ?? 'All Locations';
+        $empcode = Auth::user()->employee_code;
+        $preparedBy = Employee::where('employee_code', $empcode)->first();
         $statuses = [
             1 => 'Available',
             2 => 'Active',
@@ -61,8 +67,130 @@ class ReportController extends Controller
 
         $pStatus = $statuses[$request->status] ?? 'All Statuses';
 
+        $dateRangeLabels = [
+            'this_month' => Carbon::now()->format('F Y'),
+            'last_month' => Carbon::now()->subMonth()->format('F Y'),
+            'this_quarter' => Carbon::now()->startOfQuarter()->format('F Y') . ' - ' . Carbon::now()->endOfQuarter()->format('F Y'),
+            'this_year' => Carbon::now()->format('Y'),
+            'custom' => 'custom',
+        ];
 
         $query = Asset::with(['category', 'location', 'assigned_user']);
+
+        if ($request->input('reptype') == 'summary') {
+            switch ($pDateRange) {
+                case 'this_month':
+                    $query->whereMonth('purchase_date', Carbon::now()->month)
+                        ->whereYear('purchase_date', Carbon::now()->year);
+                    break;
+
+                case 'last_month':
+                    $query->whereMonth('purchase_date', Carbon::now()->subMonth()->month)
+                        ->whereYear('purchase_date', Carbon::now()->subMonth()->year);
+                    break;
+
+                case 'this_quarter':
+                    $query->whereBetween('purchase_date', [
+                        Carbon::now()->startOfQuarter()->format('Y-m-d'),
+                        Carbon::now()->endOfQuarter()->format('Y-m-d')
+                    ]);
+                    break;
+
+                case 'this_year':
+                    $query->whereYear('purchase_date', Carbon::now()->year);
+                    break;
+
+                case 'custom':
+                    if ($pFromDate && $pToDate) {
+                        $query->whereBetween('purchase_date', [$pFromDate, $pToDate]);
+                    }
+                    break;
+            }
+        } else {
+            $latestIds = DB::table('employee_ids')
+                ->select(
+                    'employee_id',
+                    DB::raw('MAX(expiry_date) as max_expiry_date')
+                )
+                ->where('id_type_id', 8)
+                ->groupBy('employee_id');
+
+            $queryDDO = DB::table('ddo_headers as a')
+                ->join('ddo_details as b', 'a.id', '=', 'b.ddo_header_id')
+                ->join('employees as c', 'b.employee_id', '=', 'c.id')
+
+                ->leftJoinSub($latestIds, 'x', function ($join) {
+                    $join->on('c.id', '=', 'x.employee_id');
+                })
+
+                ->leftJoin('employee_ids as d', function ($join) {
+                    $join->on('c.id', '=', 'd.employee_id')
+                        ->on('d.expiry_date', '=', 'x.max_expiry_date')
+                        ->where('d.id_type_id', 8);
+                })
+
+                ->where('a.location_id', $request->location)
+
+                ->select(
+                    'c.last_name',
+                    'c.first_name',
+                    'c.middle_name',
+                    'c.mobile',
+                    'd.id_number',
+                    DB::raw("FORMAT(d.expiry_date, 'MMMM d, yyyy') as license_expiry")
+                )
+
+                ->groupBy(
+                    'c.last_name',
+                    'c.first_name',
+                    'c.middle_name',
+                    'c.mobile',
+                    'd.id_number',
+                    'd.expiry_date'
+                );
+            if ($queryDDO->exists()) {
+                $employeeLists = $queryDDO
+                    ->orderByRaw('LTRIM(RTRIM(last_name))')
+                    ->orderByRaw('LTRIM(RTRIM(first_name))')
+                    ->orderByRaw('LTRIM(RTRIM(middle_name))')
+                    ->get();
+            } else {
+                $latestIds = DB::table('employee_ids')
+                    ->select(
+                        'employee_id',
+                        DB::raw('MAX(expiry_date) as max_expiry_date')
+                    )
+                    ->where('id_type_id', 8)
+                    ->groupBy('employee_id');
+
+                $employeeLists = Employee::from('employees as c')
+                    ->leftJoinSub($latestIds, 'x', function ($join) {
+                        $join->on('c.id', '=', 'x.employee_id');
+                    })
+
+                    ->leftJoin('employee_ids as d', function ($join) {
+                        $join->on('c.id', '=', 'd.employee_id')
+                            ->on('d.expiry_date', '=', 'x.max_expiry_date')
+                            ->where('d.id_type_id', 8);
+                    })
+
+                    ->where('c.location_id', $request->location)
+
+                    ->select(
+                        'c.last_name',
+                        'c.first_name',
+                        'c.middle_name',
+                        'c.mobile',
+                        'd.id_number',
+                        DB::raw("FORMAT(d.expiry_date, 'MMMM d, yyyy') as license_expiry")
+                    )
+
+                    ->orderByRaw('LTRIM(RTRIM(c.last_name))')
+                    ->orderByRaw('LTRIM(RTRIM(c.first_name))')
+                    ->orderByRaw('LTRIM(RTRIM(c.middle_name))')
+                    ->get();
+            }
+        }
 
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
@@ -83,10 +211,17 @@ class ReportController extends Controller
         // if ($request->format === 'excel') {
         //     return $this->exportAssetSummaryExcel($assets);
         // }
+        $pDateRange = $dateRangeLabels[$pDateRange] ?? 'Custom Range';
 
-        $pdf = PDF::loadView('reports.asset-summary', compact('assets', 'pCategory', 'pStatus', 'pLocation', 'sortField'))
-            ->setPaper('letter', 'portrait');
-        return $pdf->stream('asset-summary.pdf');
+        if ($request->input('reptype') == 'summary') {
+            $pdf = PDF::loadView('reports.asset-summary', compact('assets', 'pCategory', 'pStatus', 'pLocation', 'sortField', 'pDateRange', 'dateRangeLabels', 'pFromDate', 'pToDate', 'preparedBy'))
+                ->setPaper('letter', 'portrait');
+            return $pdf->stream('asset-summary.pdf');
+        } else {
+            $pdf = PDF::loadView('reports.asset-inventory', compact('assets', 'employeeLists', 'pCategory', 'pStatus', 'pLocation', 'sortField', 'pDateRange', 'dateRangeLabels', 'pFromDate', 'pToDate', 'preparedBy'))
+                ->setPaper('letter', 'portrait');
+            return $pdf->stream('asset-inventory.pdf');
+        }
     }
 
     public function odometerReport(Request $request)
@@ -445,13 +580,17 @@ class ReportController extends Controller
                 ->join('ddo_details as b', 'a.id', '=', 'b.ddo_header_id')
                 ->join('employees as c', 'b.employee_id', '=', 'c.id')
                 ->leftJoin('locations as l', 'a.location_id', '=', 'l.id')
-                ->leftJoin('assets as d', 'd.assigned_to', '=', 'c.id')
-                ->leftJoin('categories as cat', 'd.category_id', '=', 'cat.id')
+
+                ->leftJoin('assets as d', function ($join) {
+                    $join->on('d.assigned_to', '=', 'c.id')
+                        ->where('d.category_id', 1);
+                })
+
                 ->leftJoin('asset_licenses as e', 'e.asset_id', '=', 'd.id')
 
                 ->where('c.status', 1)
                 ->where('a.location_id', $request->location)
-                ->where('cat.id', 1)
+
                 ->select(
                     'c.id as employee_id',
                     'c.last_name',
@@ -463,6 +602,8 @@ class ReportController extends Controller
                     'l.address as location_address',
 
                     'd.id as asset_id',
+                    'd.subcategory',
+                    'd.caliber',
                     'd.manufacturer',
                     'd.model',
                     'd.name as asset_name',
@@ -482,6 +623,8 @@ class ReportController extends Controller
                     'l.name',
                     'l.address',
                     'd.id',
+                    'd.subcategory',
+                    'd.caliber',
                     'd.model',
                     'd.manufacturer',
                     'd.name',
@@ -507,7 +650,9 @@ class ReportController extends Controller
                     'l.name as location_name',
                     'l.address as location_address',
                     'd.id as asset_id',
+                    'd.subcategory',
                     'd.manufacturer',
+                    'd.caliber',
                     'd.model',
                     'd.name as asset_name',
                     'd.serial',
@@ -523,6 +668,8 @@ class ReportController extends Controller
                     'l.name',
                     'l.address',
                     'd.id',
+                    'd.subcategory',
+                    'd.caliber',
                     'd.model',
                     'd.manufacturer',
                     'd.name',
@@ -559,6 +706,8 @@ class ReportController extends Controller
                 'l.address as location_address',
 
                 'd.id as asset_id',
+                'd.subcategory',
+                'd.caliber',
                 'd.manufacturer',
                 'd.model',
                 'd.name as asset_name',
@@ -576,6 +725,8 @@ class ReportController extends Controller
                 'l.name',
                 'l.address',
                 'd.id',
+                'd.subcategory',
+                'd.caliber',
                 'd.model',
                 'd.manufacturer',
                 'd.name',

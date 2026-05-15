@@ -32,7 +32,7 @@ class AssetController extends Controller
         $searchstat = $request->input('searchstat');
 
         $locationid = $request->route('location');
-        $locations = Location::get();
+        $locations = Location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get();
         $categories = Category::get();
         $sublocations = Sublocation::get();
         $employees = Employee::where('status', '!=', '0')
@@ -112,6 +112,7 @@ class AssetController extends Controller
             'cost' => $request->cost ?? 0,
             'purchase_date' => $request->purchase_date,
             'manufacturer' => $request->manufacturer,
+            'caliber' => $request->caliber,
             'model' => $request->model,
             'serial' => $request->serial,
             'assigned_to' => $request->assigned_to ?? null,
@@ -123,6 +124,7 @@ class AssetController extends Controller
                 ? null
                 : $request->sublocation_id,
             'warranty' => $request->warranty,
+            'remarks' => $request->remarks,
             'created_by' => Auth::id(),
             'created_at' => now(),
         ]);
@@ -180,6 +182,7 @@ class AssetController extends Controller
             'cost' => $request->edit_cost ?? 0,
             'purchase_date' => $request->edit_purchase_date,
             'manufacturer' => $request->edit_manufacturer,
+            'caliber' => $request->edit_caliber,
             'model' => $request->edit_model,
             'serial' => $request->edit_serial,
             'assigned_to' => empty($request->hidden_edit_assigned_to)
@@ -193,6 +196,7 @@ class AssetController extends Controller
                 ? null
                 : $request->hidden_edit_sublocation_id,
             'warranty' => $request->edit_warranty,
+            'remarks' => $request->edit_remarks,
             'updated_by' => Auth::id(),
             'updated_at' => now(),
         ]);
