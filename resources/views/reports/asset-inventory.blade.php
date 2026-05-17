@@ -324,7 +324,7 @@
     </div>
 
     <div section="footer">
-        <div class="signature">
+        <div class="signature" style="text-align: left;">
             Prepared By:<br><br>
             <br>
             {{-- <strong><u>{{ env('ARE_PREPARED_BY') }}</u></strong><br> --}}

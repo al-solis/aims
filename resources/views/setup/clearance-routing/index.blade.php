@@ -156,22 +156,31 @@
 
         // EDIT
         document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('edit-btn')) {
-                document.getElementById('location_id').value = e.target.dataset.location;
-                document.getElementById('order').value = e.target.dataset.order;
+
+            const editBtn = e.target.closest('.edit-btn');
+
+            if (editBtn) {
+                document.getElementById('location_id').value = editBtn.dataset.location;
+                document.getElementById('order').value = editBtn.dataset.order;
 
                 const btn = document.getElementById('add-routing');
                 btn.textContent = 'Update';
-                btn.dataset.id = e.target.dataset.id;
+                btn.dataset.id = editBtn.dataset.id;
             }
         });
 
         // DELETE
         document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('delete-btn')) {
-                if (!confirm('Delete this record ' + e.target.dataset.location_name + '?')) return;
 
-                fetch(`/setup/clearance-routing/${e.target.dataset.id}`, {
+            const deleteBtn = e.target.closest('.delete-btn');
+
+            if (deleteBtn) {
+
+                if (!confirm('Delete this record ' + deleteBtn.dataset.location_name + '?')) {
+                    return;
+                }
+
+                fetch(`/setup/clearance-routing/${deleteBtn.dataset.id}`, {
                         method: 'DELETE',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'

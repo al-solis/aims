@@ -35,6 +35,13 @@
                         alt="external-office-supplies-office-and-office-supplies-flaticons-lineal-color-flat-icons-11" />
                     <span class="text-xs mt-1">Supplies</span>
                 </a>
+                <a href="{{ route('budget.index') }}" title="Request budget for office supplies and asset purchases"
+                    class="py-1.5 px-2.5 flex flex-col items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700  hover:bg-gray-200">
+                    <img width="48" height="48"
+                        src="https://img.icons8.com/?size=100&id=68348&format=png&color=000000"
+                        alt="external-office-supplies-office-and-office-supplies-flaticons-lineal-color-flat-icons-11" />
+                    <span class="text-xs mt-1">Budget</span>
+                </a>
                 {{-- <a href=""
                     class="py-1.5 px-2.5 inline-flex items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700">
                     <i class="bi bi-upc-scan"></i>

@@ -257,6 +257,40 @@
                 </div>
             </div>
 
+            <!-- Budget Request Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+                            <svg class="w-6 h-6 text-green-600 dark:text-green-300" fill="none" stroke="currentColor"
+                                class="bi bi-cash-coin" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8m5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0" />
+                                <path
+                                    d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195z" />
+                                <path
+                                    d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083q.088-.517.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1z" />
+                                <path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 6 6 0 0 1 3.13-1.567" />
+                            </svg>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900 px-2 py-1 rounded">Budget
+                            Request</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Budget Request Report</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate a report of all budget requests with
+                        filtering options.</p>
+                    <button onclick="openReportModal('budget-request')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -896,6 +930,96 @@
                 </form>
             `
             },
+            'budget-request': {
+                title: 'Budget Request Report',
+                description: 'Select parameters for budget request report',
+                form: `
+        <form id="reportForm" class="space-y-4 ml-1 mr-1">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Period</label>
+                    <select name="date_range" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                        <option value="this_month">This Month</option>
+                        <option value="last_month">Last Month</option>
+                        <option value="this_quarter">This Quarter</option>
+                        <option value="this_year">This Year</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Location</label>
+                    <select name="location" class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                        <option value="">All locations</option>
+                        @foreach ($locations ?? [] as $location)
+                            <option value="{{ $location->id }}">{{ $location->name }}</option>
+                        @endforeach
+                    </select>
+                </div>                
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Requested By</label>
+                    <select name="employee" id="employee" class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                        <option value="">All Employees</option>
+                        @foreach ($employees ?? [] as $employee)
+                            <option value="{{ $employee->id }}">{{ $employee->last_name }}, {{ $employee->first_name }} {{ $employee->middle_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Status</label>
+                    <select name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                        <option value="">All Statuses</option>
+                        <option value="0">Pending</option>
+                        <option value="1">Submitted</option>
+                        <option value="2">Approved</option>
+                        <option value="3">Rejected</option>
+                        <option value="4">Void</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Report Type</label>
+                    <select name="reptype" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                        <option value="summary">Summary</option>
+                        <option value="detailed">Detailed</option>                        
+                    </select>
+                </div>
+            </div>    
+
+            <div id="customDateRange" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">From Date</label>
+                    <input type="date" name="from_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">To Date</label>
+                    <input type="date" name="to_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                </div>
+            </div>
+
+            <!-- Add format selection like budget request report -->
+            <div class="flex items-center space-x-4 mt-4">
+                <div class="flex items-center">
+                    <input type="radio" id="budget_request_pdf" name="format" value="pdf" checked
+                        class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 focus:ring-gray-500">
+                    <label for="budget_request_pdf" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">PDF</label>
+                </div>                
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 mt-6 pt-4 border-t dark:border-gray-600">
+                <button type="button" onclick="closeReportModal()" 
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600">
+                    Cancel
+                </button>
+                <button type="submit" 
+                    class="px-4 py-2 text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 rounded-lg focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700">
+                    Generate Report
+                </button>
+            </div>
+        </form>
+    `
+            },
         };
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -941,7 +1065,7 @@
 
             // Add event listener for custom date range toggle if needed
             if (reportType === 'maintenance' || reportType === 'employee' || reportType === 'supplies-receiving' ||
-                reportType === 'supplies-issuance' || reportType === 'asset-summary') {
+                reportType === 'supplies-issuance' || reportType === 'asset-summary' || reportType === 'budget-request') {
                 const dateRangeSelect = document.querySelector('select[name="date_range"]');
                 if (dateRangeSelect) {
                     dateRangeSelect.addEventListener('change', function() {
@@ -1003,6 +1127,8 @@
                 case 'duty-detail-order':
                     url = `/reports/duty-detail-order?${queryString}`;
                     break;
+                case 'budget-request':
+                    url = `/reports/budget-request?${queryString}`;
             }
 
             // Open in new tab for PDF preview

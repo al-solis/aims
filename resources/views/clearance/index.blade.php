@@ -136,7 +136,7 @@
                         @foreach ($locations as $location)
                             <option value="{{ $location->id }}"
                                 {{ request('searchloc') == $location->id ? 'selected' : '' }}>
-                                {{ $location->description }}
+                                {{ $location->name }}
                             </option>
                         @endforeach
                     </select>
@@ -169,7 +169,7 @@
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Department</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Type</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Expected Date</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Status</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-left w-[120px]">Approver</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Current Approver</th>
                         <th scope="col" class="px-4 py-3 text-left w-[60px]">Assets</th>
@@ -201,7 +201,7 @@
                             </td>
                             <td class="px-4 py-3 w-[80px]">
                                 {{ Carbon::parse($clearanceHeader->expected_date)->format('Y-m-d') }}</td>
-                            <td class="px-4 py-3 w-[80px] text-xs font-semibold">
+                            <td class="px-4 py-3 w-[100px] text-xs font-semibold">
                                 @php
                                     $statuses = [
                                         0 => ['color' => 'bg-yellow-100 text-yellow-600', 'label' => 'Pending'],

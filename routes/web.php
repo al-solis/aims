@@ -32,6 +32,7 @@ use App\Http\Controllers\UploadedFileController;
 use App\Http\Controllers\DdoHeaderController;
 use App\Http\Controllers\ClearanceRoutingController;
 use App\Http\Controllers\TransmittalController;
+use App\Http\Controllers\BudgetController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -195,6 +196,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/supplies-receiving', [ReportController::class, 'suppliesReceivingReport'])->name('supplies.receiving');
         Route::get('/supplies-issuance', [ReportController::class, 'suppliesIssuanceReport'])->name('supplies.issuance');
         Route::get('/duty-detail-order', [ReportController::class, 'dutyDetailOrderReport'])->name('duty-detail-order');
+        Route::get('/budget-request', [ReportController::class, 'budgetRequestReport'])->name('budget.request');
     });
 
     Route::get('/transmittal', [TransmittalController::class, 'index'])->name('transmittal.index');
@@ -206,6 +208,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/transmittal/{id}/print', [TransmittalController::class, 'printTransmittal'])->name('asset.print-transmittal');
     Route::get('/get-transmittal-items/{transmittalId}', [TransmittalController::class, 'getTransmittalItems'])->name('transmittal.items');
     Route::put('/transmittal/{id}', [TransmittalController::class, 'update'])->name('transmittal.update');
+
+    Route::get('/budget', [BudgetController::class, 'index'])->name('budget.index');
+    Route::get('/budget/create', [BudgetController::class, 'create'])->name('budget.create');
+    Route::get('/budget/{id}', [BudgetController::class, 'show'])->name('budget.show');
+    Route::post('/budget/store', [BudgetController::class, 'store'])->name('budget.store');
+    Route::put('/budget/{id}', [BudgetController::class, 'update'])->name('budget.update');
+    Route::post('/budget/{id}/submit', [BudgetController::class, 'submitForApproval'])->name('budget.submit');
+    Route::post('/budget/{id}/approve', [BudgetController::class, 'approveRequest'])->name('budget.approve');
+    Route::post('/budget/{id}/reject', [BudgetController::class, 'rejectRequest'])->name('budget.reject');
+    Route::post('/budget/{id}/void', [BudgetController::class, 'voidBudget'])->name('budget.void');
+    Route::get('/budget/{id}/print', [BudgetController::class, 'printBudget'])->name('budget.print');
 });
 
 require __DIR__ . '/auth.php';

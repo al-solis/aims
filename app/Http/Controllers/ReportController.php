@@ -25,6 +25,9 @@ use App\Models\issuance_detail;
 use App\Models\ddo_header;
 use App\Models\ddo_detail;
 use App\Models\numseq;
+use App\Models\budget_header;
+use App\Models\budget_detail;
+use App\Models\User;
 
 class ReportController extends Controller
 {
@@ -1010,6 +1013,100 @@ class ReportController extends Controller
         )->setPaper('letter', $orientation);
 
         return $pdf->stream('supplies-issuance-report.pdf');
+    }
+
+    public function budgetRequestReport(Request $request)
+    {
+        // dd($request->all());
+        $pDateRange = $request->date_range ?? 'this_month';
+        $pFromDate = $request->from_date ?? '';
+        $pToDate = $request->to_date ?? '';
+        $pType = $request->reptype ?? 'summary';
+        $pStatus = $request->status ? 1 : null;
+        $pLocation = Location::find($request->location)->name ?? 'All Locations';
+        $pEmployee = Employee::find($request->employee)?->last_name . ', ' . Employee::find($request->employee)?->first_name . ' ' . Employee::find($request->employee)?->middle_name ?? 'All Employees';
+
+        $dateRangeLabels = [
+            'this_month' => Carbon::now()->format('F Y'),
+            'last_month' => Carbon::now()->subMonth()->format('F Y'),
+            'this_quarter' => Carbon::now()->startOfQuarter()->format('F Y') . ' - ' . Carbon::now()->endOfQuarter()->format('F Y'),
+            'this_year' => Carbon::now()->format('Y'),
+            'custom' => 'custom',
+        ];
+
+        // $orientation = $pType == 'summary' ? 'portrait' : 'landscape';
+        $orientation = 'portrait';
+        $query = budget_header::query()->with('budgetDetails', 'location', 'requester');
+
+        switch ($pDateRange) {
+            case 'this_month':
+                $query->whereMonth('requested_at', Carbon::now()->month)
+                    ->whereYear('requested_at', Carbon::now()->year);
+                break;
+
+            case 'last_month':
+                $query->whereMonth('requested_at', Carbon::now()->subMonth()->month)
+                    ->whereYear('requested_at', Carbon::now()->subMonth()->year);
+                break;
+
+            case 'this_quarter':
+                $query->whereBetween('requested_at', [
+                    Carbon::now()->startOfQuarter()->format('Y-m-d'),
+                    Carbon::now()->endOfQuarter()->format('Y-m-d')
+                ]);
+                break;
+
+            case 'this_year':
+                $query->whereYear('requested_at', Carbon::now()->year);
+                break;
+
+            case 'custom':
+                if ($pFromDate && $pToDate) {
+                    $query->whereBetween('requested_at', [$pFromDate, $pToDate]);
+                }
+                break;
+        }
+
+        if ($request->filled('location')) {
+            $query->where('location_id', $request->location);
+        }
+
+        if ($request->filled('employee')) {
+            $empCode = Employee::find($request->employee)->employee_code ?? null;
+            $user = User::where('employee_code', $empCode)->first();
+            $query->where('requested_by', $user->id);
+        }
+
+        if ($pStatus !== null) {
+            $query->where('status', $request->status);
+        }
+
+        $status = [
+            0 => 'Pending',
+            1 => 'Submitted',
+            2 => 'Approved',
+            3 => 'Rejected',
+            4 => 'Voided',
+        ];
+
+        $pStatus = $status[$request->status] ?? 'All Statuses';
+        $requests = $query->orderBy('requested_at', 'desc')->get();
+        // Generate PDF
+        $pDateRange = $dateRangeLabels[$pDateRange] ?? 'Custom Range';
+        $pdf = Pdf::loadView(
+            'reports.budget-request-' . strtolower($pType),
+            compact(
+                'requests',
+                'pDateRange',
+                'pFromDate',
+                'pToDate',
+                'pLocation',
+                'pEmployee',
+                'pType',
+                'pStatus'
+            )
+        )->setPaper('letter', $orientation);
+        return $pdf->stream('budget-request-report.pdf');
     }
 
     public function maintenanceReport(Request $request)
