@@ -154,8 +154,8 @@
                 <tr>
                     <th>Asset</th>
                     <th class="text-right">Qty</th>
-                    <th class="text-right">Purchase Cost</th>
-                    <th class="text-right">Actual Cost</th>
+                    <th class="text-right">Purchase Price</th>
+                    <th class="text-right">Actual Price</th>
                     <th class="text-right">Total</th>
                     <th>Status</th>
                 </tr>

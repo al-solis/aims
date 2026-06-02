@@ -183,11 +183,32 @@
                     </div>
                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Clearance Routing</h3>
                     <p class="text-gray-500 dark:text-gray-400 mb-4">
-                        Setup and manage clearance routing.
+                        Setup and manage clearance approval route.
                     </p>
                     <a href="{{ route('clearance-routing.index') }}"
                         class="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition">
                         Open Clearance Routing
+                    </a>
+                </div>
+            </div>
+
+            {{-- Budget Request Routing --}}
+            <div
+                class="p-3 hover:bg-orange-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">
+                <div class="flex flex-col items-center text-center">
+                    <div class="p-3 bg-orange-100 dark:bg-orange-900 rounded-full mb-4">
+                        {{-- <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-orange-600 dark:text-orange-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                        </svg> --}}
+                        <i class="bi bi-card-checklist text-orange-600 dark:text-orange-300 text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Budget Request Routing</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        Setup and manage budget request approval route.
+                    </p>
+                    <a href="{{ route('budget-routing.index') }}"
+                        class="px-4 py-2 rounded-lg text-xs bg-gray-900 text-white hover:bg-gray-700 transition">
+                        Open Budget Request Routing
                     </a>
                 </div>
             </div>

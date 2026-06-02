@@ -174,12 +174,27 @@
 
                     {{-- HEADER ROW (GROUP HEADER) --}}
                     <tr style="background:#f2f2f2; font-weight:bold;">
+                        @php
+                            $statusText = 'Pending';
+
+                            if ($request->status == 4) {
+                                $statusText = 'Voided';
+                            } elseif ($request->latestApproval) {
+                                if ($request->latestApproval->approved == 1) {
+                                    $statusText = 'Approved';
+                                } elseif ($request->latestApproval->approved == 0) {
+                                    $statusText = 'Disapproved';
+                                }
+                            } elseif ($request->status == 1) {
+                                $statusText = 'Submitted';
+                            }
+                        @endphp
                         <td colspan="6">
                             APV: {{ $request->apv_no }} |
                             Date: {{ Carbon::parse($request->requested_at)->format('Y-m-d') }} |
                             Location: {{ $request->location->name ?? '' }} |
                             Requested By: {{ trim($request->requester->lname . ', ' . $request->requester->fname) }} |
-                            Status: {{ $statuses[$request->status] ?? 'Unknown' }}
+                            Status: {{ $statusText }}
                         </td>
                     </tr>
 

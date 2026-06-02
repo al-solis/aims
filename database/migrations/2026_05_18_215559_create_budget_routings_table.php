@@ -10,16 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('clearance_approvals', function (Blueprint $table) {
+        Schema::create('budget_routings', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('clearance_id');
-            $table->foreign('clearance_id')->references('id')->on('clearance_headers');
             $table->unsignedBigInteger('location_id');
             $table->foreign('location_id')->references('id')->on('locations');
-            $table->unsignedBigInteger('approver_id');
-            $table->foreign('approver_id')->references('id')->on('users');
-            $table->integer('approved')->default(0); // 0 = rejected, 1 = approved
-            $table->text('remarks')->nullable();
+            $table->integer('order');
+            $table->unsignedBigInteger('created_by');
+            $table->foreign('created_by')->references('id')->on('users');
             $table->timestamps();
         });
     }
@@ -29,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('clearance_approvals');
+        Schema::dropIfExists('budget_routings');
     }
 };

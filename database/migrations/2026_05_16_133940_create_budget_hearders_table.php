@@ -24,7 +24,10 @@ return new class extends Migration {
             $table->text('purpose');
             $table->text('remarks')->nullable();
             $table->decimal('total_amount', 15, 2);
-            $table->integer('status')->default(0); // 0 = pending, 1 = submitted, 2 = approved, 3 = rejected, 4 = cancelled
+            $table->integer('status')->default(0); //0=Pending, 1=In-Progress, 2=Completed, 3=Overdue, 4=Cancelled
+            $table->integer('approval_status')->default(0); //0=Pending, 1=Approved, 2=Rejected
+            $table->integer('approval_level')->default(0); //0=No Approver, 1=Level 1, 2=Level 2, etc.
+            $table->integer('current_approver')->default(0); //0=No Approver, Department ID of current approver
             $table->unsignedBigInteger('approver_id')->nullable();
             $table->foreign('approver_id')->references('id')->on('users');
             $table->text('approver_remarks')->nullable();

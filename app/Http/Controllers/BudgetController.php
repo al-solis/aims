@@ -1,5 +1,9 @@
 <?php
 namespace App\Http\Controllers;
+use App\Models\budget_approval;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\budget_header;
 use App\Models\budget_detail;
 use Illuminate\Http\Request;
@@ -7,20 +11,68 @@ use App\Models\Employee;
 use App\Models\location;
 use App\Models\uom;
 use App\Models\numseq;
-use Illuminate\Support\Facades\Auth;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\budget_routing;
+
 class BudgetController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        $searchLocation = $request->input('searchloc');
+        $searchStatus = $request->input('status');
+
         $totalRequests = budget_header::count();
         $pendingRequests = budget_header::where('status', 0)->count();
         $overdueRequests = budget_header::where('status', 1)->where('requested_at', '<', now()->subDays(7))->count();
         $completedRequests = budget_header::where('status', 2)->count();
         $locations = location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get();
         // $employees = Employee::where('status', 1)->orderByRaw('RTRIM(LTRIM(last_name))) ASC')->get();
-        $budgets = budget_header::with('budgetDetails')->paginate(config('app.paginate'));
-        return view('budget.index', compact('budgets', 'totalRequests', 'pendingRequests', 'overdueRequests', 'completedRequests', 'locations'));
+
+        $query = budget_header::with('location', 'requester');
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('apv_no', 'like', '%' . $search . '%')
+                    ->orWhere('purpose', 'like', '%' . $search . '%')
+                    ->orWhere('remarks', 'like', '%' . $search . '%');
+            });
+        }
+        if ($searchLocation) {
+            $query->where('location_id', $searchLocation);
+        }
+        if ($searchStatus !== null) {
+            if (in_array($searchStatus, ['0', '1', '2', '3', '4'])) {
+                $query->where('status', $searchStatus);
+            } else {
+                $query->whereHas('latestApproval', function ($q) use ($searchStatus) {
+                    if ($searchStatus === '5') {
+                        $q->where('approved', 1);
+                    } elseif ($searchStatus === '6') {
+                        $q->where('approved', 0);
+                    }
+                });
+            }
+        }
+
+        $budgets = $query->with('budgetDetails')->paginate(config('app.paginate'));
+
+        $userLocation = DB::table('users as u')
+            ->leftJoin('employees as e', 'u.employee_code', '=', 'e.employee_code')
+            ->select('u.id', 'e.location_id')
+            ->where('u.id', Auth::id())
+            ->first();
+
+        return view(
+            'budget.index',
+            compact(
+                'budgets',
+                'totalRequests',
+                'pendingRequests',
+                'overdueRequests',
+                'completedRequests',
+                'locations',
+                'userLocation'
+            )
+        );
     }
 
     public function show($id)
@@ -129,16 +181,20 @@ class BudgetController extends Controller
 
     public function submitForApproval(Request $request, $id)
     {
+        $approvalLevel = budget_routing::orderBy('order')->first();
         $budget = budget_header::findOrFail($id);
 
         if ($budget->status != 0) {
-            return redirect()
-                ->route('budget.index')
-                ->with('error', 'Only pending budgets can be submitted for approval.');
+            return response()->json(['message' => 'Only pending budgets can be submitted for approval.']);
         }
 
+        if (!$approvalLevel) {
+            return response()->json(['message' => 'No approval routing defined. Please contact administrator.']);
+        }
         $budget->update([
-            'status' => 1,
+            'status' => 1, // set status to in-progress
+            'approval_level' => $approvalLevel->order,
+            'current_approver' => $approvalLevel->location_id,
             'submitted_at' => now(),
         ]);
 
@@ -148,38 +204,73 @@ class BudgetController extends Controller
     public function approveRequest(Request $request, $id)
     {
         $budget = budget_header::findOrFail($id);
+        $approvalLevel = budget_routing::where('order', $budget->approval_level)->first();
 
         if ($budget->status != 1) {
-            return redirect()
-                ->route('budget.index')
-                ->with('error', 'Only budgets pending approval can be approved.');
+            return response()->json(['message' => 'Only budgets pending approval can be approved.']);
         }
 
-        $budget->update([
-            'status' => 2,
-            'approver_id' => Auth::id(),
-            'approver_remarks' => $request->remarks,
-            'approved_at' => now(),
-        ]);
+        if ($approvalLevel) {
+            budget_approval::create([
+                'budget_id' => $budget->id,
+                'location_id' => $approvalLevel->location_id,
+                'approver_id' => Auth::id(),
+                'approved' => 1,
+                'remarks' => $request->remarks,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
-        return response()->json(['message' => 'Budget request approved.']);
+            $nextLevel = budget_routing::where('order', $approvalLevel->order + 1)->first();
+
+            if ($nextLevel) {
+                // Move to next approval level
+                $budget->update([
+                    'approval_level' => $nextLevel->order,
+                    'current_approver' => $nextLevel->location_id,
+                ]);
+
+                return response()->json(['message' => 'Budget request approved and moved to next approver.']);
+            } else {
+                // Final approval
+                $budget->update([
+                    'status' => 2, // completed
+                    'current_approver' => 0,
+                    'approval_status' => 1,
+                    'approved_at' => now(),
+                ]);
+
+                return response()->json(['message' => 'Budget request approved.']);
+            }
+        } else {
+            return response()->json(['message' => 'No approval routing defined. Please contact administrator.']);
+        }
     }
 
     public function rejectRequest(Request $request, $id)
     {
         $budget = budget_header::findOrFail($id);
+        $approvalLevel = budget_routing::where('order', $budget->approval_level)->first();
 
         if ($budget->status != 1) {
-            return redirect()
-                ->route('budget.index')
-                ->with('error', 'Only budgets pending approval can be rejected.');
+            return response()->json(['message' => 'Only budgets pending approval can be rejected.']);
         }
 
-        $budget->update([
-            'status' => 3,
+        budget_approval::create([
+            'budget_id' => $budget->id,
+            'location_id' => $approvalLevel->location_id,
             'approver_id' => Auth::id(),
-            'approver_remarks' => $request->remarks,
-            'rejected_at' => now(),
+            'approved' => 0,
+            'remarks' => $request->remarks,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $budget->update([
+            'status' => 2, // completed
+            'approval_level' => 0,
+            'current_approver' => 0,
+            'updated_at' => now(),
         ]);
 
         return response()->json(['message' => 'Budget request rejected.']);
@@ -190,9 +281,7 @@ class BudgetController extends Controller
         $budget = budget_header::findOrFail($id);
 
         if (!in_array($budget->status, [0, 1]) || Auth::id() != $budget->requested_by) {
-            return redirect()
-                ->route('budget.index')
-                ->with('error', 'Only pending or submitted budgets can be voided by the requester.');
+            return response()->json(['message' => 'Only pending or submitted budgets can be voided by the requester.']);
         }
 
         $budget->update([
@@ -210,5 +299,34 @@ class BudgetController extends Controller
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream('Budget-' . $budget->id . '.pdf');
+    }
+
+    public function getApprovalHistory($id)
+    {
+        $budget = budget_header::findOrFail($id);
+
+        $history = $budget->approvalHistory()
+            ->with('approver')
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->map(function ($item) {
+
+                $actions = [
+                    1 => 'Approved',
+                    0 => 'Rejected',
+                ];
+
+                return [
+                    'location' => $item->location->name ?? '',
+                    'approver' => $item->approver->lname . ', ' . $item->approver->fname,
+                    'action' => $actions[$item->approved] ?? 'Unknown',
+                    'date' => $item->created_at->format('Y-m-d h:i A'),
+                    'remarks' => $item->remarks,
+                ];
+            });
+
+        return response()->json([
+            'history' => $history
+        ]);
     }
 }

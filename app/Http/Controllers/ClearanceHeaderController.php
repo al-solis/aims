@@ -24,7 +24,11 @@ class ClearanceHeaderController extends Controller
         $status = $request->input('status');
         $searchloc = $request->input('searchloc');
 
-        $employees = employee::where('status', '1')->get();
+        $employees = employee::where('status', '1')
+            ->orderByRaw('LTRIM(RTRIM(last_name)) ASC')
+            ->orderByRaw('LTRIM(RTRIM(first_name)) ASC')
+            ->orderByRaw('LTRIM(RTRIM(middle_name)) ASC')
+            ->get();
         $locations = Location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get();
 
         $userLocation = DB::table('users as u')
@@ -143,30 +147,39 @@ class ClearanceHeaderController extends Controller
         $statuses = $request->status;
         $totals = $request->total;
 
+        $getStatus = clearance_header::where('id', $id)->first();
 
-        if ($detailIds || $actuals || $statuses || $totals) {
+        if ($getStatus->status == 0) {
+            clearance_header::where('id', $id)->update([
+                'type' => $request->type,
+                'expected_date' => $request->expected_date,
+                'remarks' => $request->remarks,
+                'updated_by' => Auth::id(),
+                'updated_at' => now(),
+            ]);
+        } else {
+            if ($detailIds || $actuals || $statuses || $totals) {
 
-            foreach ($detailIds as $index => $detailId) {
+                foreach ($detailIds as $index => $detailId) {
 
-                clearance_detail::where('id', $detailId)->update([
-                    'actual_cost' => $actuals[$index],
-                    'status' => $statuses[$index],
-                    'total' => $totals[$index],
-                    'updated_by' => Auth::id(),
-                    'updated_at' => now(),
-                ]);
+                    clearance_detail::where('id', $detailId)->update([
+                        'actual_cost' => $actuals[$index],
+                        'status' => $statuses[$index],
+                        'total' => $totals[$index],
+                        'updated_by' => Auth::id(),
+                        'updated_at' => now(),
+                    ]);
+                }
             }
+            clearance_header::where('id', $id)->update([
+                'status' => 1,
+                'type' => $request->type,
+                'expected_date' => $request->expected_date,
+                'remarks' => $request->remarks,
+                'updated_by' => Auth::id(),
+                'updated_at' => now(),
+            ]);
         }
-
-        clearance_header::where('id', $id)->update([
-            'status' => 1,
-            'type' => $request->type,
-            'expected_date' => $request->expected_date,
-            'remarks' => $request->remarks,
-            'updated_by' => Auth::id(),
-            'updated_at' => now(),
-        ]);
-
         return redirect(route('clearance.index'))->with('success', 'Clearance details updated successfully.');
     }
 

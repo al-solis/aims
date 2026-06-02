@@ -482,8 +482,7 @@
 
                             <div class="sm:col-span-1">
                                 <label for="cost"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Asset
-                                    Cost*</label>
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Purchase Price*</label>
                                 <input type="number" name="cost" id="cost"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. 0.00" required>
@@ -673,8 +672,7 @@
 
                             <div class="sm:col-span-1">
                                 <label for="edit_cost"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Asset
-                                    Cost*</label>
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Purchase Price*</label>
                                 <input type="number" name="edit_cost" id="edit_cost"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. 0.00" required>

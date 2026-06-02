@@ -566,7 +566,7 @@
         <form id="reportForm" class="space-y-4 ml-1 mr-1">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="sm:col-span-2">
-                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Employee Status</label>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Report Type</label>
                     <select name="report_type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
                         <option value="1">Default</option>
                         <option value="2">Monthly Disposition Report</option>                        
@@ -584,7 +584,7 @@
                 </div>
                 
                 <div class="sm:col-span-1">
-                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Employee Status</label>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Status</label>
                     <select name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
                         <option value="">All Statuses</option>
                         <option value="0">Inactive</option>

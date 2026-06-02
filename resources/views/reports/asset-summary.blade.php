@@ -169,7 +169,7 @@
                     <th>Assigned To</th>
                     <th>Status</th>
                     <th>Purchase Date</th>
-                    <th>Cost</th>
+                    <th>Purchase Price</th>
                 </tr>
             </thead>
             <tbody>

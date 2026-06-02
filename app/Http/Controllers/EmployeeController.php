@@ -91,7 +91,7 @@ class EmployeeController extends Controller
     {
         return view('employee.create', [
             'employee' => null,
-            'locations' => Location::all(),
+            'locations' => Location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get(),
         ]);
     }
 
@@ -99,7 +99,7 @@ class EmployeeController extends Controller
     {
         return view('employee.create', [
             'employee' => $employee,
-            'locations' => Location::all(),
+            'locations' => Location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get(),
             'idTypes' => IdType::where('is_active', 1)->get(),
             'employeeIds' => EmployeeId::where('employee_id', $employee->id)->get(),
         ]);

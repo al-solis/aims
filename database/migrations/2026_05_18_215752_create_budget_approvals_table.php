@@ -10,10 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('clearance_approvals', function (Blueprint $table) {
+        Schema::create('budget_approvals', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('clearance_id');
-            $table->foreign('clearance_id')->references('id')->on('clearance_headers');
+            $table->unsignedBigInteger('budget_id');
+            $table->foreign('budget_id')->references('id')->on('budget_headers');
             $table->unsignedBigInteger('location_id');
             $table->foreign('location_id')->references('id')->on('locations');
             $table->unsignedBigInteger('approver_id');
@@ -29,6 +29,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('clearance_approvals');
+        Schema::dropIfExists('budget_approvals');
     }
 };

@@ -251,7 +251,7 @@
         <!-- ROW 1 -->
         <tr>
             <td colspan="2">NO. OF CLIENTS</td>
-            <td colspan="5">121</td>
+            <td colspan="5">{{ $noOfClients }}</td>
         </tr>
 
         <!-- ROW 2 -->
@@ -259,9 +259,9 @@
             <td colspan="2">NO. OF SECURITY GUARDS</td>
             <td></td>
             <td>MALE</td>
-            <td>517</td>
+            <td>{{ $noOfGuards->where('gender', '1')->count() }}</td>
             <td>LADY GUARD</td>
-            <td>69</td>
+            <td>{{ $noOfGuards->where('gender', '2')->count() }}</td>
         </tr>
 
         <!-- ROW 3 -->
@@ -269,9 +269,9 @@
             <td colspan="2">NO. OF SECURITY OFFICER</td>
             <td></td>
             <td></td>
-            <td>43</td>
+            <td>{{ $noOfSecurityOfficers->where('gender', '1')->count() }}</td>
             <td></td>
-            <td>1</td>
+            <td>{{ $noOfSecurityOfficers->where('gender', '2')->count() }}</td>
         </tr>
 
         <!-- ROW 4 -->
@@ -279,35 +279,35 @@
             <td colspan="2">NO. OF PRIVATE DETECTIVE</td>
             <td></td>
             <td></td>
+            <td>{{ $noOfPrivateDetectives->where('gender', '1')->count() }}</td>
             <td></td>
-            <td></td>
-            <td></td>
+            <td>{{ $noOfPrivateDetectives->where('gender', '2')->count() }}</td>
         </tr>
 
         <!-- ROW 5 -->
         <tr>
             <td colspan="2">NO. OF SECURITY CONSULTANT</td>
-            <td colspan="5">1</td>
+            <td colspan="5">{{ $noOfSecurityConsultants }}</td>
         </tr>
 
         <!-- ROW 6 -->
         <tr>
             <td colspan="2">NO. OF SPECIAL PROTECTION AGENT</td>
-            <td colspan="5"></td>
+            <td colspan="5">{{ $noOfSPAs }}</td>
         </tr>
 
         <!-- ROW 7 -->
         <tr>
             <td colspan="2">NO. OF TRAINING DIRECTOR</td>
-            <td>1</td>
+            <td>{{ $noOfTrainingDirectors }}</td>
             <td colspan="2">NO. OF TRAINING OFFICER</td>
-            <td colspan="2">1</td>
+            <td colspan="2">{{ $noOfTrainingOfficers }}</td>
         </tr>
 
         <!-- TOTAL -->
         <tr>
             <td colspan="2"><strong>TOTAL</strong></td>
-            <td colspan="5">630</td>
+            <td colspan="5">{{ $totalSecEmployees }}</td>
         </tr>
     </table>
 
@@ -344,20 +344,86 @@
         <tbody>
             <tr>
                 <td>ISSUED TO SG/DEPLOYED</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+
+                {{-- LONG FIREARMS --}}
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => $item->status == 2 && str_contains(strtolower($item->caliber), '45'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => $item->status == 2 && str_contains(strtolower($item->caliber), 'm16'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => $item->status == 2 && str_contains(strtolower($item->caliber), '357'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => $item->status == 2 && str_contains(strtolower($item->caliber), 'ak47'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => $item->status == 2 && str_contains(strtolower($item->caliber), '44'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => $item->status == 2 && str_contains(strtolower($item->caliber), 'ect'))->count() }}
+                </td>
+
+                {{-- TOTAL LONG --}}
+                <td>
+                    {{ $noOfFirearms->filter(function ($item) {
+                            $caliber = strtolower($item->caliber);
+                    
+                            return $item->status == 2 &&
+                                (str_contains($caliber, '45') ||
+                                    str_contains($caliber, 'm16') ||
+                                    str_contains($caliber, '357') ||
+                                    str_contains($caliber, 'ak47') ||
+                                    str_contains($caliber, '44') ||
+                                    str_contains($caliber, 'ect'));
+                        })->count() }}
+                </td>
+
+                {{-- SHORT FIREARMS --}}
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => $item->status == 2 && str_contains(strtolower($item->caliber), '9mm'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => $item->status == 2 && str_contains(strtolower($item->caliber), '38'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => $item->status == 2 && str_contains(strtolower($item->caliber), '380'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => $item->status == 2 && str_contains(strtolower($item->caliber), '32'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => $item->status == 2 && str_contains(strtolower($item->caliber), '12ga'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => $item->status == 2 && str_contains(strtolower($item->caliber), '22'))->count() }}
+                </td>
+
+                {{-- TOTAL SHORT --}}
+                <td>
+                    {{ $noOfFirearms->filter(function ($item) {
+                            $caliber = strtolower($item->caliber);
+                    
+                            return $item->status == 2 &&
+                                (str_contains($caliber, '9mm') ||
+                                    str_contains($caliber, '38') ||
+                                    str_contains($caliber, '380') ||
+                                    str_contains($caliber, '32') ||
+                                    str_contains($caliber, '12ga') ||
+                                    str_contains($caliber, '22'));
+                        })->count() }}
+                </td>
             </tr>
             <tr>
                 <td>NO. FA'S IN VAULT FOR SAFEKEEPING</td>
@@ -395,21 +461,85 @@
             </tr>
             <tr>
                 <td><strong>GRAND TOTAL</strong></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
+                {{-- LONG FIREARMS --}}
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '45'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), 'm16'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '357'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), 'ak47'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '44'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), 'ect'))->count() }}
+                </td>
+
+                {{-- TOTAL LONG --}}
+                <td>
+                    {{ $noOfFirearms->filter(function ($item) {
+                            $caliber = strtolower($item->caliber);
+                    
+                            return in_array($item->status, [1, 2, 3, 8]) &&
+                                (str_contains($caliber, '45') ||
+                                    str_contains($caliber, 'm16') ||
+                                    str_contains($caliber, '357') ||
+                                    str_contains($caliber, 'ak47') ||
+                                    str_contains($caliber, '44') ||
+                                    str_contains($caliber, 'ect'));
+                        })->count() }}
+                </td>
+
+                {{-- SHORT FIREARMS --}}
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '9mm'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '38'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '380'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '32'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '12ga'))->count() }}
+                </td>
+
+                <td>
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '22'))->count() }}
+                </td>
+
+                {{-- TOTAL SHORT --}}
+                <td>
+                    {{ $noOfFirearms->filter(function ($item) {
+                            $caliber = strtolower($item->caliber);
+                    
+                            return in_array($item->status, [1, 2, 3, 8]) &&
+                                (str_contains($caliber, '9mm') ||
+                                    str_contains($caliber, '38') ||
+                                    str_contains($caliber, '380') ||
+                                    str_contains($caliber, '32') ||
+                                    str_contains($caliber, '12ga') ||
+                                    str_contains($caliber, '22'));
+                        })->count() }}
+                </td>
         </tbody>
     </table>
 

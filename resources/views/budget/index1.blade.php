@@ -148,11 +148,9 @@
                         <option value="">All Status</option>
                         <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Pending</option>
                         <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Submitted</option>
-                        <option value="2" {{ request('status') === '2' ? 'selected' : '' }}>Completed</option>
-                        <option value="3" {{ request('status') === '3' ? 'selected' : '' }}>Overdue</option>
+                        <option value="2" {{ request('status') === '2' ? 'selected' : '' }}>Approved</option>
+                        <option value="3" {{ request('status') === '3' ? 'selected' : '' }}>Rejected</option>
                         <option value="4" {{ request('status') === '4' ? 'selected' : '' }}>Cancelled</option>
-                        <option value="5" {{ request('status') === '5' ? 'selected' : '' }}>Approved</option>
-                        <option value="6" {{ request('status') === '6' ? 'selected' : '' }}>Rejected</option>
                     </select>
                 </div>
             </div>
@@ -170,10 +168,10 @@
                         <th scope="col" class="px-4 py-3 text-left w-[180px]">Description</th>
                         <th scope="col" class="px-4 py-3 text-left w-[200px]">Location</th>
                         <th scope="col" class="px-4 py-3 text-left w-[120px]">Requested By</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[120px]">Approved By</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Approver Remarks</th>
                         <th scope="col" class="px-4 py-3 text-left w-[120px]">Amount</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[120px]">Status</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[130px]">Approver</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Current Approver</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
                 </thead>
@@ -190,6 +188,12 @@
                             <td class="px-4 py-3 w-[120px]">
                                 {{ $budget->requester ? $budget->requester->lname . ', ' . $budget->requester->fname . ' ' . $budget->requester->mname : '' }}
                             </td>
+                            <td class="px-4 py-3 w-[180px]">
+                                {{ $budget->approver ? $budget->approver->lname . ', ' . $budget->approver->fname . ' ' . $budget->approver->mname : '' }}
+                            </td>
+                            <td class="px-4 py-3 w-[150px]">
+                                {{ $budget->approver_remarks ? $budget->approver_remarks : '' }}
+                            </td>
                             <td class="px-4 py-3 w-[120px]">
                                 {{ number_format($budget->total_amount, 2) }}</td>
                             {{-- <td class="px-4 py-3 w-[100px]">
@@ -204,14 +208,15 @@
                                 @endphp
                                 {{ $statusLabels[$budget->status] ?? 'Unknown' }}
                             </td> --}}
-                            <td class="px-4 py-3 w-[120px] text-xs font-semibold">
+                            <td class="px-4 py-3 w-[80px] text-xs font-semibold">
                                 @php
                                     $statuses = [
                                         0 => ['color' => 'bg-yellow-100 text-yellow-600', 'label' => 'Pending'],
-                                        1 => ['color' => 'bg-blue-100 text-blue-700', 'label' => 'In-progress'],
-                                        2 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Completed'],
-                                        3 => ['color' => 'bg-red-100 text-red-700', 'label' => 'Overdue'],
+                                        1 => ['color' => 'bg-blue-100 text-blue-700', 'label' => 'Submitted'],
+                                        2 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Approved'],
+                                        3 => ['color' => 'bg-red-100 text-red-700', 'label' => 'Rejected'],
                                         4 => ['color' => 'bg-gray-100 text-gray-600', 'label' => 'Cancelled'],
+                                        5 => ['color' => 'bg-yellow-100 text-yellow-700', 'label' => 'Overdue'],
                                     ];
                                     $status = $statuses[$budget->status] ?? [
                                         'color' => 'bg-gray-100 text-gray-600',
@@ -221,32 +226,13 @@
 
                                 @if ($budget->submitted_at?->copy()->addDays(7) < now() && $budget->status == 1)
                                     @php
-                                        $status = $statuses[3]; // Overdue
+                                        $status = $statuses[5]; // Overdue
                                     @endphp
                                 @endif
 
                                 <span class="px-2 py-1 text-xs rounded-full {{ $status['color'] }}">
                                     {{ $status['label'] }}
                                 </span>
-                            </td>
-
-                            <td class="px-4 py-3 text-left w-[130px]">
-                                @if ($budget->status == '0')
-                                    <span
-                                        class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-600">Not
-                                        Submitted</span>
-                                @endif
-                                @if ($budget->status == '2' && $budget->approvalHistory->last()->approved == '0')
-                                    <span
-                                        class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-600">Rejected</span>
-                                @elseif ($budget->status == '2' && $budget->approvalHistory->last()->approved == '1')
-                                    <span
-                                        class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-600">Approved</span>
-                                @endif
-
-                            </td>
-                            <td class="px-4 py-3 w-[150px]">
-                                {{ $budget->budgetApprover ? $budget->budgetApprover->name : '' }}
                             </td>
 
                             {{-- <td class="px-4 py-3 text-left w-[120px]">
@@ -289,18 +275,6 @@
                                         </svg>
                                     </a>
 
-                                    <button type="button" title="View approval history : {{ $budget->apv_no }}"
-                                        data-modal-target="view-approval-modal" data-modal-toggle="view-approval-modal"
-                                        data-id="{{ $budget->id }}" data-apv_no="{{ $budget->apv_no }}"
-                                        data-description="{{ $budget->purpose }}" onclick="openApprovalModal(this)"
-                                        class="group flex space-x-1 text-gray-500 hover:text-indigo-600 transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-diagram-3-fill" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd"
-                                                d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5zm-6 8A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5zm6 0A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5zm6 0a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5z" />
-                                        </svg>
-                                    </button>
-
                                     <button type="button" @if (Auth::user()->role == 2 || $budget->status != 0 || Auth::user()->id != $budget->requested_by) disabled @endif
                                         title="Submit for approval : {{ $budget->apv_no }}"
                                         class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors {{ Auth::user()->role == 2 || $budget->status != 0 || Auth::user()->id != $budget->requested_by ? ' cursor-not-allowed' : '' }}"
@@ -315,8 +289,8 @@
                                     </button>
 
                                     <button type="button" title="Approve request : {{ $budget->apv_no }}"
-                                        @if ($budget->status != 1 || Auth::user()->getDepartmentAttribute() != $budget->current_approver) disabled @endif
-                                        class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors {{ $budget->status != 1 || Auth::user()->getDepartmentAttribute() != $budget->current_approver ? ' cursor-not-allowed' : '' }}"
+                                        @if ($budget->status != 1 || Auth::user()->getDepartmentAttribute() != 20086) disabled @endif
+                                        class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors {{ $budget->status != 1 || Auth::user()->getDepartmentAttribute() != 20086 ? ' cursor-not-allowed' : '' }}"
                                         onclick="approveRequest({{ $budget->id }}, '{{ $budget->apv_no }}')">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
@@ -328,8 +302,8 @@
                                     </button>
 
                                     <button type="button" title="Reject request : {{ $budget->apv_no }}"
-                                        @if ($budget->status != 1 || Auth::user()->getDepartmentAttribute() != $budget->current_approver) disabled @endif
-                                        class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors {{ $budget->status != 1 || Auth::user()->getDepartmentAttribute() != $budget->current_approver ? ' cursor-not-allowed' : '' }}"
+                                        @if ($budget->status != 1 || Auth::user()->getDepartmentAttribute() != 20086) disabled @endif
+                                        class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors {{ $budget->status != 1 || Auth::user()->getDepartmentAttribute() != 20086 ? ' cursor-not-allowed' : '' }}"
                                         onclick="rejectRequest({{ $budget->id }}, '{{ $budget->apv_no }}' )">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
@@ -369,64 +343,6 @@
             {{ $budgets->links() }}
         </div>
     </div>
-
-    <!-- View approval modal -->
-    <div id="view-approval-modal" tabindex="-1" aria-hidden="true"
-        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
-        <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
-            <!-- Modal content -->
-            <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
-                <!-- Modal header -->
-                <div class="flex justify-between items-center pb-4 mb-2 rounded-t border-b sm:mb-5 dark:border-gray-600">
-                    <h3 class="text-md font-semibold text-gray-900 dark:text-white">
-                        Approval History
-                    </h3>
-                    <button type="button"
-                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                        data-modal-toggle="view-approval-modal">
-                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="sr-only">Close modal</span>
-                    </button>
-                </div>
-                <!-- Modal body -->
-                <div class="overflow-y-auto max-h-[70vh]">
-                    <form action="" method="put">
-                        @csrf
-                        <input type="hidden" name="budget_id" id="budget_id">
-                        <div name="apv_no" id="apv_no" class="mb-2 text-md font-semibold"></div>
-                        <div name="description" id="description" class="mb-2 text-md font-semibold"></div>
-                        <div class="overflow-y-auto max-h-[70vh]">
-                            <table class="min-w-full text-xs border rounded-xl">
-                                <thead class="bg-gray-200">
-                                    <tr>
-                                        <th class="px-2 py-2 text-left">Location</th>
-                                        <th class="px-2 py-2 text-left">Approver</th>
-                                        <th class="px-2 py-2 text-left">Action</th>
-                                        <th class="px-2 py-2 text-left">Date</th>
-                                        <th class="px-2 py-2 text-left">Remarks</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="approvalTableBody">
-                                    <tr>
-                                        <td colspan="5" class="text-center py-4 text-gray-500">
-                                            Loading...
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- End view approval modal -->
 
     <script>
         $(document).ready(function() {
@@ -558,74 +474,6 @@
 
             const form = document.getElementById('editForm');
             // form.action = `license/${id}`;
-        }
-
-        function openApprovalModal(button) {
-            const id = button.getAttribute('data-id');
-            const apv_no = button.getAttribute('data-apv_no');
-            const description = button.getAttribute('data-description');
-
-            document.getElementById('budget_id').value = id;
-            document.getElementById('apv_no').textContent = `Request No: ${apv_no}`;
-            document.getElementById('description').textContent = `Description: ${description}`;
-
-            // Fetch approval history via AJAX
-            $.ajax({
-                url: `/budget/${id}/approval-history`,
-                method: 'GET',
-                success: function(response) {
-                    const tbody = document.getElementById('approvalTableBody');
-                    tbody.innerHTML = '';
-
-                    if (response.history.length === 0) {
-                        tbody.innerHTML = `
-                            <tr>
-                                <td colspan="5" class="text-center py-4 text-gray-500">
-                                    No approval history found.
-                                </td>
-                            </tr>
-                        `;
-                    } else {
-                        response.history.forEach(record => {
-                            const actionBadge =
-                                record.action === 'Rejected' ?
-                                `
-                                    <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded">
-                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 16 16">
-                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 1 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 1 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-                                        </svg>
-                                        Rejected
-                                    </span>
-                                ` :
-                                record.action === 'Approved' ?
-                                `
-                                    <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded">
-                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 16 16">
-                                            <path d="M13.78 4.22a.75.75 0 0 0-1.06 0L6.5 10.44l-2.72-2.72a.75.75 0 1 0-1.06 1.06l3.25 3.25a.75.75 0 0 0 1.06 0l7.25-7.25a.75.75 0 0 0 0-1.06z" />
-                                        </svg>
-                                        Approved
-                                    </span>
-                                ` :
-                                'N/A';
-
-                            const row = `
-                                <tr>
-                                    <td class="px-2 py-2">${record.location}</td>
-                                    <td class="px-2 py-2">${record.approver}</td>
-                                    <td class="px-2 py-2">${actionBadge}</td>
-                                    <td class="px-2 py-2">${record.date}</td>
-                                    <td class="px-2 py-2">${record.remarks || ''}</td>
-                                </tr>
-                            `;
-                            tbody.insertAdjacentHTML('beforeend', row);
-                        });
-                    }
-                },
-                error: function(xhr) {
-                    alert('An error occurred while fetching approval history.');
-                }
-            });
         }
     </script>
 @endsection

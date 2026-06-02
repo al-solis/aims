@@ -16,6 +16,9 @@ class budget_header extends Model
         'remarks',
         'total_amount',
         'status',
+        'approval_status',
+        'approval_level',
+        'current_approver',
         'approver_id',
         'approver_remarks',
         'requested_at',
@@ -39,13 +42,24 @@ class budget_header extends Model
         return $this->belongsTo(User::class, 'requested_by');
     }
 
-    public function approver()
+    public function budgetApprover()
     {
-        return $this->belongsTo(User::class, 'approver_id');
+        return $this->belongsTo(Location::class, 'current_approver');
     }
 
     public function location()
     {
         return $this->belongsTo(Location::class, 'location_id');
+    }
+
+    public function approvalHistory()
+    {
+        return $this->hasMany(budget_approval::class, 'budget_id');
+    }
+
+    public function latestApproval()
+    {
+        return $this->hasOne(budget_approval::class, 'budget_id')
+            ->latestOfMany();
     }
 }

@@ -3,6 +3,7 @@
     @php
         use Carbon\Carbon;
         use Illuminate\Support\Facades\Auth;
+        use Illuminate\Support\Str;
     @endphp
     <div class="p-6 space-y-6">
         {{-- Header --}}
@@ -321,9 +322,9 @@
                                         </button>
                                     @elseif ($clearanceHeader->status == 0)
                                         {{-- Submit for approval --}}
-                                        <button type="button" @if (Auth::user()->role == 2) disabled @endif
+                                        <button type="button" @if (in_array(Auth::user()->role, [0, 2]) || Auth::user()->id != $clearanceHeader->created_by) disabled @endif
                                             title="Submit for approval : {{ $clearanceHeader->request_number }}"
-                                            class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors{{ Auth::user()->role == 2 ? ' cursor-not-allowed' : '' }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors{{ in_array(Auth::user()->role, [0, 2]) || Auth::user()->id != $clearanceHeader->created_by ? ' cursor-not-allowed' : '' }}"
                                             onclick="submitForApproval({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}' )">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-send-check-fill" viewBox="0 0 16 16">
@@ -334,24 +335,9 @@
                                             </svg>
                                         </button>
 
-
-                                        {{-- Mark as complete --}}
-                                        {{-- <button type="button"
-                                            title="Mark as complete : {{ $clearanceHeader->request_number }}"
-                                            class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors"
-                                            onclick="markAsComplete({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}' )">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
-                                                <path
-                                                    d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0" />
-                                                <path
-                                                    d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z" />
-                                            </svg>
-                                        </button> --}}
-
-                                        <button type="button" @if (Auth::user()->role == 2) disabled @endif
+                                        <button type="button" @if (in_array(Auth::user()->role, [0, 2]) || Auth::user()->id != $clearanceHeader->created_by) disabled @endif
                                             title="Void clearance : {{ $clearanceHeader->request_number }}"
-                                            class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors {{ Auth::user()->role == 2 ? ' cursor-not-allowed' : '' }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors {{ in_array(Auth::user()->role, [0, 2]) || Auth::user()->id != $clearanceHeader->created_by ? ' cursor-not-allowed' : '' }}"
                                             onclick="voidClearance({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}' )">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
@@ -447,8 +433,9 @@
                                     required>
                                     <option value="" disabled selected>Select employee</option>
                                     @foreach ($employees as $employee)
-                                        <option value="{{ $employee->id }}">{{ $employee->last_name }},
-                                            {{ $employee->first_name }} {{ $employee->middle_name }}</option>
+                                        <option value="{{ $employee->id }}">{{ Str::ucwords($employee->last_name) }},
+                                            {{ Str::ucwords($employee->first_name) }}
+                                            {{ Str::ucwords($employee->middle_name) }}</option>
                                     @endforeach
                                 </select>
                             </div>

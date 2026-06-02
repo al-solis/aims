@@ -173,7 +173,7 @@
                             @foreach ($approvalHistory as $approval)
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-4 py-3 w-[200px]">
-                                        {{ $approval->location ? $approval->location->description : 'N/A' }}
+                                        {{ $approval->location ? $approval->location->name : 'N/A' }}
                                     </td>
                                     <td class="px-4 py-3 w-[200px]">
                                         {{ $approval->approver ? $approval->approver->lname . ', ' . $approval->approver->fname . ' ' . $approval->approver->mname : 'N/A' }}
@@ -222,82 +222,87 @@
                     </table>
                 </div>
 
-                <h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">Clearance Details</h3>
+                @if ($clearanceHeader->status != 0)
+                    <h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">Clearance Details</h3>
 
-                <div class="bg-white border rounded-xl overflow-x-auto overflow-y-auto md:overflow-visible scroll-smooth">
-                    <table class="min-w-full text-xs">
-                        <thead class="bg-gray-200 text-gray-600">
-                            <tr class="rounded-xl">
-                                <th class="px-4 py-3 text-left w-[120px]">Asset</th>
-                                <th class="px-4 py-3 text-left w-[120px]">Qty</th>
-                                <th class="px-4 py-3 text-left w-[140px]">Purchase</th>
-                                <th class="px-4 py-3 text-left w-[150px]">Actual</th>
-                                <th class="px-4 py-3 text-left w-[140px]">Total</th>
-                                <th class="px-4 py-3 text-left w-[140px]">Action</th>
-                            </tr>
-                        </thead>
-
-                        <tbody class="divide-y">
-                            @foreach ($clearanceHeader->clearance_details as $detail)
-                                <tr class="hover:bg-gray-50">
-                                    <input type="hidden" name="detail_id[]" value="{{ $detail->id }}">
-
-                                    <td class="px-4 py-3 w-[120px]">
-                                        {{ $detail->asset->name ?? 'N/A' }}
-                                    </td>
-
-                                    <td class="px-4 py-3 w-[120px]">
-                                        <input type="number" min="1" step="1" name="qty[]" id="qty"
-                                            class="qty w-full text-xs border rounded px-2 py-1"
-                                            value="{{ $detail->quantity }}" readonly>
-                                    </td>
-                                    <td class="px-4 py-3 w-[140px]">{{ number_format($detail->purchase_cost, 2) }}
-                                    </td>
-
-                                    <td class="px-4 py-3 w-[150px]">
-                                        <input type="number" step="0.01" name="actual[]"
-                                            class="actual w-full text-xs border rounded px-2 py-1"
-                                            value="{{ $detail->actual_cost ?? $detail->purchase_cost }}">
-                                    </td>
-
-                                    <!-- TOTAL -->
-                                    <input type="hidden" name="total[]" class="total" value="{{ $detail->total }}">
-                                    <td class="px-4 py-3 w-[140px]">
-                                        <input type="text" class="total-display w-full text-xs border-none px-2 py-1"
-                                            value="{{ number_format($detail->total, 2) }}" readonly>
-                                    </td>
-
-                                    <!-- ACTION / STATUS -->
-                                    @php
-                                        $statuses = [
-                                            0 => 'Pending',
-                                            1 => 'Returned',
-                                            2 => 'Damaged',
-                                            3 => 'Lost',
-                                        ];
-                                    @endphp
-
-                                    <td class="px-4 py-3 w-[140px]">
-                                        <select name="status[]" class="w-full text-xs border rounded px-2 py-1">
-                                            @foreach ($statuses as $value => $label)
-                                                <option value="{{ $value }}" @selected($detail->status == $value)>
-                                                    {{ $label }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </td>
+                    <div
+                        class="bg-white border rounded-xl overflow-x-auto overflow-y-auto md:overflow-visible scroll-smooth">
+                        <table class="min-w-full text-xs">
+                            <thead class="bg-gray-200 text-gray-600">
+                                <tr class="rounded-xl">
+                                    <th class="px-4 py-3 text-left w-[120px]">Asset</th>
+                                    <th class="px-4 py-3 text-left w-[120px]">Qty</th>
+                                    <th class="px-4 py-3 text-left w-[140px]">Purchase</th>
+                                    <th class="px-4 py-3 text-left w-[150px]">Actual</th>
+                                    <th class="px-4 py-3 text-left w-[140px]">Total</th>
+                                    <th class="px-4 py-3 text-left w-[140px]">Action</th>
                                 </tr>
-                            @endforeach
-                            @if ($clearanceHeader->clearance_details->isEmpty())
-                                <tr>
-                                    <td colspan="7" class="px-4 py-3 text-center text-gray-600">
-                                        No asset accountability found.
-                                    </td>
-                                </tr>
-                            @endif
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+
+                            <tbody class="divide-y">
+                                @foreach ($clearanceHeader->clearance_details as $detail)
+                                    <tr class="hover:bg-gray-50">
+                                        <input type="hidden" name="detail_id[]" value="{{ $detail->id }}">
+
+                                        <td class="px-4 py-3 w-[120px]">
+                                            {{ $detail->asset->name ?? 'N/A' }}
+                                        </td>
+
+                                        <td class="px-4 py-3 w-[120px]">
+                                            <input type="number" min="1" step="1" name="qty[]"
+                                                id="qty" class="qty w-full text-xs border rounded px-2 py-1"
+                                                value="{{ $detail->quantity }}" readonly>
+                                        </td>
+                                        <td class="px-4 py-3 w-[140px]">{{ number_format($detail->purchase_cost, 2) }}
+                                        </td>
+
+                                        <td class="px-4 py-3 w-[150px]">
+                                            <input type="number" step="0.01" name="actual[]"
+                                                class="actual w-full text-xs border rounded px-2 py-1"
+                                                value="{{ $detail->actual_cost ?? $detail->purchase_cost }}">
+                                        </td>
+
+                                        <!-- TOTAL -->
+                                        <input type="hidden" name="total[]" class="total"
+                                            value="{{ $detail->total }}">
+                                        <td class="px-4 py-3 w-[140px]">
+                                            <input type="text"
+                                                class="total-display w-full text-xs border-none px-2 py-1"
+                                                value="{{ number_format($detail->total, 2) }}" readonly>
+                                        </td>
+
+                                        <!-- ACTION / STATUS -->
+                                        @php
+                                            $statuses = [
+                                                0 => 'Pending',
+                                                1 => 'Returned',
+                                                2 => 'Damaged',
+                                                3 => 'Lost',
+                                            ];
+                                        @endphp
+
+                                        <td class="px-4 py-3 w-[140px]">
+                                            <select name="status[]" class="w-full text-xs border rounded px-2 py-1">
+                                                @foreach ($statuses as $value => $label)
+                                                    <option value="{{ $value }}" @selected($detail->status == $value)>
+                                                        {{ $label }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                @if ($clearanceHeader->clearance_details->isEmpty())
+                                    <tr>
+                                        <td colspan="7" class="px-4 py-3 text-center text-gray-600">
+                                            No asset accountability found.
+                                        </td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
 
                 <div class="mt-5 flex justify-end gap-x-2">
                     <a href="{{ route('clearance.index') }}" type="button" id="closeButton"
@@ -308,9 +313,14 @@
                         Back
                     </a>
                     {{-- Show when pending --}}
-                    @if ($clearanceHeader->status == 0 || $clearanceHeader->current_approver == $userLocation->location_id)
-                        <button type="submit" id="saveBtn" @if (Auth::user()->role == 2) disabled @endif
-                            class="py-1.5 sm:py-2 px-3 inline-flex items-center gap-x-2 border text-xs font-medium text-white {{ Auth::user()->role == 2 ? 'bg-gray-600 hover:bg-gray-600 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-800' }} rounded-lg">
+                    @if ($clearanceHeader->status == 0)
+                        <button type="submit" id="saveBtn" @if (in_array(Auth::user()->role, [0, 2]) || Auth::user()->id != $clearanceHeader->created_by) disabled @endif
+                            class="py-1.5 sm:py-2 px-3 inline-flex items-center gap-x-2 border text-xs font-medium text-white {{ in_array(Auth::user()->role, [0, 2]) || Auth::user()->id != $clearanceHeader->created_by ? 'bg-gray-600 hover:bg-gray-600 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-800' }} rounded-lg">
+                            Save Changes
+                        </button>
+                    @elseif ($clearanceHeader->current_approver == $userLocation->location_id && $clearanceHeader->status == 1)
+                        <button type="submit" id="saveBtn"
+                            class="py-1.5 sm:py-2 px-3 inline-flex items-center gap-x-2 border text-xs font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-lg">
                             Save Changes
                         </button>
                     @endif

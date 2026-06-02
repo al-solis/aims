@@ -138,8 +138,8 @@
         <br>
         <div class="sub-title" style="font-weight: bolder; font-size: 15px">BUDGET REQUEST SUMMARY REPORT</div>
         <div class="sub-title">Range: {{ $pDateRange != 'custom' ? $pDateRange : $pFromDate . ' to ' . $pToDate }}</div>
-        <div class="sub-title">Location: {{ $pLocation }}</div>
-        <div class="sub-title">Requested By: {{ $pEmployee }}</div>
+        <div class="sub-title">Location: {{ $pLocation ?? 'All Locations' }}</div>
+        <div class="sub-title">Requested By: {{ $pEmployee ?? 'All Employees' }}</div>
         <div class="sub-title">Status: {{ $pStatus !== null ? $pStatus : 'All' }}</div>
     </div>
 
@@ -193,7 +193,23 @@
                             @endphp
                         @endforeach
                         <td class="text-right">{{ number_format($detailTotal, 2) }}</td>
-                        <td>{{ $statuses[$request->status] ?? 'Unknown' }}</td>
+                        @php
+                            $statusText = 'Pending';
+
+                            if ($request->status == 4) {
+                                $statusText = 'Voided';
+                            } elseif ($request->latestApproval) {
+                                if ($request->latestApproval->approved == 1) {
+                                    $statusText = 'Approved';
+                                } elseif ($request->latestApproval->approved == 0) {
+                                    $statusText = 'Disapproved';
+                                }
+                            } elseif ($request->status == 1) {
+                                $statusText = 'Submitted';
+                            }
+                        @endphp
+
+                        <td>{{ $statusText }}</td>
 
                     </tr>
                 @endforeach

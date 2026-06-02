@@ -393,7 +393,10 @@
             });
 
             // Calculate and display grand total
-            let grandTotal = budgetItems.reduce((sum, item) => sum + item.total_price, 0);
+            let grandTotal = budgetItems.reduce((sum, item) => {
+                const value = parseFloat(item.total_price);
+                return sum + (isNaN(value) ? 0 : value);
+            }, 0);
             tbody.append(`
             <tr class="bg-gray-50 font-bold">
                 <td colspan="5" class="px-4 py-3 text-right">GRAND TOTAL:</td>

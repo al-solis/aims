@@ -28,6 +28,8 @@ use App\Models\numseq;
 use App\Models\budget_header;
 use App\Models\budget_detail;
 use App\Models\User;
+use App\Models\budget_routing;
+use App\Models\budget_approval;
 
 class ReportController extends Controller
 {
@@ -358,6 +360,27 @@ class ReportController extends Controller
             )->setPaper('letter', $reportType == '2' ? 'landscape' : 'portrait');
 
         } else {
+            $noOfClients = location::where('status', 1)->count();
+            $noOfGuards = Employee::whereRaw('LOWER(position) LIKE ?', ['%guard%'])->get();
+            $noOfSecurityOfficers = Employee::whereRaw('LOWER(position) LIKE ?', ['%security officer%'])->get();
+            $noOfPrivateDetectives = Employee::whereRaw('LOWER(position) LIKE ?', ['%private detective%'])->get();
+            $noOfSecurityConsultants = Employee::whereRaw('LOWER(position) LIKE ?', ['%security consultant%'])->count();
+            $noOfSPAs = Employee::whereRaw('LOWER(position) LIKE ?', ['%special protection agent%'])->count();
+            $noOfTrainingDirectors = Employee::whereRaw('LOWER(position) LIKE ?', ['%training director%'])->count();
+            $noOfTrainingOfficers = Employee::whereRaw('LOWER(position) LIKE ?', ['%training officer%'])->count();
+            $totalSecEmployees = Employee::whereRaw('LOWER(position) LIKE ?', ['%guard%'])
+                ->orWhereRaw('LOWER(position) LIKE ?', ['%security officer%'])
+                ->orWhereRaw('LOWER(position) LIKE ?', ['%private detective%'])
+                ->orWhereRaw('LOWER(position) LIKE ?', ['%security consultant%'])
+                ->orWhereRaw('LOWER(position) LIKE ?', ['%special protection agent%'])
+                ->orWhereRaw('LOWER(position) LIKE ?', ['%training director%'])
+                ->orWhereRaw('LOWER(position) LIKE ?', ['%training officer%'])
+                ->count();
+
+            $noOfFirearms = Asset::where('category_id', 1)
+                ->whereIn('status', [1, 2, 3, 8])
+                ->get();
+
             $query = DB::table('employees as e')
                 ->join('locations as l', 'e.location_id', '=', 'l.id')
                 ->leftJoin('assets as a', function ($join) {
@@ -551,7 +574,17 @@ class ReportController extends Controller
                     'sortField',
                     'sortDirection',
                     'gains',
-                    'losses'
+                    'losses',
+                    'noOfClients',
+                    'noOfGuards',
+                    'noOfSecurityOfficers',
+                    'noOfPrivateDetectives',
+                    'noOfSecurityConsultants',
+                    'noOfSPAs',
+                    'noOfTrainingDirectors',
+                    'noOfTrainingOfficers',
+                    'totalSecEmployees',
+                    'noOfFirearms'
                 )
             )->setPaper('letter', $reportType == '2' ? 'landscape' : 'portrait')
                 ->setOptions([
@@ -1022,9 +1055,9 @@ class ReportController extends Controller
         $pFromDate = $request->from_date ?? '';
         $pToDate = $request->to_date ?? '';
         $pType = $request->reptype ?? 'summary';
-        $pStatus = $request->status ? 1 : null;
-        $pLocation = Location::find($request->location)->name ?? 'All Locations';
-        $pEmployee = Employee::find($request->employee)?->last_name . ', ' . Employee::find($request->employee)?->first_name . ' ' . Employee::find($request->employee)?->middle_name ?? 'All Employees';
+        $pStatus = $request->status !== null ? (int) $request->status : null;
+        $pLocation = $request->location ? Location::find($request->location)->name ?? 'All Locations' : 'All Locations';
+        $pEmployee = $request->employee ? Employee::find($request->employee)?->last_name . ', ' . Employee::find($request->employee)?->first_name . ' ' . Employee::find($request->employee)?->middle_name ?? 'All Employees' : 'All Employees';
 
         $dateRangeLabels = [
             'this_month' => Carbon::now()->format('F Y'),
@@ -1036,7 +1069,13 @@ class ReportController extends Controller
 
         // $orientation = $pType == 'summary' ? 'portrait' : 'landscape';
         $orientation = 'portrait';
-        $query = budget_header::query()->with('budgetDetails', 'location', 'requester');
+        $query = budget_header::query()
+            ->with([
+                'budgetDetails',
+                'location',
+                'requester',
+                'latestApproval'
+            ]);
 
         switch ($pDateRange) {
             case 'this_month':
@@ -1078,7 +1117,25 @@ class ReportController extends Controller
         }
 
         if ($pStatus !== null) {
-            $query->where('status', $request->status);
+
+            // Pending / Submitted / Voided
+            if (in_array($pStatus, [0, 1, 4])) {
+                $query->where('status', $pStatus);
+            }
+
+            // Approved
+            elseif ($pStatus == 2) {
+                $query->whereHas('latestApproval', function ($q) {
+                    $q->where('approved', 1);
+                });
+            }
+
+            // Disapproved
+            elseif ($pStatus == 3) {
+                $query->whereHas('latestApproval', function ($q) {
+                    $q->where('approved', 0);
+                });
+            }
         }
 
         $status = [
@@ -1090,7 +1147,7 @@ class ReportController extends Controller
         ];
 
         $pStatus = $status[$request->status] ?? 'All Statuses';
-        $requests = $query->orderBy('requested_at', 'desc')->get();
+        $requests = $query->orderBy('requested_at')->get();
         // Generate PDF
         $pDateRange = $dateRangeLabels[$pDateRange] ?? 'Custom Range';
         $pdf = Pdf::loadView(

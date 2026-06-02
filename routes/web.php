@@ -33,6 +33,7 @@ use App\Http\Controllers\DdoHeaderController;
 use App\Http\Controllers\ClearanceRoutingController;
 use App\Http\Controllers\TransmittalController;
 use App\Http\Controllers\BudgetController;
+use App\Http\Controllers\BudgetRoutingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -83,6 +84,12 @@ Route::middleware('auth')->group(function () {
     Route::put('setup/ddo/{ddo}', [DdoHeaderController::class, 'update'])->name('ddo.update');
     Route::get('/ddo/get-employees-by-location', [DdoHeaderController::class, 'getEmployeesByLocation']);
     Route::post('ddo/location/copy', [DdoHeaderController::class, 'copyLocationSetup'])->name('ddo.location.copy');
+    Route::get('setup/budget-routing', [BudgetRoutingController::class, 'index'])->name('budget-routing.index');
+    Route::get('setup/budget-routing/list', [BudgetRoutingController::class, 'viewRouting']);
+    Route::post('setup/budget-routing', [BudgetRoutingController::class, 'store']);
+    Route::put('setup/budget-routing/{id}', [BudgetRoutingController::class, 'update']);
+    Route::delete('setup/budget-routing/{id}', [BudgetRoutingController::class, 'destroy']);
+    Route::get('/budget/{id}/approval-history', [BudgetController::class, 'getApprovalHistory'])->name('budget.approval-history');
     // Route::post('/employee/{employee}/ids', [EmployeeIdController::class, 'store'])
     //     ->name('employee.ids.store');
 
