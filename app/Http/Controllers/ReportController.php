@@ -271,7 +271,7 @@ class ReportController extends Controller
     {
         // dd($request->all());
         $reportType = $request->input('report_type', '1'); // Default to 1 if not provided
-        $reportFile = $reportType == '2' ? 'employee-disposition' : 'employee';
+        $reportFile = $reportType == '1' ? 'employee' : ($reportType == '2' ? 'employee-disposition' : 'employee-lesp-expiry');
         $pDateRange = $request->date_range ?? 'this_month';
         $pFromDate = $request->from_date ?? '';
         $pToDate = $request->to_date ?? '';
@@ -359,7 +359,7 @@ class ReportController extends Controller
                 )
             )->setPaper('letter', $reportType == '2' ? 'landscape' : 'portrait');
 
-        } else {
+        } elseif ($reportType == '2') {
             $noOfClients = location::where('status', 1)->count();
             $noOfGuards = Employee::whereRaw('LOWER(position) LIKE ?', ['%guard%'])->get();
             $noOfSecurityOfficers = Employee::whereRaw('LOWER(position) LIKE ?', ['%security officer%'])->get();
@@ -594,6 +594,94 @@ class ReportController extends Controller
                     'isRemoteEnabled' => true,
                     'chroot' => public_path(),
                 ]);
+        } elseif ($reportType == '3') {
+            $query = Employee::query()->with('location');
+
+            switch ($pDateRange) {
+                case 'this_month':
+                    $query->whereHas('employeeIds', function ($q) {
+                        $q->where('id_type_id', 8) // LESP ID
+                            ->whereMonth('expiry_date', Carbon::now()->month)
+                            ->whereYear('expiry_date', Carbon::now()->year);
+                    });
+                    break;
+
+                case 'last_month':
+                    $query->whereHas('employeeIds', function ($q) {
+                        $q->where('id_type_id', 8) // LESP ID
+                            ->whereMonth('expiry_date', Carbon::now()->subMonth()->month)
+                            ->whereYear('expiry_date', Carbon::now()->subMonth()->year);
+                    });
+                    break;
+
+                case 'this_quarter':
+                    $query->whereHas('employeeIds', function ($q) {
+                        $q->where('id_type_id', 8) // LESP ID
+                            ->whereBetween('expiry_date', [
+                                Carbon::now()->startOfQuarter()->format('Y-m-d'),
+                                Carbon::now()->endOfQuarter()->format('Y-m-d')
+                            ]);
+                    });
+                    break;
+
+                case 'this_year':
+                    $query->whereHas('employeeIds', function ($q) {
+                        $q->where('id_type_id', 8) // LESP ID
+                            ->whereYear('expiry_date', Carbon::now()->year);
+                    });
+                    break;
+
+                case 'custom':
+                    if ($pFromDate && $pToDate) {
+                        $query->whereHas('employeeIds', function ($q) use ($pFromDate, $pToDate) {
+                            $q->where('id_type_id', 8) // LESP ID
+                                ->whereBetween('expiry_date', [$pFromDate, $pToDate]);
+                        });
+                    }
+                    break;
+            }
+            if ($request->filled('location')) {
+                $query->where('location_id', $request->location);
+            }
+            if ($pStatus != null && $pStatus != '') {
+                $query->where('status', $pStatus);
+            }
+
+            $employees = $query->get()->sortBy('employeeIds.0.expiry_date');
+            ;
+
+            $dateRangeLabels = [
+                'this_month' => Carbon::now()->format('F Y'),
+                'last_month' => Carbon::now()->subMonth()->format('F Y'),
+                'this_quarter' => Carbon::now()->startOfQuarter()->format('F Y') . ' - ' . Carbon::now()->endOfQuarter()->format('F Y'),
+                'this_year' => Carbon::now()->format('Y'),
+                'custom' => 'custom',
+            ];
+
+            $pDateRange = $dateRangeLabels[$pDateRange] ?? 'Custom Range';
+
+            // Generate PDF
+            $pdf = Pdf::loadView(
+                'reports.' . $reportFile,
+                compact(
+                    'employees',
+                    'pDateRange',
+                    'pFromDate',
+                    'pToDate',
+                    'pLocationName',
+                    'statusLabel',
+                    'pDateRange',
+                )
+            )->setPaper('letter', 'portrait')
+                ->setOptions([
+                    'defaultFont' => 'sans-serif',
+                    'isPhpEnabled' => true,
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => true,
+                    'chroot' => public_path(),
+                ]);
+        } else {
+            abort(400, 'Invalid report type');
         }
 
         return $pdf->stream('employee-report.pdf');

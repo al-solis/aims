@@ -13,6 +13,7 @@ class employee_id extends Model
         'employee_id',
         'id_type_id',
         'id_number',
+        'badge',
         'issue_date',
         'expiry_date',
         'created_by',

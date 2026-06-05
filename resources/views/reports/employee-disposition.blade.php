@@ -159,7 +159,7 @@
 
     {{-- HEADER --}}
     <div class="no-space">
-        <p><strong>TO : C, SOCIA</strong></p>
+        <p><strong>TO : C, SOSIA</strong></p>
         <p><strong>SUBJECT : MONTHLY DISPOSITION REPORT</strong></p>
         <p><strong>DATE : {{ now()->format('F d, Y') }}</strong></p>
         <br>

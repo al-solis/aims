@@ -501,7 +501,7 @@
                                     </p>
                                     <input type="hidden" id="employee_id_record_id" name="employee_id_record_id"
                                         value="">
-                                    <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                                    <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
                                         <div class="w-full">
                                             <label for="employee_id_type"
                                                 class="block text-xs font-medium text-gray-900 dark:text-white">ID
@@ -521,6 +521,14 @@
                                             <input type="text" name="employee_id_number" id="employee_id_number"
                                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                                 placeholder="e.g. 242-327-268">
+                                        </div>
+                                        <div class="w-full">
+                                            <label for="badge"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Badge
+                                                Number</label>
+                                            <input type="text" name="badge" id="badge"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                                placeholder="e.g. 04-4146789-0">
                                         </div>
                                     </div>
 
@@ -558,6 +566,8 @@
                                                 <tr>
                                                     <th scope="col" class="px-4 py-3 text-left w-[100px]">ID Type</th>
                                                     <th scope="col" class="px-4 py-3 text-left w-[80px]">ID Number</th>
+                                                    <th scope="col" class="px-4 py-3 text-left w-[100px]">Badge Number
+                                                    </th>
                                                     <th scope="col" class="px-4 py-3 text-left w-[60px]">Issued</th>
                                                     <th scope="col" class="px-4 py-3 text-left w-[60px]">Expiry</th>
                                                     <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
@@ -570,6 +580,7 @@
                                                         <td class="px-2 py-2 font-medium w-[100px]">
                                                             {{ $employeeId->idType->name }}</td>
                                                         <td class="px-2 py-2 w-[80px]">{{ $employeeId->id_number }}</td>
+                                                        <td class="px-2 py-2 w-[100px]">{{ $employeeId->badge }}</td>
                                                         <td class="px-2 py-2 w-[60px]">{{ $employeeId->issue_date }}</td>
                                                         <td class="px-2 py-2 w-[60px]">{{ $employeeId->expiry_date }}</td>
                                                         <td class="px-2 py-2 w-[50px]">
@@ -899,6 +910,7 @@
                     recordId: document.getElementById('employee_id_record_id'),
                     type: document.getElementById('employee_id_type'),
                     number: document.getElementById('employee_id_number'),
+                    badge: document.getElementById('badge'),
                     issuedDate: document.getElementById('employee_id_issued_date'),
                     expiryDate: document.getElementById('employee_id_expiry_date')
                 };
@@ -908,6 +920,7 @@
                     const employeeId = employeeIdForm.recordId.value;
                     const idType = employeeIdForm.type.value;
                     const idNumber = employeeIdForm.number.value.trim();
+                    const badge = employeeIdForm.badge.value.trim();
                     const issuedDate = employeeIdForm.issuedDate.value;
                     const expiryDate = employeeIdForm.expiryDate.value;
 
@@ -931,6 +944,7 @@
                         id: employeeId || null,
                         id_type_id: idType,
                         id_number: idNumber,
+                        badge: badge || null,
                         issue_date: issuedDate || null,
                         expiry_date: expiryDate || null,
                         _token: document.querySelector('meta[name="csrf-token"]').content
@@ -979,6 +993,7 @@
                     employeeIdForm.recordId.value = '';
                     employeeIdForm.type.value = '';
                     employeeIdForm.number.value = '';
+                    employeeIdForm.badge.value = '';
                     employeeIdForm.issuedDate.value = '';
                     employeeIdForm.expiryDate.value = '';
                     addIdBtn.textContent = 'Add ID';
@@ -998,7 +1013,7 @@
                                 if (!noIdsRow) {
                                     tbody.innerHTML = `
                             <tr id="no-ids-row">
-                                <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                                <td colspan="6" class="px-4 py-6 text-center text-gray-500">
                                     No IDs found.
                                 </td>
                             </tr>
@@ -1019,6 +1034,7 @@
                         <tr id="row-${id.id}" class="hover:bg-gray-50">
                             <td class="px-2 py-2 font-medium w-[100px]">${id.id_type.name}</td>
                             <td class="px-2 py-2 w-[80px]">${id.id_number}</td>
+                            <td class="px-2 py-2 w-[100px]">${id.badge || ''}</td>
                             <td class="px-2 py-2 w-[60px]">${id.issue_date || ''}</td>
                             <td class="px-2 py-2 w-[60px]">${id.expiry_date || ''}</td>
                             <td class="px-2 py-2 w-[50px]">
@@ -1115,6 +1131,7 @@
                         document.getElementById('employee_id_record_id').value = data.id.id;
                         document.getElementById('employee_id_type').value = data.id.id_type_id;
                         document.getElementById('employee_id_number').value = data.id.id_number;
+                        document.getElementById('badge').value = data.id.badge || '';
                         document.getElementById('employee_id_issued_date').value = formatDateForInput(data.id
                             .issue_date) || '';
                         document.getElementById('employee_id_expiry_date').value = formatDateForInput(data.id
@@ -1175,7 +1192,7 @@
                         if (tbody.children.length === 0) {
                             tbody.innerHTML = `
                                 <tr id="no-ids-row">
-                                    <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                                    <td colspan="6" class="px-4 py-6 text-center text-gray-500">
                                         No IDs found.
                                     </td>
                                 </tr>

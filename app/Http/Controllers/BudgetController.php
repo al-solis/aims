@@ -294,7 +294,7 @@ class BudgetController extends Controller
 
     public function printBudget($id)
     {
-        $budget = budget_header::with('budgetDetails.unit', 'location', 'requester')->findOrFail($id);
+        $budget = budget_header::with('budgetDetails.unit', 'location', 'requester', 'latestApproval')->findOrFail($id);
         $pdf = Pdf::loadView('reports.budget-request-form', compact('budget'))
             ->setPaper('letter', 'portrait');
 

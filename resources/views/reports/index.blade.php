@@ -569,7 +569,8 @@
                     <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Report Type</label>
                     <select name="report_type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
                         <option value="1">Default</option>
-                        <option value="2">Monthly Disposition Report</option>                        
+                        <option value="2">Monthly Disposition Report</option>
+                        <option value="3">Expiring LESP</option>
                     </select>
                 </div>
                 <div class="sm:col-span-1">

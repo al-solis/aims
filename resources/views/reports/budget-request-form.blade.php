@@ -169,6 +169,17 @@
                     {{ $budget->remarks ?? '' }}
                 </td>
             </tr>
+
+            {{-- <tr>
+                <td><strong>Reference:</strong></td>
+                <td colspan="3">
+                    {{ $budget->latestApproval->approver->lname ?? '' }},
+                    {{ $budget->latestApproval->approver->fname ?? '' }}
+                    {{ $budget->latestApproval->approver->mname ?? '' }} |
+                    {{ $budget->latestApproval->approved == '1' ? 'Approved' : 'Rejected' }} |
+                    {{ $budget->latestApproval->created_at->format('F d, Y h:i A') ?? '' }}
+                </td>
+            </tr> --}}
         </table>
     </div>
 
@@ -222,16 +233,31 @@
     {{-- <p style="text-align: center; font-size: 11px; color:#555">Nothing follows</p> --}}
 
     {{-- SIGNATURES --}}
-    {{-- <div class="footer">
+    <div class="footer">
         <div class="signature">
-            ___________________________<br>
-            Employee Signature
+            {{ $budget->latestApproval->approved == '1' ? 'Approved' : 'Rejected' }} by: <br>
+            <br>
+            <br>
+            <span style="text-decoration: underline;">
+                {{ $budget->latestApproval->approver->fname ?? '' }}
+                {{ $budget->latestApproval->approver->mname ?? '' }}
+                {{ $budget->latestApproval->approver->lname ?? '' }}
+                |
+                {{ $budget->latestApproval->created_at->format('F d, Y h:i A') ?? '' }}
+
+            </span><br>
+
+            {{ $budget->latestApproval->approver->employee->position ?? '' }}
+            <br>
         </div>
         <div class="signature" style="float:right;">
+            Checked by: <br>
+            <br>
+            <br>
             ___________________________<br>
             Authorized Officer
         </div>
-    </div> --}}
+    </div>
 
     <div class="page-number">
         Generated on {{ now()->format('F d, Y') }}

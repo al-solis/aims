@@ -426,7 +426,8 @@ class EmployeeController extends Controller
             'id_type_id' => $request->id_type_id,
             'id_number' => $request->id_number,
             'issue_date' => $request->issue_date,
-            'expiry_date' => $request->expiry_date
+            'expiry_date' => $request->expiry_date,
+            'badge' => $request->badge
         ]);
 
         $employeeIdRecord->load('idType');
@@ -444,6 +445,7 @@ class EmployeeController extends Controller
         $request->validate([
             'id_type_id' => 'required|exists:id_types,id',
             'id_number' => 'required|string|max:50|unique:employee_ids,id_number,' . $id,
+            'badge' => 'nullable|string|max:50',
             'issue_date' => 'nullable|date',
             'expiry_date' => 'nullable|date|after_or_equal:issue_date'
         ]);
@@ -455,6 +457,7 @@ class EmployeeController extends Controller
         $employeeIdRecord->update([
             'id_type_id' => $request->id_type_id,
             'id_number' => $request->id_number,
+            'badge' => $request->badge,
             'issue_date' => $request->issue_date,
             'expiry_date' => $request->expiry_date
         ]);

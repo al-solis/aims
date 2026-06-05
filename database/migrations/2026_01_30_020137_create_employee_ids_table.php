@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->foreign('id_type_id')->references('id')->on('id_types');
 
             $table->string('id_number', 50)->nullable(false);
+            $table->string('badge', 50)->nullable();
             $table->date('issue_date')->nullable();
             $table->date('expiry_date')->nullable();
 
