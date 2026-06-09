@@ -167,7 +167,7 @@
                         <th scope="col" class="px-4 py-3 text-left w-[110px]">Asset ID</th>
                         <th scope="col" class="px-4 py-3 text-left w-[200px]">Name</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Type</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Number</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Number/ Serial</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Issuing Authority</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Expiration Date</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Status</th>
@@ -346,7 +346,7 @@
                 </div>
                 <!-- Modal body -->
                 <div class="overflow-y-auto max-h-[70vh]">
-                    <form action="{{ route('licenses.store') }}" method="POST">
+                    <form action="{{ route('asset-licenses.store') }}" method="POST">
                         @csrf
                         <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-1">
                             <div class="w-full md:col-span-2">
@@ -355,7 +355,7 @@
                                 <select name="asset_id" id="asset_id"
                                     class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     required>
-                                    <option value="" selected>Select asset</option>
+                                    {{-- <option value="" selected>Select asset</option> --}}
                                     @foreach ($assets as $asset)
                                         <option value="{{ $asset->id }}">{{ $asset->name }} -
                                             {{ $asset->asset_code }}</option>
@@ -377,7 +377,8 @@
 
                             <div class="sm:col-span-1">
                                 <label for="license_number"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">License Number*</label>
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">License/ Serial
+                                    Number*</label>
                                 <input type="text" name="license_number" id="license_number"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="License/ permit number" required>
@@ -465,10 +466,9 @@
                                     required>
                                     <option value="{{ old('edit_asset_id') }}" selected>Select asset</option>
                                     @foreach ($assets as $asset)
-                                        <option value="{{ $asset->id }}"
-                                            {{ old('edit_asset_id', $assetLicense->asset_id ?? '') == $asset->id ? 'selected' : '' }}>
-                                            {{ $asset->name }} -
-                                            {{ $asset->asset_code }}</option>
+                                        <option value="{{ $asset->id }}">
+                                            {{ $asset->name }} - {{ $asset->asset_code }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -480,16 +480,17 @@
                                     required>
                                     <option value="" selected>Select type</option>
                                     @foreach ($licenseTypes as $licenseType)
-                                        <option value="{{ $licenseType->id }}"
-                                            {{ old('edit_license_type_id', $assetLicense->license_type_id ?? '') == $licenseType->id ? 'selected' : '' }}>
-                                            {{ $licenseType->name }}</option>
+                                        <option value="{{ $licenseType->id }}">
+                                            {{ $licenseType->name }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
 
                             <div class="sm:col-span-1">
                                 <label for="edit_license_number"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">License Number*</label>
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">License/ Serial
+                                    Number*</label>
                                 <input type="text" name="edit_license_number" id="edit_license_number"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="License/ permit number" required>
@@ -564,18 +565,17 @@
 
         function openEditModal(button) {
             const id = button.getAttribute('data-id');
-            document.getElementById('edit_id').value = button.getAttribute('data-id');
-            document.getElementById('edit_asset_id').value = button.getAttribute('data-asset_id');
-            document.getElementById('edit_license_type_id').value = button.getAttribute('data-license_type_id');
-            document.getElementById('edit_license_number').value = button.getAttribute('data-license_number');
-            document.getElementById('edit_issuing_authority').value = button.getAttribute('data-issuing_authority');
-            document.getElementById('edit_issue_date').value = button.getAttribute('data-issue_date') ?? null;
-            document.getElementById('edit_expiration_date').value = button.getAttribute('data-expiration_date') ?? null;
 
+            $('#edit_id').val(id);
+            $('#edit_asset_id').val(button.getAttribute('data-asset_id')).trigger('change');
+            $('#edit_license_type_id').val(button.getAttribute('data-license_type_id')).trigger('change');
 
-            const form = document.getElementById('editForm');
-            form.action = `/licenses/${id}`;
+            $('#edit_license_number').val(button.getAttribute('data-license_number'));
+            $('#edit_issuing_authority').val(button.getAttribute('data-issuing_authority'));
+            $('#edit_issue_date').val(button.getAttribute('data-issue_date'));
+            $('#edit_expiration_date').val(button.getAttribute('data-expiration_date'));
 
+            document.getElementById('editForm').action = `/asset-licenses/${id}`;
         }
     </script>
 @endsection

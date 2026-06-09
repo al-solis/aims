@@ -234,22 +234,22 @@
 
     {{-- SIGNATURES --}}
     <div class="footer">
-        <div class="signature">
-            {{ $budget->latestApproval->approved == '1' ? 'Approved' : 'Rejected' }} by: <br>
-            <br>
-            <br>
-            <span style="text-decoration: underline;">
-                {{ $budget->latestApproval->approver->fname ?? '' }}
-                {{ $budget->latestApproval->approver->mname ?? '' }}
-                {{ $budget->latestApproval->approver->lname ?? '' }}
-                |
-                {{ $budget->latestApproval->created_at->format('F d, Y h:i A') ?? '' }}
-
-            </span><br>
-
-            {{ $budget->latestApproval->approver->employee->position ?? '' }}
-            <br>
-        </div>
+        @if ($budget->latestApproval)
+            <div class="signature">
+                {{ $budget->latestApproval?->approved == '1' ? 'Approved' : 'Rejected' }} by: <br>
+                <br>
+                <br>
+                <span style="text-decoration: underline;">
+                    {{ $budget->latestApproval?->approver->fname ?? '' }}
+                    {{ $budget->latestApproval?->approver->mname ?? '' }}
+                    {{ $budget->latestApproval?->approver->lname ?? '' }}
+                    |
+                    {{ $budget->latestApproval?->created_at->format('F d, Y h:i A') ?? '' }}
+                </span><br>
+                {{ $budget->latestApproval?->approver->employee->position ?? '' }}
+                <br>
+            </div>
+        @endif
         <div class="signature" style="float:right;">
             Checked by: <br>
             <br>

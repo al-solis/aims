@@ -47,7 +47,7 @@
                     <i class="bi bi-upc-scan"></i>
                     Scanner
                 </a> --}}
-                <a href="{{ route('licenses.index') }}" title="Track and monitor asset licenses and permits"
+                <a href="{{ route('asset-licenses.index') }}" title="Track and monitor asset licenses and permits"
                     class="py-1.5 px-2.5 flex flex-col items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700  hover:bg-gray-200">
                     <img width="48" height="48"
                         src="https://img.icons8.com/external-good-lines-kalash/32/external-card-banking-and-money-good-lines-kalash.png"

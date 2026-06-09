@@ -160,9 +160,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('supplies', SuppliesController::class)->except(['destroy']);
 
 
-    Route::get('/licenses', [AssetLicenseController::class, 'index'])->name('licenses.index');
-    Route::post('/licenses', [AssetLicenseController::class, 'store'])->name('licenses.store');
-    Route::put('/licenses/{id}', [AssetLicenseController::class, 'update'])->name('licenses.update');
+    Route::get('/asset-licenses', [AssetLicenseController::class, 'index'])->name('asset-licenses.index');
+    Route::post('/asset-licenses', [AssetLicenseController::class, 'store'])->name('asset-licenses.store');
+    Route::put('/asset-licenses/{id}', [AssetLicenseController::class, 'update'])->name('asset-licenses.update');
     //Route::resource('licenses', AssetLicenseController::class)->except(['destroy']);
 
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');

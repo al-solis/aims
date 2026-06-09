@@ -71,7 +71,7 @@ class MainController extends Controller
                 'severity' => $daysLeft < 0 ? 4 : ($daysLeft <= 7 ? 3 : 2),
                 'icon' => 'bi-credit-card-2-front',
                 'color' => $daysLeft < 0 ? 'red' : 'yellow',
-                'url' => route('licenses.index', $license->asset->id ?? 0)
+                'url' => route('asset-licenses.index', $license->asset->id ?? 0)
             ]);
         }
 

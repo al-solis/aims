@@ -169,7 +169,7 @@
                     <th>Aquired</th>
                     <th>Property No.</th>
                     <th>Description</th>
-                    <th class="text-right">Purchase Cost</th>
+                    <th class="text-right">Purchase Price</th>
                     <th class="text-right">Total</th>
                 </tr>
             </thead>
@@ -218,10 +218,10 @@
     {{-- SIGNATURES --}}
     <div class="footer">
         <div class="signature">
+            <br>
             Approved By:<br><br>
 
             ___________________________<br>
-            <br>
             <br>
             Authorized Officer
 
@@ -235,7 +235,7 @@
                 {{ $transfer->transferDetails->first()->fromEmployee->middle_name ?? '' }}</span><br>
             <span
                 style="color:#555;">{{ $transfer->transferDetails->first()->fromEmployee->position ?? '' }}</span><br>
-            Employee Signature
+
         </div>
         <div class="signature">
             Received By:<br><br>
@@ -245,7 +245,7 @@
                 {{ $transfer->transferDetails->first()->toEmployee->first_name ?? '' }}
                 {{ $transfer->transferDetails->first()->toEmployee->middle_name ?? '' }} </span><br>
             <span style="color:#555;">{{ $transfer->transferDetails->first()->toEmployee->position ?? '' }}</span><br>
-            Employee Signature
+
         </div>
     </div>
 

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\asset_license;
 use App\Models\license_type;
@@ -66,7 +65,7 @@ class AssetLicenseController extends Controller
             ]);
 
         return view(
-            'licenses.index',
+            'asset-licenses.index',
             compact('assetLicenses', 'assets', 'licenseTypes', 'allLicenseTypes', 'totalLicenses', 'activeLicenses', 'expiringSoonLicenses', 'expiredLicenses', 'licenseExpiringDays')
         );
     }
@@ -92,7 +91,7 @@ class AssetLicenseController extends Controller
             'created_at' => now(),
         ]);
 
-        return redirect()->route('licenses.index')->with('success', 'License added successfully.');
+        return redirect()->route('asset-licenses.index')->with('success', 'License added successfully.');
     }
 
     public function update(Request $request, $id)
@@ -119,6 +118,6 @@ class AssetLicenseController extends Controller
             'updated_at' => now(),
         ]);
 
-        return redirect()->route('licenses.index')->with('success', 'License updated successfully.');
+        return redirect()->route('asset-licenses.index')->with('success', 'License updated successfully.');
     }
 }

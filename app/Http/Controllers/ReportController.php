@@ -30,6 +30,7 @@ use App\Models\budget_detail;
 use App\Models\User;
 use App\Models\budget_routing;
 use App\Models\budget_approval;
+use App\Models\mdr_exc_loc;
 
 class ReportController extends Controller
 {
@@ -360,29 +361,50 @@ class ReportController extends Controller
             )->setPaper('letter', $reportType == '2' ? 'landscape' : 'portrait');
 
         } elseif ($reportType == '2') {
-            $noOfClients = location::where('status', 1)->count();
-            $noOfGuards = Employee::whereRaw('LOWER(position) LIKE ?', ['%guard%'])->get();
-            $noOfSecurityOfficers = Employee::whereRaw('LOWER(position) LIKE ?', ['%security officer%'])->get();
-            $noOfPrivateDetectives = Employee::whereRaw('LOWER(position) LIKE ?', ['%private detective%'])->get();
-            $noOfSecurityConsultants = Employee::whereRaw('LOWER(position) LIKE ?', ['%security consultant%'])->count();
-            $noOfSPAs = Employee::whereRaw('LOWER(position) LIKE ?', ['%special protection agent%'])->count();
-            $noOfTrainingDirectors = Employee::whereRaw('LOWER(position) LIKE ?', ['%training director%'])->count();
-            $noOfTrainingOfficers = Employee::whereRaw('LOWER(position) LIKE ?', ['%training officer%'])->count();
-            $totalSecEmployees = Employee::whereRaw('LOWER(position) LIKE ?', ['%guard%'])
-                ->orWhereRaw('LOWER(position) LIKE ?', ['%security officer%'])
-                ->orWhereRaw('LOWER(position) LIKE ?', ['%private detective%'])
-                ->orWhereRaw('LOWER(position) LIKE ?', ['%security consultant%'])
-                ->orWhereRaw('LOWER(position) LIKE ?', ['%special protection agent%'])
-                ->orWhereRaw('LOWER(position) LIKE ?', ['%training director%'])
-                ->orWhereRaw('LOWER(position) LIKE ?', ['%training officer%'])
+            $noOfClients = location::where('status', 1)
+                ->whereNotIn('id', mdr_exc_loc::pluck('location_id'))
+                ->count();
+            $noOfGuards = Employee::whereRaw('LOWER(position) LIKE ?', ['%guard%'])
+                ->where('status', 1)
+                ->get();
+            $noOfSecurityOfficers = Employee::whereRaw('LOWER(position) LIKE ?', ['%security officer%'])
+                ->where('status', 1)
+                ->get();
+            $noOfPrivateDetectives = Employee::whereRaw('LOWER(position) LIKE ?', ['%private detective%'])
+                ->where('status', 1)
+                ->get();
+            $noOfSecurityConsultants = Employee::whereRaw('LOWER(position) LIKE ?', ['%security consultant%'])
+                ->where('status', 1)
+                ->count();
+            $noOfSPAs = Employee::whereRaw('LOWER(position) LIKE ?', ['%special protection agent%'])
+                ->where('status', 1)
+                ->count();
+            $noOfTrainingDirectors = Employee::whereRaw('LOWER(position) LIKE ?', ['%training director%'])
+                ->where('status', 1)
+                ->count();
+            $noOfTrainingOfficers = Employee::whereRaw('LOWER(position) LIKE ?', ['%training officer%'])
+                ->where('status', 1)
+                ->count();
+            $totalSecEmployees = Employee::where('status', 1)
+                ->where(function ($query) {
+                    $query->whereRaw('LOWER(position) LIKE ?', ['%guard%'])
+                        ->orWhereRaw('LOWER(position) LIKE ?', ['%security officer%'])
+                        ->orWhereRaw('LOWER(position) LIKE ?', ['%private detective%'])
+                        ->orWhereRaw('LOWER(position) LIKE ?', ['%security consultant%'])
+                        ->orWhereRaw('LOWER(position) LIKE ?', ['%special protection agent%'])
+                        ->orWhereRaw('LOWER(position) LIKE ?', ['%training director%'])
+                        ->orWhereRaw('LOWER(position) LIKE ?', ['%training officer%']);
+                })
                 ->count();
 
-            $noOfFirearms = Asset::where('category_id', 1)
+            $noOfFirearms = Asset::with('location')
+                ->where('category_id', 1)
                 ->whereIn('status', [1, 2, 3, 8])
                 ->get();
 
             $query = DB::table('employees as e')
                 ->join('locations as l', 'e.location_id', '=', 'l.id')
+                ->whereNotIn('l.id', mdr_exc_loc::pluck('location_id'))
                 ->leftJoin('assets as a', function ($join) {
                     $join->on('a.assigned_to', '=', 'e.id')
                         ->where('a.category_id', 1); // firearms only
@@ -451,7 +473,7 @@ class ReportController extends Controller
             //employee gains
             $queryGains = DB::table('employees as e')
                 ->join('locations as l', 'e.location_id', '=', 'l.id')
-
+                ->whereNotIn('l.id', mdr_exc_loc::pluck('location_id'))
                 ->leftJoinSub(
                     DB::table('employee_history')
                         ->select('employee_id', DB::raw('MAX(end_date) as max_end_date'))
@@ -471,6 +493,7 @@ class ReportController extends Controller
 
             $queryLosses = DB::table('employees as e')
                 ->join('locations as l', 'e.location_id', '=', 'l.id')
+                ->whereNotIn('l.id', mdr_exc_loc::pluck('location_id'))
                 ->whereIn('e.status', [3, 4, 5]) // resigned, retired, terminated
                 ->whereNotNull('e.termination_date'); // Ensure termination_date is not null
 
