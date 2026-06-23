@@ -14,7 +14,7 @@ use App\Models\clearance_header as ClearanceHeader;
 use App\Models\clearance_detail as ClearanceDetail;
 use App\Models\employee;
 use App\Models\setting;
-use App\Models\Supplies;
+use App\Models\supplies as Supplies;
 
 
 class MainController extends Controller
