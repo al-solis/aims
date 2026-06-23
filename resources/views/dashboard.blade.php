@@ -9,7 +9,7 @@
             </div>
 
             <h2 class="ml-3 font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight mt-0">
-                {{ __('Asset Inventory Management System') }}
+                {{ env('APP_NAME', 'Asset and Workforce Management System') }}
             </h2>
         </div>
 
