@@ -719,7 +719,7 @@
                                     </td>
 
                                     <td rowspan="{{ $empRowspan }}">
-                                        {{ $employee->highest_education }}
+                                        {{ Str::upper($employee->highest_education) }}
                                     </td>
 
                                     <td rowspan="{{ $empRowspan }}">
@@ -799,7 +799,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" style="text-align:center;">No new employees found.</td>
+                        <td colspan="6" style="text-align:center;">No new employees for this period.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -838,7 +838,8 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" style="text-align:center;">No resigned/ terminated employees found.</td>
+                        <td colspan="5" style="text-align:center;">No resigned/ terminated employees for this period.
+                        </td>
                     </tr>
                 @endforelse
             </tbody>
