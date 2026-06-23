@@ -8,7 +8,7 @@ use App\Models\asset as Asset;
 use App\Models\location as Location;
 use App\Models\category;
 use Carbon\Carbon;
-use App\Models\Maintenance;
+use App\Models\maintenance as Maintenance;
 use App\Models\asset_license as AssetLicense;
 use App\Models\clearance_header as ClearanceHeader;
 use App\Models\clearance_detail as ClearanceDetail;
