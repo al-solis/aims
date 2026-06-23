@@ -55,7 +55,7 @@
         <img src="{{ asset('images/kesia_banner.webp') }}" alt="Logo" class="w-auto max-w-[280px] lg:max-w-sm">
 
         <p class="mt-4 text-center text-4xl font-medium text-white tracking-wide">
-            Asset Inventory Management System
+            {{ env('APP_NAME', 'Asset and Workforce Management System') }}
         </p>
 
     </div>
