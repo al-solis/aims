@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Uom;
+use App\Models\uom as UOM;
 
 class UomController extends Controller
 {
@@ -13,11 +13,11 @@ class UomController extends Controller
     {
         $search = $request->input('search');
         $status = $request->input('status');
-        $totalUoms = Uom::count();
-        $activeUoms = Uom::where('is_active', 1)->count();
-        $inactiveUoms = Uom::where('is_active', 0)->count();
+        $totalUoms = UOM::count();
+        $activeUoms = UOM::where('is_active', 1)->count();
+        $inactiveUoms = UOM::where('is_active', 0)->count();
 
-        $query = Uom::query();
+        $query = UOM::query();
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -39,7 +39,7 @@ class UomController extends Controller
     public function store(Request $request)
     {
 
-        $baseUom = Uom::pluck('code')->implode(',');
+        $baseUom = UOM::pluck('code')->implode(',');
         // dd($baseUom);
         $request->validate([
             'name' => 'required|string|max:100',
@@ -49,7 +49,7 @@ class UomController extends Controller
         ]);
 
 
-        Uom::create([
+        UOM::create([
             'name' => $request->name,
             'code' => $request->code,
             'conversion_factor' => $request->conversion_factor,
@@ -70,7 +70,7 @@ class UomController extends Controller
             'edit_base_uom' => 'required|string|max:10',
         ]);
 
-        $uom = Uom::findOrFail($id);
+        $uom = UOM::findOrFail($id);
         $uom->update([
             'name' => $request->edit_name,
             'code' => $request->edit_code,

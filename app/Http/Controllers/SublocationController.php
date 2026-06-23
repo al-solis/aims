@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\SubLocation;
-use App\Models\Location;
+use App\Models\sublocation as SubLocation;
+use App\Models\location as Location;
 
 class SublocationController extends Controller
 {

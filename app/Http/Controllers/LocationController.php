@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Location;
-use App\Models\SubLocation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\location as Location;
+use App\Models\sublocation as SubLocation;
 class LocationController extends Controller
 {
     public function index(Request $request)

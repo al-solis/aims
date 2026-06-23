@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Location;
+use App\Models\location as Location;
 use App\Models\budget_routing;
 
 class BudgetRoutingController extends Controller

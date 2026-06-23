@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\clearance_routing;
-use App\Models\Location;
+use App\Models\location as Location;
 
 
 class ClearanceRoutingController extends Controller

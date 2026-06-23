@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\transmittal_header;
 use App\Models\transmittal_detail;
-use App\Models\Employee;
-use App\Models\Location;
-use App\Models\Asset;
+use App\Models\employee as Employee;
+use App\Models\location as Location;
+use App\Models\asset as Asset;
 
 class TransmittalController extends Controller
 {

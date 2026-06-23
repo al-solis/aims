@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
-use App\Models\Supplies;
-use App\Models\UOM;
+use App\Models\supplies as Supplies;
+use App\Models\uom as UOM;
 use App\Models\issuance_header;
 use App\Models\issuance_detail;
 use App\Models\employee;
-use App\Models\Location;
+use App\Models\location as Location;
 
 class IssuanceController extends Controller
 {

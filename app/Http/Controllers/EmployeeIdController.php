@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\employee_id as EmployeeId;
 use Illuminate\Support\Facades\DB;
-use App\Models\Employee;
+use App\Models\employee as Employee;
 
 class EmployeeIdController extends Controller
 {

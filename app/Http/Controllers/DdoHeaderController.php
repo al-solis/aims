@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\ddo_header;
 use App\Models\ddo_detail;
-use App\Models\Employee;
-use App\Models\Location;
+use App\Models\employee as Employee;
+use App\Models\location as Location;
 use Carbon\Carbon;
 
 

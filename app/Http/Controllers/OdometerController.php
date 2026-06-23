@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Models\Odometer;
-use App\Models\Asset;
-use App\Models\Employee;
+use App\Models\odometer as Odometer;
+use App\Models\asset as Asset;
+use App\Models\employee as Employee;
 
 class OdometerController extends Controller
 {
