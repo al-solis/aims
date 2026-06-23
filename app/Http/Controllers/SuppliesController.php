@@ -8,10 +8,10 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\Supplies;
-use App\Models\UOM;
-use App\Models\SuppliesCategory;
-use App\Models\Supplier;
+use App\Models\supplies as Supplies;
+use App\Models\uom as UOM;
+use App\Models\suppliescategory as SuppliesCategory;
+use App\Models\supplier as Supplier;
 
 class SuppliesController extends Controller
 {
