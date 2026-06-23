@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\asset as Asset;
-use App\Models\Location;
+use App\Models\location as Location;
 use App\Models\category;
 use Carbon\Carbon;
 use App\Models\Maintenance;
