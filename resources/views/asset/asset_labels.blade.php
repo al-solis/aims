@@ -77,10 +77,10 @@
 
             <div class="asset-code">{{ $asset->asset_code }}</div>
             <div class="description">{{ $asset->name ?? 'N/A' }}</div>
-            <div class="assigned">Assigned To:
+            <div class="assigned">
                 {{ $asset->assigned_to ? $asset->assigned_user->last_name . ', ' . $asset->assigned_user->first_name . ' ' . $asset->assigned_user->middle_name : 'N/A' }}
             </div>
-            <div class="location">Location: {{ $asset->location->name ?? 'N/A' }}</div>
+            <div class="location">{{ $asset->location->name ?? 'N/A' }}</div>
             <img class="barcode" src="data:image/png;base64,{{ DNS1D::getBarcodePNG($asset->asset_code, 'C128', 2, 40) }}"
                 alt="barcode" />
         </div>

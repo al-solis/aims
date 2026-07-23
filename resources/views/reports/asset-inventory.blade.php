@@ -148,6 +148,7 @@
     <span><strong>THRU &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             {{ $preparedBy?->first_name }} {{ $preparedBy?->last_name }}<br></strong></span>
     <span><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             {{ $preparedBy?->position }}<br></strong></span>
     <span><strong>SUBJECT &nbsp;&nbsp;&nbsp;
             MONTHLY INVENTORY REPORT<br></strong></span>

@@ -794,7 +794,7 @@
                             {{ Str::upper($gain->middle_name) }}</td>
                         <td>{{ $gain->location_name ?? '' }}</td>
                         <td>{{ Carbon::parse($gain->hire_date)->format('m/d/Y') }}</td>
-                        <td>{{ $gain->previous_employer ?? 'N/A' }}</td>
+                        <td>{{ $gain->previous_employer ?? '' }}</td>
                         <td></td>
                     </tr>
                 @empty

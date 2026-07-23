@@ -116,6 +116,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/get-sublocations/{location}', [LocationController::class, 'getSublocations']);
     Route::get('/asset/labels', [AssetController::class, 'printAssetLabel'])->name('asset.labels');
+    Route::get('/asset/qr-code', [AssetController::class, 'generateQRCode'])->name('asset.qr-code');
+
     Route::post('/assets/print-labels', [AssetController::class, 'printAssetLabel'])->name('assets.print.labels');
 
     Route::post('/asset/save-selection', [AssetController::class, 'saveSelection'])->name('asset.save-selection');

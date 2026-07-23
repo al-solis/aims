@@ -39,7 +39,7 @@
                 <div id="bulk-actions" class="flex items-center gap-2"
                     style="{{ count(session('selected_assets', [])) > 0 ? '' : 'display:none;' }}">
 
-                    <a id="print-selected-btn" href="#" target="_blank"
+                    {{-- <a id="print-selected-btn" href="#" target="_blank"
                         class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-upc-scan" viewBox="0 0 16 16">
@@ -47,7 +47,7 @@
                                 d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z" />
                         </svg>
                         Print Selected (<span id="selected-count">0</span>)
-                    </a>
+                    </a> --}}
 
                     {{-- <a id="transfer-selected-btn" href="#" target="_blank"
                         class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200">
@@ -61,17 +61,57 @@
                         Transfer Selected (<span id="selected-count">0</span>)
                     </a> --}}
 
-                    <button onclick="clearSelection()"
-                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-eraser" viewBox="0 0 16 16">
-                            <path
-                                d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828zm2.121.707a1 1 0 0 0-1.414 0L4.16 7.547l5.293 5.293 4.633-4.633a1 1 0 0 0 0-1.414zM8.746 13.547 3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293z" />
-                        </svg>
-                        Clear Selection
-                    </button>
-                </div>
+                    <div class="relative">
+                        <button type="button" id="print-selected-btn" onclick="togglePrintDropdown()"
+                            class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-upc-scan" viewBox="0 0 16 16">
+                                <path
+                                    d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z" />
+                            </svg>
+                            Print Selected (<span id="selected-count">0</span>)
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
 
+                        <div id="print-dropdown"
+                            class="hidden absolute left-0 z-20 mt-1 w-44 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                            <a id="print-barcode-link" href="#" target="_blank" onclick="closePrintDropdown()"
+                                class="flex items-center gap-2 px-4 py-2 text-xs text-gray-700 hover:bg-gray-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
+                                    class="bi bi-upc-scan" viewBox="0 0 16 16">
+                                    <path
+                                        d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z" />
+                                </svg>
+                                Print Barcode
+                            </a>
+                            <a id="print-qr-link" href="#" target="_blank" onclick="closePrintDropdown()"
+                                class="flex items-center gap-2 px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 border-t border-gray-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
+                                    class="bi bi-qr-code" viewBox="0 0 16 16">
+                                    <path d="M2 2h2v2H2zM2 3h1v1H2z" />
+                                    <path d="M6 0v6H0V0zM5 1H1v4h4zM4 12H2v2h2z" />
+                                    <path d="M6 10v6H0v-6zm-5 1v4h4v-4zm11-9h2v2h-2z" />
+                                    <path
+                                        d="M10 0v6h6V0zm5 1v4h-4V1zM8 1V0h1v2H8zm0 2h1v1H8zm0 2h1v1H8zM8 8h1v1H8zm0 2h1v1H8zm0 2h1v2H8zm0 3h1v1H8zM10 8h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1zm2-8h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1zm2-8h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1z" />
+                                </svg>
+                                Print QR Code
+                            </a>
+                        </div>
+
+                        <button onclick="clearSelection()"
+                            class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-eraser" viewBox="0 0 16 16">
+                                <path
+                                    d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828zm2.121.707a1 1 0 0 0-1.414 0L4.16 7.547l5.293 5.293 4.633-4.633a1 1 0 0 0 0-1.414zM8.746 13.547 3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293z" />
+                            </svg>
+                            Clear Selection
+                        </button>
+                    </div>
+                </div>
 
                 {{-- <a href="{{ route('setup.index') }}"
                     class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 ">
@@ -346,6 +386,20 @@
                                             fill="currentColor" class="bi bi-upc-scan" viewBox="0 0 16 16">
                                             <path
                                                 d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z" />
+                                        </svg>
+                                    </a>
+
+                                    <a href="{{ route('asset.qr-code', ['asset_ids' => $asset->id]) }}"
+                                        title="Generate QR: {{ $asset->asset_code }}" target="_blank"
+                                        class="group flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-qr-code" viewBox="0 0 16 16">
+                                            <path d="M2 2h2v2H2zM2 3h1v1H2z" />
+                                            <path d="M6 0v6H0V0zM5 1H1v4h4zM4 12H2v2h2z" />
+                                            <path d="M6 10v6H0v-6zm-5 1v4h4v-4zm11-9h2v2h-2z" />
+                                            <path
+                                                d="M10 0v6h6V0zm5 1v4h-4V1zM8 1V0h1v2H8zm0 2h1v1H8zm0 2h1v1H8zM8 8h1v1H8zm0 2h1v1H8zm0 2h1v2H8zm0 3h1v1H8zM10 8h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1zm2-8h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1zm2-8h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1z" />
                                         </svg>
                                     </a>
 
@@ -1150,6 +1204,7 @@
 
         //update print selected button link
         const PRINT_BASE_URL = "{{ route('asset.labels') }}";
+        const QR_BASE_URL = "{{ route('asset.qr-code') }}";
         const TRANSFER_BASE_URL = "{{ route('transfer.index') }}";
 
         function getSelectedAssetIds() {
@@ -1157,24 +1212,47 @@
                 .map(cb => cb.value);
         }
 
+        // function updateBulkActions() {
+        //     const ids = getSelectedAssetIds();
+        //     const bulkActions = document.getElementById('bulk-actions');
+        //     const printBtn = document.getElementById('print-selected-btn');
+        //     const countSpan = document.getElementById('selected-count');
+        //     const transferBtn = document.getElementById('transfer-selected-btn');
+
+        //     if (ids.length > 0) {
+        //         bulkActions.style.display = 'flex';
+        //         countSpan.textContent = ids.length;
+
+        //         // Live update URL
+        //         printBtn.href = PRINT_BASE_URL + '?asset_ids=' + ids.join(',');
+        //         transferBtn.href = TRANSFER_BASE_URL + '?asset_ids=' + ids.join(',');
+        //     } else {
+        //         bulkActions.style.display = 'none';
+        //         printBtn.href = '#';
+        //         transferBtn.href = '#';
+        //     }
+        // }
+
         function updateBulkActions() {
             const ids = getSelectedAssetIds();
             const bulkActions = document.getElementById('bulk-actions');
-            const printBtn = document.getElementById('print-selected-btn');
             const countSpan = document.getElementById('selected-count');
+            const barcodeLink = document.getElementById('print-barcode-link');
+            const qrLink = document.getElementById('print-qr-link');
             const transferBtn = document.getElementById('transfer-selected-btn');
 
             if (ids.length > 0) {
                 bulkActions.style.display = 'flex';
                 countSpan.textContent = ids.length;
 
-                // Live update URL
-                printBtn.href = PRINT_BASE_URL + '?asset_ids=' + ids.join(',');
-                transferBtn.href = TRANSFER_BASE_URL + '?asset_ids=' + ids.join(',');
+                barcodeLink.href = PRINT_BASE_URL + '?asset_ids=' + ids.join(',');
+                qrLink.href = QR_BASE_URL + '?asset_ids=' + ids.join(',');
+                if (transferBtn) transferBtn.href = TRANSFER_BASE_URL + '?asset_ids=' + ids.join(',');
             } else {
                 bulkActions.style.display = 'none';
-                printBtn.href = '#';
-                transferBtn.href = '#';
+                barcodeLink.href = '#';
+                qrLink.href = '#';
+                if (transferBtn) transferBtn.href = '#';
             }
         }
 
@@ -1191,6 +1269,24 @@
                 cb.checked = this.checked;
             });
             updateBulkActions();
+        });
+
+        function togglePrintDropdown() {
+            document.getElementById('print-dropdown').classList.toggle('hidden');
+        }
+
+        function closePrintDropdown() {
+            document.getElementById('print-dropdown').classList.add('hidden');
+        }
+
+        // Close dropdown when clicking outside of it
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('print-dropdown');
+            const btn = document.getElementById('print-selected-btn');
+            if (!dropdown || dropdown.classList.contains('hidden')) return;
+            if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
         });
 
         // Initial load (important for search / pagination)

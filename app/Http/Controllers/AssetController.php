@@ -161,6 +161,49 @@ class AssetController extends Controller
         return $pdf->stream('asset_labels.pdf');
     }
 
+    public function generateQRCode(Request $request)
+    {
+        $assetIds = $request->input('asset_ids', []);
+
+        if (is_string($assetIds)) {
+            $assetIds = explode(',', $assetIds);
+        }
+
+        $assetIds = array_values(
+            array_filter(array_map('intval', (array) $assetIds))
+        );
+
+        if (empty($assetIds)) {
+            return redirect()->back()->with('error', 'No assets selected for QR code generation.');
+        }
+
+        // dd($assetIds);
+
+        $assets = Asset::with(['category', 'location', 'assigned_user'])
+            ->whereIn('id', $assetIds)
+            ->get();
+
+        foreach ($assets as $asset) {
+            $asset->qr = base64_encode(
+                QrCode::format('svg')
+                    ->size(120)
+                    ->margin(1)
+                    ->generate($asset->asset_code)
+            );
+        }
+
+        // dd($assets);
+
+        // 35mm x 13mm
+        $width = 35 * 2.83465; // 99.21 pt
+        $height = 13 * 2.83465; // 36.85 pt
+
+        $pdf = Pdf::loadView('asset.asset_qr', compact('assets'))
+            ->setPaper([0, 0, $width, $height], 'portrait');
+
+        return $pdf->stream('asset_qr_codes.pdf');
+    }
+
     public function update(Request $request, Asset $asset)
     {
         $request->validate([

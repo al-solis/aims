@@ -570,7 +570,10 @@ class ReportController extends Controller
                 'e.position',
                 'e.hire_date',
                 'h.company'
-            )->get();
+            )
+                ->orderBy('e.last_name')
+                ->orderBy('e.first_name')
+                ->get();
 
             $losses = $queryLosses->groupBy(
                 'l.name',
@@ -580,7 +583,10 @@ class ReportController extends Controller
                 'e.position',
                 'e.termination_date',
                 'e.status'
-            )->get();
+            )
+                ->orderBy('e.last_name')
+                ->orderBy('e.first_name')
+                ->get();
 
             $dateRangeLabels = $dateRangeLabels[$pDateRange] ?? 'custom';
 
