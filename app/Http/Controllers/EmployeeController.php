@@ -29,7 +29,7 @@ class EmployeeController extends Controller
         $locations = Location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get();
         $query = Employee::query();
         $totalEmployees = Employee::count();
-        $activeEmployees = Employee::where('status', 1)->count();
+        $activeEmployees = Employee::whereIn('status', [1, 11])->count();
         $onleaveEmployees = Employee::whereIn('status', [2, 10])->count();
         $inactiveEmployees = Employee::whereIn('status', [0, 3, 4, 5, 6, 7, 8, 9])->count();
 

@@ -58,7 +58,7 @@
         }
 
         .asset-code {
-            font-size: 7pt;
+            font-size: 6pt;
             font-weight: bold;
             line-height: 1.0;
             margin-bottom: 1px;
@@ -90,7 +90,7 @@
                 <tr>
 
                     <td class="qr-cell">
-                        <img src="data:image/svg+xml;base64,{{ $asset->qr }}">
+                        <img src="data:image/svg+xml;base64,{{ trim($asset->qr) }}">
                     </td>
 
                     <td class="info-cell">
