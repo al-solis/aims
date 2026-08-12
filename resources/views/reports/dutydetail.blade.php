@@ -132,7 +132,7 @@
         <div>
             <strong>
                 DUTY DETAIL ORDER NO.
-                <u>{{ $newOrderNo }}</u>
+                <u>{{ isset($newOrderNo) ? $newOrderNo : 'N/A' }}</u>
             </strong>
         </div>
 

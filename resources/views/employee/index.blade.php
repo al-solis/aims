@@ -288,7 +288,6 @@
     <div id="view-asset-modal" tabindex="-1" aria-hidden="true"
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
         <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
-            <!-- Modal content -->
             <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
                 <!-- Modal header -->
                 <div class="flex justify-between items-center pb-4 mb-2 rounded-t border-b sm:mb-5 dark:border-gray-600">
@@ -314,29 +313,32 @@
                         <input type="hidden" name="empId" id="empId">
                         <div name="employee_name" id="employee_name" class="mb-2 text-md font-semibold"></div>
                         <div class="overflow-y-auto max-h-[70vh]">
+                            <div class="mb-3 flex items-center">
+                                <input type="checkbox" id="selectAllAssets" class="mr-2" checked>
+                                <label for="selectAllAssets" class="text-xs font-medium text-gray-700">Select All
+                                    Assets</label>
+                            </div>
                             <table class="min-w-full text-xs border rounded-xl">
                                 <thead class="bg-gray-200">
                                     <tr>
+                                        <th class="px-2 py-2 text-left w-8">
+                                            <input type="checkbox" id="selectAllAssetsHeader" checked>
+                                        </th>
                                         <th class="px-2 py-2 text-left">Asset Code</th>
                                         <th class="px-2 py-2 text-left">Name</th>
                                         <th class="px-2 py-2 text-left">Category</th>
                                         <th class="px-2 py-2 text-left">Location</th>
-                                        {{-- <th class="px-2 py-2 text-left">Status</th> --}}
                                         <th class="px-2 py-2 text-left">License Validity</th>
                                     </tr>
                                 </thead>
                                 <tbody id="assetTableBody">
-                                    <tr>
-                                        <td colspan="5" class="text-center py-4 text-gray-500">
-                                            Loading...
-                                        </td>
-                                    </tr>
+                                    <!-- Asset rows will be inserted here with checkboxes -->
                                 </tbody>
                             </table>
                         </div>
 
                         <br />
-                        <a href="#" title="Print Accountability Form" onclick="printARE()"
+                        <a href="#" title="Print Accountability Form" onclick="printARE(event)"
                             class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="mr-2 bi bi-printer" viewBox="0 0 16 16">
@@ -347,19 +349,7 @@
                             Accountability Form
                         </a>
 
-                        {{-- <a href="#" title="Print Transmittal Form" onclick="printTransmittal()"
-                            class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="mr-2 bi bi-printer" viewBox="0 0 16 16">
-                                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1" />
-                                <path
-                                    d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1" />
-                            </svg>
-                            Transmittal Form
-                        </a> --}}
-
-
-                        <a href="#" title="Print Duty Detail" onclick="printDutyDetail()"
+                        <a href="#" title="Print Duty Detail" onclick="printDutyDetail(event)"
                             class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="mr-2 bi bi-printer" viewBox="0 0 16 16">
@@ -374,7 +364,6 @@
             </div>
         </div>
     </div>
-    <!-- End view assest modal -->
 
     <!-- Upload file modal -->
     <div id="upload-file-modal" tabindex="-1" aria-hidden="true"
@@ -478,197 +467,264 @@
                 </div>
             </div>
             <!-- End upload modal -->
+        </div>
+    </div>
+    <!-- End view asset modal -->
 
-            <script>
-                let searchTimer;
+    <script>
+        let searchTimer;
+        let selectedAssetIds = [];
 
-                const searchInput = document.getElementById('simple-search');
-                const form = searchInput.closest('form');
+        const searchInput = document.getElementById('simple-search');
+        const form = searchInput.closest('form');
 
-                searchInput.addEventListener('input', function() {
-                    clearTimeout(searchTimer);
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimer);
 
-                    searchTimer = setTimeout(() => {
-                        form.submit();
-                    }, 800); // change to 5000 for 5 seconds
-                });
+            searchTimer = setTimeout(() => {
+                form.submit();
+            }, 800);
+        });
 
-                function clearModalFields() {
-                    // Clear all form fields
-                    const form = document.querySelector('form');
-                    form.reset();
+        function clearModalFields() {
+            const form = document.querySelector('form');
+            form.reset();
 
-                    // Remove any success messages after a delay
-                    setTimeout(() => {
-                        const successMessage = document.querySelector('[data-success]');
-                        if (successMessage) {
-                            successMessage.remove();
-                        }
-                    }, 3000);
+            setTimeout(() => {
+                const successMessage = document.querySelector('[data-success]');
+                if (successMessage) {
+                    successMessage.remove();
                 }
+            }, 3000);
+        }
 
-                function openAssetModal(button) {
-                    const id = button.getAttribute('data-id');
-                    document.getElementById('empId').value = id
-                    document.getElementById('employee_name').innerText = button.getAttribute('data-name');
-                    const statusMap = {
-                        1: 'Available',
-                        2: 'Active',
-                        3: 'Assigned',
-                        4: 'Maintenance',
-                        5: 'Retired'
-                    };
+        // Main function to open asset modal with checkboxes
+        function openAssetModal(button) {
+            const id = button.getAttribute('data-id');
+            document.getElementById('empId').value = id;
+            document.getElementById('employee_name').innerText = button.getAttribute('data-name');
 
-                    fetch(`/employee/${id}/accountability`)
-                        .then(response => response.json())
-                        .then(data => {
+            fetch(`/employee/${id}/accountability`)
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('assetTableBody');
+                    tbody.innerHTML = '';
 
-                            const tbody = document.getElementById('assetTableBody');
-                            tbody.innerHTML = '';
-
-                            if (data.assets.length === 0) {
-                                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="text-center py-4 text-gray-500">
-                            No assigned assets found.
-                        </td>
-                    </tr>
-                `;
-                                return;
-                            }
-
-                            data.assets.forEach(asset => {
-
-                                const statusLabel = statusMap[asset.status] || 'Available'
-
-                                let expirationDate = asset.licenses ?
-                                    asset.licenses.map(l => new Date(l.expiration_date).toLocaleDateString())
-                                    .join('<br>') :
-                                    '';
-
-                                tbody.innerHTML += `
-                    <tr class="border-b">
-                        <td class="px-2 py-2">${asset.asset_code ?? ''}</td>
-                        <td class="px-2 py-2">${asset.name ?? ''}</td>
-                        <td class="px-2 py-2">${asset.category ? asset.category.name : ''}</td>
-                        <td class="px-2 py-2">${asset.location ? asset.location.name : ''}</td>                        
-                        <td class="px-2 py-2">${expirationDate}</td>
-                    </tr>
-                `;
-                            });
-                        })
-                        .catch(error => {
-                            console.error(error);
-                        });
-                }
-
-                function printARE() {
-                    const empId = document.getElementById('empId').value
-                    if (!empId) {
-                        alert('Employee must be selected.');
+                    if (data.assets.length === 0) {
+                        tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-gray-500">
+                                No assigned assets found.
+                            </td>
+                        </tr>
+                    `;
                         return;
                     }
 
-                    let url = "{{ route('are.print') }}" + "?empId=" + empId;
-                    window.open(url, '_blank');
-                }
+                    // Reset selected assets
+                    selectedAssetIds = [];
 
-                function printDutyDetail() {
-                    const empId = document.getElementById('empId').value
-                    if (!empId) {
-                        alert('Employee must be selected.');
-                        return;
-                    }
+                    data.assets.forEach(asset => {
+                        // Add asset ID to selected list by default
+                        selectedAssetIds.push(asset.id);
 
-                    let url = "{{ route('duty.detail.print') }}" + "?empId=" + empId;
-                    window.open(url, '_blank');
-                }
+                        let expirationDate = asset.licenses ?
+                            asset.licenses.map(l => new Date(l.expiration_date).toLocaleDateString()).join(
+                                '<br>') :
+                            '';
 
-                function loadUploadModal(button) {
-                    const id = button.getAttribute('data-id');
-                    document.getElementById('upload_emp_id').value = id;
-                    document.getElementById('upload_employee_name').value = button.getAttribute('data-name');
-                    const empName = button.getAttribute('data-name');
+                        tbody.innerHTML += `
+                        <tr class="border-b" data-asset-id="${asset.id}">
+                            <td class="px-2 py-2 text-center">
+                                <input type="checkbox" class="asset-checkbox" value="${asset.id}" checked>
+                            </td>
+                            <td class="px-2 py-2">${asset.asset_code ?? ''}</td>
+                            <td class="px-2 py-2">${asset.name ?? ''}</td>
+                            <td class="px-2 py-2">${asset.category ? asset.category.name : ''}</td>
+                            <td class="px-2 py-2">${asset.location ? asset.location.name : ''}</td>                        
+                            <td class="px-2 py-2">${expirationDate}</td>
+                        </tr>
+                    `;
+                    });
 
-                    // make sure the elements exist
-                    const empIdInput = document.getElementById('upload_emp_id');
-                    const empNameInput = document.getElementById('upload_employee_name');
-
-                    if (empIdInput && empNameInput) {
-                        empIdInput.value = id; // hidden input
-                        empNameInput.value = empName; // visible input
-                    }
-
-                    loadUploadedFiles(id);
-                }
-
-
-                function submitUploadFileForm() {
-                    const empId = document.getElementById('upload_emp_id').value;
-                    const form = document.getElementById('uploadFileForm');
-                    const formData = new FormData(form);
-
-                    fetch(`/employee/${empId}/upload`, {
-                            method: 'POST',
-                            body: formData,
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert('Files uploaded successfully!');
-                                form.reset();
-                                // Optionally, refresh the uploaded files table here
-                                loadUploadedFiles(empId);
+                    // Add event listeners to checkboxes
+                    document.querySelectorAll('.asset-checkbox').forEach(checkbox => {
+                        checkbox.addEventListener('change', function() {
+                            const assetId = parseInt(this.value);
+                            if (this.checked) {
+                                if (!selectedAssetIds.includes(assetId)) {
+                                    selectedAssetIds.push(assetId);
+                                }
                             } else {
-                                alert('Error uploading files: ' + data.message);
+                                selectedAssetIds = selectedAssetIds.filter(id => id !== assetId);
                             }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('An error occurred while uploading files.');
+                            updateSelectAllState();
                         });
+                    });
+
+                    // Add event listeners for select all checkboxes
+                    document.getElementById('selectAllAssets').addEventListener('change', function() {
+                        toggleAllCheckboxes(this.checked);
+                    });
+
+                    document.getElementById('selectAllAssetsHeader').addEventListener('change', function() {
+                        toggleAllCheckboxes(this.checked);
+                    });
+
+                    // Initialize select all state
+                    updateSelectAllState();
+                })
+                .catch(error => {
+                    console.error('Error loading assets:', error);
+                    alert('Error loading assets. Please try again.');
+                });
+        }
+
+        function toggleAllCheckboxes(checked) {
+            const checkboxes = document.querySelectorAll('.asset-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = checked;
+                const assetId = parseInt(checkbox.value);
+                if (checked) {
+                    if (!selectedAssetIds.includes(assetId)) {
+                        selectedAssetIds.push(assetId);
+                    }
+                } else {
+                    selectedAssetIds = selectedAssetIds.filter(id => id !== assetId);
                 }
+            });
 
-                function loadUploadedFiles(empId) {
-                    fetch(`/employee/${empId}/uploaded-files`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const tableBody = document.getElementById('viewDetailsTable');
-                            tableBody.innerHTML = '';
+            document.getElementById('selectAllAssets').checked = checked;
+            document.getElementById('selectAllAssetsHeader').checked = checked;
+        }
 
-                            if (data.files.length === 0) {
-                                tableBody.innerHTML = `
-                                    <tr>
-                                        <td colspan="3" class="text-center py-4 text-gray-500">
-                                            No files uploaded.
-                                        </td>
-                                    </tr>
-                                `;
-                                return;
-                            }
+        function updateSelectAllState() {
+            const checkboxes = document.querySelectorAll('.asset-checkbox');
+            const checkedCount = document.querySelectorAll('.asset-checkbox:checked').length;
+            const allChecked = checkboxes.length > 0 && checkedCount === checkboxes.length;
 
-                            data.files.forEach(file => {
-                                const uploadDate = new Date(file.created_at).toLocaleDateString();
-                                tableBody.innerHTML += `
-                                    <tr class="border-b">
-                                        <td class="px-3 py-2">${uploadDate}</td>
-                                        <td class="px-3 py-2">${file.file_name}</td>
-                                        <td class="px-3 py-2">
-                                            <a href="/storage/${file.path}" target="_blank" class="text-blue-600 hover:underline">
-                                                View File
-                                            </a>
-                                        </td>
-                                    </tr>
-                                `;
-                            });
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('An error occurred while loading uploaded files.');
-                        });
-                }
-            </script>
-        @endsection
+            document.getElementById('selectAllAssets').checked = allChecked;
+            document.getElementById('selectAllAssetsHeader').checked = allChecked;
+        }
+
+        function printARE(event) {
+            event.preventDefault();
+            const empId = document.getElementById('empId').value;
+
+            if (!empId) {
+                alert('Employee must be selected.');
+                return;
+            }
+
+            if (selectedAssetIds.length === 0) {
+                alert('Please select at least one asset to print.');
+                return;
+            }
+
+            const assetIdsParam = selectedAssetIds.join(',');
+            let url = "{{ route('are.print') }}" + "?empId=" + empId + "&assetIds=" + assetIdsParam;
+            window.open(url, '_blank');
+        }
+
+        function printDutyDetail(event) {
+            event.preventDefault();
+            const empId = document.getElementById('empId').value;
+
+            if (!empId) {
+                alert('Employee must be selected.');
+                return;
+            }
+
+            if (selectedAssetIds.length === 0) {
+                alert('Please select at least one asset to print.');
+                return;
+            }
+
+            const assetIdsParam = selectedAssetIds.join(',');
+            let url = "{{ route('duty.detail.print') }}" + "?empId=" + empId + "&assetIds=" + assetIdsParam;
+            window.open(url, '_blank');
+        }
+
+        function loadUploadModal(button) {
+            const id = button.getAttribute('data-id');
+            const empName = button.getAttribute('data-name');
+
+            const empIdInput = document.getElementById('upload_emp_id');
+            const empNameInput = document.getElementById('upload_employee_name');
+
+            if (empIdInput && empNameInput) {
+                empIdInput.value = id;
+                empNameInput.value = empName;
+            }
+
+            loadUploadedFiles(id);
+        }
+
+        function submitUploadFileForm() {
+            const empId = document.getElementById('upload_emp_id').value;
+            const form = document.getElementById('uploadFileForm');
+            const formData = new FormData(form);
+
+            fetch(`/employee/${empId}/upload`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Files uploaded successfully!');
+                        form.reset();
+                        loadUploadedFiles(empId);
+                    } else {
+                        alert('Error uploading files: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while uploading files.');
+                });
+        }
+
+        function loadUploadedFiles(empId) {
+            fetch(`/employee/${empId}/uploaded-files`)
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('viewDetailsTable');
+                    tableBody.innerHTML = '';
+
+                    if (data.files.length === 0) {
+                        tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="3" class="text-center py-4 text-gray-500">
+                                No files uploaded.
+                            </td>
+                        </tr>
+                    `;
+                        return;
+                    }
+
+                    data.files.forEach(file => {
+                        const uploadDate = new Date(file.created_at).toLocaleDateString();
+                        tableBody.innerHTML += `
+                        <tr class="border-b">
+                            <td class="px-3 py-2">${uploadDate}</td>
+                            <td class="px-3 py-2">${file.file_name}</td>
+                            <td class="px-3 py-2">
+                                <a href="/storage/${file.path}" target="_blank" class="text-blue-600 hover:underline">
+                                    View File
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while loading uploaded files.');
+                });
+        }
+    </script>
+@endsection

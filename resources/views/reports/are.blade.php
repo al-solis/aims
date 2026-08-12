@@ -50,6 +50,20 @@
             padding-bottom: 3px;
         }
 
+        .no-border-table {
+            border: none;
+        }
+
+        .no-border-table th,
+        .no-border-table td {
+            border: none !important;
+            padding: 4px 6px;
+        }
+
+        .no-border-table {
+            margin-top: 0;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -125,16 +139,16 @@
     </div>
 
     <br>
-    <p style="text-align: justify">This accountability form does not automatically imply salary deduction in the event
+    {{-- <p style="text-align: justify">This accountability form does not automatically imply salary deduction in the event
         of
         damaged or malfunctioning equipment. In cases where an item is reported as defective or broken. An incident
         report or letter of report must first be conducted and submitted to properly assess the cause of the damage. The
         management will review the findings of the report to determine responsibility, ensuring that any action taken is
-        fair, justified, and based on verified facts rather than assumptions.</p>
+        fair, justified, and based on verified facts rather than assumptions.</p> --}}
 
     <div class="section">
         {{-- <div class="section-title">Accountability Information</div> --}}
-        <table>
+        <table class="no-border-table">
             <tr>
                 <td width="30%"><strong>Issued To:</strong></td>
                 <td width="70%">
@@ -159,13 +173,14 @@
         <p style="text-align: center">{{ $employee->location->name ?? 'N/A' }}<br>
             {{ $employee->location->description ?? '' }}</p>
     </div> --}}
+    <p></p>
 
 
     {{-- CLEARANCE DETAILS --}}
     <div class="section">
         {{-- <div class="section-title">Accountability Details</div> --}}
 
-        <table>
+        <table class="no-border-table">
             <thead>
                 <tr>
                     <th>Qty</th>
@@ -210,6 +225,18 @@
 
 
     </div>
+    <p></p>
+    <p style="text-align: justify">I hereby acknowledge receipt of and accept accountability of the above asset issued
+        to me in accordance
+        with the company policies and procedures.
+    </p>
+    <p style="text-align: justify">
+        I further understand the the issued Asset is for Company use only and failure to comply with the company
+        policies and procedures
+        will be subject to disciplinary action, and any damanges due to my negligence will be automatically charged
+        and/or
+        deducted to my salary.
+    </p>
 
     {{-- SIGNATURES --}}
     <div class="footer">

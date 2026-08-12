@@ -251,13 +251,13 @@
 
             <strong>
                 <u>
-                    {{ strtoupper($preparedBy->first_name . ' ' . $preparedBy->last_name) }}
+                    {{ strtoupper($preparedBy?->first_name . ' ' . $preparedBy?->last_name) }}
                 </u>
             </strong>
 
             <br>
 
-            {{ $preparedBy->position ?? '' }}
+            {{ $preparedBy?->position ?? '' }}
         </div>
 
         <div class="signature" style="float:right;">
