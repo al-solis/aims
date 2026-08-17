@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use App\Models\employee as Employee;
 use App\Models\location as Location;
 use App\Models\id_type as IdType;
@@ -15,6 +16,8 @@ use App\Models\asset;
 use App\Models\category;
 use App\Models\asset_license;
 use App\Models\uploaded_file as UploadedFile;
+use App\Models\numseq;
+use App\Models\unused_sequence;
 
 class EmployeeController extends Controller
 {
@@ -89,8 +92,57 @@ class EmployeeController extends Controller
 
     public function create()
     {
+        $numberSequence = unused_sequence::where('name', 'employee_number')
+            ->where('created_by', Auth::id())
+            ->first();
+
+        if (!$numberSequence) {
+
+            // Get the main number sequence configuration
+            $num = numseq::where('name', 'employee_number')->first();
+
+            if (!$num) {
+                abort(500, 'Employee number sequence is not configured.');
+            }
+
+            // Get the next number
+            $nextNumber = $num->current_number + 1;
+
+            // Apply padding only if number_length is greater than 0
+            if ((int) $num->number_length > 0) {
+                $employeeNumber = str_pad(
+                    $nextNumber,
+                    (int) $num->number_length,
+                    '0',
+                    STR_PAD_LEFT
+                );
+            } else {
+                $employeeNumber = (string) $nextNumber;
+            }
+
+            // Add prefix if configured
+            if (!empty($num->prefix)) {
+                $employeeNumber = $num->prefix . $employeeNumber;
+            }
+
+            // Insert into unused sequence
+            $numberSequence = unused_sequence::create([
+                'name' => 'employee_number',
+                'control_number' => $employeeNumber,
+                'created_by' => Auth::id(),
+            ]);
+
+            // Update the main sequence
+            $num->update([
+                'current_number' => $nextNumber,
+            ]);
+        } else {
+            $employeeNumber = $numberSequence->control_number;
+        }
+
         return view('employee.create', [
             'employee' => null,
+            'employeeNumber' => $employeeNumber,
             'locations' => Location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get(),
         ]);
     }
@@ -198,6 +250,12 @@ class EmployeeController extends Controller
                 'photo_path' => $photoPath,
                 'created_by' => Auth::id(),
             ]);
+
+            DB::table('unused_sequences')
+                ->where('name', 'employee_number')
+                ->where('control_number', $request->idno)
+                ->where('created_by', Auth::id())
+                ->delete();
 
         } catch (\Exception $e) {
             if ($request->filled('employee_path')) {

@@ -131,7 +131,7 @@
                                                 class="block text-xs font-medium text-gray-900 dark:text-white">ID
                                                 No*</label>
                                             <input type="text" name="idno" id="idno"
-                                                value="{{ old('idno', $employee->employee_code ?? '') }}"
+                                                value="{{ old('idno', $employee->employee_code ?? $employeeNumber) }}"
                                                 class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                                 placeholder="e.g. 001-26, 2026-00001" required>
                                             <small id="id-feedback" class="text-red-500 text-xs mb-1 hidden">

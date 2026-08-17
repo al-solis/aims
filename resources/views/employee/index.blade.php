@@ -313,11 +313,11 @@
                         <input type="hidden" name="empId" id="empId">
                         <div name="employee_name" id="employee_name" class="mb-2 text-md font-semibold"></div>
                         <div class="overflow-y-auto max-h-[70vh]">
-                            <div class="mb-3 flex items-center">
+                            {{-- <div class="mb-3 flex items-center">
                                 <input type="checkbox" id="selectAllAssets" class="mr-2" checked>
                                 <label for="selectAllAssets" class="text-xs font-medium text-gray-700">Select All
                                     Assets</label>
-                            </div>
+                            </div> --}}
                             <table class="min-w-full text-xs border rounded-xl">
                                 <thead class="bg-gray-200">
                                     <tr>
@@ -563,9 +563,9 @@
                     });
 
                     // Add event listeners for select all checkboxes
-                    document.getElementById('selectAllAssets').addEventListener('change', function() {
-                        toggleAllCheckboxes(this.checked);
-                    });
+                    //document.getElementById('selectAllAssets').addEventListener('change', function() {
+                    //    toggleAllCheckboxes(this.checked);
+                    //});
 
                     document.getElementById('selectAllAssetsHeader').addEventListener('change', function() {
                         toggleAllCheckboxes(this.checked);
@@ -594,7 +594,7 @@
                 }
             });
 
-            document.getElementById('selectAllAssets').checked = checked;
+            //document.getElementById('selectAllAssets').checked = checked;
             document.getElementById('selectAllAssetsHeader').checked = checked;
         }
 
@@ -603,7 +603,7 @@
             const checkedCount = document.querySelectorAll('.asset-checkbox:checked').length;
             const allChecked = checkboxes.length > 0 && checkedCount === checkboxes.length;
 
-            document.getElementById('selectAllAssets').checked = allChecked;
+            //document.getElementById('selectAllAssets').checked = allChecked;
             document.getElementById('selectAllAssetsHeader').checked = allChecked;
         }
 
