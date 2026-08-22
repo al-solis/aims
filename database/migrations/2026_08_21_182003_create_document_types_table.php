@@ -10,12 +10,16 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('unused_sequences', function (Blueprint $table) {
+        Schema::create('document_types', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 20);
-            $table->string('control_number');
-            $table->unsignedBigInteger('created_by')->nullable();
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->boolean('is_active')->default(true);
+
+            $table->unsignedBigInteger('created_by');
             $table->foreign('created_by')->references('id')->on('users');
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->foreign('updated_by')->references('id')->on('users');
             $table->timestamps();
         });
     }
@@ -25,6 +29,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('unused_sequences');
+        Schema::dropIfExists('document_types');
     }
 };

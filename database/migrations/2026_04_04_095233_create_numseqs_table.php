@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('numseqs', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->string('name');
             $table->string('prefix')->nullable();
             $table->integer('month')->nullable();
             $table->integer('year')->nullable();

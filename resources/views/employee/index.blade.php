@@ -141,6 +141,20 @@
                 </div>
 
                 <div class="md:w-1/3 w-full">
+                    <select id="searchdoc" name="searchdoc"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                        onchange="this.form.submit()">
+                        <option value="">All Document Types</option>
+                        @foreach ($docTypes as $docType)
+                            <option value="{{ $docType->id }}"
+                                {{ request('searchdoc') == $docType->id ? 'selected' : '' }}>
+                                {{ $docType->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="md:w-1/3 w-full">
                     <select id="status" name="status"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                         onchange="this.form.submit()">
@@ -368,7 +382,7 @@
     <!-- Upload file modal -->
     <div id="upload-file-modal" tabindex="-1" aria-hidden="true"
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
-        <div class="relative p-4 w-full max-w-4xl h-full md:h-auto">
+        <div class="relative p-4 w-full max-w-5xl h-full md:h-auto">
             <!-- Modal content -->
             <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
                 <!-- Modal header -->
@@ -407,8 +421,22 @@
                                         <input name="upload_employee_name" id="upload_employee_name"
                                             class="text-md font-semibold bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"></input>
                                     </div>
+
                                     <div class="w-full sm:col-span-2">
-                                        <label class="block text-xs font-medium">Note</label>
+                                        <label
+                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Document
+                                            Type</label>
+                                        <select name="doctype" id="doctype"
+                                            class="text-md font-semibold bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                            <option value="">Select Document Type</option>
+                                            @foreach ($docTypes as $docType)
+                                                <option value="{{ $docType->id }}">{{ $docType->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="w-full sm:col-span-2">
+                                        <label class="block text-sm font-medium">Note</label>
                                         <textarea id="note" name="note" rows="3"
                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"></textarea>
                                     </div>
@@ -435,6 +463,8 @@
                                             <thead class="bg-gray-100">
                                                 <tr>
                                                     <th class="px-3 py-2 border">Date</th>
+                                                    <th class="px-3 py-2 border">Document Type</th>
+                                                    <th class="px-3 py-2 border">Note</th>
                                                     <th class="px-3 py-2 border">File Name</th>
                                                     <th class="px-3 py-2 border">File</th>
                                                 </tr>
@@ -698,7 +728,7 @@
                     if (data.files.length === 0) {
                         tableBody.innerHTML = `
                         <tr>
-                            <td colspan="3" class="text-center py-4 text-gray-500">
+                            <td colspan="5" class="text-center py-4 text-gray-500">
                                 No files uploaded.
                             </td>
                         </tr>
@@ -711,6 +741,8 @@
                         tableBody.innerHTML += `
                         <tr class="border-b">
                             <td class="px-3 py-2">${uploadDate}</td>
+                            <td class="px-3 py-2">${file.document_type_id ? file.document_type.name : 'N/A'}</td>
+                            <td class="px-3 py-2">${file.note}</td>
                             <td class="px-3 py-2">${file.file_name}</td>
                             <td class="px-3 py-2">
                                 <a href="/storage/${file.path}" target="_blank" class="text-blue-600 hover:underline">

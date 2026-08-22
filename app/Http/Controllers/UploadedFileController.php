@@ -23,6 +23,7 @@ class UploadedFileController extends Controller
 
                 UploadedFile::create([
                     'employee_id' => $employee->id,
+                    'document_type_id' => $request->doctype,
                     'module' => 'employee',
                     'note' => $request->input('note', ''),
                     'file_name' => $file->getClientOriginalName(),
@@ -42,7 +43,7 @@ class UploadedFileController extends Controller
     public function getFiles($empId)
     {
         $employee = employee::findOrFail($empId);
-        $files = UploadedFile::where('employee_id', $employee->id)->get();
+        $files = UploadedFile::with('documentType')->where('employee_id', $employee->id)->get();
 
         return response()->json(['files' => $files]);
     }

@@ -10,6 +10,7 @@ class uploaded_file extends Model
     protected $fillable = [
         'employee_id',
         'module',
+        'document_type_id',
         'note',
         'file_name',
         'path',
@@ -20,6 +21,11 @@ class uploaded_file extends Model
     public function employee()
     {
         return $this->belongsTo(employee::class, 'employee_id');
+    }
+
+    public function documentType()
+    {
+        return $this->belongsTo(document_type::class, 'document_type_id');
     }
 }
 

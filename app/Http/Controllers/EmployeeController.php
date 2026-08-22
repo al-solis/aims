@@ -18,6 +18,7 @@ use App\Models\asset_license;
 use App\Models\uploaded_file as UploadedFile;
 use App\Models\numseq;
 use App\Models\unused_sequence;
+use App\Models\document_type;
 
 class EmployeeController extends Controller
 {
@@ -28,6 +29,7 @@ class EmployeeController extends Controller
         $search = $request->query('search');
         $status = $request->query('status');
         $searchloc = $request->query('searchloc');
+        $searchdoc = $request->query('searchdoc');
 
         $locations = Location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get();
         $query = Employee::query();
@@ -35,6 +37,8 @@ class EmployeeController extends Controller
         $activeEmployees = Employee::whereIn('status', [1, 11])->count();
         $onleaveEmployees = Employee::whereIn('status', [2, 10])->count();
         $inactiveEmployees = Employee::whereIn('status', [0, 3, 4, 5, 6, 7, 8, 9])->count();
+
+        $docTypes = document_type::where('is_active', 1)->get();
 
         // If status or location is selected and search exists, redirect without search
         if (($status || $searchloc) && $search) {
@@ -67,6 +71,12 @@ class EmployeeController extends Controller
             $query->where('status', $status);
         }
 
+        if ($searchdoc) {
+            $query->whereHas('uploadedFiles', function ($fileQuery) use ($searchdoc) {
+                $fileQuery->where('document_type_id', $searchdoc);
+            });
+        }
+
         $employees = $query->orderBy('last_name')
             ->orderBy('first_name')
             ->orderBy('middle_name')
@@ -86,7 +96,8 @@ class EmployeeController extends Controller
             'inactiveEmployees',
             'search',
             'status',
-            'searchloc'
+            'searchloc',
+            'docTypes'
         ));
     }
 

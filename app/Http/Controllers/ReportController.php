@@ -281,12 +281,19 @@ class ReportController extends Controller
         $pLocationName = $pLocation ? $pLocation->name : 'All Locations';
 
         $statusLabel = [
+            //0: Inactive, 1: Active, 2: On Leave, 3: Resigned, 4: Retired, 5: Terminated, 6: AWOL, 7: Deceased, 8: Dropped, 9: Labor, 10: Floating, 11: Rehired
             0 => 'Inactive',
             1 => 'Active',
             2 => 'On Leave',
             3 => 'Resigned',
             4 => 'Retired',
             5 => 'Terminated',
+            6 => 'AWOL',
+            7 => 'Deceased',
+            8 => 'Dropped',
+            9 => 'Labor',
+            10 => 'Floating',
+            11 => 'Rehired',
         ];
 
         $dateRangeLabels = [

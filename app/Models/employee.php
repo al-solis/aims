@@ -61,4 +61,9 @@ class employee extends Model
     {
         return $this->hasMany(EmployeeHistory::class, 'employee_id');
     }
+
+    public function uploadedFiles()
+    {
+        return $this->hasMany(uploaded_file::class, 'employee_id');
+    }
 }

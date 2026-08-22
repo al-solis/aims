@@ -34,6 +34,7 @@ use App\Http\Controllers\ClearanceRoutingController;
 use App\Http\Controllers\TransmittalController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\BudgetRoutingController;
+use App\Http\Controllers\DocumentTypeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -70,6 +71,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('setup/category', CategoryController::class)->except(['destroy']);
     Route::resource('setup/license', LicenseTypeController::class)->except(['destroy']);
+    Route::resource('setup/doctype', DocumentTypeController::class)->except(['destroy']);
     Route::resource('setup/idtype', IdTypeController::class)->except(['destroy']);
     Route::resource('setup/supplies-category', SuppliesCategoryController::class)->except(['destroy']);
     Route::resource('setup/uom', UomController::class)->except(['destroy']);

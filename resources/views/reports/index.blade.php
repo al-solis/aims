@@ -594,6 +594,12 @@
                         <option value="3">Resigned</option>
                         <option value="4">Retired</option>
                         <option value="5">Terminated</option>
+                        <option value="6">AWOL</option>
+                        <option value="7">Deceased</option>
+                        <option value="8">Dropped</option>
+                        <option value="9">Labor</option>
+                        <option value="10">Floating</option>
+                        <option value="11">Rehired</option>
                     </select>
                 </div>
 

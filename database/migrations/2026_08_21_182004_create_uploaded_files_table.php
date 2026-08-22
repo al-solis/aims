@@ -15,6 +15,8 @@ return new class extends Migration {
             $table->unsignedBigInteger('employee_id');
             $table->foreign('employee_id')->references('id')->on('employees');
             $table->string('module');
+            $table->unsignedBigInteger('document_type_id')->nullable();
+            $table->foreign('document_type_id')->references('id')->on('document_types');
             $table->text('note')->nullable();
             $table->string('file_name');
             $table->text('path');
