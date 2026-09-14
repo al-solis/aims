@@ -289,7 +289,7 @@
 
                                 {{-- LOCATION (only once) --}}
                                 @if ($locationFirst)
-                                    <td rowspan="{{ $locationRowspan }}">
+                                    <td rowspan="{{ $locationRowspan }}" style="text-align: center;">
                                         {{ $row->location_name }}<br>
                                         {{ $row->location_address }}
                                     </td>
