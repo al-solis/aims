@@ -295,6 +295,7 @@ class AssetController extends Controller
     {
         $id = $request->empId;
         $assetIdsParam = $request->assetIds;
+        $printedBy = Employee::where('employee_code', Auth::user()->employee_code)->first();
 
         $employee = Employee::with('location')
             ->findOrFail($id);
@@ -315,7 +316,7 @@ class AssetController extends Controller
                 ->get();
         }
 
-        $pdf = PDF::loadView('reports.are', compact('employee', 'assets'))
+        $pdf = PDF::loadView('reports.are', compact('employee', 'assets', 'printedBy'))
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream('are.pdf');

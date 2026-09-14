@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\employee;
+use App\Models\document_type;
 
 class uploaded_file extends Model
 {
@@ -26,6 +28,11 @@ class uploaded_file extends Model
     public function documentType()
     {
         return $this->belongsTo(document_type::class, 'document_type_id');
+    }
+
+    public function uploader()
+    {
+        return $this->belongsTo(User::class, 'uploaded_by');
     }
 }
 

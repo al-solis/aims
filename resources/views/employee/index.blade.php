@@ -198,8 +198,9 @@
                     @forelse($employees as $employee)
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3 font-medium w-[50px]">{{ $employee->employee_code }}</td>
-                            <td class="px-4 py-3 w-[150px]">{{ $employee->last_name }}, {{ $employee->first_name }}
-                                {{ $employee->middle_name }}</td>
+                            <td class="px-4 py-3 w-[150px]">
+                                {{ $employee->last_name }}{{ trim($employee->first_name) ? ', ' . $employee->first_name : '' }}{{ trim($employee->middle_name) ? ' ' . $employee->middle_name : '' }}
+                            </td>
                             <td class="px-4 py-3 w-[150px]">{{ $employee->position }}</td>
                             <td class="px-4 py-3 w-[100px]">{{ $employee->location ? $employee->location->name : '' }}
                             </td>
@@ -382,7 +383,7 @@
     <!-- Upload file modal -->
     <div id="upload-file-modal" tabindex="-1" aria-hidden="true"
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
-        <div class="relative p-4 w-full max-w-5xl h-full md:h-auto">
+        <div class="relative p-4 w-full max-w-4xl h-full md:h-auto">
             <!-- Modal content -->
             <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
                 <!-- Modal header -->
@@ -463,6 +464,7 @@
                                             <thead class="bg-gray-100">
                                                 <tr>
                                                     <th class="px-3 py-2 border">Date</th>
+                                                    <th class="px-3 py-2 border">Uploaded By</th>
                                                     <th class="px-3 py-2 border">Document Type</th>
                                                     <th class="px-3 py-2 border">Note</th>
                                                     <th class="px-3 py-2 border">File Name</th>
@@ -741,6 +743,7 @@
                         tableBody.innerHTML += `
                         <tr class="border-b">
                             <td class="px-3 py-2">${uploadDate}</td>
+                            <td class="px-3 py-2">${file.uploaded_by ? file.uploader.lname + ', ' + file.uploader.fname : 'N/A'}</td>
                             <td class="px-3 py-2">${file.document_type_id ? file.document_type.name : 'N/A'}</td>
                             <td class="px-3 py-2">${file.note}</td>
                             <td class="px-3 py-2">${file.file_name}</td>

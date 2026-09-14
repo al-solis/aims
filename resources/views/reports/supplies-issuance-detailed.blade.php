@@ -88,11 +88,57 @@
         }
 
         .signature {
-            margin-top: 50px;
+            position: relative;
             width: 45%;
             display: inline-block;
+            vertical-align: top;
             text-align: center;
         }
+
+        .signature-label {
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .signature-area {
+            position: relative;
+            width: 260px;
+            height: 75px;
+            margin: 0 auto;
+        }
+
+        .signature-line {
+            position: absolute;
+            width: 260px;
+            left: 0;
+            bottom: 25px;
+            border-bottom: 1px solid #000;
+            z-index: 1;
+        }
+
+        .signature-image {
+            position: absolute;
+            width: 80px;
+            height: auto;
+            left: 50%;
+            bottom: 10px;
+            transform: translateX(-50%);
+            z-index: 3;
+        }
+
+        .signature-name {
+            position: absolute;
+            width: 100%;
+            left: 0;
+            bottom: 0;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .signature-position {
+            margin-top: 2px;
+        }
+
 
         .status-returned {
             color: green;

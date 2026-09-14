@@ -910,11 +910,11 @@ class ReportController extends Controller
         // dd($employees);
 
         if ($request->draft) {
-            $ddoFormatted = 'DRAFT - ' . Carbon::now()->format('F Y');
+            $ddoFormatted = 'DRAFT - ' . Carbon::parse($request->from_date)->format('F Y');
         } else {
             $ddoseq = numseq::where('name', 'ddo')
-                ->where('month', Carbon::now()->month)
-                ->where('year', Carbon::now()->year)
+                ->where('month', Carbon::parse($request->from_date)->month)
+                ->where('year', Carbon::parse($request->from_date)->year)
                 ->first();
 
             if ($ddoseq) {
@@ -923,13 +923,13 @@ class ReportController extends Controller
             } else {
                 $ddoseq = numseq::create([
                     'name' => 'ddo',
-                    'month' => Carbon::now()->month,
-                    'year' => Carbon::now()->year,
+                    'month' => Carbon::parse($request->from_date)->month,
+                    'year' => Carbon::parse($request->from_date)->year,
                     'current_number' => 1,
                 ]);
             }
 
-            $monthYear = Carbon::now()->format('F Y'); // April 2026
+            $monthYear = Carbon::parse($request->from_date)->format('F Y'); // April 2026
             $sequence = str_pad($ddoseq->current_number, 3, '0', STR_PAD_LEFT); // 004
 
             $ddoFormatted = $monthYear . '-' . $sequence;

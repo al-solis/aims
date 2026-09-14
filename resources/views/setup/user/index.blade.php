@@ -138,7 +138,7 @@
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Middle Name</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Email</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Roles</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Status</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
                 </thead>
@@ -146,12 +146,13 @@
                 <tbody class="divide-y">
                     @forelse($users as $user)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 w-[80px]">{{ $user->employee_code }}</td>
-                            <td class="px-4 py-3 w-[80px]">{{ $user->lname }}</td>
-                            <td class="px-4 py-3 w-[80px]">{{ $user->fname }}</td>
-                            <td class="px-4 py-3 w-[80px]">{{ $user->mname }}</td>
-                            <td class="px-4 py-3 w-[80px]">{{ $user->email }}</td>
-                            <td class="px-4 py-3 w-[80px]">
+                            <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">{{ $user->employee_code }}
+                            </td>
+                            <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">{{ $user->lname }}</td>
+                            <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">{{ $user->fname }}</td>
+                            <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">{{ $user->mname }}</td>
+                            <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">{{ $user->email }}</td>
+                            <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">
                                 {{ $user->role == 1 ? 'Admin' : ($user->role == 2 ? 'Viewer' : 'User') }}</td>
                             <td class="px-4 py-3 w-[100px] text-xs font-semibold">
                                 @php

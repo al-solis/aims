@@ -21,7 +21,7 @@
                     {{-- https://img.icons8.com/color/48/dashboard-layout.png --}}
                     {{-- <img width="48" height="48"
                         src="{{ file_exists(public_path('icons/dashboard.png')) ? asset('icons/dashboard.png') : 'https://img.icons8.com/color/48/dashboard-layout.png' }}"
-                        alt="dashboard-layout" /> --}}
+                        alt="Dashboard" /> --}}
                     <img width="48" height="48" src="https://img.icons8.com/color/48/dashboard-layout.png"
                         alt="dashboard" />
                     <span class="text-xs mt-1">Dashboard</span>
@@ -31,7 +31,7 @@
                     class="py-1.5 px-2.5 flex flex-col items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700  hover:bg-gray-200">
                     {{-- <img width="48" height="48"
                         src="{{ file_exists(public_path('icons/assets.png')) ? asset('icons/assets.png') : 'https://img.icons8.com/color/48/box.png' }}"
-                        alt="box" /> --}}
+                        alt="Assets" /> --}}
                     <img width="48" height="48" src="https://img.icons8.com/color/48/box.png" alt="asset" />
                     {{-- https://img.icons8.com/color/48/box.png --}}
                     <span class="text-xs mt-1">Assets</span>
@@ -40,7 +40,7 @@
                     class="py-1.5 px-2.5 flex flex-col items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700  hover:bg-gray-200">
                     {{-- <img width="48" height="48"
                         src="{{ file_exists(public_path('icons/supplies.png')) ? asset('icons/supplies.png') : 'https://img.icons8.com/external-flaticons-lineal-color-flat-icons/64/external-office-supplies-office-and-office-supplies-flaticons-lineal-color-flat-icons-11.png' }}"
-                        alt="external-office-supplies-office-and-office-supplies-flaticons-lineal-color-flat-icons-11" /> --}}
+                        alt="Supplies" /> --}}
                     <img width="48" height="48"
                         src="https://img.icons8.com/external-flaticons-lineal-color-flat-icons/64/external-office-supplies-office-and-office-supplies-flaticons-lineal-color-flat-icons-11.png"
                         alt="supplies" />
@@ -51,7 +51,7 @@
                     class="py-1.5 px-2.5 flex flex-col items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700  hover:bg-gray-200">
                     {{-- <img width="48" height="48"
                         src="{{ file_exists(public_path('icons/budget.png')) ? asset('icons/budget.png') : 'https://img.icons8.com/?size=100&id=68348&format=png&color=000000' }}"
-                        alt="external-office-supplies-office-and-office-supplies-flaticons-lineal-color-flat-icons-11" /> --}}
+                        alt="Budget" /> --}}
                     <img width="48" height="48"
                         src="https://img.icons8.com/?size=100&id=68348&format=png&color=000000" alt="budget" />
                     <span class="text-xs mt-1">Budget</span>
@@ -67,8 +67,8 @@
                 <a href="{{ route('asset-licenses.index') }}" title="Track and monitor asset licenses and permits"
                     class="py-1.5 px-2.5 flex flex-col items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700  hover:bg-gray-200">
                     {{-- <img width="48" height="48"
-                            src="{{ file_exists(public_path('icons/licenses.png')) ? asset('icons/licenses.png') : 'https://img.icons8.com/external-good-lines-kalash/32/external-card-banking-and-money-good-lines-kalash.png' }}"
-                            alt="external-card-banking-and-money-good-lines-kalash" /> --}}
+                        src="{{ file_exists(public_path('icons/licenses.png')) ? asset('icons/licenses.png') : 'https://img.icons8.com/external-good-lines-kalash/32/external-card-banking-and-money-good-lines-kalash.png' }}"
+                        alt="Licenses" /> --}}
                     <img width="48" height="48"
                         src="https://img.icons8.com/external-good-lines-kalash/32/external-card-banking-and-money-good-lines-kalash.png"
                         alt="licenses" />
@@ -80,7 +80,7 @@
                     class="py-1.5 px-2.5 flex flex-col items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700  hover:bg-gray-200">
                     {{-- <img width="48" height="48"
                         src="{{ file_exists(public_path('icons/clearance.png')) ? asset('icons/clearance.png') : 'https://img.icons8.com/3d-sugary/100/document-14.png' }}"
-                        alt="document-14" /> --}}
+                        alt="Clearance" /> --}}
                     <img width="48" height="48" src="https://img.icons8.com/3d-sugary/100/document-14.png"
                         alt="clearance" />
                     Clearance
@@ -91,7 +91,7 @@
                     class="py-1.5 px-2.5 flex flex-col items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700  hover:bg-gray-200">
                     {{-- <img width="48" height="48"
                         src="{{ file_exists(public_path('icons/maintenance.png')) ? asset('icons/maintenance.png') : 'https://img.icons8.com/external-wanicon-lineal-color-wanicon/64/external-wrench-construction-wanicon-lineal-color-wanicon.png' }}"
-                        alt="external-wrench-construction-wanicon-lineal-color-wanicon" /> --}}
+                        alt="Maintenance" /> --}}
                     <img width="48" height="48"
                         src="https://img.icons8.com/external-wanicon-lineal-color-wanicon/64/external-wrench-construction-wanicon-lineal-color-wanicon.png"
                         alt="maintenance" />
@@ -103,7 +103,7 @@
                     class="py-1.5 px-2.5 flex flex-col items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700  hover:bg-gray-200">
                     {{-- <img width="48" height="48"
                         src="{{ file_exists(public_path('icons/employees.png')) ? asset('icons/employees.png') : 'https://img.icons8.com/external-filled-outline-wichaiwi/64/external-Employee-business-filled-outline-wichaiwi.png' }}"
-                        alt="external-Employee-business-filled-outline-wichaiwi" /> --}}
+                        alt="Employees" /> --}}
                     <img width="48" height="48"
                         src="https://img.icons8.com/external-filled-outline-wichaiwi/64/external-Employee-business-filled-outline-wichaiwi.png"
                         alt="employees" />
@@ -120,7 +120,7 @@
                     href="{{ route('reports.index') }}">
                     {{-- <img width="48" height="48"
                         src="{{ file_exists(public_path('icons/reports.png')) ? asset('icons/reports.png') : 'https://img.icons8.com/fluency/48/pie-chart-report-script.png' }}"
-                        alt="pie-chart-report-script" /> --}}
+                        alt="Reports" /> --}}
                     <img width="48" height="48"
                         src="https://img.icons8.com/fluency/48/pie-chart-report-script.png" alt="reports" />
                     Reports
@@ -131,7 +131,7 @@
                         class="py-1.5 px-2.5 flex flex-col items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700  hover:bg-gray-200">
                         {{-- <img width="48" height="48"
                             src="{{ file_exists(public_path('icons/settings.png')) ? asset('icons/settings.png') : 'https://img.icons8.com/bubbles/100/settings.png' }}"
-                            alt="settings" /> --}}
+                            alt="Settings" /> --}}
                         <img width="48" height="48" src="https://img.icons8.com/bubbles/100/settings.png"
                             alt="settings" />
                         Setup

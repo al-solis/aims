@@ -1,5 +1,8 @@
 @extends('dashboard')
 @section('content')
+    @php
+        use Illuminate\Support\Str;
+    @endphp
     <div class="p-6 space-y-6">
 
         {{-- Header --}}
@@ -141,7 +144,7 @@
                         <th scope="col" class="px-4 py-3 text-left w-[200px]">Name</th>
                         <th scope="col" class="px-4 py-3 text-left w-[250px]">Description</th>
                         <th scope="col" class="px-4 py-3 text-left w-[350px]">Address</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Contact Number</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Contact Number</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Sub-Locations</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
@@ -151,11 +154,19 @@
                 <tbody class="divide-y">
                     @forelse($locations as $location)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 font-medium w-[100px]">{{ $location->code }}</td>
-                            <td class="px-4 py-3 w-[200px]">{{ $location->name }}</td>
-                            <td class="px-4 py-3 w-[250px]">{{ $location->description }}</td>
-                            <td class="px-4 py-3 w-[350px]">{{ $location->address }}</td>
-                            <td class="px-4 py-3 w-[100px]">{{ $location->contact_number }}</td>
+                            <td class="px-4 py-3 font-medium w-[100px] whitespace-normal break-all align-top">
+                                {{ $location->code }}
+                            </td>
+                            <td class="px-4 py-3 w-[200px] whitespace-normal break-all align-top">{{ $location->name }}
+                            </td>
+                            <td class="px-4 py-3 w-[250px] whitespace-normal break-all align-top">
+                                {{ $location->description }}</td>
+                            <td class="px-4 py-3 w-[350px] whitespace-normal break-all align-top">
+                                {{ $location->address }}
+                            </td>
+                            <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">
+                                {{ $location->contact_number }}
+                            </td>
                             <td class="px-4 py-3 w-[150px]">
                                 <a href="{{ route('location.sublocation.index', $location->id) }}"
                                     class="font-semibold text-gray-600 hover:underline">

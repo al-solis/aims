@@ -133,11 +133,11 @@
                 <thead class="bg-gray-200 text-gray-600">
                     <tr>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Name</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Contact Person</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Contact Person</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Number</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Email</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Address</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Status</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Address</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
                 </thead>
@@ -145,12 +145,16 @@
                 <tbody class="divide-y">
                     @forelse($suppliers as $supplier)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 w-[80px]">{{ $supplier->name }}</td>
-                            <td class="px-4 py-3 w-[150px]">{{ $supplier->contact_person }}</td>
-                            <td class="px-4 py-3 w-[80px]">{{ $supplier->contact_number }}</td>
-                            <td class="px-4 py-3 w-[80px]">{{ $supplier->email }}</td>
-                            <td class="px-4 py-3 w-[80px]">{{ $supplier->address }}</td>
-                            <td class="px-4 py-3 w-[100px] text-xs font-semibold">
+                            <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">{{ $supplier->name }}</td>
+                            <td class="px-4 py-3 w-[100px] whitespace-normal break-all align-top">
+                                {{ $supplier->contact_person }}</td>
+                            <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">
+                                {{ $supplier->contact_number }}</td>
+                            <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">
+                                {{ $supplier->email }}</td>
+                            <td class="px-4 py-3 w-[150px] whitespace-normal break-all align-top">{{ $supplier->address }}
+                            </td>
+                            <td class="px-4 py-3 w-[80px] text-xs font-semibold">
                                 @php
                                     $statuses = [
                                         0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Inactive'],

@@ -80,7 +80,36 @@
             width: 45%;
             display: inline-block;
             text-align: center;
+            vertical-align: top;
         }
+
+        .signature-line {
+            position: relative;
+            width: 280px;
+            height: 55px;
+            margin: 0 auto;
+        }
+
+        .signature-image {
+            position: absolute;
+            width: 80px;
+            height: auto;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -5px;
+            z-index: 2;
+        }
+
+
+        .line {
+            position: absolute;
+            width: 280px;
+            left: 0;
+            bottom: 5px;
+            border-bottom: 1px solid #000;
+            z-index: 1;
+        }
+
 
         .status-returned {
             color: green;
@@ -269,7 +298,10 @@
 
                                 {{-- TIME OF SHIFT (empty for now) --}}
                                 @if ($index == 0)
-                                    <td rowspan="{{ $empRowspan }}"></td>
+                                    <td rowspan="{{ $empRowspan }}" width="50">
+                                        0700H-1900H <br>
+                                        1900H-0700H
+                                    </td>
                                 @endif
 
                                 {{-- FIREARM --}}
@@ -322,14 +354,19 @@
     {{-- SIGNATURES --}}
     <div class="footer">
         <div class="signature">
-
-            _________________________________________<br>
-            <strong>{{ env('DDO_SIG1') }}</strong> <br>
+            <div class="signature-line">
+                <img src="{{ public_path('images/DDO1.png') }}" class="signature-image">
+                <div class="line"></div>
+            </div>
+            <strong>{{ env('DDO_SIG1') }}</strong><br>
             {{ env('DDO_SIG1_POSITION') }}
         </div>
-        <div class="signature" style="float:right;">
 
-            _________________________________________<br>
+        <div class="signature" style="float:right;">
+            <div class="signature-line">
+                <img src="{{ public_path('images/DDO2.png') }}" class="signature-image">
+                <div class="line"></div>
+            </div>
             <strong>{{ env('DDO_SIG2') }}</strong><br>
             {{ env('DDO_SIG2_POSITION') }}
         </div>

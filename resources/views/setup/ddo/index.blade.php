@@ -159,9 +159,12 @@
                     @forelse($setups as $setup)
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3 font-medium w-[100px]">{{ $setup->id }}</td>
-                            <td class="px-4 py-3 w-[200px]">{{ $setup->location->name }}</td>
-                            <td class="px-4 py-3 w-[300px]">{{ $setup->remarks }}</td>
-                            <td class="px-4 py-3 w-[100px]">{{ $setup->ddoDetails->count() }}</td>
+                            <td class="px-4 py-3 w-[200px] whitespace-normal break-all align-top">
+                                {{ $setup->location->name }}</td>
+                            <td class="px-4 py-3 w-[300px] whitespace-normal break-all align-top">{{ $setup->remarks }}
+                            </td>
+                            <td class="px-4 py-3 w-[100px] whitespace-normal break-all align-top">
+                                {{ $setup->ddoDetails->count() }}</td>
                             <td class="px-4 py-3 w-[150px] text-xs font-semibold">
                                 @php
                                     $statuses = [

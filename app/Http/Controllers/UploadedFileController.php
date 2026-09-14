@@ -43,7 +43,7 @@ class UploadedFileController extends Controller
     public function getFiles($empId)
     {
         $employee = employee::findOrFail($empId);
-        $files = UploadedFile::with('documentType')->where('employee_id', $employee->id)->get();
+        $files = UploadedFile::with('documentType', 'uploader')->where('employee_id', $employee->id)->get();
 
         return response()->json(['files' => $files]);
     }

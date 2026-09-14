@@ -89,11 +89,62 @@
             margin-top: 40px;
         }
 
+        .footer {
+            width: 100%;
+            margin-top: 40px;
+            text-align: center;
+        }
+
         .signature {
-            margin-top: 50px;
+            position: relative;
             width: 45%;
             display: inline-block;
+            vertical-align: top;
             text-align: center;
+        }
+
+        .signature-label {
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .signature-area {
+            position: relative;
+            width: 260px;
+            height: 75px;
+            margin: 0 auto;
+        }
+
+        .signature-line {
+            position: absolute;
+            width: 260px;
+            left: 0;
+            bottom: 25px;
+            border-bottom: 1px solid #000;
+            z-index: 1;
+        }
+
+        .signature-image {
+            position: absolute;
+            width: 80px;
+            height: auto;
+            left: 50%;
+            bottom: 10px;
+            transform: translateX(-50%);
+            z-index: 3;
+        }
+
+        .signature-name {
+            position: absolute;
+            width: 100%;
+            left: 0;
+            bottom: 0;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .signature-position {
+            margin-top: 2px;
         }
 
         .status-returned {
@@ -239,10 +290,7 @@
     </p>
 
     {{-- SIGNATURES --}}
-    <div class="footer">
-        {{-- <div>. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-            .</div> --}}
+    {{-- <div class="footer">
         <div class="signature">
             Released by:<br><br>
             <br>
@@ -254,6 +302,62 @@
             <br>
             <strong><u>{{ $employee->first_name . ' ' . substr($employee->middle_name, 0, 1) . '. ' . $employee->last_name }}</u></strong><br>
             {{ $employee->position ?? '' }}
+        </div>
+
+    </div> --}}
+
+    <div class="footer">
+        {{-- RELEASED BY --}}
+        <div class="signature">
+            <div class="signature-label">
+                Released by:
+            </div>
+            <div class="signature-area">
+                {{-- LINE --}}
+                <div class="signature-line"></div>
+
+                {{-- SIGNATURE --}}
+                <img src="{{ public_path('images/ARE.png') }}" class="signature-image">
+
+                {{-- NAME --}}
+                <div class="signature-name">
+                    @if ($printedBy)
+                        <strong>
+                            {{ strtoupper($printedBy?->first_name . ' ' . $printedBy?->middle_name . ' ' . $printedBy?->last_name) }}
+                        </strong>
+                    @endif
+                </div>
+            </div>
+            <div class="signature-position">
+                {{ $printedBy?->position ?? '' }}
+            </div>
+        </div>
+
+        {{-- RECEIVED BY --}}
+        <div class="signature">
+            <div class="signature-label">
+                Received by:
+            </div>
+
+            <div class="signature-area">
+                {{-- LINE --}}
+                <div class="signature-line"></div>
+
+                {{-- NAME --}}
+                <div class="signature-name">
+                    <strong>
+                        @if ($employee)
+                            {{ strtoupper(
+                                $employee->first_name . ' ' . substr($employee->middle_name ?? '', 0, 1) . '. ' . $employee->last_name,
+                            ) }}
+                        @endif
+                    </strong>
+                </div>
+            </div>
+
+            <div class="signature-position">
+                {{ $employee?->position ?? '' }}
+            </div>
         </div>
 
     </div>

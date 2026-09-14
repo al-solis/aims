@@ -15,6 +15,7 @@ use App\Models\issuance_detail;
 use App\Models\employee;
 use App\Models\location as Location;
 
+
 class IssuanceController extends Controller
 {
     public function index(Request $request)
@@ -232,13 +233,15 @@ class IssuanceController extends Controller
 
     public function print($id)
     {
+        $printedBy = employee::where('employee_code', Auth::user()->employee_code)->first();
+
         $issuances = issuance_header::with([
             'details.supply',
             'details.uom',
             'issuedTo'
         ])->findOrFail($id);
 
-        $pdf = Pdf::loadView('reports.issuance', compact('issuances'))
+        $pdf = Pdf::loadView('reports.issuance', compact('issuances', 'printedBy'))
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream('issuance_' . $issuances->issuance_number . '.pdf');

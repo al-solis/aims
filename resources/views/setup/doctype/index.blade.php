@@ -135,7 +135,7 @@
                     <tr>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Name</th>
                         <th scope="col" class="px-4 py-3 text-left w-[200px]">Description</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Status</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
                 </thead>
@@ -143,9 +143,10 @@
                 <tbody class="divide-y">
                     @forelse($docTypes as $docType)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 w-[150px]">{{ $docType->name }}</td>
-                            <td class="px-4 py-3 w-[200px]">{{ $docType->description }}</td>
-                            <td class="px-4 py-3 w-[100px] text-xs font-semibold">
+                            <td class="px-4 py-3 w-[150px] whitespace-normal break-all align-top">{{ $docType->name }}</td>
+                            <td class="px-4 py-3 w-[200px] whitespace-normal break-all align-top">
+                                {{ $docType->description }}</td>
+                            <td class="px-4 py-3 w-[80px] text-xs font-semibold">
                                 @php
                                     $statuses = [
                                         0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Inactive'],

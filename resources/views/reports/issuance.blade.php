@@ -76,10 +76,55 @@
         }
 
         .signature {
-            margin-top: 50px;
-            width: 30%;
+            position: relative;
+            width: 45%;
             display: inline-block;
+            vertical-align: top;
             text-align: center;
+        }
+
+        .signature-label {
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .signature-area {
+            position: relative;
+            width: 260px;
+            height: 75px;
+            margin: 0 auto;
+        }
+
+        .signature-line {
+            position: absolute;
+            width: 260px;
+            left: 0;
+            bottom: 25px;
+            border-bottom: 1px solid #000;
+            z-index: 1;
+        }
+
+        .signature-image {
+            position: absolute;
+            width: 80px;
+            height: auto;
+            left: 50%;
+            bottom: 10px;
+            transform: translateX(-50%);
+            z-index: 3;
+        }
+
+        .signature-name {
+            position: absolute;
+            width: 100%;
+            left: 0;
+            bottom: 0;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .signature-position {
+            margin-top: 2px;
         }
 
         .page-number {
@@ -218,6 +263,67 @@
     {{-- <p style="text-align: center; font-size: 11px; color:#555">This clearance certificate is valid only when properly
         signed
         and dated.</p> --}}
+    <div class="footer">
+        {{-- Issued BY --}}
+        <div class="signature">
+            <div class="signature-label">
+                Issued by:
+            </div>
+            <div class="signature-area">
+                {{-- LINE --}}
+                <div class="signature-line"></div>
+
+                {{-- SIGNATURE --}}
+                <img src="{{ public_path('images/SUP.png') }}" class="signature-image">
+
+                {{-- NAME --}}
+                <div class="signature-name">
+                    @if ($printedBy)
+                        <strong>
+                            {{ strtoupper($printedBy?->first_name . ' ' . $printedBy?->middle_name . ' ' . $printedBy?->last_name) }}
+                        </strong>
+                    @endif
+                </div>
+            </div>
+            <div class="signature-position">
+                {{ $printedBy?->position ?? '' }}
+            </div>
+        </div>
+
+        {{-- RECEIVED BY --}}
+        <div class="signature">
+            <div class="signature-label">
+                Received by:
+            </div>
+
+            <div class="signature-area">
+                {{-- LINE --}}
+                <div class="signature-line"></div>
+
+                {{-- NAME --}}
+                <div class="signature-name">
+                    <strong>
+                        @if ($issuances->issuedTo)
+                            {{ strtoupper(
+                                $issuances->issuedTo->first_name .
+                                    ' ' .
+                                    substr($issuances->issuedTo->middle_name ?? '', 0, 1) .
+                                    '. ' .
+                                    $issuances->issuedTo->last_name,
+                            ) }}
+                        @endif
+                    </strong>
+                </div>
+            </div>
+
+            <div class="signature-position">
+                {{ $issuances->issuedTo?->position ?? '' }}
+            </div>
+        </div>
+
+    </div>
+
+
     <div class="page-number">
         Generated on {{ now()->format('F d, Y') }}
     </div>
