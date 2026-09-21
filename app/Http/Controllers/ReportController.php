@@ -896,15 +896,18 @@ class ReportController extends Controller
         // APPLY UNION
         $query = $query
             ->union($unionQuery)
-            ->orderBy('last_name')
-            ->orderBy('asset_name')
             ->get();
 
-        // $employees = $query->groupBy('employee_id');       
         $employees = $query
             ->groupBy('location_name')
             ->map(function ($locGroup) {
-                return $locGroup->groupBy('employee_id');
+                return $locGroup
+                    ->sortBy([
+                        ['last_name', 'asc'],
+                        ['first_name', 'asc'],
+                        ['asset_name', 'asc'],
+                    ])
+                    ->groupBy('employee_id');
             });
 
         // dd($employees);

@@ -1,16 +1,13 @@
 @extends('dashboard')
 @section('content')
-    @php
-        use Illuminate\Support\Str;
-    @endphp
     <div class="p-6 space-y-6">
 
         {{-- Header --}}
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-semibold text-gray-900">Location Management</h1>
+                <h1 class="text-2xl font-semibold text-gray-900">Cluster Management</h1>
                 <p class="text-sm text-gray-500">
-                    Manage locations and sub-locations for asset tracking
+                    Manage Location Cluster or Region
                 </p>
             </div>
             <div class="flex items-center gap-2 mt-0">
@@ -27,7 +24,7 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
-                    Add Location
+                    Add Cluster
                 </button>
             </div>
         </div>
@@ -36,18 +33,17 @@
         @php
             $cards = [
                 [
-                    'title' => 'Total Locations',
-                    'value' => $totalLocations,
+                    'title' => 'Total Clusters',
+                    'value' => $totalClusters,
                     'color' => 'blue',
                     'icon' => '
-                        <svg xmlns="http://www.w3.org/2000/svg" class = "w-5 h-5 text-blue-600" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
-                        <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/>
-                        <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
-                        </svg>',
+                        <svg xmlns="http://www.w3.org/2000/svg" class = "w-5 h-5 text-blue-600" width="16" height="16" fill="currentColor" class="bi bi-credit-card-2-front" viewBox="0 0 16 16">
+                        <path d="M2.5 3.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1zm2-2a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1zM0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6zm1.5.5A.5.5 0 0 1 1 13V6a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5z"/>
+</svg>',
                 ],
                 [
-                    'title' => 'Active Locations',
-                    'value' => $activeLocations,
+                    'title' => 'Active',
+                    'value' => $activeClusters,
                     'color' => 'green',
                     'icon' => '
                         <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" stroke-width="2"
@@ -57,14 +53,12 @@
                         </svg>',
                 ],
                 [
-                    'title' => 'Total Sub-Locations',
-                    'value' => $totalSubLocations,
-                    'color' => 'orange',
+                    'title' => 'Inactive',
+                    'value' => $inactiveClusters,
+                    'color' => 'red',
                     'icon' => '
-                        <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M3 7h18M3 12h18M3 17h18" />
+                        <svg class="w-5 h-5 text-red-600" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
                         </svg>',
                 ],
             ];
@@ -114,23 +108,9 @@
         <form action="" method="GET">
             <div class="flex flex-col md:flex-row gap-2 text-xs md:text-sm">
                 <div class="md:w-2/3 w-full">
-                    <input type="text" id="simple-search" name="search"
-                        placeholder="Search by name, code, or description..."
+                    <input type="text" id="simple-search" name="search" placeholder="Search by name or description..."
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                         value = "{{ request()->query('search') }}" oninput="this.form.submit()">
-                </div>
-
-                <div class="md:w-1/3 w-full">
-                    <select id="cluster" name="cluster"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                        onchange="this.form.submit()">
-                        <option value="">All Clusters</option>
-                        @foreach ($clusters as $cluster)
-                            <option value="{{ $cluster->id }}" {{ request('cluster') == $cluster->id ? 'selected' : '' }}>
-                                {{ $cluster->name }}
-                            </option>
-                        @endforeach
-                    </select>
                 </div>
 
                 <div class="md:w-1/3 w-full">
@@ -140,7 +120,6 @@
                         <option value="">All Status</option>
                         <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Active</option>
                         <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Inactive</option>
-                        <option value="2" {{ request('status') === '2' ? 'selected' : '' }}>Under Maintenance</option>
                     </select>
                 </div>
             </div>
@@ -153,63 +132,26 @@
             <table class="min-w-full text-xs">
                 <thead class="bg-gray-200 text-gray-600">
                     <tr>
-                        <th scope="col" class="px-4 py-3 text-left w-[100px]">Code</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[200px]">Name</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[250px]">Description</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[350px]">Address</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Contact Number</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Sub-Locations</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Cluster</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Status</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Name</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[200px]">Description</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
                 </thead>
 
                 <tbody class="divide-y">
-                    @forelse($locations as $location)
+                    @forelse($clusters as $cluster)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 font-medium w-[100px] whitespace-normal break-all align-top">
-                                {{ $location->code }}
-                            </td>
-                            <td class="px-4 py-3 w-[200px] whitespace-normal break-all align-top">{{ $location->name }}
-                            </td>
-                            <td class="px-4 py-3 w-[250px] whitespace-normal break-all align-top">
-                                {{ $location->description }}</td>
-                            <td class="px-4 py-3 w-[350px] whitespace-normal break-all align-top">
-                                {{ $location->address }}
-                            </td>
-                            <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">
-                                {{ $location->contact_number }}
-                            </td>
-                            <td class="px-4 py-3 w-[150px]">
-                                <a href="{{ route('location.sublocation.index', $location->id) }}"
-                                    class="font-semibold text-gray-600 hover:underline">
-                                    ({{ $location->sublocations_count }})
-                                    sub-locations
-                                </a>
-                            </td>
-                            <td class="px-4 py-3 w-[150px] text-xs font-semibold">
-                                @if ($location->cluster)
-                                    <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-600">
-                                        {{ $location->cluster->name }}
-                                    </span>
-                                @else
-                                    <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-600">
-                                        No Cluster
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3 w-[150px] text-xs font-semibold">
+                            <td class="px-4 py-3 w-[150px] whitespace-normal break-all align-top">{{ $cluster->name }}</td>
+                            <td class="px-4 py-3 w-[200px] whitespace-normal break-all align-top">
+                                {{ $cluster->description }}</td>
+                            <td class="px-4 py-3 w-[80px] text-xs font-semibold">
                                 @php
                                     $statuses = [
                                         0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Inactive'],
                                         1 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Active'],
-                                        2 => [
-                                            'color' => 'bg-yellow-100 text-yellow-700',
-                                            'label' => 'Under Maintenance',
-                                        ],
                                     ];
-                                    $status = $statuses[$location->status] ?? [
+                                    $status = $statuses[$cluster->is_active] ?? [
                                         'color' => 'bg-gray-100 text-gray-600',
                                         'label' => 'Unknown',
                                     ];
@@ -221,14 +163,11 @@
                             </td>
                             <td class="px-4 py-3 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
-                                    <button type="button" title="Edit location {{ $location->name }}"
+                                    <button type="button" title="Edit Cluster {{ $cluster->name }}"
                                         data-modal-target="edit-modal" data-modal-toggle="edit-modal"
-                                        data-id="{{ $location->id }}" data-name="{{ $location->name }}"
-                                        data-code="{{ $location->code }}" data-cluster="{{ $location->cluster_id }}"
-                                        data-description="{{ $location->description }}"
-                                        data-address="{{ $location->address }}"
-                                        data-contact="{{ $location->contact_number }}"
-                                        data-status="{{ $location->status }}" onclick="openEditModal(this)"
+                                        data-id="{{ $cluster->id }}" data-name="{{ $cluster->name }}"
+                                        data-description="{{ $cluster->description }}"
+                                        data-status="{{ $cluster->is_active }}" onclick="openEditModal(this)"
                                         class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -245,7 +184,7 @@
                     @empty
                         <tr>
                             <td colspan="9" class="px-4 py-6 text-center text-gray-500">
-                                No locations found.
+                                No Clusters found.
                             </td>
                         </tr>
                     @endforelse
@@ -255,11 +194,11 @@
         <!-- Pagination Links -->
         <div
             class="w-full md:w-auto text-xs flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0 mb-2">
-            {{ $locations->links() }}
+            {{ $clusters->links() }}
         </div>
     </div>
 
-    <!-- Create location modal -->
+    <!-- Create Cluster modal -->
     <div id="add-modal" tabindex="-1" aria-hidden="true"
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
         <div class="relative p-4 w-full max-w-md h-full md:h-auto">
@@ -268,7 +207,7 @@
                 <!-- Modal header -->
                 <div class="flex justify-between items-center pb-4 mb-2 rounded-t border-b sm:mb-5 dark:border-gray-600">
                     <h3 class="text-md font-semibold text-gray-900 dark:text-white">
-                        Add New Location
+                        Add New Cluster
                     </h3>
                     <button type="button"
                         class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -284,77 +223,37 @@
                 </div>
                 <!-- Modal body -->
                 <div class="overflow-y-auto max-h-[70vh]">
-                    <form action="{{ route('location.store') }}" method="POST">
+                    <form action="{{ route('cluster.store') }}" method="POST">
                         @csrf
                         <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-1">
-                            <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-3">
-                                <div class="w-full md:col-span-1">
-                                    <label for="code"
-                                        class="block text-xs font-medium text-gray-900 dark:text-white">Code*</label>
-                                    <input type="text" name="code" id="code"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                        placeholder="e.g. HQ-MAIN" required>
-                                </div>
-                                <div class="w-full md:col-span-2">
-                                    <label for="cluster"
-                                        class="block text-xs font-medium text-gray-900 dark:text-white">Cluster*</label>
-                                    <select type="text" name="cluster" id="cluster"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                        placeholder="e.g. Headquarters Main Office" required>
-                                        <option value="">Select a cluster</option>
-                                        @foreach ($clusters as $cluster)
-                                            <option value="{{ $cluster->id }}">{{ $cluster->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
                             <div class="w-full md:col-span-2">
                                 <label for="name"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
                                 <input type="text" name="name" id="name"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="e.g. Headquarters Main Office" required>
+                                    placeholder="e.g. Cluster 1" required>
                             </div>
                             <div class="sm:col-span-2">
                                 <label for="description"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                <textarea type="text" name="description" id="description" rows="2"
+                                <textarea type="text" name="description" id="description" rows="3"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="Location long description"></textarea>
+                                    placeholder="e.g. CALABARZON"></textarea>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="address"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Address</label>
-                                <textarea type="text" name="address" id="address" rows="3"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="Location address"></textarea>
+                                <label for="status"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
+                                <select id="status" name="status"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    required>
+                                    {{-- <option selected="">Select product type</option> --}}
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
                             </div>
-                            <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-3">
-                                <div class="sm:col-span-2">
-                                    <label for="contact_number"
-                                        class="block text-xs font-medium text-gray-900 dark:text-white">Contact
-                                        Number</label>
-                                    <input type="text" name="contact_number" id="contact_number"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                        placeholder="e.g. 123-456-7890" required>
-                                </div>
 
-                                <div class="sm:col-span-1">
-                                    <label for="status"
-                                        class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                                    <select id="status" name="status"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                        required>
-                                        {{-- <option selected="">Select product type</option> --}}
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                        <option value="2">Under Maintenance</option>
-                                    </select>
-                                </div>
-                            </div>
                         </div>
-
                         <button type="submit"
                             class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
                             <svg class="mr-1 -ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
@@ -363,14 +262,14 @@
                                     d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            Add Location
+                            Add Cluster
                         </button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    <!-- End create location modal -->
+    <!-- End create Document Type modal -->
 
     <!-- Modal  Edit-->
     <div id="edit-modal" tabindex="-1" aria-hidden="true"
@@ -382,7 +281,7 @@
                 <div
                     class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        Update Location
+                        Update Cluster
                     </h3>
                     <button type="button"
                         class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -403,80 +302,38 @@
                         <input type="hidden" name="edit_id" id="edit_id">
 
                         <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-1">
-                            <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-3">
-                                <div class="w-full md:col-span-1">
-                                    <label for="edit_code"
-                                        class="block text-xs font-medium text-gray-900 dark:text-white">Code*</label>
-                                    <input type="text" name="edit_code" id="edit_code"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                        placeholder="e.g. HQ-MAIN" required>
-                                </div>
-                                <div class="w-full md:col-span-2">
-                                    <label for="edit_cluster"
-                                        class="block text-xs font-medium text-gray-900 dark:text-white">Cluster*</label>
-                                    <select type="text" name="edit_cluster" id="edit_cluster"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                        placeholder="e.g. Headquarters Main Office" required>
-                                        <option value="">Select a cluster</option>
-                                        @foreach ($clusters as $cluster)
-                                            <option value="{{ $cluster->id }}">{{ $cluster->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="w-full md:col-span-2">
+                            <div class="sm:col-span-2">
                                 <label for="edit_name"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
                                 <input type="text" name="edit_name" id="edit_name"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="e.g. Headquarters Main Office" required>
+                                    placeholder="e.g. Firearms" required>
                             </div>
                             <div class="sm:col-span-2">
                                 <label for="edit_description"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                <textarea type="text" name="edit_description" id="edit_description" rows="2"
+                                <textarea type="text" name="edit_description" id="edit_description" rows="3"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="Location description"></textarea>
+                                    placeholder="Category description"></textarea>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="edit_address"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Address</label>
-                                <textarea type="text" name="edit_address" id="edit_address" rows="2"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="Location address"></textarea>
+                                <label for="edit_status"
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
+                                <select id="edit_status" name="edit_status"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                    required>
+                                    {{-- <option selected="">Select product type</option> --}}
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
                             </div>
-
-                            <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-3">
-                                <div class="sm:col-span-2">
-                                    <label for="edit_contact_number"
-                                        class="block text-xs font-medium text-gray-900 dark:text-white">Contact
-                                        Number</label>
-                                    <input type="text" name="edit_contact_number" id="edit_contact_number"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                        placeholder="e.g. 123-456-7890" required>
-                                </div>
-
-                                <div class="sm:col-span-1">
-                                    <label for="edit_status"
-                                        class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                                    <select id="edit_status" name="edit_status"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                        required>
-                                        {{-- <option selected="">Select product type</option> --}}
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                        <option value="2">Under Maintenance</option>
-                                    </select>
-                                </div>
-                            </div>
-
                         </div>
 
                         <button type="submit"
                             class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
                             {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
-                            Update Location
+                            Update Cluster
                         </button>
                     </form>
                 </div>
@@ -503,16 +360,12 @@
         function openEditModal(button) {
             const id = button.getAttribute('data-id');
             document.getElementById('edit_id').value = button.getAttribute('data-id');
-            document.getElementById('edit_cluster').value = button.getAttribute('data-cluster');
-            document.getElementById('edit_code').value = button.getAttribute('data-code');
             document.getElementById('edit_name').value = button.getAttribute('data-name');
             document.getElementById('edit_description').value = button.getAttribute('data-description');
-            document.getElementById('edit_address').value = button.getAttribute('data-address');
-            document.getElementById('edit_contact_number').value = button.getAttribute('data-contact');
             document.getElementById('edit_status').value = button.getAttribute('data-status');
 
             const form = document.getElementById('editForm');
-            form.action = `location/${id}`;
+            form.action = `cluster/${id}`;
         }
     </script>
 @endsection

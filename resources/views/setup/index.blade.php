@@ -6,6 +6,24 @@
     <div class="py-5">
         <div class="max-w-7xl mx-auto px-2 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
 
+            {{-- Cluster --}}
+            <div
+                class="p-3 hover:bg-blue-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">
+                <div class="flex flex-col items-center text-center">
+                    <div class="p-3 bg-red-100 dark:bg-red-900 rounded-full mb-4">
+                        <i class="bi bi-collection text-red-600 dark:text-blue-300 text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Cluster</h3>
+                    <p class="text-gray-500 dark:text-gray-400 mb-4">
+                        Setup and manage location cluster or region.
+                    </p>
+                    <a href="{{ route('cluster.index') }}"
+                        class="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition">
+                        Open Cluster
+                    </a>
+                </div>
+            </div>
+
             {{-- Location --}}
             <div
                 class="p-3 hover:bg-blue-100 focus:outline-hidden bg-white border border-gray-200 rounded-2xl shadow hover:shadow-md dark:bg-gray-800 dark:border-gray-700 transition">

@@ -35,6 +35,7 @@ use App\Http\Controllers\TransmittalController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\BudgetRoutingController;
 use App\Http\Controllers\DocumentTypeController;
+use App\Http\Controllers\ClusterController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -69,6 +70,7 @@ Route::middleware('auth')->group(function () {
         return view('setup.index');
     })->name('setup.index');
 
+    Route::resource('setup/cluster', ClusterController::class)->except(['destroy']);
     Route::resource('setup/category', CategoryController::class)->except(['destroy']);
     Route::resource('setup/license', LicenseTypeController::class)->except(['destroy']);
     Route::resource('setup/doctype', DocumentTypeController::class)->except(['destroy']);

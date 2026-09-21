@@ -24,6 +24,7 @@ class UploadedFileController extends Controller
                 UploadedFile::create([
                     'employee_id' => $employee->id,
                     'document_type_id' => $request->doctype,
+                    'document_date' => $request->document_date ?? null,
                     'module' => 'employee',
                     'note' => $request->input('note', ''),
                     'file_name' => $file->getClientOriginalName(),

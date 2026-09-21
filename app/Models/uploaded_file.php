@@ -13,6 +13,7 @@ class uploaded_file extends Model
         'employee_id',
         'module',
         'document_type_id',
+        'document_date',
         'note',
         'file_name',
         'path',

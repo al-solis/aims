@@ -423,7 +423,7 @@
                                             class="text-md font-semibold bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"></input>
                                     </div>
 
-                                    <div class="w-full sm:col-span-2">
+                                    <div class="w-full sm:col-span-1">
                                         <label
                                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Document
                                             Type</label>
@@ -434,6 +434,12 @@
                                                 <option value="{{ $docType->id }}">{{ $docType->name }}</option>
                                             @endforeach
                                         </select>
+                                    </div>
+
+                                    <div class="w-full sm:col-span-1">
+                                        <label class="block text-sm font-medium mb-2">Document Date</label>
+                                        <input type="date" name="document_date" id="document_date"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
                                     </div>
 
                                     <div class="w-full sm:col-span-2">
@@ -466,6 +472,7 @@
                                                     <th class="px-3 py-2 border">Date</th>
                                                     <th class="px-3 py-2 border">Uploaded By</th>
                                                     <th class="px-3 py-2 border">Document Type</th>
+                                                    <th class="px-3 py-2 border">Document Date</th>
                                                     <th class="px-3 py-2 border">Note</th>
                                                     <th class="px-3 py-2 border">File Name</th>
                                                     <th class="px-3 py-2 border">File</th>
@@ -743,8 +750,9 @@
                         tableBody.innerHTML += `
                         <tr class="border-b">
                             <td class="px-3 py-2">${uploadDate}</td>
-                            <td class="px-3 py-2">${file.uploaded_by ? file.uploader.lname + ', ' + file.uploader.fname : 'N/A'}</td>
-                            <td class="px-3 py-2">${file.document_type_id ? file.document_type.name : 'N/A'}</td>
+                            <td class="px-3 py-2">${file.uploaded_by ? file.uploader.lname + ', ' + file.uploader.fname : ''}</td>
+                            <td class="px-3 py-2">${file.document_type_id ? file.document_type.name : ''}</td>
+                            <td class="px-3 py-2">${file.document_date ? new Date(file.document_date).toLocaleDateString() : ''}</td>
                             <td class="px-3 py-2">${file.note}</td>
                             <td class="px-3 py-2">${file.file_name}</td>
                             <td class="px-3 py-2">

@@ -8,12 +8,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\location as Location;
 use App\Models\sublocation as SubLocation;
+use App\Models\cluster;
 class LocationController extends Controller
 {
     public function index(Request $request)
     {
         $search = $request->query('search');
         $status = $request->query('status');
+        $cluster = $request->query('cluster');
+
+        $clusters = cluster::where('is_active', 1)->get();
 
         $query = Location::query();
         $totalLocations = Location::count();
@@ -38,15 +42,20 @@ class LocationController extends Controller
             $query->where('status', $status);
         }
 
+        if ($cluster !== null && $cluster !== '') {
+            $query->where('cluster_id', $cluster);
+        }
+
         $locations = $query->withCount('sublocations')->paginate(config('app.paginate'));
 
-        return view('setup.location.index', compact('locations', 'totalLocations', 'activeLocations', 'totalSubLocations', 'search', 'status'));
+        return view('setup.location.index', compact('locations', 'clusters', 'totalLocations', 'activeLocations', 'totalSubLocations', 'search', 'status'));
 
     }
 
     public function store(Request $request)
     {
         $request->validate([
+            'cluster' => 'required|exists:clusters,id',
             'code' => 'required|string|max:15|unique:locations,code',
             'name' => 'required|string|max:60',
             'description' => 'nullable|string',
@@ -62,6 +71,7 @@ class LocationController extends Controller
             'address' => $request->address,
             'contact_number' => $request->contact_number,
             'status' => $request->status,
+            'cluster_id' => $request->cluster,
             'created_by' => Auth::id(),
         ]);
 
@@ -78,10 +88,12 @@ class LocationController extends Controller
             'edit_description' => 'nullable|string',
             'edit_address' => 'nullable|string',
             'edit_contact_number' => 'nullable|string|max:20',
+            'edit_cluster' => 'required|exists:clusters,id',
             'edit_status' => 'required|integer|in:0,1,2',
         ]);
 
         $location->update([
+            'cluster_id' => $request->edit_cluster,
             'code' => $request->edit_code,
             'name' => $request->edit_name,
             'description' => $request->edit_description,
