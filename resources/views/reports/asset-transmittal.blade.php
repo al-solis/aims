@@ -86,6 +86,7 @@
 
         .signature-label {
             margin-bottom: 5px;
+            text-align: left;
         }
 
         .signature-area {
@@ -275,7 +276,11 @@
                 <div class="signature-line"></div>
 
                 {{-- SIGNATURE --}}
-                <img src="{{ public_path('images/TRN.png') }}" class="signature-image">
+                @php
+                    $file = $preparedBy?->employee_code . '.png';
+                    $signaturePath = public_path('images/' . $file);
+                @endphp
+                <img src="{{ file_exists($signaturePath) ? $signaturePath : '' }}" class="signature-image">
 
                 {{-- NAME --}}
                 <div class="signature-name">

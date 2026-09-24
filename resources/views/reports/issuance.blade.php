@@ -274,8 +274,11 @@
                 <div class="signature-line"></div>
 
                 {{-- SIGNATURE --}}
-                <img src="{{ public_path('images/SUP.png') }}" class="signature-image">
-
+                @php
+                    $file = $printedBy?->employee_code . '.png';
+                    $signaturePath = public_path('images/' . $file);
+                @endphp
+                <img src="{{ file_exists($signaturePath) ? $signaturePath : '' }}" class="signature-image">
                 {{-- NAME --}}
                 <div class="signature-name">
                     @if ($printedBy)
