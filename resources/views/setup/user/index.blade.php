@@ -418,13 +418,13 @@
                             <div class="md:col-span-1">
                                 <label for="edit_role"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Role*</label>
-                                <select id="edit_role" name="edit_role"
+                                <select id="edit_role_id" name="edit_role_id"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     required>
                                     {{-- <option selected="">Select product type</option> --}}
-                                    <option value='0'>User</option>
-                                    <option value='1'>Admin</option>
-                                    <option value='2'>Viewer</option>
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -477,7 +477,7 @@
             document.getElementById('edit_mname').value = button.getAttribute('data-mname');
             document.getElementById('edit_email').value = button.getAttribute('data-email');
             document.getElementById('edit_is_active').value = button.getAttribute('data-status');
-            document.getElementById('edit_role').value = button.getAttribute('data-role');
+            document.getElementById('edit_role_id').value = button.getAttribute('data-role');
 
             const form = document.getElementById('editForm');
             form.action = `user/${id}`;
