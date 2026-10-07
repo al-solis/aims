@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Location;
+use App\Models\location;
 
 class clearance_routing extends Model
 {
@@ -17,6 +17,6 @@ class clearance_routing extends Model
 
     public function location()
     {
-        return $this->belongsTo(Location::class);
+        return $this->belongsTo(location::class);
     }
 }
