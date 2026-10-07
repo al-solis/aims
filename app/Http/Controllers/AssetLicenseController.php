@@ -13,8 +13,23 @@ use Carbon\Carbon;
 
 class AssetLicenseController extends Controller
 {
+    private const LICENSE_CODE = 'LIC-01';
+
+    private function authorizeLicense(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::LICENSE_CODE, $action),
+            403,
+            'You do not have permission in Licenses and Permit Management to perform this action.'
+        );
+    }
     public function index(Request $request)
     {
+        $this->authorizeLicense('read');
+        $canCreate = Auth::user()->hasAccess(self::LICENSE_CODE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::LICENSE_CODE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::LICENSE_CODE, 'delete');
+
         $search = $request->input('search');
         $status = $request->input('status');
         $searchType = $request->input('searchType');
@@ -66,12 +81,27 @@ class AssetLicenseController extends Controller
 
         return view(
             'asset-licenses.index',
-            compact('assetLicenses', 'assets', 'licenseTypes', 'allLicenseTypes', 'totalLicenses', 'activeLicenses', 'expiringSoonLicenses', 'expiredLicenses', 'licenseExpiringDays')
+            compact(
+                'assetLicenses',
+                'assets',
+                'licenseTypes',
+                'allLicenseTypes',
+                'totalLicenses',
+                'activeLicenses',
+                'expiringSoonLicenses',
+                'expiredLicenses',
+                'licenseExpiringDays',
+                'canCreate',
+                'canUpdate',
+                'canDelete'
+            )
         );
     }
 
     public function store(Request $request)
     {
+        $this->authorizeLicense('create');
+
         $request->validate([
             'asset_id' => 'required|exists:assets,id',
             'license_type_id' => 'required|exists:license_types,id',
@@ -96,7 +126,7 @@ class AssetLicenseController extends Controller
 
     public function update(Request $request, $id)
     {
-
+        $this->authorizeLicense('update');
 
         $request->validate([
             'edit_asset_id' => 'required|exists:assets,id',

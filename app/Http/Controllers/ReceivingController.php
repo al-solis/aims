@@ -16,8 +16,24 @@ use App\Models\receiving_detail;
 use App\Models\employee;
 class ReceivingController extends Controller
 {
+    private const SUPPLIES_CODE = 'SUP-01';
+
+    private function authorizeSupplies(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::SUPPLIES_CODE, $action),
+            403,
+            'You do not have permission in Supplies Management to perform this action.'
+        );
+    }
     public function index(Request $request)
     {
+        $this->authorizeSupplies('read');
+
+        $canCreate = Auth::user()->hasAccess(self::SUPPLIES_CODE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SUPPLIES_CODE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SUPPLIES_CODE, 'delete');
+
         $search = $request->input('search');
         $searchsupplier = $request->input('searchsupplier');
         $searchemployee = $request->input('searchemployee');
@@ -50,11 +66,21 @@ class ReceivingController extends Controller
             ->appends($request->only('search', 'searchemployee', 'searchsupplier'))
         ;
 
-        return view('supplies.receiving.index', compact('receivings', 'suppliers', 'uoms', 'employees'));
+        return view('supplies.receiving.index', compact(
+            'receivings',
+            'suppliers',
+            'uoms',
+            'employees',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
+        ));
     }
 
     public function create()
     {
+        $this->authorizeSupplies('create');
+
         $supplies = Supplies::where('status', 1)
             ->orderBy('name')->get();
         $suppliers = Supplier::where('is_active', 1)
@@ -69,6 +95,8 @@ class ReceivingController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizeSupplies('create');
+
         $request->validate([
             'description' => 'required|string',
             'received_date' => 'required|date',
@@ -181,6 +209,8 @@ class ReceivingController extends Controller
 
     public function void($id)
     {
+        $this->authorizeSupplies('delete');
+
         $receiving = receiving_header::findOrFail($id);
 
         if ($receiving->status == 2) {

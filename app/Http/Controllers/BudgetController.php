@@ -15,8 +15,25 @@ use App\Models\budget_routing;
 
 class BudgetController extends Controller
 {
+    private const BUDGET_CODE = 'BM-01';
+
+    private function authorizeBudget(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::BUDGET_CODE, $action),
+            403,
+            'You do not have permission in Budget Management to perform this action.'
+        );
+    }
+
     public function index(Request $request)
     {
+        $this->authorizeBudget('read');
+
+        $canCreate = Auth::user()->hasAccess(self::BUDGET_CODE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::BUDGET_CODE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::BUDGET_CODE, 'delete');
+
         $search = $request->input('search');
         $searchLocation = $request->input('searchloc');
         $searchStatus = $request->input('status');
@@ -70,7 +87,10 @@ class BudgetController extends Controller
                 'overdueRequests',
                 'completedRequests',
                 'locations',
-                'userLocation'
+                'userLocation',
+                'canCreate',
+                'canUpdate',
+                'canDelete'
             )
         );
     }
@@ -85,6 +105,8 @@ class BudgetController extends Controller
 
     public function create(Request $request, $id = null)
     {
+        $this->authorizeBudget('create');
+
         $locations = location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get();
         $uoms = uom::orderBy('name')->get();
         $budget = null;
@@ -93,6 +115,8 @@ class BudgetController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizeBudget('create');
+
         $request->validate([
             'location_id_display' => 'required|exists:locations,id',
             'purpose' => 'required|string',
@@ -138,6 +162,8 @@ class BudgetController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeBudget('update');
+
         $request->validate([
             'location_id' => 'required|exists:locations,id',
             'purpose' => 'required|string',
@@ -181,6 +207,8 @@ class BudgetController extends Controller
 
     public function submitForApproval(Request $request, $id)
     {
+        $this->authorizeBudget('update');
+
         $approvalLevel = budget_routing::orderBy('order')->first();
         $budget = budget_header::findOrFail($id);
 
@@ -203,6 +231,8 @@ class BudgetController extends Controller
 
     public function approveRequest(Request $request, $id)
     {
+        $this->authorizeBudget('update');
+
         $budget = budget_header::findOrFail($id);
         $approvalLevel = budget_routing::where('order', $budget->approval_level)->first();
 
@@ -249,6 +279,7 @@ class BudgetController extends Controller
 
     public function rejectRequest(Request $request, $id)
     {
+        $this->authorizeBudget('update');
         $budget = budget_header::findOrFail($id);
         $approvalLevel = budget_routing::where('order', $budget->approval_level)->first();
 
@@ -278,6 +309,8 @@ class BudgetController extends Controller
 
     public function voidBudget(Request $request, $id)
     {
+        $this->authorizeBudget('update');
+
         $budget = budget_header::findOrFail($id);
 
         if (!in_array($budget->status, [0, 1]) || Auth::id() != $budget->requested_by) {

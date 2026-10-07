@@ -23,8 +23,8 @@
                     Back
                 </a>
 
-                <a href ="{{ route('issuance.create') }}" @if (Auth::user()->role == 2) disabled @endif
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white {{ Auth::user()->role == 2 ? 'bg-gray-600 hover:bg-gray-600 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-800' }} rounded-lg">
+                <a href ="{{ route('issuance.create') }}" @if (!$canCreate) disabled @endif
+                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white {{ $canCreate ? 'bg-gray-900 hover:bg-gray-800' : 'bg-gray-600 hover:bg-gray-600 cursor-not-allowed' }} rounded-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -185,9 +185,9 @@
                                         </svg>
                                     </a>
 
-                                    @if ($issuance->status == 0 || Auth::user()->role == 2)
+                                    @if ($issuance->status == 0 || !$canUpdate)
                                         <button type="button"
-                                            title="{{ Auth::user()->role == 2 ? 'Unable to void' : 'Voided already' }} : {{ $issuance->issuance_number }}"
+                                            title="{{ !$canUpdate ? 'Unable to void' : 'Voided already' }} : {{ $issuance->issuance_number }}"
                                             disabled class="group flex space-x-1 text-gray-300 cursor-not-allowed">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">

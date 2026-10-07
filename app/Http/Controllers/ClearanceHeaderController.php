@@ -18,8 +18,24 @@ use App\Models\clearance_approval;
 
 class ClearanceHeaderController extends Controller
 {
+    private const CLEARANCE_CODE = 'CM-01';
+
+    private function authorizeClearance(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::CLEARANCE_CODE, $action),
+            403,
+            'You do not have permission in Clearance Management to perform this action.'
+        );
+    }
+
     public function index(Request $request)
     {
+        $this->authorizeClearance('read');
+        $canCreate = Auth::user()->hasAccess(self::CLEARANCE_CODE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::CLEARANCE_CODE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::CLEARANCE_CODE, 'delete');
+
         $search = $request->input('search');
         $status = $request->input('status');
         $searchloc = $request->input('searchloc');
@@ -78,12 +94,17 @@ class ClearanceHeaderController extends Controller
             'employees',
             'locations',
             'searchloc',
-            'userLocation'
+            'userLocation',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
         ));
     }
 
     public function store(Request $request)
     {
+        $this->authorizeClearance('create');
+
         $request->validate([
             'employee_id' => 'required|exists:employees,id',
             'remarks' => 'nullable|string',
@@ -125,6 +146,8 @@ class ClearanceHeaderController extends Controller
 
     public function show($id)
     {
+        $this->authorizeClearance('read');
+
         $userLocation = DB::table('users as u')
             ->leftJoin('employees as e', 'u.employee_code', '=', 'e.employee_code')
             ->select('u.id', 'e.location_id')
@@ -185,6 +208,8 @@ class ClearanceHeaderController extends Controller
 
     public function submitForApproval($id)
     {
+        $this->authorizeClearance('update');
+
         $approvalLevel = clearance_routing::orderBy('order')->first();
         clearance_header::where('id', $id)->update([
             'status' => 1, // Set status to in-progress
@@ -199,6 +224,7 @@ class ClearanceHeaderController extends Controller
 
     public function approveClearance(Request $request, $id)
     {
+        $this->authorizeClearance('update');
         $clearance = clearance_header::findOrFail($id);
         $approvalLevel = clearance_routing::where('order', $clearance->approval_level)->first();
 
@@ -240,6 +266,8 @@ class ClearanceHeaderController extends Controller
 
     public function rejectClearance(Request $request, $id)
     {
+        $this->authorizeClearance('update');
+
         $clearance = clearance_header::findOrFail($id);
         $approvalLevel = clearance_routing::where('order', $clearance->approval_level)->first();
 
@@ -266,6 +294,8 @@ class ClearanceHeaderController extends Controller
 
     public function markAsComplete($id)
     {
+        $this->authorizeClearance('update');
+
         clearance_header::where('id', $id)->update([
             'status' => 2,
             'updated_by' => Auth::id(),
@@ -290,6 +320,7 @@ class ClearanceHeaderController extends Controller
 
     public function voidClearance($id)
     {
+        $this->authorizeClearance('delete');
         clearance_header::where('id', $id)->update([
             'status' => 4,
             'updated_by' => Auth::id(),

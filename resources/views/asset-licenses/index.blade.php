@@ -14,9 +14,9 @@
                 </p>
             </div>
             <div class="flex items-center gap-2 mt-0">
-                <button @if (Auth::user()->role == 2) disabled @endif data-modal-target="alert-modal"
-                    data-modal-toggle="{{ Auth::user()->role == 2 ? '' : 'alert-modal' }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 {{ Auth::user()->role == 2 ? 'bg-gray-100 hover:bg-gray-100 cursor-not-allowed' : 'bg-white hover:bg-gray-100' }} rounded-lg">
+                <button @if (!$canCreate) disabled @endif data-modal-target="alert-modal"
+                    data-modal-toggle="{{ $canCreate ? 'alert-modal' : '' }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 {{ $canCreate ? 'bg-white hover:bg-gray-100' : 'bg-gray-100 hover:bg-gray-100 cursor-not-allowed' }} rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-bell" viewBox="0 0 16 16">
                         <path
@@ -25,9 +25,9 @@
                     Setup Alerts
                 </button>
 
-                <button @if (Auth::user()->role == 2) disabled @endif data-modal-target="add-modal"
-                    data-modal-toggle="{{ Auth::user()->role == 2 ? '' : 'add-modal' }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white {{ Auth::user()->role == 2 ? 'bg-gray-600 hover:bg-gray-600 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-800' }} rounded-lg">
+                <button @if (!$canCreate) disabled @endif data-modal-target="add-modal"
+                    data-modal-toggle="{{ $canCreate ? 'add-modal' : '' }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white {{ $canCreate ? 'bg-gray-900 hover:bg-gray-800' : 'bg-gray-600 hover:bg-gray-600 cursor-not-allowed' }} rounded-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -172,7 +172,7 @@
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Expiration Date</th>
                         <th scope="col" class="px-4 py-3 text-left w-[100px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-left w-[150px]">Alert</th>
-                        @if (Auth::user()->role != 2)
+                        @if ($canUpdate || $canDelete)
                             <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                         @endif
                     </tr>
@@ -222,7 +222,7 @@
                                     {{ $assetLicense->status_label['label'] }}
                                 @endif
                             </td>
-                            @if (Auth::user()->role != 2)
+                            @if ($canUpdate || $canDelete)
                                 <td class="px-4 py-3 w-[50px]">
                                     <div class="flex items-center justify-center space-x-2">
                                         <button type="button" title="Edit license {{ $assetLicense->asset->name }}"

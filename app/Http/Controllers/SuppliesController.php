@@ -15,8 +15,25 @@ use App\Models\supplier as Supplier;
 
 class SuppliesController extends Controller
 {
+    private const SUPPLIES_CODE = 'SUP-01';
+
+    private function authorizeSupplies(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::SUPPLIES_CODE, $action),
+            403,
+            'You do not have permission in Supplies Management to perform this action.'
+        );
+    }
+
     public function index(Request $request)
     {
+        $this->authorizeSupplies('read');
+
+        $canCreate = Auth::user()->hasAccess(self::SUPPLIES_CODE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SUPPLIES_CODE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SUPPLIES_CODE, 'delete');
+
         $search = $request->input('search');
         $searchcat = $request->input('searchcat');
         $searchsupplier = $request->input('searchsupplier');
@@ -57,12 +74,22 @@ class SuppliesController extends Controller
             ->appends('searchsupplier', $searchsupplier)
         ;
 
-        return view('supplies.index', compact('supplies', 'uoms', 'categories', 'suppliers'));
+        return view('supplies.index', compact(
+            'supplies',
+            'uoms',
+            'categories',
+            'suppliers',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
+        ));
     }
 
     public function store(Request $request)
     {
         // dd($request->all());
+        $this->authorizeSupplies('create');
+
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -101,6 +128,8 @@ class SuppliesController extends Controller
     public function update(Request $request, $id)
     {
         // dd($request->all());
+        $this->authorizeSupplies('update');
+
         $supply = Supplies::findOrFail($id);
 
         $request->validate([

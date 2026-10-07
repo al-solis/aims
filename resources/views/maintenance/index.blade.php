@@ -23,9 +23,9 @@
                     Back
                 </a> --}}
 
-                <button @if (Auth::user()->role == 2) disabled @endif data-modal-target="add-modal"
-                    data-modal-toggle="{{ Auth::user()->role == 2 ? '' : 'add-modal' }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white {{ Auth::user()->role == 2 ? 'bg-gray-600 hover:bg-gray-600 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-800' }} rounded-lg">
+                <button @if (!$canCreate) disabled @endif data-modal-target="add-modal"
+                    data-modal-toggle="{{ $canCreate ? 'add-modal' : '' }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white {{ $canCreate ? 'bg-gray-900 hover:bg-gray-800' : 'bg-gray-600 hover:bg-gray-600 cursor-not-allowed' }} rounded-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -99,7 +99,7 @@
             @endforeach
         </div>
 
-        @if ($errors->any())
+        {{-- @if ($errors->any())
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 pt-1">
                 <ul>
                     @foreach ($errors->all() as $error)
@@ -118,6 +118,29 @@
                     clearModalFields();
                 });
             </script>
+        @endif --}}
+
+        @if (session('success'))
+            <div id="success-alert"
+                class="mt-3 mb-3 rounded-lg border border-green-300 bg-green-50 p-3 text-sm text-green-800 shadow-sm transition-all duration-500">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <svg class="h-4 w-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        {{ session('success') }}
+                    </div>
+                    <button type="button" onclick="this.closest('[id$=-alert]').style.display='none'"
+                        class="text-green-600 hover:text-green-800">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
         @endif
 
         {{-- Filters --}}
@@ -243,7 +266,8 @@
                             <td class="px-4 py-3 text-right w-[80px]">{{ number_format($maintenance->cost, 2) }}</td>
                             <td class="px-4 py-3 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
-                                    <button type="button" title="Edit maintenance : {{ $maintenance->maintenance_code }}"
+                                    <button type="button" @if (!$canUpdate) disabled @endif
+                                        title="Edit maintenance : {{ $maintenance->maintenance_code }}"
                                         data-id="{{ $maintenance->id }}" data-asset_id="{{ $maintenance->asset_id }}"
                                         data-asset_name="{{ $maintenance->asset ? $maintenance->asset->name : '' }}"
                                         data-type="{{ $maintenance->type }}"
@@ -254,7 +278,7 @@
                                         data-cost="{{ $maintenance->cost }}" data-notes="{{ $maintenance->notes }}"
                                         data-status="{{ $maintenance->status }}" data-modal-target="edit-modal"
                                         data-modal-toggle="edit-modal" onclick="openEditModal(this)"
-                                        class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+                                        class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors {{ !$canUpdate ? ' cursor-not-allowed' : '' }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                                             <path
@@ -325,9 +349,9 @@
                                         </button>
 
                                         {{-- Mark as complete --}}
-                                        <button type="button" @if (Auth::user()->role == 2) disabled @endif
+                                        <button type="button" @if (!$canUpdate) disabled @endif
                                             title="Mark as complete : {{ $maintenance->maintenance_code }}"
-                                            class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors {{ Auth::user()->role == 2 ? ' cursor-not-allowed' : '' }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors {{ !$canUpdate ? ' cursor-not-allowed' : '' }}"
                                             onclick="markAsComplete({{ $maintenance->id }}, '{{ $maintenance->maintenance_code }}' )">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
@@ -339,9 +363,9 @@
                                         </button>
 
                                         {{-- Mark as void --}}
-                                        <button type="button" @if (Auth::user()->role == 2) disabled @endif
+                                        <button type="button" @if (!$canDelete) disabled @endif
                                             title="Void maintenance : {{ $maintenance->maintenance_code }}"
-                                            class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors {{ Auth::user()->role == 2 ? ' cursor-not-allowed' : '' }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors {{ !$canDelete ? ' cursor-not-allowed' : '' }}"
                                             onclick="voidMaintenance({{ $maintenance->id }}, '{{ $maintenance->maintenance_code }}' )">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
@@ -388,9 +412,9 @@
                                         </button>
                                     @else
                                         {{-- Mark as In-Progress --}}
-                                        <button type="button" @if (Auth::user()->role == 2) disabled @endif
+                                        <button type="button" @if (!$canUpdate) disabled @endif
                                             title="Mark as in-progress : {{ $maintenance->maintenance_code }}"
-                                            class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors {{ Auth::user()->role == 2 ? ' cursor-not-allowed' : '' }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors {{ !$canUpdate ? ' cursor-not-allowed' : '' }}"
                                             onclick="markAsInProgress({{ $maintenance->id }}, '{{ $maintenance->maintenance_code }}' )">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-graph-up-arrow" viewBox="0 0 16 16">
@@ -400,9 +424,9 @@
                                         </button>
 
                                         {{-- Mark as complete --}}
-                                        <button type="button" @if (Auth::user()->role == 2) disabled @endif
+                                        <button type="button" @if (!$canUpdate) disabled @endif
                                             title="Mark as complete : {{ $maintenance->maintenance_code }}"
-                                            class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors {{ Auth::user()->role == 2 ? ' cursor-not-allowed' : '' }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors {{ !$canUpdate ? ' cursor-not-allowed' : '' }}"
                                             onclick="markAsComplete({{ $maintenance->id }}, '{{ $maintenance->maintenance_code }}' )">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
@@ -414,9 +438,9 @@
                                         </button>
 
                                         {{-- Mark as void --}}
-                                        <button type="button" @if (Auth::user()->role == 2) disabled @endif
+                                        <button type="button" @if (!$canDelete) disabled @endif
                                             title="Void maintenance : {{ $maintenance->maintenance_code }}"
-                                            class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors {{ Auth::user()->role == 2 ? ' cursor-not-allowed' : '' }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors {{ !$canDelete ? ' cursor-not-allowed' : '' }}"
                                             onclick="voidMaintenance({{ $maintenance->id }}, '{{ $maintenance->maintenance_code }}' )">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
@@ -691,8 +715,8 @@
 
                         </div>
 
-                        <button type="submit" @if (Auth::user()->role == 2) disabled @endif
-                            class="btn-Update mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800 {{ Auth::user()->role == 2 ? ' cursor-not-allowed' : '' }}">
+                        <button type="submit" @if (!$canUpdate) disabled @endif
+                            class="btn-Update mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800 {{ !$canUpdate ? ' cursor-not-allowed' : '' }}">
                             {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
                             Update Maintenance Record
                         </button>

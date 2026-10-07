@@ -51,8 +51,26 @@ class ReportController extends Controller
         );
     }
 
+    private function authorizeReport(string $key): void
+    {
+        $codes = collect(config('report_keys', []))
+            ->filter(fn($r) => $r['key'] === $key)
+            ->keys();
+
+        abort_unless(
+            $codes->isNotEmpty() && Auth::user()
+                ->accessibleSubModules('REP', main: false)
+                ->whereIn('sub_modules.code', $codes)
+                ->exists(),
+            403,
+            'You do not have access to this report.'
+        );
+    }
+
     public function assetSummary(Request $request)
     {
+        $this->authorizeReport('asset-summary');
+
         $pDateRange = $request->date_range ?? 'this_month';
         $pFromDate = $request->from_date ?? '';
         $pToDate = $request->to_date ?? '';
@@ -232,6 +250,8 @@ class ReportController extends Controller
 
     public function odometerReport(Request $request)
     {
+        $this->authorizeReport('odometer');
+
         $request->validate([
             'asset_id' => 'required|exists:assets,id',
             'from_date' => 'required|date',
@@ -270,6 +290,8 @@ class ReportController extends Controller
 
     public function employeeReport(Request $request)
     {
+        $this->authorizeReport('employee');
+
         // dd($request->all());
         $reportType = $request->input('report_type', '1'); // Default to 1 if not provided
         $reportFile = $reportType == '1' ? 'employee' : ($reportType == '2' ? 'employee-disposition' : 'employee-lesp-expiry');
@@ -725,6 +747,7 @@ class ReportController extends Controller
 
     public function dutyDetailOrderReport(Request $request)
     {
+        $this->authorizeReport('duty-detail-order');
         // dd($request->all());
         $pLocation = Location::find($request->location)->name ?? 'All Locations';
         $pFromDate = $request->from_date ?? '';
@@ -956,6 +979,7 @@ class ReportController extends Controller
     public function suppliesReport(Request $request)
     {
         // dd($request->all());
+        $this->authorizeReport('supplies');
         $pCategory = SuppliesCategory::find($request->category)->name ?? 'All Categories';
         $pSupplier = Supplier::find($request->supplier)->name ?? 'All Suppliers';
         $statuses = [
@@ -1015,6 +1039,7 @@ class ReportController extends Controller
     public function suppliesReceivingReport(Request $request)
     {
         //dd($request->all());
+        $this->authorizeReport('supplies-receiving');
         $pDateRange = $request->date_range ?? 'this_month';
         $pFromDate = $request->from_date ?? '';
         $pToDate = $request->to_date ?? '';
@@ -1095,6 +1120,7 @@ class ReportController extends Controller
 
     public function suppliesIssuanceReport(Request $request)
     {
+        $this->authorizeReport('supplies-issuance');
         // dd($request->all());
         $pDateRange = $request->date_range ?? 'this_month';
         $pFromDate = $request->from_date ?? '';
@@ -1178,6 +1204,7 @@ class ReportController extends Controller
     public function budgetRequestReport(Request $request)
     {
         // dd($request->all());
+        $this->authorizeReport('budget-request');
         $pDateRange = $request->date_range ?? 'this_month';
         $pFromDate = $request->from_date ?? '';
         $pToDate = $request->to_date ?? '';
@@ -1297,6 +1324,7 @@ class ReportController extends Controller
     {
         // Validate request
         // dd($request->all());
+        $this->authorizeReport('maintenance');
         $rules = [
             'date_range' => 'required|in:this_month,last_month,this_quarter,this_year,custom',
             'type' => 'nullable|in:0,1,2,3,4',

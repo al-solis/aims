@@ -137,7 +137,7 @@
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">First Name</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Middle Name</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Email</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Roles</th>
+                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Role</th>
                         <th scope="col" class="px-4 py-3 text-left w-[80px]">Status</th>
                         <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
                     </tr>
@@ -152,8 +152,11 @@
                             <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">{{ $user->fname }}</td>
                             <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">{{ $user->mname }}</td>
                             <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">{{ $user->email }}</td>
+                            {{-- <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">
+                                {{ $user->role == 1 ? 'Admin' : ($user->role == 2 ? 'Viewer' : 'User') }}</td> --}}
                             <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">
-                                {{ $user->role == 1 ? 'Admin' : ($user->role == 2 ? 'Viewer' : 'User') }}</td>
+                                {{ $user->userRole ? $user->userRole->name : '—' }}
+                            </td>
                             <td class="px-4 py-3 w-[100px] text-xs font-semibold">
                                 @php
                                     $statuses = [
@@ -177,7 +180,7 @@
                                         data-modal-target="edit-modal" data-modal-toggle="edit-modal"
                                         data-id="{{ $user->id }}" data-employee_code="{{ $user->employee_code }}"
                                         data-lname="{{ $user->lname }}" data-fname="{{ $user->fname }}"
-                                        data-mname="{{ $user->mname }}" data-role="{{ $user->role }}"
+                                        data-mname="{{ $user->mname }}" data-role_id="{{ $user->role_id }}"
                                         data-email="{{ $user->email }}" data-status="{{ $user->is_active }}"
                                         onclick="openEditModal(this)"
                                         class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
@@ -302,9 +305,12 @@
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     required>
                                     {{-- <option selected="">Select product type</option> --}}
-                                    <option value='0'>User</option>
+                                    {{-- <option value='0'>User</option>
                                     <option value='1'>Admin</option>
-                                    <option value='2'>Viewer</option>
+                                    <option value='2'>Viewer</option> --}}
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 

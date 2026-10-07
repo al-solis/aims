@@ -2,202 +2,289 @@
 @section('content')
     @php use Carbon\Carbon; @endphp
 
-    <div class="max-w-3xl px-4 py-10 sm:px-6 lg:px-8 lg:py-6 mx-auto">
+    <div class="max-w-5xl px-4 py-8 sm:px-6 lg:px-8 mx-auto">
 
-        <div class="bg-white rounded-xl shadow-xs p-3 sm:p-8">
-            <div class="text-center mb-4">
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-800">
-                    Clearance Approval Routing
-                </h2>
-                <p class="text-sm text-gray-600">
-                    Setup clearance approval routing.
+        {{-- Page header --}}
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-6">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800">Clearance Approval Routing</h2>
+                <p class="text-sm text-gray-600 mt-1">
+                    Set which departments sign off on a clearance, and in what order.
                 </p>
             </div>
+            <a href="{{ route('setup.index') }}"
+                class="inline-flex items-center gap-2 self-start sm:self-auto px-4 py-2 text-xs font-medium text-gray-700 border border-gray-300 bg-white rounded-lg hover:bg-gray-100">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Back to Setup
+            </a>
+        </div>
 
-            <hr class="my-3">
+        <div class="grid gap-6 lg:grid-cols-5 items-start">
 
-            <div class="grid gap-2 mb-4 sm:grid-cols-6">
-                <div class="sm:col-span-4">
-                    <label class="text-xs font-medium">Department/Location*</label>
-                    <select id="location_id" class="w-full text-xs border rounded p-2">
-                        <option value="">Select</option>
-                        @foreach ($locations as $location)
-                            <option value="{{ $location->id }}">{{ $location->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+            {{-- Left: form --}}
+            <div class="lg:col-span-2 lg:sticky lg:top-6">
+                <div id="formCard" class="bg-white rounded-xl shadow-xs border border-gray-200 p-5">
+                    <h3 id="formTitle" class="text-base font-bold text-gray-800">Add approval step</h3>
+                    <p id="formHint" class="text-xs text-gray-500 mt-1 mb-4">
+                        New departments are added to the end of the sequence. Use the arrows to reorder.
+                    </p>
 
-                <div class="sm:col-span-1">
-                    <label class="text-xs font-medium">Order*</label>
-                    <input type="number" id="order" min="1" step="1"
-                        class="w-full text-xs border rounded p-2">
-                </div>
+                    <div id="formError"
+                        class="hidden mb-3 text-xs text-red-700 bg-red-50 border border-red-200 rounded p-2"></div>
 
-                <div class="sm:col-span-1 flex items-end">
-                    <button id="add-routing" class="w-full text-white bg-green-600 text-sm rounded p-2">
-                        Add
-                    </button>
+                    <div>
+                        <label for="location_id" class="block text-xs font-medium text-gray-700 mb-1">
+                            Department/Location <span class="text-red-600">*</span>
+                        </label>
+                        <select id="location_id"
+                            class="w-full text-xs border border-gray-300 rounded p-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <option value="">Select a department</option>
+                            @foreach ($locations as $location)
+                                <option value="{{ $location->id }}">{{ $location->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mt-5 flex gap-2">
+                        <button id="add-routing"
+                            class="flex-1 text-white bg-green-600 hover:bg-green-700 text-sm font-medium rounded p-2">
+                            Add step
+                        </button>
+                        <button id="cancel-edit" type="button"
+                            class="hidden text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 hover:bg-gray-200 rounded px-4 py-2">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <h3 class="text-lg font-bold mb-2">Routing Order</h3>
+            {{-- Right: approval sequence --}}
+            <div class="lg:col-span-3">
+                <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-base font-bold text-gray-800">Approval sequence</h3>
+                        <span id="stepCount" class="text-xs text-gray-500"></span>
+                    </div>
 
-            <table class="min-w-full text-xs border">
-                <thead class="bg-gray-200">
-                    <tr>
-                        <th class="px-3 py-2 text-left">Location/ Department</th>
-                        <th class="px-3 py-2 text-left">Order</th>
-                        <th class="px-3 py-2 text-left">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="routingBody"></tbody>
-            </table>
+                    <ol id="routingList"></ol>
 
-            <div class="mt-5 flex justify-end gap-x-2">
-                <a href="{{ route('setup.index') }}" type="button" id="closeButton"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 ">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Back
-                </a>
+                    <div id="emptyState" class="hidden text-center py-10">
+                        <p class="text-sm font-medium text-gray-700">No approval steps yet</p>
+                        <p class="text-xs text-gray-500 mt-1">Add the first department using the form.</p>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            loadRoutings();
-        });
+        const listEl = document.getElementById('routingList');
+        const emptyEl = document.getElementById('emptyState');
+        const countEl = document.getElementById('stepCount');
+        const addBtn = document.getElementById('add-routing');
+        const cancelBtn = document.getElementById('cancel-edit');
+        const errorEl = document.getElementById('formError');
+        const csrf = '{{ csrf_token() }}';
+        let editingId = null;
+
+        const jsonHeaders = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrf
+        };
+
+        const chevronUp =
+            '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>';
+        const chevronDown =
+            '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>';
+
+        document.addEventListener('DOMContentLoaded', loadRoutings);
+
+        function esc(str) {
+            const d = document.createElement('div');
+            d.textContent = str ?? '';
+            return d.innerHTML;
+        }
+
+        function showError(msg) {
+            errorEl.textContent = msg;
+            errorEl.classList.remove('hidden');
+        }
+
+        function clearError() {
+            errorEl.classList.add('hidden');
+            errorEl.textContent = '';
+        }
 
         function loadRoutings() {
             fetch(`/setup/clearance-routing/list`)
                 .then(res => res.json())
                 .then(res => {
-                    const data = res.record;
-                    const body = document.getElementById('routingBody');
-                    body.innerHTML = '';
+                    const data = res.record || [];
+                    listEl.innerHTML = '';
 
-                    data.forEach(r => {
-                        body.innerHTML += `
-                <tr>
-                    <td class="px-3 py-2">${r.location.name}</td>
-                    <td class="px-3 py-2">${r.order}</td>
-                    <td class="px-3 py-2">
-                        <button title="Edit ${r.location.name}"
-                            class="edit-btn text-blue-600"
-                            data-id="${r.id}"
-                            data-location="${r.location_id}"
-                            data-location_name="${r.location.name}"
-                            data-order="${r.order}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" 
-                                fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                            </svg>
-                        </button>
+                    emptyEl.classList.toggle('hidden', data.length > 0);
+                    countEl.textContent = data.length ? `${data.length} step${data.length > 1 ? 's' : ''}` : '';
 
-                        <button title="Delete ${r.location.name}"
-                            class="delete-btn text-red-600 ml-2"                            
-                            data-id="${r.id}"
-                            data-location_name="${r.location.name}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-                            </svg>
-                        </button>
-                    </td>
-                </tr>
-            `;
+                    data.forEach((r, i) => {
+                        const isFirst = i === 0;
+                        const isLast = i === data.length - 1;
+                        const name = esc(r.location.name);
+                        const isEditing = String(r.id) === String(editingId);
+                        const moveBtn =
+                            'move-btn p-1.5 rounded text-gray-600 hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent';
+
+                        listEl.insertAdjacentHTML('beforeend', `
+                            <li class="relative flex gap-3 ${isLast ? '' : 'pb-4'}">
+                                ${isLast ? '' : '<span class="absolute left-4 top-8 bottom-0 w-px bg-gray-300" aria-hidden="true"></span>'}
+                                <span class="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-600 text-white text-xs font-bold">
+                                    ${i + 1}
+                                </span>
+                                <div class="flex flex-1 items-center justify-between rounded-lg border px-3 py-2 ${isEditing ? 'border-blue-400 bg-blue-50' : 'border-gray-200 bg-gray-50'}">
+                                    <span class="text-sm font-medium text-gray-800">${name}</span>
+                                    <div class="flex items-center gap-0.5">
+                                        <button type="button" title="Move ${name} up" aria-label="Move ${name} up"
+                                            class="${moveBtn}" data-id="${r.id}" data-direction="up" ${isFirst ? 'disabled' : ''}>
+                                            ${chevronUp}
+                                        </button>
+                                        <button type="button" title="Move ${name} down" aria-label="Move ${name} down"
+                                            class="${moveBtn}" data-id="${r.id}" data-direction="down" ${isLast ? 'disabled' : ''}>
+                                            ${chevronDown}
+                                        </button>
+                                        <span class="w-px h-5 bg-gray-300 mx-1" aria-hidden="true"></span>
+                                        <button type="button" title="Edit ${name}" aria-label="Edit ${name}"
+                                            class="edit-btn p-1.5 rounded text-blue-600 hover:bg-blue-100"
+                                            data-id="${r.id}"
+                                            data-location="${r.location_id}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                            </svg>
+                                        </button>
+                                        <button type="button" title="Delete ${name}" aria-label="Delete ${name}"
+                                            class="delete-btn p-1.5 rounded text-red-600 hover:bg-red-100"
+                                            data-id="${r.id}"
+                                            data-location_name="${name}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </li>
+                        `);
                     });
                 });
         }
 
         // ADD / UPDATE
-        document.getElementById('add-routing').addEventListener('click', function() {
-            const location = document.getElementById('location_id').value;
-            const order = document.getElementById('order').value;
-            const id = this.dataset.id;
+        addBtn.addEventListener('click', function() {
+            clearError();
 
-            if (!location || !order) {
-                alert('Fill all fields');
+            const location = document.getElementById('location_id').value;
+
+            if (!location) {
+                showError('Select a department.');
                 return;
             }
 
-            let url = '/setup/clearance-routing';
-            let method = 'POST';
-
-            if (id) {
-                url = `/setup/clearance-routing/${id}`;
-                method = 'PUT';
-            }
+            const url = editingId ? `/setup/clearance-routing/${editingId}` : '/setup/clearance-routing';
+            const method = editingId ? 'PUT' : 'POST';
 
             fetch(url, {
                     method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
+                    headers: jsonHeaders,
                     body: JSON.stringify({
-                        location_id: location,
-                        order: order
+                        location_id: location
                     })
                 })
                 .then(res => res.json())
                 .then(res => {
                     if (res.error) {
-                        alert(res.error);
+                        showError(res.error);
+                    } else if (res.errors) {
+                        showError(Object.values(res.errors).flat().join(' '));
                     } else {
                         resetForm();
                         loadRoutings();
                     }
-                });
+                })
+                .catch(() => showError('Something went wrong. Try again.'));
         });
 
-        // EDIT
-        document.addEventListener('click', function(e) {
+        cancelBtn.addEventListener('click', function() {
+            resetForm();
+            loadRoutings();
+        });
 
+        // MOVE / EDIT / DELETE (delegated)
+        document.addEventListener('click', function(e) {
+            const moveBtn = e.target.closest('.move-btn');
             const editBtn = e.target.closest('.edit-btn');
-
-            if (editBtn) {
-                document.getElementById('location_id').value = editBtn.dataset.location;
-                document.getElementById('order').value = editBtn.dataset.order;
-
-                const btn = document.getElementById('add-routing');
-                btn.textContent = 'Update';
-                btn.dataset.id = editBtn.dataset.id;
-            }
-        });
-
-        // DELETE
-        document.addEventListener('click', function(e) {
-
             const deleteBtn = e.target.closest('.delete-btn');
 
-            if (deleteBtn) {
+            if (moveBtn && !moveBtn.disabled) {
+                moveBtn.disabled = true;
+                fetch(`/setup/clearance-routing/${moveBtn.dataset.id}/move`, {
+                        method: 'POST',
+                        headers: jsonHeaders,
+                        body: JSON.stringify({
+                            direction: moveBtn.dataset.direction
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(() => loadRoutings())
+                    .catch(() => loadRoutings());
+            }
 
+            if (editBtn) {
+                clearError();
+                editingId = editBtn.dataset.id;
+
+                document.getElementById('location_id').value = editBtn.dataset.location;
+                document.getElementById('formTitle').textContent = 'Edit approval step';
+                document.getElementById('formHint').textContent =
+                    'Change the department for this step. Its position stays the same.';
+                addBtn.textContent = 'Save changes';
+                cancelBtn.classList.remove('hidden');
+
+                document.getElementById('formCard').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest'
+                });
+                loadRoutings(); // re-render to highlight the step being edited
+            }
+
+            if (deleteBtn) {
                 if (!confirm('Delete this record ' + deleteBtn.dataset.location_name + '?')) {
                     return;
                 }
 
                 fetch(`/setup/clearance-routing/${deleteBtn.dataset.id}`, {
                         method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
+                        headers: jsonHeaders
                     })
                     .then(res => res.json())
-                    .then(() => loadRoutings());
+                    .then(() => {
+                        if (String(deleteBtn.dataset.id) === String(editingId)) resetForm();
+                        loadRoutings();
+                    });
             }
         });
 
         function resetForm() {
+            editingId = null;
+            clearError();
             document.getElementById('location_id').value = '';
-            document.getElementById('order').value = '';
-
-            const btn = document.getElementById('add-routing');
-            btn.textContent = 'Add';
-            delete btn.dataset.id;
+            document.getElementById('formTitle').textContent = 'Add approval step';
+            document.getElementById('formHint').textContent =
+                'New departments are added to the end of the sequence. Use the arrows to reorder.';
+            addBtn.textContent = 'Add step';
+            cancelBtn.classList.add('hidden');
         }
     </script>
 @endsection

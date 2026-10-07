@@ -36,6 +36,8 @@ use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\BudgetRoutingController;
 use App\Http\Controllers\DocumentTypeController;
 use App\Http\Controllers\ClusterController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\AccessRightController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -78,6 +80,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('setup/supplies-category', SuppliesCategoryController::class)->except(['destroy']);
     Route::resource('setup/uom', UomController::class)->except(['destroy']);
     Route::resource('setup/supplier', SupplierController::class)->except(['destroy']);
+
+    Route::get('setup/roles', [RoleController::class, 'index'])->name('setup.role.index');
+    Route::get('setup/roles/create', [RoleController::class, 'create'])->name('setup.roles.create');
+    Route::post('setup/roles', [RoleController::class, 'store'])->name('setup.roles.store');
+    Route::get('setup/roles/{role}/edit', [RoleController::class, 'edit'])->name('setup.roles.edit');
+    Route::put('setup/roles/{role}', [RoleController::class, 'update'])->name('setup.roles.update');
+    Route::get('setup/access-rights', [AccessRightController::class, 'index'])->name('setup.access.index');
+    Route::put('setup/access-rights', [AccessRightController::class, 'update'])->name('setup.access.update');
     Route::resource('setup/user', RegisteredUserController::class)->except(['destroy']);
     Route::resource('setup/ddo', DdoHeaderController::class)->except(['destroy', 'update']);
     Route::get('setup/clearance-routing', [ClearanceRoutingController::class, 'index'])->name('clearance-routing.index');
@@ -85,6 +95,7 @@ Route::middleware('auth')->group(function () {
     Route::post('setup/clearance-routing', [ClearanceRoutingController::class, 'store']);
     Route::put('setup/clearance-routing/{id}', [ClearanceRoutingController::class, 'update']);
     Route::delete('setup/clearance-routing/{id}', [ClearanceRoutingController::class, 'destroy']);
+    Route::post('setup/clearance-routing/{id}/move', [ClearanceRoutingController::class, 'move']);
     Route::put('setup/ddo/{ddo}', [DdoHeaderController::class, 'update'])->name('ddo.update');
     Route::get('/ddo/get-employees-by-location', [DdoHeaderController::class, 'getEmployeesByLocation']);
     Route::post('ddo/location/copy', [DdoHeaderController::class, 'copyLocationSetup'])->name('ddo.location.copy');
@@ -93,9 +104,9 @@ Route::middleware('auth')->group(function () {
     Route::post('setup/budget-routing', [BudgetRoutingController::class, 'store']);
     Route::put('setup/budget-routing/{id}', [BudgetRoutingController::class, 'update']);
     Route::delete('setup/budget-routing/{id}', [BudgetRoutingController::class, 'destroy']);
+    Route::post('setup/budget-routing/{id}/move', [BudgetRoutingController::class, 'move']);
     Route::get('/budget/{id}/approval-history', [BudgetController::class, 'getApprovalHistory'])->name('budget.approval-history');
-    // Route::post('/employee/{employee}/ids', [EmployeeIdController::class, 'store'])
-    //     ->name('employee.ids.store');
+
 
     // Employee ID routes
     Route::prefix('employee/{employee}/ids')->group(function () {

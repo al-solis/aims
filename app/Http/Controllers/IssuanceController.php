@@ -18,8 +18,25 @@ use App\Models\location as Location;
 
 class IssuanceController extends Controller
 {
+    private const SUPPLIES_CODE = 'SUP-01';
+
+    private function authorizeSupplies(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::SUPPLIES_CODE, $action),
+            403,
+            'You do not have permission in Supplies Management to perform this action.'
+        );
+    }
+
     public function index(Request $request)
     {
+        $this->authorizeSupplies('read');
+
+        $canCreate = Auth::user()->hasAccess(self::SUPPLIES_CODE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SUPPLIES_CODE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SUPPLIES_CODE, 'delete');
+
         $search = $request->input('search');
         $searchlocation = $request->input('searchlocation');
         $searchemployee = $request->input('searchemployee');
@@ -49,11 +66,13 @@ class IssuanceController extends Controller
             ->appends($request->only('search', 'searchemployee', 'searchlocation'))
         ;
 
-        return view('supplies.issuance.index', compact('issuances', 'employees', 'uoms', 'locations'));
+        return view('supplies.issuance.index', compact('issuances', 'employees', 'uoms', 'locations', 'canCreate', 'canUpdate', 'canDelete'));
     }
 
     public function create()
     {
+        $this->authorizeSupplies('create');
+
         $supplies = Supplies::where('status', 1)
             ->orderBy('name')->get();
         $employees = employee::whereIn('status', [1])
@@ -66,6 +85,8 @@ class IssuanceController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizeSupplies('create');
+
         $request->validate([
             'purpose' => 'required|string',
             'issuance_date' => 'required|date',
@@ -194,6 +215,8 @@ class IssuanceController extends Controller
 
     public function void($id)
     {
+        $this->authorizeSupplies('delete');
+
         $issuance = issuance_header::findOrFail($id);
 
         if ($issuance->status == 0) {

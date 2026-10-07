@@ -22,8 +22,8 @@
                     Back
                 </a> --}}
 
-                <a @if (Auth::user()->role == 2) disabled @endif href="{{ route('budget.create') }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white{{ Auth::user()->role == 2 ? ' bg-gray-600 hover:bg-gray-600 cursor-not-allowed' : ' bg-gray-900 hover:bg-gray-800' }} rounded-lg">
+                <a @if (!$canCreate) disabled @endif href="{{ route('budget.create') }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white{{ $canCreate ? ' bg-gray-900 hover:bg-gray-800' : ' bg-gray-600 hover:bg-gray-600 cursor-not-allowed' }} rounded-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -301,9 +301,9 @@
                                         </svg>
                                     </button>
 
-                                    <button type="button" @if (Auth::user()->role == 2 || $budget->status != 0 || Auth::user()->id != $budget->requested_by) disabled @endif
+                                    <button type="button" @if (!$canCreate || $budget->status != 0 || Auth::user()->id != $budget->requested_by) disabled @endif
                                         title="Submit for approval : {{ $budget->apv_no }}"
-                                        class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors {{ Auth::user()->role == 2 || $budget->status != 0 || Auth::user()->id != $budget->requested_by ? ' cursor-not-allowed' : '' }}"
+                                        class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors {{ !$canCreate && $budget->status == 0 && Auth::user()->id == $budget->requested_by ? ' cursor-not-allowed' : '' }}"
                                         onclick="submitForApproval({{ $budget->id }}, '{{ $budget->apv_no }}' )">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-send-check-fill" viewBox="0 0 16 16">

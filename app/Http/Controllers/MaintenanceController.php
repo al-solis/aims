@@ -13,8 +13,23 @@ use App\Models\asset;
 
 class MaintenanceController extends Controller
 {
+    private const MAINTENANCE_CODE = 'MM-01';
+
+    private function authorizeMaintenance(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::MAINTENANCE_CODE, $action),
+            403,
+            'You do not have permission in Maintenance Management to perform this action.'
+        );
+    }
     public function index(Request $request)
     {
+        $this->authorizeMaintenance('read');
+        $canCreate = Auth::user()->hasAccess(self::MAINTENANCE_CODE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::MAINTENANCE_CODE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::MAINTENANCE_CODE, 'delete');
+
         $search = $request->input('search');
         $status = $request->input('status');
         $searchType = $request->input('searchType'); // Default to 'code' if not provided
@@ -65,13 +80,18 @@ class MaintenanceController extends Controller
                 'inprogressMaintenances',
                 'completedThisMonthMaintenances',
                 'overdueMaintenances',
-                'assets'
+                'assets',
+                'canCreate',
+                'canUpdate',
+                'canDelete'
             )
         );
     }
 
     public function store(Request $request)
     {
+        $this->authorizeMaintenance('create');
+
         $year = Carbon::now()->year;
         $count = Maintenance::whereYear('created_at', $year)->count() + 1;
         $maintenanceCode = 'MT-' . $year . '-' . str_pad($count, 5, '0', STR_PAD_LEFT);
@@ -108,6 +128,8 @@ class MaintenanceController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeMaintenance('update');
+
         $maintenance = Maintenance::findOrFail($id);
 
         $request->validate([
@@ -139,6 +161,8 @@ class MaintenanceController extends Controller
 
     public function markAsInProgress($id)
     {
+        $this->authorizeMaintenance('update');
+
         $maintenance = Maintenance::findOrFail($id);
         $maintenance->update([
             'status' => 2,
@@ -156,6 +180,8 @@ class MaintenanceController extends Controller
 
     public function markAsComplete($id)
     {
+        $this->authorizeMaintenance('update');
+
         $maintenance = Maintenance::findOrFail($id);
         $maintenance->update([
             'status' => 3,
@@ -173,6 +199,8 @@ class MaintenanceController extends Controller
 
     public function voidMaintenance($id)
     {
+        $this->authorizeMaintenance('delete');
+
         $maintenance = Maintenance::findOrFail($id);
         $maintenance->update([
             'status' => 4,

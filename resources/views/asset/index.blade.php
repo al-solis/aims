@@ -123,10 +123,10 @@
                     Bulk UPC Generate
                 </a> --}}
 
-                <button @if (Auth::user()->role == 2) disabled @endif data-modal-target="add-modal"
-                    data-modal-toggle="{{ Auth::user()->role == 2 ? '' : 'add-modal' }}"
+                <button @if (!$canCreate) disabled @endif data-modal-target="add-modal"
+                    data-modal-toggle="{{ $canCreate ? 'add-modal' : '' }}"
                     class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white 
-                    {{ Auth::user()->role == 2 ? 'bg-gray-600 hover:bg-gray-600 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-800' }} rounded-lg">
+                    {{ $canCreate ? 'bg-gray-900 hover:bg-gray-800' : 'bg-gray-600 hover:bg-gray-600 cursor-not-allowed' }} rounded-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -335,7 +335,7 @@
                             </td>
                             <td class="px-4 py-2 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
-                                    @if (Auth::user()->role != 2)
+                                    @if ($canUpdate)
                                         <button type="button" title="Edit asset: {{ $asset->asset_code }}"
                                             data-modal-target="edit-modal" data-modal-toggle="edit-modal"
                                             data-id="{{ $asset->id }}" data-code="{{ $asset->asset_code }}"
@@ -417,7 +417,7 @@
                                             <path d="M12 9h2V8h-2z" />
                                         </svg>
                                     </a> --}}
-                                    @if ($asset->category_id == 2 && Auth::user()->role != 2)
+                                    @if ($asset->category_id == 2 && $canCreate)
                                         <a href="{{ route('asset.odometer.show', $asset->id) }}" type="button"
                                             title="Add odometer reading : {{ $asset->asset_code }}"
                                             data-id="{{ $asset->id }}" data-code="{{ $asset->asset_code }}"
@@ -447,7 +447,7 @@
                                         </button>
                                     @endif
 
-                                    @if (Auth::user()->role != 2)
+                                    @if ($canDelete)
                                         <button type="button" title="Retire asset: {{ $asset->asset_code }}"
                                             data-id="{{ $asset->id }}" data-code="{{ $asset->asset_code }}"
                                             onclick="retireAsset(this)"

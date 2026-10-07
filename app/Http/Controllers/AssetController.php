@@ -24,8 +24,25 @@ use App\Models\clearance_detail as ClearanceDetail;
 
 class AssetController extends Controller
 {
+    private const ASSET_CODE = 'AM-01';
+
+    private function authorizeAsset(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::ASSET_CODE, $action),
+            403,
+            'You do not have permission in Asset Management to perform this action.'
+        );
+    }
+
     public function index(Request $request)
     {
+        $this->authorizeAsset('read');
+
+        $canCreate = Auth::user()->hasAccess(self::ASSET_CODE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::ASSET_CODE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::ASSET_CODE, 'delete');
+
         $search = $request->input('search');
         $searchloc = $request->input('searchloc');
         $searchcat = $request->input('searchcat');
@@ -77,11 +94,13 @@ class AssetController extends Controller
                 'selected_assets' => $request->input('selected_assets', '')
             ]);
 
-        return view('asset.index', compact('assets', 'categories', 'locations', 'sublocations', 'employees'));
+        return view('asset.index', compact('assets', 'canCreate', 'canUpdate', 'canDelete', 'categories', 'locations', 'sublocations', 'employees'));
     }
 
     public function store(Request $request, Asset $asset)
     {
+        $this->authorizeAsset('create');
+
         $request->validate([
             // 'asset_code' => 'required|string|max:25|unique:assets,asset_code,' . $asset->id,
             'name' => 'required|string|max:50',
@@ -206,6 +225,8 @@ class AssetController extends Controller
 
     public function update(Request $request, Asset $asset)
     {
+        $this->authorizeAsset('update');
+
         $request->validate([
             'edit_name' => 'required|string|max:50',
             'edit_description' => 'nullable|string|max:250',
@@ -473,6 +494,7 @@ class AssetController extends Controller
 
     public function retire($id)
     {
+        $this->authorizeAsset('delete');
         $asset = Asset::findOrFail($id);
 
         if ($asset->status == 5) {

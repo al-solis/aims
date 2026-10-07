@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Models\role;
 
 class RegisteredUserController extends Controller
 {
@@ -35,7 +36,7 @@ class RegisteredUserController extends Controller
             'mname' => ['nullable', 'string', 'max:30'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['integer'],
+            'role_id' => ['integer'],
             'is_active' => ['boolean'],
         ]);
 
@@ -46,7 +47,8 @@ class RegisteredUserController extends Controller
             'employee_code' => $request->employee_code,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role ?? 0,
+            'role_id' => $request->role_id ?? 0,
+            // 'role' => $request->role ?? 0,
             'is_active' => $request->is_active ?? false,
         ]);
 
@@ -63,31 +65,55 @@ class RegisteredUserController extends Controller
         $search = $request->query('search');
         $status = $request->query('status');
 
+        // User statistics
         $totalUsers = User::count();
+
         $activeUsers = User::where('is_active', true)->count();
+
         $inactiveUsers = User::where('is_active', false)->count();
 
-        $users = User::latest();
+        // Active roles
+        $roles = Role::where('is_active', true)
+            ->orderBy('name')
+            ->get();
 
+        // Users query
+        $users = User::query()
+            ->with('userRole')
+            ->latest();
+
+        // Search
         if ($search) {
-            $users = $users->where(function ($query) use ($search) {
+            $users->where(function ($query) use ($search) {
                 $query->where('lname', 'like', "%{$search}%")
                     ->orWhere('fname', 'like', "%{$search}%")
                     ->orWhere('mname', 'like', "%{$search}%");
             });
         }
 
+        // Status
         if ($status !== null && $status !== '') {
-            $users = $users->where('is_active', (bool) $status);
+            $users->where('is_active', $status == '1');
         }
 
-        $users = $users->paginate(config('app.paginate'))
+        // Pagination
+        $users = $users
+            ->paginate(config('app.paginate'))
             ->appends([
                 'search' => $search,
                 'status' => $status,
             ]);
 
-        return view('setup.user.index', compact('users', 'totalUsers', 'activeUsers', 'inactiveUsers'));
+        return view(
+            'setup.user.index',
+            compact(
+                'users',
+                'totalUsers',
+                'activeUsers',
+                'inactiveUsers',
+                'roles'
+            )
+        );
     }
 
     public function update($id)
@@ -100,7 +126,7 @@ class RegisteredUserController extends Controller
             'mname' => request('edit_mname'),
             'employee_code' => request('edit_employee_code'),
             'email' => request('edit_email'),
-            'role' => request('edit_role'),
+            'role_id' => request('edit_role_id'),
             'is_active' => request('edit_is_active'),
         ]);
 

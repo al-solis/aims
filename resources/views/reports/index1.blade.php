@@ -1,48 +1,6 @@
 @extends('dashboard')
 @section('content')
-    @php
-        use Illuminate\Support\Facades\Auth;
-
-        // modules.code of the Reports module — change to match your modules table.
-        $moduleCode = 'REP';
-
-        // sub-module code => ['key' => modal/report key, 'badge' => label]  (config/report_keys.php)
-        $reportMap = config('report_keys', []);
-
-        // Reports sub-modules (code NOT ending in "-01") the user's role can view, and that have a report mapped.
-$reportCards = Auth::user()
-    ->accessibleSubModules($moduleCode, main: false)
-    ->get()
-    ->filter(fn($sm) => isset($reportMap[$sm->code]))
-    ->values();
-
-$allowedReports = $reportCards->map(fn($sm) => $reportMap[$sm->code]['key'])->all();
-
-$palette = [
-    ['bg' => 'bg-blue-100 dark:bg-blue-900', 'text' => 'text-blue-600 dark:text-blue-300'],
-    ['bg' => 'bg-green-100 dark:bg-green-900', 'text' => 'text-green-600 dark:text-green-300'],
-    ['bg' => 'bg-yellow-100 dark:bg-yellow-900', 'text' => 'text-yellow-600 dark:text-yellow-300'],
-    ['bg' => 'bg-orange-100 dark:bg-orange-900', 'text' => 'text-orange-600 dark:text-orange-300'],
-    ['bg' => 'bg-purple-100 dark:bg-purple-900', 'text' => 'text-purple-600 dark:text-purple-300'],
-    ['bg' => 'bg-indigo-100 dark:bg-indigo-900', 'text' => 'text-indigo-600 dark:text-indigo-300'],
-    ['bg' => 'bg-red-100 dark:bg-red-900', 'text' => 'text-red-600 dark:text-red-300'],
-        ];
-    @endphp
-
-    {{-- @php
-        use Illuminate\Support\Facades\DB;
-        $u = Auth::user();
-        dd([
-            'role_id' => $u->role_id,
-            'config_keys' => array_keys(config('report_keys', [])),
-            'rights_rows' => DB::table('access_rights')
-                ->where('role_id', $u->role_id)
-                ->where('module_id', 8)
-                ->get(['sub_module_id', 'can_read']),
-            'query_rows' => $u->accessibleSubModules('REP', main: false)->pluck('sub_modules.code'),
-        ]);
-    @endphp --}}
-    <div class="container mx-auto px-2 sm:px-4 lg:px-4 py-2">
+    <div class="container mx-auto px-2 sm:px-2 lg:px-2 py-2">
         <!-- Header -->
         <div class="mb-2">
             <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Reports</h1>
@@ -51,47 +9,290 @@ $palette = [
 
         <!-- Reports Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            @forelse ($reportCards as $sm)
-                @php
-                    $c = $palette[$loop->index % count($palette)];
-                    $cfg = $reportMap[$sm->code];
-                    $icon = $sm->icon
-                        ? (str_contains($sm->icon, 'bi ')
-                            ? $sm->icon
-                            : 'bi ' . $sm->icon)
-                        : 'bi bi-file-earmark-text';
-                @endphp
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-                    <div class="p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 {{ $c['bg'] }} rounded-lg">
-                                <i class="{{ $icon }} {{ $c['text'] }} text-2xl leading-none"></i>
-                            </div>
-                            @if (!empty($cfg['badge']))
-                                <span
-                                    class="text-xs font-medium {{ $c['text'] }} {{ $c['bg'] }} px-2 py-1 rounded">{{ $cfg['badge'] }}</span>
-                            @endif
-                        </div>
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ $sm->name }}</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">{{ $sm->description }}</p>
-                        <button onclick="openReportModal('{{ $cfg['key'] }}')"
-                            class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Asset Reports Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                                </path>
                             </svg>
-                            Generate Report
-                        </button>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">Asset</span>
                     </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Asset Listing Report</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Select parameters for asset listing report.
+                        Filter by date range, category, status and location.</p>
+                    <button onclick="openReportModal('asset-summary')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
                 </div>
-            @empty
-                <div class="col-span-full rounded-lg border border-gray-200 bg-white p-8 text-center text-sm text-gray-500">
-                    You don't have access to any reports.
+            </div>
+
+            <!-- Odometer Readings Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+                            <svg class="w-6 h-6 text-green-600 dark:text-green-300" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900 px-2 py-1 rounded">Odometer</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Odometer Readings Report</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Track vehicle usage with detailed odometer
+                        readings by date range</p>
+                    <button onclick="openReportModal('odometer')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
                 </div>
-            @endforelse
+            </div>
+
+            <!-- Maintenance Reports Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+                            <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-300" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                                </path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900 px-2 py-1 rounded">Maintenance</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Maintenance History</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">View maintenance records with cost analysis and
+                        schedules</p>
+                    <button onclick="openReportModal('maintenance')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Employee Reports Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-orange-600 dark:text-orange-300"
+                                fill="none" width="16" height="16" stroke="currentColor" class="bi bi-people-fill"
+                                viewBox="0 0 16 16">
+                                <path
+                                    d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
+                            </svg>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900 px-2 py-1 rounded">Employee</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Employee List</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate employee listing per location, status
+                        and date range.
+                    </p>
+                    <button onclick="openReportModal('employee')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Supplies Reports Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-purple-600 dark:text-purple-300"
+                                fill="none" width="16" height="16" stroke="currentColor" class="bi bi-cart"
+                                viewBox="0 0 16 16">
+                                <path
+                                    d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
+                            </svg>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">Supplies</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Supplies Summary Report</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate supplies balance summary with
+                        filtering by category and supplier.
+                    </p>
+                    <button onclick="openReportModal('supplies')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Supplies Receiving Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-indigo-600 dark:text-indigo-300"
+                                fill="none" width="16" height="16" stroke="currentColor"
+                                class="bi bi-clipboard-check" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0" />
+                                <path
+                                    d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z" />
+                                <path
+                                    d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z" />
+                            </svg>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900 px-2 py-1 rounded">Supplies
+                            Receiving</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Supplies Receiving Report</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate detailed and summary supplies
+                        receiving report. Filtered by supplier and date range.
+                    </p>
+                    <button onclick="openReportModal('supplies-receiving')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Supplies Issuance Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-red-100 dark:bg-red-900 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-600 dark:text-red-300"
+                                fill="none" width="16" height="16" stroke="currentColor"
+                                class="bi bi-folder-symlink" viewBox="0 0 16 16">
+                                <path
+                                    d="m11.798 8.271-3.182 1.97c-.27.166-.616-.036-.616-.372V9.1s-2.571-.3-4 2.4c.571-4.8 3.143-4.8 4-4.8v-.769c0-.336.346-.538.616-.371l3.182 1.969c.27.166.27.576 0 .742" />
+                                <path
+                                    d="m.5 3 .04.87a2 2 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14h10.348a2 2 0 0 0 1.991-1.819l.637-7A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2m.694 2.09A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09l-.636 7a1 1 0 0 1-.996.91H2.826a1 1 0 0 1-.995-.91zM6.172 2a1 1 0 0 1 .707.293L7.586 3H2.19q-.362.002-.683.12L1.5 2.98a1 1 0 0 1 1-.98z" />
+                            </svg>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900 px-2 py-1 rounded">Supplies
+                            Issuance</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Supplies Issuance Report</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate detailed and summary supplies
+                        issuance report. Filtered by location, date range and status.
+                    </p>
+                    <button onclick="openReportModal('supplies-issuance')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Duty Detail Order Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600 dark:text-blue-300"
+                                fill="none" width="16" height="16" stroke="currentColor"
+                                class="bi bi-file-person" viewBox="0 0 16 16">
+                                <path
+                                    d="M12 1a1 1 0 0 1 1 1v10.755S12 11 8 11s-5 1.755-5 1.755V2a1 1 0 0 1 1-1zM4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                                <path d="M8 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+                            </svg>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">Duty
+                            Detail Order</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Duty Detail Order Report</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate duty detail order report with
+                        location filtering and date range.
+                    </p>
+                    <button onclick="openReportModal('duty-detail-order')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Budget Request Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+                            <svg class="w-6 h-6 text-green-600 dark:text-green-300" fill="none" stroke="currentColor"
+                                class="bi bi-cash-coin" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8m5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0" />
+                                <path
+                                    d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195z" />
+                                <path
+                                    d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083q.088-.517.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1z" />
+                                <path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 6 6 0 0 1 3.13-1.567" />
+                            </svg>
+                        </div>
+                        <span
+                            class="text-xs font-medium text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900 px-2 py-1 rounded">Budget
+                            Request</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Budget Request Report</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate a report of all budget requests with
+                        filtering options.</p>
+                    <button onclick="openReportModal('budget-request')"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+
         </div>
     </div>
-
 
     <!-- Parameter Modal -->
     <div id="reportModal" tabindex="-1" aria-hidden="true"
@@ -857,10 +1058,7 @@ $palette = [
         });
 
         // Modal functions
-        const allowedReports = @json($allowedReports);
-
         function openReportModal(reportType) {
-            if (!allowedReports.includes(reportType)) return;
             const config = reportConfigs[reportType];
             if (!config) return;
 

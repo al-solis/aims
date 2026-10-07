@@ -23,7 +23,7 @@
                     Back
                 </a>
 
-                @if ($assets->canBeTransferred() && Auth::user()->role != 2)
+                @if ($assets->canBeTransferred() && $canCreate)
                     <button data-modal-target="add-modal" data-modal-toggle="add-modal"
                         class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -23,9 +23,9 @@
                     Back
                 </a> --}}
 
-                <button @if (Auth::user()->role == 2) disabled @endif data-modal-target="add-modal"
-                    data-modal-toggle="{{ Auth::user()->role == 2 ? '' : 'add-modal' }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white{{ Auth::user()->role == 2 ? ' bg-gray-600 hover:bg-gray-600 cursor-not-allowed' : ' bg-gray-900 hover:bg-gray-800' }} rounded-lg">
+                <button @if (!$canCreate) disabled @endif data-modal-target="add-modal"
+                    data-modal-toggle="{{ $canCreate ? 'add-modal' : '' }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white{{ $canCreate ? ' bg-gray-900 hover:bg-gray-800' : ' bg-gray-600 hover:bg-gray-600 cursor-not-allowed' }} rounded-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -251,17 +251,19 @@
                                 {{ number_format($clearanceHeader->clearance_details->sum('total'), 2) }}</td>
                             <td class="px-4 py-3 w-[50px]">
                                 <div class="flex items-center justify-center space-x-2">
-                                    <a href="{{ route('clearance.show', $clearanceHeader->id) }}" type="button"
-                                        title="Edit clearance : {{ $clearanceHeader->request_number }}"
-                                        class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                            <path
-                                                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                            <path fill-rule="evenodd"
-                                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                                        </svg>
-                                    </a>
+                                    @if ($canUpdate || Auth::user()->id == $clearanceHeader->created_by)
+                                        <a href="{{ route('clearance.show', $clearanceHeader->id) }}" type="button"
+                                            title="Edit clearance : {{ $clearanceHeader->request_number }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                                <path fill-rule="evenodd"
+                                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                            </svg>
+                                        </a>
+                                    @endif
 
                                     <a href="{{ route('clearance.print', $clearanceHeader->id) }}" type="button"
                                         target="_blank" title="Print clearance : {{ $clearanceHeader->request_number }}"
@@ -322,9 +324,9 @@
                                         </button>
                                     @elseif ($clearanceHeader->status == 0)
                                         {{-- Submit for approval --}}
-                                        <button type="button" @if (in_array(Auth::user()->role, [0, 2]) || Auth::user()->id != $clearanceHeader->created_by) disabled @endif
+                                        <button type="button" @if (!$canUpdate || Auth::user()->id != $clearanceHeader->created_by) disabled @endif
                                             title="Submit for approval : {{ $clearanceHeader->request_number }}"
-                                            class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors{{ in_array(Auth::user()->role, [0, 2]) || Auth::user()->id != $clearanceHeader->created_by ? ' cursor-not-allowed' : '' }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-green-600 transition-colors{{ !$canUpdate || Auth::user()->id != $clearanceHeader->created_by ? ' cursor-not-allowed' : '' }}"
                                             onclick="submitForApproval({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}' )">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-send-check-fill" viewBox="0 0 16 16">
@@ -335,9 +337,9 @@
                                             </svg>
                                         </button>
 
-                                        <button type="button" @if (in_array(Auth::user()->role, [0, 2]) || Auth::user()->id != $clearanceHeader->created_by) disabled @endif
+                                        <button type="button" @if (!$canUpdate || Auth::user()->id != $clearanceHeader->created_by) disabled @endif
                                             title="Void clearance : {{ $clearanceHeader->request_number }}"
-                                            class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors {{ in_array(Auth::user()->role, [0, 2]) || Auth::user()->id != $clearanceHeader->created_by ? ' cursor-not-allowed' : '' }}"
+                                            class="group flex space-x-1 text-gray-500 hover:text-red-600 transition-colors {{ !$canUpdate || Auth::user()->id != $clearanceHeader->created_by ? ' cursor-not-allowed' : '' }}"
                                             onclick="voidClearance({{ $clearanceHeader->id }}, '{{ $clearanceHeader->request_number }}' )">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">

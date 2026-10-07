@@ -19,8 +19,24 @@ use App\Models\transfer_detail as TransferDetail;
 
 class TransferController extends Controller
 {
+    private const ASSET_CODE = 'AM-01';
+
+    private function authorizeAsset(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::ASSET_CODE, $action),
+            403,
+            'You do not have permission in Asset Management to perform this action.'
+        );
+    }
     public function show(Request $request, $assetId)
     {
+        $this->authorizeAsset('read');
+
+        $canCreate = Auth::user()->hasAccess(self::ASSET_CODE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::ASSET_CODE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::ASSET_CODE, 'delete');
+
         $search = $request->input('search');
         $status = $request->input('status');
         $searchLoc = $request->input('searchloc');
@@ -89,12 +105,27 @@ class TransferController extends Controller
 
         return view(
             'asset.transfer.show',
-            compact('locations', 'employees', 'transfers', 'assetId', 'totalTransfers', 'activeTransfers', 'cancelledTransfers', 'assets', 'sublocation')
+            compact(
+                'canCreate',
+                'canUpdate',
+                'canDelete',
+                'locations',
+                'employees',
+                'transfers',
+                'assetId',
+                'totalTransfers',
+                'activeTransfers',
+                'cancelledTransfers',
+                'assets',
+                'sublocation'
+            )
         );
     }
 
     public function store(Request $request, Transfer $transfer)
     {
+        $this->authorizeAsset('create');
+
         $request->validate([
             'asset_id' => 'required|exists:assets,id',
             'transfer_date' => 'required|date',
@@ -208,6 +239,8 @@ class TransferController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeAsset('update');
+
         $request->validate([
             'edit_note' => 'nullable|string|max:255',
             'edit_transfer_date' => 'required|date',
