@@ -3,208 +3,276 @@
     <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
     @php
         use Carbon\Carbon;
+
+        $fieldClass =
+            'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500';
+        $labelClass = 'block mb-1.5 text-sm font-medium text-gray-900 dark:text-white';
     @endphp
-    <div class="max-w-3xl px-4 py-10 sm:px-6 lg:px-8 lg:py-6 mx-auto">
+
+    <div class="container mx-auto px-2 sm:px-4 lg:px-4 py-4">
+
+        {{-- Alerts --}}
         @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 pt-1">
-                <ul>
+            <div data-error="true"
+                class="mb-4 flex gap-3 rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-800">
+                <svg class="mt-0.5 h-5 w-5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-4a1 1 0 00-1 1v3a1 1 0 002 0V7a1 1 0 00-1-1zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                        clip-rule="evenodd" />
+                </svg>
+                <ul class="space-y-0.5">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
             </div>
         @elseif (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 pt-1"
-                data-success="true">
+            <div data-success="true"
+                class="mb-4 flex items-center gap-3 rounded-lg border border-green-300 bg-green-50 p-4 text-sm text-green-800">
+                <svg class="h-5 w-5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                </svg>
                 {{ session('success') }}
             </div>
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Clear form fields after successful submission
                     clearModalFields();
                 });
             </script>
         @endif
 
-        <div class="bg-white rounded-xl shadow-xs p-3 sm:p-8">
-            <div class="text-center mb-4">
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-800">
-                    Supply Receiving
-                </h2>
-                <p class="text-sm text-gray-600">
-                    Receive items to update inventory.
+        {{-- Page header --}}
+        <div class="mb-5 flex flex-wrap items-start justify-between gap-3">
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">New supply receiving</h1>
+                <p class="mt-1 max-w-2xl text-sm text-gray-600 dark:text-gray-400">
+                    Record the items you received. Saving adds them to inventory.
                 </p>
             </div>
-            <hr style="border: 0; height: 1px; background-color: #ccc; margin: 10px 0;">
-
-            <form action="{{ route('receiving.store') }}" method="POST" id="receivingForm">
-                @csrf
-                <div class="grid ml-1 mr-1 mt-2 gap-2 mb-2 sm:grid-cols-2">
-                    <div class="sm:col-span-1">
-                        <label for="description"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Description*</label>
-                        <input type="text" name="description" id="description"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="Type receiving description." required></input>
-                    </div>
-
-                    <div class="sm:col-span-1">
-                        <label for="received_date" class="block text-xs font-medium text-gray-900 dark:text-white">Received
-                            Date*</label>
-                        <input type="date" name="received_date" id="received_date" max="{{ now()->format('Y-m-d') }}"
-                            value="{{ now()->format('Y-m-d') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            required></input>
-                    </div>
-
-                    <div class="sm:col-span-1">
-                        <label for="reference_no" class="block text-xs font-medium text-gray-900 dark:text-white">Reference
-                            No*</label>
-                        <input type="text" name="reference_no" id="reference_no"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="Type reference/ PO number." required></input>
-                    </div>
-
-                    <div class="sm:col-span-1">
-                        <label for="supplier_id"
-                            class="select2 block text-xs font-medium text-gray-900 dark:text-white">Supplier*</label>
-                        <select id="supplier_id" name="supplier_id"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            required>
-                            <option value="">Select supplier</option>
-                            @foreach ($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="sm:col-span-1">
-                        <label for="employee_id"
-                            class="select2 block text-xs font-medium text-gray-900 dark:text-white">Received By*</label>
-                        <select id="employee_id" name="employee_id"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            required>
-                            <option value="">Select employee</option>
-                            @foreach ($employees as $employee)
-                                <option value="{{ $employee->id }}">{{ $employee->last_name }}, {{ $employee->first_name }}
-                                    {{ $employee->middle_name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="sm:col-span-2">
-                        <label for="remarks"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Remarks</label>
-                        <textarea name="remarks" id="remarks" rows="3"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="Provide receiving details, etc."></textarea>
-                    </div>
-
-                    <div class="sm:col-span-1">
-                        <label for="supplies_id"
-                            class="select2 block text-xs font-medium text-gray-900 dark:text-white">Product*</label>
-                        <select id="supplies_id" name="supplies_id"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                            <option value="">Select item</option>
-                            @foreach ($supplies as $supply)
-                                <option value="{{ $supply->id }}" data-name="{{ $supply->name }}"
-                                    data-code="{{ $supply->code }}" data-uom="{{ $supply->uom_id }}">{{ $supply->code }}
-                                    ({{ $supply->name }})
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="sm:col-span-1">
-                        <input type="hidden" name="uom_id" id="uom_id">
-                        <label for="uom_name"
-                            class="select2 block text-xs font-medium text-gray-900 dark:text-white">UOM*</label>
-                        <select id="uom_name" name="uom_name"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                            <option value="">Select UOM</option>
-                            @foreach ($uoms as $uom)
-                                <option value="{{ $uom->id }}">{{ $uom->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="sm:col-span-1">
-                        <label for="quantity"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Quantity*</label>
-                        <input type="number" name="quantity" id="quantity" step="1" min="1"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="0">
-                    </div>
-
-                    <div class="sm:col-span-1">
-                        <label for="unit_price" class="block text-xs font-medium text-gray-900 dark:text-white">Unit
-                            Price*</label>
-                        <input type="number" name="unit_price" id="unit_price" step="0.01" min="0"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="0.00">
-                    </div>
-
-                    <div class="sm:col-span-2">
-                        <button id="add-item-btn" type="button"
-                            class="mt-2 h-fit text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-xs px-4 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                            Add Item
-                        </button>
-                    </div>
-                </div>
-
-                <h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">Item/s Received</h3>
-                <div class="bg-white border rounded-xl overflow-x-auto overflow-y-auto md:overflow-visible scroll-smooth">
-                    <table class="min-w-full text-xs">
-                        <thead class="bg-gray-200 text-gray-600">
-                            <tr class="rounded-xl">
-                                <th class="px-4 py-3 text-left w-[200px]">Item</th>
-                                <th class="px-4 py-3 text-left w-[100px]">Qty</th>
-                                <th class="px-4 py-3 text-left w-[150px]">UOM</th>
-                                <th class="px-4 py-3 text-left w-[120px]">Price</th>
-                                <th class="px-4 py-3 text-left w-[120px]">Total</th>
-                                <th class="px-4 py-3 text-left w-[100px]">Action</th>
-                            </tr>
-                        </thead>
-
-                        <tbody id="receivingBody" class="divide-y">
-                            {{-- Dynamic rows will be added here via JavaScript --}}
-                        </tbody>
-                        <tfoot>
-                            <tr class="bg-gray-50 font-semibold">
-                                <td colspan="4" class="px-4 py-3 text-right">Grand Total:</td>
-                                <td class="px-4 py-3" id="grandTotal">0.00</td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-
-                <!-- Hidden inputs for submitting items -->
-                <div id="hiddenInputsContainer"></div>
-
-                <hr style="border: 0; height: 1px; background-color: #ccc; margin: 10px 0;">
-                <div class="mt-5 flex justify-end gap-x-2">
-                    <a href="{{ route('receiving.index') }}" type="button" id="closeButton"
-                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 ">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        Back
-                    </a>
-
-                    <button type="submit" id="saveButton"
-                        class="py-1.5 sm:py-2 px-3 inline-flex items-center gap-x-2 border text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-floppy" viewBox="0 0 16 16">
-                            <path d="M11 2H9v3h2z" />
-                            <path
-                                d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0M1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5m3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4zM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5z" />
-                        </svg>
-                        Save Transaction
-                    </button>
-                </div>
-            </form>
+            <a href="{{ route('receiving.index') }}" id="closeButton"
+                class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Back to receiving list
+            </a>
         </div>
+
+        <form action="{{ route('receiving.store') }}" method="POST" id="receivingForm">
+            @csrf
+
+            <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
+
+                {{-- LEFT: receiving details + summary --}}
+                <div class="space-y-5 lg:col-span-1">
+
+                    <section class="rounded-xl bg-white p-5 shadow-sm dark:bg-gray-800">
+                        <h2 class="text-base font-semibold text-gray-900 dark:text-white">Receiving details</h2>
+                        <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Fields marked * are required.</p>
+
+                        <div class="mt-4 space-y-4">
+                            <div>
+                                <label for="description" class="{{ $labelClass }}">Description *</label>
+                                <input type="text" name="description" id="description" class="{{ $fieldClass }}"
+                                    placeholder="e.g. Delivery of office supplies" required>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                                <div>
+                                    <label for="received_date" class="{{ $labelClass }}">Received date *</label>
+                                    <input type="date" name="received_date" id="received_date"
+                                        max="{{ now()->format('Y-m-d') }}" value="{{ now()->format('Y-m-d') }}"
+                                        class="{{ $fieldClass }}" required>
+                                </div>
+                                <div>
+                                    <label for="reference_no" class="{{ $labelClass }}">Reference no. *</label>
+                                    <input type="text" name="reference_no" id="reference_no" class="{{ $fieldClass }}"
+                                        placeholder="Reference or PO number" required>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="supplier_id" class="{{ $labelClass }}">Supplier *</label>
+                                <select id="supplier_id" name="supplier_id" class="{{ $fieldClass }}" required>
+                                    <option value="">Select supplier</option>
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="employee_id" class="{{ $labelClass }}">Received by *</label>
+                                <select id="employee_id" name="employee_id" class="{{ $fieldClass }}" required>
+                                    <option value="">Select employee</option>
+                                    @foreach ($employees as $employee)
+                                        <option value="{{ $employee->id }}">{{ $employee->last_name }},
+                                            {{ $employee->first_name }} {{ $employee->middle_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="remarks" class="{{ $labelClass }}">Remarks</label>
+                                <textarea name="remarks" id="remarks" rows="3" class="{{ $fieldClass }}"
+                                    placeholder="Delivery notes, condition of goods, etc."></textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    {{-- Summary + actions --}}
+                    <section class="rounded-xl bg-white p-5 shadow-sm dark:bg-gray-800 lg:sticky lg:top-4">
+                        <h2 class="text-base font-semibold text-gray-900 dark:text-white">Summary</h2>
+
+                        <dl class="mt-4 space-y-2 text-sm">
+                            <div class="flex items-center justify-between">
+                                <dt class="text-gray-500 dark:text-gray-400">Items</dt>
+                                <dd id="summaryCount" class="font-medium text-gray-900 dark:text-white">0</dd>
+                            </div>
+                            <div
+                                class="flex items-center justify-between border-t border-gray-200 pt-3 dark:border-gray-700">
+                                <dt class="font-medium text-gray-900 dark:text-white">Grand total</dt>
+                                <dd id="summaryTotal" class="text-xl font-semibold text-gray-900 dark:text-white">0.00
+                                </dd>
+                            </div>
+                        </dl>
+
+                        <div class="mt-5 flex gap-2">
+                            <a href="{{ route('receiving.index') }}"
+                                class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600">
+                                Cancel
+                            </a>
+                            <button type="submit" id="saveButton"
+                                class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-gray-700 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                    fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M11 2H9v3h2z" />
+                                    <path
+                                        d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0M1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5m3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4zM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5z" />
+                                </svg>
+                                Save receiving
+                            </button>
+                        </div>
+                    </section>
+                </div>
+
+                {{-- RIGHT: item entry + items table --}}
+                <div class="space-y-5 lg:col-span-2">
+
+                    <section class="rounded-xl bg-white p-5 shadow-sm dark:bg-gray-800">
+                        <div class="flex items-center justify-between gap-3">
+                            <div>
+                                <h2 class="text-base font-semibold text-gray-900 dark:text-white">Add an item</h2>
+                                <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+                                    The unit of measure is set by the product.
+                                </p>
+                            </div>
+                            <div class="text-right text-sm">
+                                <div class="text-gray-500 dark:text-gray-400">Line total</div>
+                                <div id="linePreview" class="font-semibold text-gray-900 dark:text-white">0.00</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+                            <div class="col-span-2 md:col-span-3">
+                                <label for="supplies_id" class="{{ $labelClass }}">Product *</label>
+                                <select id="supplies_id" name="supplies_id" class="{{ $fieldClass }}">
+                                    <option value="">Select item</option>
+                                    @foreach ($supplies as $supply)
+                                        <option value="{{ $supply->id }}" data-name="{{ $supply->name }}"
+                                            data-code="{{ $supply->code }}" data-uom="{{ $supply->uom_id }}">
+                                            {{ $supply->code }} ({{ $supply->name }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-span-2 md:col-span-1">
+                                <input type="hidden" name="uom_id" id="uom_id">
+                                <label for="uom_name" class="{{ $labelClass }}">Unit of measure *</label>
+                                <select id="uom_name" name="uom_name" class="{{ $fieldClass }}">
+                                    <option value="">Select UOM</option>
+                                    @foreach ($uoms as $uom)
+                                        <option value="{{ $uom->id }}">{{ $uom->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-span-1 md:col-span-2">
+                                <label for="quantity" class="{{ $labelClass }}">Quantity *</label>
+                                <input type="number" name="quantity" id="quantity" step="1" min="1"
+                                    class="{{ $fieldClass }}" placeholder="0">
+                            </div>
+
+                            <div class="col-span-1 md:col-span-2">
+                                <label for="unit_price" class="{{ $labelClass }}">Unit price *</label>
+                                <input type="number" name="unit_price" id="unit_price" step="0.01" min="0"
+                                    class="{{ $fieldClass }}" placeholder="0.00">
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex justify-end">
+                            <button id="add-item-btn" type="button"
+                                class="inline-flex items-center gap-2 rounded-lg bg-gray-700 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                    fill="currentColor" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                                </svg>
+                                Add item
+                            </button>
+                        </div>
+                    </section>
+
+                    <section class="overflow-hidden rounded-xl bg-white shadow-sm dark:bg-gray-800">
+                        <div class="border-b border-gray-200 p-5 dark:border-gray-700">
+                            <h2 class="text-base font-semibold text-gray-900 dark:text-white">Items received</h2>
+                            <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+                                Change the quantity or price directly in the table.
+                            </p>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead class="bg-gray-50 text-left text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                                    <tr>
+                                        <th class="px-5 py-3 font-medium">Item</th>
+                                        <th class="w-28 px-3 py-3 font-medium">Qty</th>
+                                        <th class="px-3 py-3 font-medium">UOM</th>
+                                        <th class="w-32 px-3 py-3 font-medium">Price</th>
+                                        <th class="px-3 py-3 text-right font-medium">Total</th>
+                                        <th class="w-16 px-5 py-3 text-right font-medium">
+                                            <span class="sr-only">Actions</span>
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="receivingBody"
+                                    class="divide-y divide-gray-200 text-gray-900 dark:divide-gray-700 dark:text-white">
+                                    {{-- Dynamic rows will be added here via JavaScript --}}
+                                </tbody>
+                                <tfoot>
+                                    <tr
+                                        class="border-t-2 border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-700">
+                                        <td colspan="4"
+                                            class="px-5 py-3 text-right font-semibold text-gray-900 dark:text-white">
+                                            Grand total</td>
+                                        <td class="px-3 py-3 text-right font-semibold text-gray-900 dark:text-white"
+                                            id="grandTotal">0.00</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Hidden inputs for submitting items -->
+                    <div id="hiddenInputsContainer"></div>
+                </div>
+            </div>
+        </form>
     </div>
 
     <style>
@@ -255,15 +323,20 @@
                 width: '100%'
             });
 
+            // The product decides the UOM, so the UOM select is read-only
             $('#supplies_id').on('change', function() {
                 let uomId = $(this).find(':selected').data('uom');
 
                 if (uomId) {
                     $('#uom_id').val(uomId);
                     $('#uom_name').val(uomId).trigger('change');
+                } else {
+                    $('#uom_id').val('');
+                    $('#uom_name').val('').trigger('change');
                 }
                 $('#uom_name').prop('disabled', true);
             });
+            $('#uom_name').prop('disabled', true);
 
             $('#employee_id').select2({
                 placeholder: "Select employee",
@@ -289,12 +362,23 @@
                     addItem();
                 }
             });
+
+            // Live line total
+            $('#quantity, #unit_price').on('input', updateLinePreview);
+
+            renderTable();
         });
+
+        function updateLinePreview() {
+            const qty = parseFloat($('#quantity').val()) || 0;
+            const price = parseFloat($('#unit_price').val()) || 0;
+            $('#linePreview').text(formatNumber(qty * price));
+        }
 
         function addItem() {
             // Get values
             const suppliesId = $('#supplies_id').val();
-            const suppliesText = $('#supplies_id option:selected').text();
+            const suppliesText = $('#supplies_id option:selected').text().trim();
             const uomId = $('#uom_id').val();
             const uomText = $('#uom_name option:selected').text();
             const quantity = parseFloat($('#quantity').val()) || 0;
@@ -328,7 +412,6 @@
 
             if (existingItem) {
                 if (confirm('Item with same UOM already exists. Do you want to update the quantity and price?')) {
-                    // Update existing item
                     existingItem.quantity = quantity;
                     existingItem.unit_price = unitPrice;
                     existingItem.total_price = quantity * unitPrice;
@@ -362,33 +445,45 @@
             tbody.empty();
 
             if (items.length === 0) {
-                tbody.html('<tr><td colspan="6" class="text-center py-4 text-gray-500">No items added yet.</td></tr>');
-                $('#grandTotal').text('0.00');
+                tbody.html(`
+                    <tr>
+                        <td colspan="6" class="px-5 py-12 text-center">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">No items yet</p>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Choose a product above and select Add item.</p>
+                        </td>
+                    </tr>`);
+                $('#grandTotal, #summaryTotal').text('0.00');
+                $('#summaryCount').text(0);
+                updateHiddenInputs(); // clear stale inputs after the last item is removed
                 return;
             }
 
             let grandTotal = 0;
 
-            items.forEach((item, index) => {
+            items.forEach((item) => {
                 const row = `
-                    <tr data-id="${item.id}">
-                        <td class="px-4 py-2">${item.supplies_text}</td>
-                        <td class="px-4 py-2">
-                            <input type="number" step="1" min="1" value="${item.quantity}" 
-                                class="quantity-input w-20 px-2 py-1 border rounded text-xs" 
+                    <tr data-id="${item.id}" class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <td class="px-5 py-3 font-medium">${escapeHtml(item.supplies_text)}</td>
+                        <td class="px-3 py-3">
+                            <input type="number" step="1" min="1" value="${item.quantity}"
+                                aria-label="Quantity"
+                                class="quantity-input w-24 rounded-md border border-gray-300 bg-gray-50 px-2 py-1.5 text-sm focus:border-gray-600 focus:ring-gray-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                 onchange="updateItem(${item.id}, 'quantity', this.value)">
                         </td>
-                        <td class="px-4 py-2">${item.uom_text}</td>
-                        <td class="px-4 py-2">
-                            <input type="number" step="0.01" min="0" value="${item.unit_price}" 
-                                class="price-input w-24 px-2 py-1 border rounded text-xs" 
+                        <td class="px-3 py-3">${escapeHtml(item.uom_text)}</td>
+                        <td class="px-3 py-3">
+                            <input type="number" step="0.01" min="0" value="${item.unit_price}"
+                                aria-label="Unit price"
+                                class="price-input w-28 rounded-md border border-gray-300 bg-gray-50 px-2 py-1.5 text-sm focus:border-gray-600 focus:ring-gray-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                 onchange="updateItem(${item.id}, 'unit_price', this.value)">
                         </td>
-                        <td class="px-4 py-2 total-cell">${formatNumber(item.total_price)}</td>
-                        <td class="px-4 py-2">
-                            <button type="button" onclick="removeItem(${item.id})" 
-                                class="text-red-600 hover:text-red-800">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <td class="px-3 py-3 text-right font-medium total-cell">${formatNumber(item.total_price)}</td>
+                        <td class="px-5 py-3 text-right">
+                            <button type="button" onclick="removeItem(${item.id})"
+                                title="Remove ${escapeHtml(item.supplies_text)}"
+                                aria-label="Remove ${escapeHtml(item.supplies_text)}"
+                                class="rounded-md p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 dark:hover:bg-red-900/30">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
                             </button>
@@ -399,7 +494,8 @@
                 grandTotal += item.total_price;
             });
 
-            $('#grandTotal').text(formatNumber(grandTotal));
+            $('#grandTotal, #summaryTotal').text(formatNumber(grandTotal));
+            $('#summaryCount').text(items.length);
             updateHiddenInputs();
         }
 
@@ -421,7 +517,7 @@
 
                 // Recalculate grand total
                 let grandTotal = items.reduce((sum, i) => sum + i.total_price, 0);
-                $('#grandTotal').text(formatNumber(grandTotal));
+                $('#grandTotal, #summaryTotal').text(formatNumber(grandTotal));
 
                 updateHiddenInputs();
             }
@@ -437,9 +533,31 @@
 
         function clearInputFields() {
             $('#supplies_id').val('').trigger('change');
-            $('#uom_id').val('').trigger('change');
+            $('#uom_id').val('');
+            $('#uom_name').val('').trigger('change');
             $('#quantity').val('');
             $('#unit_price').val('');
+            updateLinePreview();
+        }
+
+        // Called after a successful save: reset the form and item list
+        function clearModalFields() {
+            items = [];
+            document.getElementById('receivingForm').reset();
+            $('#supplier_id, #employee_id').val('').trigger('change');
+            clearInputFields();
+            renderTable();
+        }
+
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
+            return String(text).replace(/[&<>"']/g, c => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            } [c]));
         }
 
         function formatNumber(number) {
@@ -503,7 +621,7 @@
             setTimeout(() => {
                 toast.style.animation = 'slideOutRight 0.3s ease-in';
                 setTimeout(() => {
-                    document.body.removeChild(toast);
+                    toast.remove();
                 }, 300);
             }, 3000);
         }
