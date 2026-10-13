@@ -128,6 +128,142 @@ $palette = [
         </div>
     </div>
 
+    <style>
+        @keyframes rl-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes rl-slide {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(300%);
+            }
+        }
+
+        @keyframes rl-pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes rl-pop {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        @keyframes rl-blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .3;
+            }
+        }
+
+        .rl-card {
+            animation: rl-pop .25s ease-out;
+        }
+
+        .rl-ring {
+            background: conic-gradient(from 0deg, rgba(37, 99, 235, 0) 0%, #2563eb 60%, #7c3aed 100%);
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+            mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+            animation: rl-spin 1.2s linear infinite;
+        }
+
+        .rl-icon {
+            animation: rl-pulse 1.8s ease-in-out infinite;
+        }
+
+        .rl-bar {
+            animation: rl-slide 1.4s ease-in-out infinite;
+        }
+
+        .rl-dot-active {
+            animation: rl-blink 1s ease-in-out infinite;
+        }
+    </style>
+
+    <!-- Report Loading Overlay -->
+    <div id="reportLoading" class="hidden fixed inset-0 z-[60] items-center justify-center bg-gray-900/60 backdrop-blur-sm"
+        role="alertdialog" aria-live="polite" aria-labelledby="reportLoadingTitle">
+        <div class="rl-card w-full max-w-md mx-4 rounded-2xl bg-white dark:bg-gray-800 shadow-2xl p-8 text-center">
+
+            <!-- Animated icon -->
+            <div class="relative mx-auto h-24 w-24">
+                <div class="rl-ring absolute inset-0 rounded-full"></div>
+                <div
+                    class="rl-icon absolute inset-3 flex items-center justify-center rounded-full bg-blue-50 dark:bg-gray-700">
+                    <svg class="h-9 w-9 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Title -->
+            <h3 id="reportLoadingTitle" class="mt-6 text-xl font-semibold text-gray-900 dark:text-white">
+                Generating report
+            </h3>
+            <p id="reportLoadingName" class="mt-1 text-sm font-medium text-blue-600 dark:text-blue-300"></p>
+
+            <!-- Indeterminate progress bar -->
+            <div class="mt-6 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                <div class="rl-bar h-full w-1/3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+            </div>
+
+            <!-- Status message -->
+            <p id="reportLoadingMsg" class="mt-4 min-h-[2.5rem] text-sm text-gray-600 dark:text-gray-400">
+                Collecting data...
+            </p>
+
+            <!-- Steps -->
+            <ol class="mt-4 flex items-center justify-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                <li data-step="0" class="rl-step flex items-center gap-1.5">
+                    <span class="rl-dot h-2 w-2 rounded-full bg-gray-300 dark:bg-gray-600"></span>Collect
+                </li>
+                <li class="h-px w-6 bg-gray-300 dark:bg-gray-600"></li>
+                <li data-step="1" class="rl-step flex items-center gap-1.5">
+                    <span class="rl-dot h-2 w-2 rounded-full bg-gray-300 dark:bg-gray-600"></span>Build
+                </li>
+                <li class="h-px w-6 bg-gray-300 dark:bg-gray-600"></li>
+                <li data-step="2" class="rl-step flex items-center gap-1.5">
+                    <span class="rl-dot h-2 w-2 rounded-full bg-gray-300 dark:bg-gray-600"></span>Finalize
+                </li>
+            </ol>
+
+            <!-- Footer -->
+            <div
+                class="mt-6 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-4 text-xs text-gray-500 dark:text-gray-400">
+                <span>Please don't close this page</span>
+                <span>Elapsed: <span id="reportLoadingTime"
+                        class="font-mono font-medium text-gray-700 dark:text-gray-200">00:00</span></span>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Report configurations
         const reportConfigs = {
@@ -444,7 +580,12 @@ $palette = [
                     <input type="radio" id="employee_pdf" name="format" value="pdf" checked
                         class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 focus:ring-gray-500">
                     <label for="employee_pdf" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">PDF</label>
-                </div>                
+                </div>
+                <div class="flex items-center">
+                    <input type="radio" id="employee_excel" name="format" value="excel"
+                        class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 focus:ring-gray-500">
+                    <label for="employee_excel" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">Excel</label>
+                </div>            
             </div>
 
             <div class="flex items-center justify-end space-x-3 mt-6 pt-4 border-t dark:border-gray-600">
@@ -900,55 +1041,235 @@ $palette = [
             document.getElementById('formContainer').innerHTML = '';
         }
 
-        function generateReport(reportType, formData) {
-            // Convert FormData to object
+        let reportTimer = null;
+        let reportBusy = false;
+
+
+        const reportStages = [{
+                at: 0,
+                step: 0,
+                text: 'Collecting data...'
+            },
+            {
+                at: 5,
+                step: 1,
+                text: 'Building your report...'
+            },
+            {
+                at: 15,
+                step: 2,
+                text: 'Finalizing the file. Large reports can take a while.'
+            },
+            {
+                at: 40,
+                step: 2,
+                text: 'This is taking longer than usual, but the system is still processing your request.'
+            },
+        ];
+
+
+        function showReportLoading(reportName = '', format = '') {
+            const overlay = document.getElementById('reportLoading');
+            const msg = document.getElementById('reportLoadingMsg');
+            const time = document.getElementById('reportLoadingTime');
+            const name = document.getElementById('reportLoadingName');
+            let secs = 0;
+
+            name.textContent = [reportName, format && `(${format})`].filter(Boolean).join(' ');
+            time.textContent = '00:00';
+            msg.textContent = reportStages[0].text;
+            paintReportStep(0);
+
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+
+            reportTimer = setInterval(() => {
+                secs++;
+                const m = String(Math.floor(secs / 60)).padStart(2, '0');
+                const s = String(secs % 60).padStart(2, '0');
+                time.textContent = `${m}:${s}`;
+
+                // pick the latest stage whose time has passed
+                const stage = [...reportStages].reverse().find(st => secs >= st.at);
+                if (stage && msg.textContent !== stage.text) {
+                    msg.textContent = stage.text;
+                    paintReportStep(stage.step);
+                }
+            }, 1000);
+        }
+
+        function hideReportLoading() {
+            clearInterval(reportTimer);
+            const overlay = document.getElementById('reportLoading');
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+        }
+
+        function paintReportStep(activeStep) {
+            document.querySelectorAll('#reportLoading .rl-step').forEach(li => {
+                const idx = Number(li.dataset.step);
+                const dot = li.querySelector('.rl-dot');
+                dot.className = 'rl-dot h-2 w-2 rounded-full';
+                li.classList.remove('text-gray-900', 'dark:text-white', 'font-medium');
+
+                if (idx < activeStep) { // done
+                    dot.classList.add('bg-green-500');
+                } else if (idx === activeStep) { // active
+                    dot.classList.add('bg-blue-600', 'rl-dot-active');
+                    li.classList.add('text-gray-900', 'dark:text-white', 'font-medium');
+                } else { // pending
+                    dot.classList.add('bg-gray-300', 'dark:bg-gray-600');
+                }
+            });
+        }
+
+        const reportUrls = {
+            'asset-summary': '/reports/asset-summary',
+            'odometer': '/reports/odometer',
+            'maintenance': '/reports/maintenance',
+            'employee': '/reports/employee',
+            'supplies': '/reports/supplies-summary',
+            'supplies-receiving': '/reports/supplies-receiving',
+            'supplies-issuance': '/reports/supplies-issuance',
+            'duty-detail-order': '/reports/duty-detail-order',
+            'budget-request': '/reports/budget-request',
+        };
+
+        async function generateReport(reportType, formData) {
+            if (reportBusy) return;
+
+            const base = reportUrls[reportType];
+            if (!base) return;
+
             const params = Object.fromEntries(formData.entries());
+            const url = `${base}?${new URLSearchParams(params).toString()}`;
+            const format = (params.format || 'pdf').toLowerCase();
+            const expectsDownload = ['excel', 'xlsx', 'csv'].includes(format);
 
-            // Build query string
-            const queryString = new URLSearchParams(params).toString();
-
-            //alert('Report parameters: ' + queryString); // For debugging
-
-            // Generate report URL based on type
-            let url;
-            switch (reportType) {
-                case 'asset-summary':
-                    url = `/reports/asset-summary?${queryString}`;
-                    break;
-                case 'odometer':
-                    url = `/reports/odometer?${queryString}`;
-                    break;
-                case 'maintenance':
-                    url = `/reports/maintenance?${queryString}`;
-                    break;
-                case 'employee':
-                    url = `/reports/employee?${queryString}`;
-                    break;
-                case 'supplies':
-                    url = `/reports/supplies-summary?${queryString}`;
-                    break;
-                case 'supplies-receiving':
-                    url = `/reports/supplies-receiving?${queryString}`;
-                    break;
-                case 'supplies-issuance':
-                    url = `/reports/supplies-issuance?${queryString}`;
-                    break;
-                case 'duty-detail-order':
-                    url = `/reports/duty-detail-order?${queryString}`;
-                    break;
-                case 'budget-request':
-                    url = `/reports/budget-request?${queryString}`;
-            }
-
-            // Open in new tab for PDF preview
-            if (params.format === 'excel') {
-                window.location.href = url; // Download Excel
-            } else {
-                window.open(url, '_blank'); // Preview PDF
+            // Open the preview tab inside the click so popup blockers allow it
+            let previewTab = null;
+            if (!expectsDownload) {
+                previewTab = window.open('', '_blank');
+                if (previewTab) {
+                    previewTab.document.write(
+                        '<p style="font-family:Arial;padding:20px">Generating report, please wait...</p>');
+                }
             }
 
             closeReportModal();
+            reportBusy = true;
+            showReportLoading(reportConfigs[reportType]?.title, format.toUpperCase());
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin'
+                });
+
+                if (!response.ok) {
+                    throw new Error(
+                        response.status === 403 ? 'You are not allowed to generate this report.' :
+                        response.status === 419 ? 'Your session has expired. Please refresh the page.' :
+                        'The server returned an error (' + response.status + ').'
+                    );
+                }
+
+                const contentType = (response.headers.get('Content-Type') || '').toLowerCase();
+
+                // An HTML page here means a redirect (login, validation) instead of a file
+                if (contentType.includes('text/html')) {
+                    throw new Error('The server did not return a file. Please check your parameters or log in again.');
+                }
+
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+
+                if (contentType.includes('pdf')) {
+                    if (previewTab) {
+                        previewTab.location.href = blobUrl;
+                    } else {
+                        window.open(blobUrl, '_blank');
+                    }
+                } else {
+                    // Excel, CSV or anything else: download it
+                    if (previewTab) previewTab.close();
+
+                    const cd = response.headers.get('Content-Disposition') || '';
+                    const match = cd.match(/filename\*?=(?:UTF-8'')?"?([^";]+)"?/i);
+                    const ext = contentType.includes('csv') ? 'csv' : 'xlsx';
+                    const filename = match ? decodeURIComponent(match[1]) : `report.${ext}`;
+
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                }
+
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+            } catch (err) {
+                if (previewTab) previewTab.close();
+                alert('Failed to generate the report. ' + err.message);
+            } finally {
+                reportBusy = false;
+                hideReportLoading();
+            }
         }
+
+
+
+        // function generateReport(reportType, formData) {
+        //     // Convert FormData to object
+        //     const params = Object.fromEntries(formData.entries());
+
+        //     // Build query string
+        //     const queryString = new URLSearchParams(params).toString();
+
+        //     //alert('Report parameters: ' + queryString); // For debugging
+
+        //     // Generate report URL based on type
+        //     let url;
+        //     switch (reportType) {
+        //         case 'asset-summary':
+        //             url = `/reports/asset-summary?${queryString}`;
+        //             break;
+        //         case 'odometer':
+        //             url = `/reports/odometer?${queryString}`;
+        //             break;
+        //         case 'maintenance':
+        //             url = `/reports/maintenance?${queryString}`;
+        //             break;
+        //         case 'employee':
+        //             url = `/reports/employee?${queryString}`;
+        //             break;
+        //         case 'supplies':
+        //             url = `/reports/supplies-summary?${queryString}`;
+        //             break;
+        //         case 'supplies-receiving':
+        //             url = `/reports/supplies-receiving?${queryString}`;
+        //             break;
+        //         case 'supplies-issuance':
+        //             url = `/reports/supplies-issuance?${queryString}`;
+        //             break;
+        //         case 'duty-detail-order':
+        //             url = `/reports/duty-detail-order?${queryString}`;
+        //             break;
+        //         case 'budget-request':
+        //             url = `/reports/budget-request?${queryString}`;
+        //     }
+
+        //     // Open in new tab for PDF preview
+        //     if (params.format === 'excel') {
+        //         window.location.href = url; // Download Excel
+        //     } else {
+        //         window.open(url, '_blank'); // Preview PDF
+        //     }
+
+        //     closeReportModal();
+        // }
 
         // Close modal when clicking outside
         window.onclick = function(event) {

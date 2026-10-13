@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DispositionReportExport;
 use Carbon\Carbon;
 use App\Models\odometer as Odometer;
 use App\Models\asset as Asset;
@@ -431,9 +433,21 @@ class ReportController extends Controller
                 ->whereIn('status', [1, 2, 3, 8])
                 ->get();
 
+            $excludedLocationIds = mdr_exc_loc::pluck('location_id');
+
+            // Firearms (category 1) with no employee assigned, tied to a location
+            $locationAssets = Asset::where('category_id', 1)
+                ->whereNull('assigned_to')
+                ->whereNotNull('location_id')
+                ->whereNotIn('location_id', $excludedLocationIds)
+                ->whereIn('status', [1, 2, 3, 8])
+                ->when($request->filled('location'), fn($q) => $q->where('location_id', $request->location))
+                ->get()
+                ->groupBy('location_id');
+
             $query = DB::table('employees as e')
                 ->join('locations as l', 'e.location_id', '=', 'l.id')
-                ->whereNotIn('l.id', mdr_exc_loc::pluck('location_id'))
+                ->whereNotIn('l.id', $excludedLocationIds)
                 ->leftJoin('assets as a', function ($join) {
                     $join->on('a.assigned_to', '=', 'e.id')
                         ->where('a.category_id', 1); // firearms only
@@ -444,10 +458,11 @@ class ReportController extends Controller
                 })
                 ->leftJoin('employee_ids as ids2', function ($join) {
                     $join->on('e.id', '=', 'ids2.employee_id')
-                        ->where('ids2.id_type_id', 1); // SSS Id
+                        ->where('ids2.id_type_id', 1); // SSS ID
                 })
-                ->where('e.status', 1) // Only active employees                
+                ->where('e.status', 1)
                 ->select(
+                    'l.id as location_id',
                     'l.name as location_name',
                     'l.address as location_address',
                     'ids.id_number as license_no',
@@ -473,6 +488,7 @@ class ReportController extends Controller
 
             $employees = $query
                 ->groupBy(
+                    'l.id',
                     'l.name',
                     'l.address',
                     'ids.id_number',
@@ -491,10 +507,73 @@ class ReportController extends Controller
                     'a.serial'
                 )
                 ->get()
-                ->groupBy('location_name') // FIX: use location_name, not location_id
-                ->map(function ($locGroup) {
-                    return $locGroup->groupBy('employee_id');
-                });
+                ->groupBy('location_id')
+                ->map(fn($locGroup) => $locGroup->groupBy('employee_id'));
+
+            // $query = DB::table('employees as e')
+            //     ->join('locations as l', 'e.location_id', '=', 'l.id')
+            //     ->whereNotIn('l.id', mdr_exc_loc::pluck('location_id'))
+            //     ->leftJoin('assets as a', function ($join) {
+            //         $join->on('a.assigned_to', '=', 'e.id')
+            //             ->where('a.category_id', 1); // firearms only
+            //     })
+            //     ->leftJoin('employee_ids as ids', function ($join) {
+            //         $join->on('e.id', '=', 'ids.employee_id')
+            //             ->where('ids.id_type_id', 8); // LESP ID
+            //     })
+            //     ->leftJoin('employee_ids as ids2', function ($join) {
+            //         $join->on('e.id', '=', 'ids2.employee_id')
+            //             ->where('ids2.id_type_id', 1); // SSS Id
+            //     })
+            //     ->where('e.status', 1) // Only active employees                
+            //     ->select(
+            //         'l.name as location_name',
+            //         'l.address as location_address',
+            //         'ids.id_number as license_no',
+            //         'ids.expiry_date as license_expiry',
+            //         'ids2.id_number as sss_no',
+            //         'e.id as employee_id',
+            //         'e.first_name',
+            //         'e.middle_name',
+            //         'e.last_name',
+            //         'e.gender',
+            //         'e.highest_education',
+            //         'e.position',
+            //         'e.sss_rate',
+            //         'a.manufacturer as asset_kind',
+            //         'a.model as asset_make',
+            //         'a.serial as asset_serial',
+            //         DB::raw("FORMAT(MAX(ids.expiry_date), 'MMMM d, yyyy') as id_expiration")
+            //     );
+
+            // if ($request->filled('location')) {
+            //     $query->where('e.location_id', $request->location);
+            // }
+
+            // $employees = $query
+            //     ->groupBy(
+            //         'l.name',
+            //         'l.address',
+            //         'ids.id_number',
+            //         'ids.expiry_date',
+            //         'ids2.id_number',
+            //         'e.id',
+            //         'e.first_name',
+            //         'e.middle_name',
+            //         'e.last_name',
+            //         'e.gender',
+            //         'e.highest_education',
+            //         'e.position',
+            //         'e.sss_rate',
+            //         'a.manufacturer',
+            //         'a.model',
+            //         'a.serial'
+            //     )
+            //     ->get()
+            //     ->groupBy('location_name') // FIX: use location_name, not location_id
+            //     ->map(function ($locGroup) {
+            //         return $locGroup->groupBy('employee_id');
+            //     });
 
             $sortField = $request->get('sort', 'hire_date');
             $sortDirection = $request->get('direction', 'desc');
@@ -619,32 +698,42 @@ class ReportController extends Controller
 
             $dateRangeLabels = $dateRangeLabels[$pDateRange] ?? 'custom';
 
-            $pdf = Pdf::loadView(
-                'reports.' . $reportFile,
-                compact(
-                    'employees',
-                    'pDateRange',
-                    'dateRangeLabels',
-                    'pFromDate',
-                    'pToDate',
-                    'pLocationName',
-                    'statusLabel',
-                    'sortField',
-                    'sortDirection',
-                    'gains',
-                    'losses',
-                    'noOfClients',
-                    'noOfGuards',
-                    'noOfSecurityOfficers',
-                    'noOfPrivateDetectives',
-                    'noOfSecurityConsultants',
-                    'noOfSPAs',
-                    'noOfTrainingDirectors',
-                    'noOfTrainingOfficers',
-                    'totalSecEmployees',
-                    'noOfFirearms'
-                )
-            )->setPaper('letter', $reportType == '2' ? 'landscape' : 'portrait')
+            $viewData = compact(
+                'employees',
+                'locationAssets',
+                'pDateRange',
+                'dateRangeLabels',
+                'pFromDate',
+                'pToDate',
+                'pLocationName',
+                'statusLabel',
+                'sortField',
+                'sortDirection',
+                'gains',
+                'losses',
+                'noOfClients',
+                'noOfGuards',
+                'noOfSecurityOfficers',
+                'noOfPrivateDetectives',
+                'noOfSecurityConsultants',
+                'noOfSPAs',
+                'noOfTrainingDirectors',
+                'noOfTrainingOfficers',
+                'totalSecEmployees',
+                'noOfFirearms'
+            );
+
+            // EXCEL
+            if ($request->input('format') === 'excel') {
+                return Excel::download(
+                    new DispositionReportExport($viewData),
+                    'monthly-disposition-report.xlsx'
+                );
+            }
+
+            // PDF
+            $pdf = Pdf::loadView('reports.' . $reportFile, $viewData)
+                ->setPaper('letter', 'landscape')
                 ->setOptions([
                     'defaultFont' => 'sans-serif',
                     'isPhpEnabled' => true,
@@ -652,6 +741,7 @@ class ReportController extends Controller
                     'isRemoteEnabled' => true,
                     'chroot' => public_path(),
                 ]);
+
         } elseif ($reportType == '3') {
             $query = Employee::query()->with('location');
 
@@ -866,24 +956,70 @@ class ReportController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $unionQuery = DB::table('employees as c')
-            ->leftJoin('assets as d', function ($join) {
-                $join->on('d.assigned_to', '=', 'c.id')
-                    ->where('d.category_id', 1);
-            })
-            ->leftJoin('asset_licenses as e', 'e.asset_id', '=', 'd.id')
-            ->leftJoin('locations as l', 'd.location_id', '=', 'l.id')
+        // $unionQuery = DB::table('employees as c')
+        //     ->leftJoin('assets as d', function ($join) {
+        //         $join->on('d.assigned_to', '=', 'c.id')
+        //             ->where('d.category_id', 1);
+        //     })
+        //     ->leftJoin('asset_licenses as e', 'e.asset_id', '=', 'd.id')
+        //     ->leftJoin('locations as l', 'd.location_id', '=', 'l.id')
 
-            ->where('c.status', 1)
-            ->where('c.employee_code', 99999)
+        //     ->where('c.status', 1)
+        //     ->where('c.employee_code', 99999)
+        //     ->where('d.location_id', $request->location)
+
+        //     ->select(
+        //         'c.id as employee_id',
+        //         DB::raw("'' as last_name"),
+        //         DB::raw("'' as first_name"),
+        //         DB::raw("'' as middle_name"),
+        //         'c.position',
+
+        //         'l.name as location_name',
+        //         'l.address as location_address',
+
+        //         'd.id as asset_id',
+        //         'd.subcategory',
+        //         'd.caliber',
+        //         'd.manufacturer',
+        //         'd.model',
+        //         'd.name as asset_name',
+        //         'd.serial',
+
+        //         DB::raw("FORMAT(MAX(e.expiration_date), 'MMMM d, yyyy') as expiration_date")
+        //     )
+
+        //     ->groupBy(
+        //         'c.id',
+        //         'c.last_name',
+        //         'c.first_name',
+        //         'c.middle_name',
+        //         'c.position',
+        //         'l.name',
+        //         'l.address',
+        //         'd.id',
+        //         'd.subcategory',
+        //         'd.caliber',
+        //         'd.model',
+        //         'd.manufacturer',
+        //         'd.name',
+        //         'd.serial'
+        //     );
+
+        $unionQuery = DB::table('assets as d')
+            ->join('locations as l', 'd.location_id', '=', 'l.id')
+            ->leftJoin('asset_licenses as e', 'e.asset_id', '=', 'd.id')
+
+            ->where('d.category_id', 1)                    // firearms only, same as the main query
             ->where('d.location_id', $request->location)
+            ->whereNull('d.assigned_to')                   // unassigned assets only
 
             ->select(
-                'c.id as employee_id',
+                DB::raw('0 as employee_id'),
                 DB::raw("'' as last_name"),
                 DB::raw("'' as first_name"),
                 DB::raw("'' as middle_name"),
-                'c.position',
+                DB::raw("'' as position"),
 
                 'l.name as location_name',
                 'l.address as location_address',
@@ -900,11 +1036,6 @@ class ReportController extends Controller
             )
 
             ->groupBy(
-                'c.id',
-                'c.last_name',
-                'c.first_name',
-                'c.middle_name',
-                'c.position',
                 'l.name',
                 'l.address',
                 'd.id',

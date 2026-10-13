@@ -297,7 +297,7 @@
                 </div>
                 <!-- Modal body -->
                 <div class="overflow-y-auto max-h-[70vh]">
-                    <form action="{{ route('transfer.store') }}" method="POST">
+                    <form id="transferForm" action="{{ route('transfer.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="purchase_date" id="purchase_date"
                             value="{{ $assets->purchase_date ?? '' }}">
@@ -343,10 +343,9 @@
                             </div>
                             <div class="sm:col-span-1">
                                 <label for="to_employee_id"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Transfer to*</label>
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Transfer to</label>
                                 <select id="to_employee_id" name="to_employee_id"
-                                    class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    required>
+                                    class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
                                     <option value="" selected>Select employee</option>
                                     @foreach ($employees as $employee)
                                         <option value="{{ $employee->id }}">
@@ -475,10 +474,9 @@
                             </div>
                             <div class="sm:col-span-1">
                                 <label for="edit_to_employee_id"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Transfer to*</label>
+                                    class="block text-xs font-medium text-gray-900 dark:text-white">Transfer to</label>
                                 <select id="edit_to_employee_id" name="edit_to_employee_id"
-                                    class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    required>
+                                    class="select2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
                                     <option value="" selected>Select employee</option>
                                     @foreach ($employees as $employee)
                                         <option value="{{ $employee->id }}">
@@ -698,6 +696,18 @@
                     sublocationSelect.prop('disabled', false);
                 }
             });
+        });
+
+        document.getElementById('transferForm').addEventListener('submit', function(e) {
+            const toEmployee = $('#to_employee_id').val();
+            const toLocation = $('#location_id').val();
+
+            // Block only when BOTH are empty
+            if (!toEmployee && !toLocation) {
+                e.preventDefault();
+                alert('Please select a "Transfer to" employee or a Location before saving.');
+                $('#to_employee_id').select2('open');
+            }
         });
 
         document.getElementById('to_employee_id').addEventListener('change', function() {

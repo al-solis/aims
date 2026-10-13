@@ -129,11 +129,14 @@ class TransferController extends Controller
         $request->validate([
             'asset_id' => 'required|exists:assets,id',
             'transfer_date' => 'required|date',
-            'from_employee_id' => 'required|exists:employees,id',
-            'to_employee_id' => 'required|exists:employees,id',
-            'location_id' => 'nullable|exists:locations,id',
+            'from_employee_id' => 'nullable|exists:employees,id',
+            'to_employee_id' => 'required_without:location_id|nullable|exists:employees,id',
+            'location_id' => 'required_without:to_employee_id|nullable|exists:locations,id',
             'sublocation_id' => 'nullable|exists:sublocations,id',
             'description' => 'nullable|string|max:255',
+        ], [
+            'to_employee_id.required_without' => 'Select a "Transfer to" employee or a location.',
+            'location_id.required_without' => 'Select a "Transfer to" employee or a location.',
         ]);
 
         $year = Carbon::parse($request->transfer_date)->year;
@@ -154,7 +157,7 @@ class TransferController extends Controller
         $transferDetails = TransferDetail::create([
             'transfer_id' => $transfer->id,
             'asset_id' => $request->asset_id,
-            'from_employee_id' => $request->from_employee_id,
+            'from_employee_id' => $request->from_employee_id ?? null,
             'from_location_id' => $request->from_location_id ?? null,
             'from_sublocation_id' => $request->from_sublocation_id ?? null,
             'to_employee_id' => $request->to_employee_id,
@@ -244,10 +247,13 @@ class TransferController extends Controller
         $request->validate([
             'edit_note' => 'nullable|string|max:255',
             'edit_transfer_date' => 'required|date',
-            'edit_from_employee_id' => 'required|exists:employees,id',
-            'edit_to_employee_id' => 'required|exists:employees,id',
-            'edit_location_id' => 'nullable|exists:locations,id',
+            'edit_from_employee_id' => 'nullable|exists:employees,id',
+            'edit_to_employee_id' => 'required_without:edit_location_id|nullable|exists:employees,id',
+            'edit_location_id' => 'required_without:edit_to_employee_id|nullable|exists:locations,id',
             'edit_sublocation_id' => 'nullable|exists:sublocations,id',
+        ], [
+            'edit_to_employee_id.required_without' => 'Select a "Transfer to" employee or a location.',
+            'edit_location_id.required_without' => 'Select a "Transfer to" employee or a location.',
         ]);
 
         $transfer = Transfer::findOrFail($id);

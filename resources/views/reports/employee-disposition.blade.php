@@ -70,6 +70,28 @@
             background-color: #f2f2f2;
         }
 
+        table tr {
+            page-break-inside: avoid;
+        }
+
+        td {
+            vertical-align: top;
+        }
+
+        /* simulated merged cells */
+        .mc-first {
+            border-bottom: none;
+        }
+
+        .mc-mid {
+            border-top: none;
+            border-bottom: none;
+        }
+
+        .mc-last {
+            border-top: none;
+        }
+
         .text-right {
             text-align: right;
         }
@@ -671,90 +693,109 @@
                 </tr>
             </thead>
             <tbody>
-                @php $seq = 1; @endphp
+                @php
+                    $seq = 1;
+                    // position class for simulated merging: $i = row index in group, $n = group size
+                    $mc = function ($i, $n) {
+                        if ($n <= 1) {
+                            return '';
+                        }
+                        if ($i == 0) {
+                            return 'mc-first';
+                        }
+                        if ($i == $n - 1) {
+                            return 'mc-last';
+                        }
+                        return 'mc-mid';
+                    };
+                @endphp
+
                 @forelse ($employees as $locId => $empGroup)
 
                     @php
-                        // total rows for this location
-                        $locationRowspan = $empGroup->flatten()->count();
-                        $locationFirst = true;
+                        $locAssets = $locationAssets->get($locId, collect());
+                        $firstEmp = $empGroup->first()->first();
+                        $locationRowspan = $locAssets->count() + $empGroup->flatten()->count();
+                        $r = 0; // row position inside this location
                     @endphp
 
+                    {{-- UNASSIGNED FIREARMS (category 1) - first rows of the location --}}
+                    @foreach ($locAssets as $asset)
+                        <tr>
+                            <td class="{{ $mc($r, $locationRowspan) }}">
+                                @if ($r == 0)
+                                    {{ $firstEmp->location_name ?? 'N/A' }}<br>
+                                    {{ $firstEmp->location_address ?? '' }}
+                                @endif
+                            </td>
+
+                            <td colspan="7"></td>
+
+                            <td>{{ $asset->manufacturer ?? '' }}</td>
+                            <td>{{ $asset->model ?? '' }}</td>
+                            <td>{{ $asset->serial ?? '' }}</td>
+
+                            <td colspan="3"></td>
+                        </tr>
+                        @php $r++; @endphp
+                    @endforeach
+
+                    {{-- EMPLOYEES --}}
                     @foreach ($empGroup as $empId => $empRows)
-                        @php
-                            $empRowspan = $empRows->count();
-                        @endphp
+                        @php $empRowspan = $empRows->count(); @endphp
 
                         @foreach ($empRows as $index => $employee)
+                            @php
+                                $first = $index == 0;
+                                $ec = $mc($index, $empRowspan); // employee-level merge class
+                            @endphp
                             <tr>
-
-                                {{-- LOCATION (only once) --}}
-                                {{-- @if ($locationFirst)
-                                    <td rowspan="{{ $locationRowspan }}">
+                                {{-- CLIENT --}}
+                                <td class="{{ $mc($r, $locationRowspan) }}">
+                                    @if ($r == 0)
                                         {{ $employee->location_name ?? 'N/A' }}<br>
                                         {{ $employee->location_address ?? '' }}
-                                    </td>
-                                    @php $locationFirst = false; @endphp
-                                @endif --}}
-                                {{-- CLIENT (repeat per EMPLOYEE, not per LOCATION) --}}
-                                @if ($index == 0)
-                                    <td rowspan="{{ $empRowspan }}">
-                                        {{ $employee->location_name ?? 'N/A' }}<br>
-                                        {{ $employee->location_address ?? '' }}
-                                    </td>
-                                @endif
+                                    @endif
+                                </td>
 
-                                {{-- EMPLOYEE DETAILS (only once per employee) --}}
-                                @if ($index == 0)
-                                    <td rowspan="{{ $empRowspan }}">{{ $seq++ }}</td>
-
-                                    <td rowspan="{{ $empRowspan }}">
+                                {{-- EMPLOYEE DETAILS (text only on first row) --}}
+                                <td class="{{ $ec }}">{{ $first ? $seq : '' }}</td>
+                                <td class="{{ $ec }}">
+                                    @if ($first)
                                         {{ Str::upper($employee->last_name) }},
                                         {{ Str::upper($employee->first_name) }}
                                         {{ Str::upper($employee->middle_name) }}
-                                    </td>
+                                    @endif
+                                </td>
+                                <td class="{{ $ec }}">
+                                    {{ $first ? ($employee->gender == 1 ? 'M' : 'F') : '' }}</td>
+                                <td class="{{ $ec }}">
+                                    {{ $first ? Str::upper($employee->highest_education) : '' }}</td>
+                                <td class="{{ $ec }}">{{ $first ? $employee->license_no ?? '' : '' }}</td>
+                                <td class="{{ $ec }}">
+                                    {{ $first && $employee->license_expiry ? Carbon::parse($employee->license_expiry)->format('m/d/Y') : '' }}
+                                </td>
+                                <td class="{{ $ec }}">{{ $first ? $employee->sss_no ?? '' : '' }}</td>
 
-                                    <td rowspan="{{ $empRowspan }}">
-                                        {{ $employee->gender == 1 ? 'M' : 'F' }}
-                                    </td>
-
-                                    <td rowspan="{{ $empRowspan }}">
-                                        {{ Str::upper($employee->highest_education) }}
-                                    </td>
-
-                                    <td rowspan="{{ $empRowspan }}">
-                                        {{ $employee->license_no ?? '' }}
-                                    </td>
-
-                                    <td rowspan="{{ $empRowspan }}">
-                                        {{ $employee->license_expiry ? Carbon::parse($employee->license_expiry)->format('m/d/Y') : '' }}
-                                    </td>
-
-                                    <td rowspan="{{ $empRowspan }}">
-                                        {{ $employee->sss_no ?? '' }}
-                                    </td>
-                                @endif
-
-                                {{-- ASSET / FIREARM (ALWAYS REPEATED) --}}
+                                {{-- FIREARM (every row) --}}
                                 <td>{{ $employee->asset_kind ?? '' }}</td>
                                 <td>{{ $employee->asset_make ?? '' }}</td>
                                 <td>{{ $employee->asset_serial ?? '' }}</td>
 
-                                {{-- INSURANCE --}}
-                                @if ($index == 0)
-                                    <td rowspan="{{ $empRowspan }}">{{ $employee->policy_no ?? '' }}</td>
-                                    <td rowspan="{{ $empRowspan }}" style="text-align:right">
-                                        {{ $employee->policy_amount ?? '' }}</td>
-                                @endif
-
-                                {{-- SSS --}}
-                                @if ($index == 0)
-                                    <td rowspan="{{ $empRowspan }}" style="text-align:right">
-                                        {{ number_format($employee->sss_rate, 2) }}
-                                    </td>
-                                @endif
-
+                                {{-- INSURANCE + SSS --}}
+                                <td class="{{ $ec }}">{{ $first ? $employee->policy_no ?? '' : '' }}</td>
+                                <td class="{{ $ec }}" style="text-align:right">
+                                    {{ $first ? $employee->policy_amount ?? '' : '' }}</td>
+                                <td class="{{ $ec }}" style="text-align:right">
+                                    {{ $first ? number_format($employee->sss_rate, 2) : '' }}
+                                </td>
                             </tr>
+                            @php
+                                $r++;
+                                if ($first) {
+                                    $seq++;
+                                }
+                            @endphp
                         @endforeach
                     @endforeach
 

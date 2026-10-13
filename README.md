@@ -20,3 +20,6 @@ physical assets throughout KESIA operations.
 ## Inquiries
 
 If you need a customize web application for your busines email me via [gunch1258@yahoo.com](mailto:gunch1258@yahoo.com). 
+
+## Required
+composer require maatwebsite/excel
