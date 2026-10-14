@@ -506,6 +506,7 @@ $palette = [
                         <option value="1">Default</option>
                         <option value="2">Monthly Disposition Report</option>
                         <option value="3">Expiring LESP</option>
+                        <option value="4">Summary Report</option>
                     </select>
                 </div>
                 <div class="sm:col-span-1">

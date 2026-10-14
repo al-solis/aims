@@ -296,7 +296,15 @@ class ReportController extends Controller
 
         // dd($request->all());
         $reportType = $request->input('report_type', '1'); // Default to 1 if not provided
-        $reportFile = $reportType == '1' ? 'employee' : ($reportType == '2' ? 'employee-disposition' : 'employee-lesp-expiry');
+        //$reportFile = $reportType == '1' ? 'employee' : ($reportType == '2' ? 'employee-disposition' : 'employee-lesp-expiry');
+
+        $reportFile = match ($reportType) {
+            '1' => 'employee',
+            '2' => 'employee-disposition',
+            '3' => 'employee-lesp-expiry',
+            '4' => 'employee-summary'
+        };
+
         $pDateRange = $request->date_range ?? 'this_month';
         $pFromDate = $request->from_date ?? '';
         $pToDate = $request->to_date ?? '';
@@ -304,8 +312,7 @@ class ReportController extends Controller
         $pLocation = $request->location ? Location::where('id', $request->location)->first() : null;
         $pLocationName = $pLocation ? $pLocation->name : 'All Locations';
 
-        $statusLabel = [
-            //0: Inactive, 1: Active, 2: On Leave, 3: Resigned, 4: Retired, 5: Terminated, 6: AWOL, 7: Deceased, 8: Dropped, 9: Labor, 10: Floating, 11: Rehired
+        $statusLabels = [
             0 => 'Inactive',
             1 => 'Active',
             2 => 'On Leave',
@@ -328,7 +335,7 @@ class ReportController extends Controller
             'custom' => 'custom',
         ];
 
-        $statusLabel = $statusLabel[$pStatus] ?? 'All Statuses';
+        $statusLabel = $statusLabels[$pStatus] ?? 'All Statuses';
 
         //dd($query->toSql());
         if ($reportType == '1') {
@@ -828,6 +835,98 @@ class ReportController extends Controller
                     'isRemoteEnabled' => true,
                     'chroot' => public_path(),
                 ]);
+
+        } elseif ($reportType == '4') {
+
+            // Base query: hire date range + location + status (blank status = all statuses)
+            $base = Employee::query();
+
+            switch ($pDateRange) {
+                case 'this_month':
+                    $base->whereMonth('hire_date', Carbon::now()->month)
+                        ->whereYear('hire_date', Carbon::now()->year);
+                    break;
+                case 'last_month':
+                    $base->whereMonth('hire_date', Carbon::now()->subMonth()->month)
+                        ->whereYear('hire_date', Carbon::now()->subMonth()->year);
+                    break;
+                case 'this_quarter':
+                    $base->whereBetween('hire_date', [
+                        Carbon::now()->startOfQuarter()->format('Y-m-d'),
+                        Carbon::now()->endOfQuarter()->format('Y-m-d'),
+                    ]);
+                    break;
+                case 'this_year':
+                    $base->whereYear('hire_date', Carbon::now()->year);
+                    break;
+                case 'custom':
+                    if ($pFromDate && $pToDate) {
+                        $base->whereBetween('hire_date', [$pFromDate, $pToDate]);
+                    }
+                    break;
+            }
+
+            if ($request->filled('location')) {
+                $base->where('location_id', $request->location);
+            }
+            if ($request->filled('status')) {
+                $base->where('status', $request->status);
+            }
+
+            // 1) Count per status
+            $statusCounts = (clone $base)
+                ->select('status', DB::raw('COUNT(*) as total'))
+                ->groupBy('status')
+                ->orderBy('status')
+                ->pluck('total', 'status');
+
+            $grandTotal = $statusCounts->sum();
+
+            // 2) Location x Status matrix
+            $locationNames = Location::pluck('name', 'id');
+
+            $rows = (clone $base)
+                ->select('location_id', 'status', DB::raw('COUNT(*) as total'))
+                ->groupBy('location_id', 'status')
+                ->get();
+
+            $statusColumns = $statusCounts->keys()->sort()->values();
+
+            $matrix = $rows
+                ->groupBy(fn($r) => $locationNames[$r->location_id] ?? 'No Location')
+                ->map(fn($g) => $g->pluck('total', 'status'))
+                ->sortKeys();
+
+            $columnTotals = $statusColumns->mapWithKeys(
+                fn($s) => [$s => $matrix->sum(fn($m) => $m[$s] ?? 0)]
+            );
+
+            $pDateRange = $dateRangeLabels[$pDateRange] ?? 'Custom Range';
+
+            $pdf = Pdf::loadView(
+                'reports.' . $reportFile,
+                compact(
+                    'pDateRange',
+                    'pFromDate',
+                    'pToDate',
+                    'pLocationName',
+                    'statusLabel',
+                    'statusLabels',
+                    'statusCounts',
+                    'grandTotal',
+                    'statusColumns',
+                    'matrix',
+                    'columnTotals'
+                )
+            )->setPaper('letter', $statusColumns->count() > 5 ? 'landscape' : 'portrait')
+                ->setOptions([
+                    'defaultFont' => 'sans-serif',
+                    'isPhpEnabled' => true,
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => true,
+                    'chroot' => public_path(),
+                ]);
+
         } else {
             abort(400, 'Invalid report type');
         }
