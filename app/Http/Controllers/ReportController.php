@@ -486,7 +486,7 @@ class ReportController extends Controller
                     'a.manufacturer as asset_kind',
                     'a.model as asset_make',
                     'a.serial as asset_serial',
-                    DB::raw("FORMAT(MAX(ids.expiry_date), 'MMMM d, yyyy') as id_expiration")
+                    DB::raw("TO_CHAR(MAX(ids.expiry_date), 'FMMonth FMDD, YYYY') as id_expiration")
                 );
 
             if ($request->filled('location')) {
@@ -550,7 +550,7 @@ class ReportController extends Controller
             //         'a.manufacturer as asset_kind',
             //         'a.model as asset_make',
             //         'a.serial as asset_serial',
-            //         DB::raw("FORMAT(MAX(ids.expiry_date), 'MMMM d, yyyy') as id_expiration")
+            //         DB::raw("TO_CHAR(MAX(ids.expiry_date), 'FMMonth FMDD, YYYY') as id_expiration")
             //     );
 
             // if ($request->filled('location')) {
@@ -657,7 +657,7 @@ class ReportController extends Controller
 
             $queryGains = $queryGains->select(
                 'l.name as location_name',
-                DB::raw("FORMAT(MAX(h.end_date), 'MMMM d, yyyy') as end_date"),
+                DB::raw("TO_CHAR(MAX(h.end_date), 'FMMonth FMDD, YYYY') as end_date"),
                 'e.first_name',
                 'e.middle_name',
                 'e.last_name',
@@ -668,7 +668,7 @@ class ReportController extends Controller
 
             $queryLosses = $queryLosses->select(
                 'l.name as location_name',
-                DB::raw("FORMAT(MAX(e.termination_date), 'MMMM d, yyyy') as end_date"),
+                DB::raw("TO_CHAR(MAX(e.termination_date), 'FMMonth FMDD, YYYY') as end_date"),
                 'e.first_name',
                 'e.middle_name',
                 'e.last_name',
