@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\employee_id as EmployeeId;
 use App\Models\EmployeeHistory;
-use App\Models\Location;
+use App\Models\location;
 class employee extends Model
 {
     protected $table = 'employees';
@@ -49,7 +49,7 @@ class employee extends Model
 
     public function location()
     {
-        return $this->belongsTo(Location::class, 'location_id');
+        return $this->belongsTo(location::class, 'location_id');
     }
 
     public function employeeIds()
