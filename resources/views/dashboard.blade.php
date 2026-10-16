@@ -38,7 +38,8 @@
                         @php($imgSrc = $sm->img ?: $sm->src)
                         @if ($imgSrc)
                             {{-- <img width="48" height="48" src="{{ $imgSrc }}" alt="{{ $sm->name }}" /> --}}
-                            <img width="48" height="48" src="{{ asset($imgSrc) }}" alt="{{ $sm->name }}" />
+                            <img width="48" height="48" src="{{ asset('icons/' . $imgSrc) }}"
+                                alt="{{ $sm->name }}" />
                         @elseif ($sm->icon)
                             <i class="{{ $sm->icon }}" style="font-size: 48px; line-height: 48px;"></i>
                         @endif
