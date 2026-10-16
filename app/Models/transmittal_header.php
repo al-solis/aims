@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\transmittal_detail;
+use App\Models\employee;
+use App\Models\location;
 
 class transmittal_header extends Model
 {
@@ -21,12 +24,12 @@ class transmittal_header extends Model
 
     public function transmittedTo()
     {
-        return $this->belongsTo(Employee::class, 'transmitted_to');
+        return $this->belongsTo(employee::class, 'transmitted_to');
     }
 
     public function location()
     {
-        return $this->belongsTo(Location::class, 'location_id');
+        return $this->belongsTo(location::class, 'location_id');
     }
 
     public function details()
