@@ -1,19 +1,15 @@
 <x-guest-layout>
+    <link rel="stylesheet" href="{{ asset('assets/css/form-theme.css') }}">
+
+    {{-- Colors come from <html data-theme="..."> in the guest layout; do not set data-theme here --}}
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Hanken+Grotesk:wght@400;500;600&display=swap');
 
-        :root {
-            --ink: #0f2a2b;
-            --ink-soft: #1c3d3e;
-            --brass: #b08d57;
-            --brass-dark: #8f6f3f;
-            --line: #d9ded9;
-        }
-
-        /* Wallpaper with a deep green overlay */
+        /* Wallpaper with an overlay tinted by the theme's ink color */
         body {
             background-image:
-                linear-gradient(rgba(15, 42, 43, .82), rgba(15, 42, 43, .88)),
+                linear-gradient(color-mix(in srgb, var(--ft-ink) 82%, transparent),
+                    color-mix(in srgb, var(--ft-ink) 88%, transparent)),
                 url('{{ asset('images/wallpaper.jpeg') }}');
             background-size: cover;
             background-position: center;
@@ -31,76 +27,44 @@
             overflow: visible !important;
         }
 
+        /* Card border: a soft line in the theme's accent, visible against the wallpaper */
         .login-card {
-            background: #fff;
-            border-top: 3px solid var(--brass);
-            border-radius: 2px;
-            padding: 2.5rem 2.25rem;
-            box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .55);
+            border: 1px solid color-mix(in srgb, var(--ft-accent) 60%, transparent);
         }
 
-        .login-card .login-title {
+        .login-card .ft-card-head h1 {
             font-family: 'Cormorant Garamond', Georgia, serif;
-            font-size: 2.25rem;
-            font-weight: 600;
+            font-size: 2rem;
             line-height: 1.1;
-            color: var(--ink);
         }
 
-        /* Restyle the existing components without touching their markup */
-        .login-card input[type="email"],
-        .login-card input[type="password"] {
-            border-color: var(--line);
-            border-radius: 2px;
-            padding: .7rem .9rem;
-            box-shadow: none;
-            transition: border-color .15s, box-shadow .15s;
-        }
-
-        .login-card input[type="email"]:focus,
-        .login-card input[type="password"]:focus {
-            border-color: var(--ink);
-            box-shadow: 0 0 0 3px rgba(176, 141, 87, .25);
-            outline: none;
-        }
-
+        /* Remember-me checkbox and forgot-password link follow the theme */
         .login-card input[type="checkbox"] {
-            border-radius: 2px;
-            color: var(--ink);
+            border-radius: 3px;
+            border-color: var(--ft-border);
+            color: var(--ft-ink);
+        }
+
+        .login-card input[type="checkbox"]:checked {
+            border-color: var(--ft-ink);
         }
 
         .login-card input[type="checkbox"]:focus {
-            --tw-ring-color: var(--brass);
-        }
-
-        .login-card button[type="submit"] {
-            background: var(--ink);
-            border-radius: 2px;
-            padding: .7rem 1.4rem;
-            letter-spacing: .02em;
-            text-transform: none;
-            font-weight: 600;
-            transition: background .15s;
-        }
-
-        .login-card button[type="submit"]:hover,
-        .login-card button[type="submit"]:focus {
-            background: var(--ink-soft);
-        }
-
-        .login-card button[type="submit"]:focus-visible {
-            outline: 2px solid var(--brass);
-            outline-offset: 2px;
+            --tw-ring-color: var(--ft-accent);
         }
 
         .login-card a {
-            color: var(--ink);
-            text-decoration-color: var(--brass);
+            color: var(--ft-ink);
+            text-decoration-color: var(--ft-accent);
             text-underline-offset: 3px;
         }
 
         .login-card a:hover {
-            color: var(--brass-dark);
+            color: var(--ft-accent-dark);
+        }
+
+        .login-card a:focus {
+            --tw-ring-color: var(--ft-accent);
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -110,55 +74,62 @@
         }
     </style>
 
-    <div class="login-card">
-        <h1 class="login-title mb-6">{{ __('Sign in') }}</h1>
+    <div class="ft-card login-card">
+        <div class="ft-card-head">
+            <h1>{{ __('Sign in') }}</h1>
+            <p>{{ __('Enter your email and password to continue.') }}</p>
+        </div>
 
-        <!-- Session Status -->
-        <x-auth-session-status class="mb-4" :status="session('status')" />
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
+        <div class="ft-body">
+            <!-- Session Status -->
+            <x-auth-session-status class="mb-4" :status="session('status')" />
 
-            <!-- Email Address -->
-            <div>
-                <x-input-label for="email" class="text-xs" :value="__('Email')" />
-                <x-text-input id="email" class="block mt-1 w-full text-xs" type="email" name="email"
-                    :value="old('email')" required autofocus autocomplete="username" />
-                <x-input-error :messages="$errors->get('email')" class="mt-2" />
-            </div>
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
 
-            <!-- Password -->
-            <div class="mt-4">
-                <x-input-label for="password" class="text-xs" :value="__('Password')" />
+                <div class="space-y-4">
+                    <!-- Email Address -->
+                    <div>
+                        <label for="email" class="ft-label">{{ __('Email') }}</label>
+                        <input id="email" class="ft-field" type="email" name="email" value="{{ old('email') }}"
+                            required autofocus autocomplete="username">
+                        <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                    </div>
 
-                <x-text-input id="password" class="block mt-1 w-full text-xs" type="password" name="password" required
-                    autocomplete="current-password" />
+                    <!-- Password -->
+                    <div>
+                        <label for="password" class="ft-label">{{ __('Password') }}</label>
+                        <input id="password" class="ft-field" type="password" name="password" required
+                            autocomplete="current-password">
+                        <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                    </div>
 
-                <x-input-error :messages="$errors->get('password')" class="mt-2" />
-            </div>
+                    <!-- Remember Me -->
+                    <div class="block">
+                        <label for="remember_me" class="inline-flex items-center">
+                            <input id="remember_me" type="checkbox"
+                                class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800"
+                                name="remember">
+                            <span class="ms-2 text-xs text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
+                        </label>
+                    </div>
+                </div>
 
-            <!-- Remember Me -->
-            <div class="block mt-4">
-                <label for="remember_me" class="inline-flex items-center">
-                    <input id="remember_me" type="checkbox"
-                        class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800"
-                        name="remember">
-                    <span class="ms-2 text-xs text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
-                </label>
-            </div>
+                {{-- Actions --}}
+                <div class="ft-divider mt-6 pt-5 flex items-center justify-between gap-x-2">
+                    {{-- @if (Route::has('password.request')) --}}
+                    @if (route('password.request', absolute: false))
+                        <a class="underline text-xs rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2"
+                            href="{{ route('password.request') }}">
+                            {{ __('Forgot your password?') }}
+                        </a>
+                    @endif
 
-            <div class="flex items-center justify-end mt-6">
-                {{-- @if (Route::has('password.request')) --}}
-                @if (route('password.request', absolute: false))
-                    <a class="underline text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
-                        href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
-                    </a>
-                @endif
-
-                <x-primary-button class="ms-3 text-xs">
-                    {{ __('Log in') }}
-                </x-primary-button>
-            </div>
-        </form>
+                    <button type="submit" class="ft-btn ft-btn-primary ms-auto">
+                        {{ __('Log in') }}
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </x-guest-layout>

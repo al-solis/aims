@@ -2,81 +2,76 @@
 @section('content')
     @php use Carbon\Carbon; @endphp
 
-    <div class="max-w-5xl px-4 py-8 sm:px-6 lg:px-8 mx-auto">
+    {{-- Colors come from <html data-theme="..."> defined in the layout; do not set data-theme here --}}
+    <div class="ft-page max-w-5xl px-4 py-10 sm:px-6 lg:px-8 lg:py-6 mx-auto">
 
-        {{-- Page header --}}
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-6">
-            <div>
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-800">Clearance Approval Routing</h2>
-                <p class="text-sm text-gray-600 mt-1">
-                    Set which departments sign off on a clearance, and in what order.
-                </p>
+        <div class="ft-card">
+            <div class="ft-card-head">
+                <h1>Clearance Approval Routing</h1>
+                <p>Set which departments sign off on a clearance, and in what order.</p>
             </div>
-            <a href="{{ route('setup.index') }}"
-                class="inline-flex items-center gap-2 self-start sm:self-auto px-4 py-2 text-xs font-medium text-gray-700 border border-gray-300 bg-white rounded-lg hover:bg-gray-100">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                Back to Setup
-            </a>
-        </div>
 
-        <div class="grid gap-6 lg:grid-cols-5 items-start">
+            <div class="ft-body">
+                <div class="grid gap-8 lg:grid-cols-5 items-start">
 
-            {{-- Left: form --}}
-            <div class="lg:col-span-2 lg:sticky lg:top-6">
-                <div id="formCard" class="bg-white rounded-xl shadow-xs border border-gray-200 p-5">
-                    <h3 id="formTitle" class="text-base font-bold text-gray-800">Add approval step</h3>
-                    <p id="formHint" class="text-xs text-gray-500 mt-1 mb-4">
-                        New departments are added to the end of the sequence. Use the arrows to reorder.
-                    </p>
+                    {{-- Left: form --}}
+                    <div id="formCard" class="lg:col-span-2 lg:sticky lg:top-6">
+                        <h3 id="formTitle" class="ft-section-title" style="margin-top: 0;">Add approval step</h3>
+                        <p id="formHint" class="text-xs text-gray-500 mb-4">
+                            New departments are added to the end of the sequence. Use the arrows to reorder.
+                        </p>
 
-                    <div id="formError"
-                        class="hidden mb-3 text-xs text-red-700 bg-red-50 border border-red-200 rounded p-2"></div>
+                        <div id="formError" class="ft-alert ft-alert-error hidden text-xs"></div>
 
-                    <div>
-                        <label for="location_id" class="block text-xs font-medium text-gray-700 mb-1">
-                            Department/Location <span class="text-red-600">*</span>
-                        </label>
-                        <select id="location_id"
-                            class="w-full text-xs border border-gray-300 rounded p-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            <option value="">Select a department</option>
-                            @foreach ($locations as $location)
-                                <option value="{{ $location->id }}">{{ $location->name }}</option>
-                            @endforeach
-                        </select>
+                        <div>
+                            <label for="location_id" class="ft-label">
+                                Department/Location <span class="text-red-600">*</span>
+                            </label>
+                            <select id="location_id" class="ft-field">
+                                <option value="">Select a department</option>
+                                @foreach ($locations as $location)
+                                    <option value="{{ $location->id }}">{{ $location->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mt-5 flex gap-2">
+                            <button id="add-routing" type="button" class="ft-btn ft-btn-primary flex-1 justify-center">
+                                Add step
+                            </button>
+                            <button id="cancel-edit" type="button" class="ft-btn ft-btn-ghost" style="display: none;">
+                                Cancel
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="mt-5 flex gap-2">
-                        <button id="add-routing"
-                            class="flex-1 text-white bg-green-600 hover:bg-green-700 text-sm font-medium rounded p-2">
-                            Add step
-                        </button>
-                        <button id="cancel-edit" type="button"
-                            class="hidden text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 hover:bg-gray-200 rounded px-4 py-2">
-                            Cancel
-                        </button>
+                    {{-- Right: approval sequence --}}
+                    <div class="lg:col-span-3">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="ft-section-title" style="margin: 0;">Approval sequence</h3>
+                            <span id="stepCount" class="text-xs text-gray-500"></span>
+                        </div>
+
+                        <ol id="routingList"></ol>
+
+                        <div id="emptyState" class="ft-empty hidden">
+                            <p class="font-semibold" style="color: var(--ft-ink);">No approval steps yet</p>
+                            <p class="text-xs mt-1">Add the first department using the form.</p>
+                        </div>
                     </div>
+
+                </div>
+
+                {{-- Actions --}}
+                <div class="ft-divider mt-8 pt-5 flex justify-end gap-x-2">
+                    <a href="{{ route('setup.index') }}" class="ft-btn ft-btn-ghost">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Back to Setup
+                    </a>
                 </div>
             </div>
-
-            {{-- Right: approval sequence --}}
-            <div class="lg:col-span-3">
-                <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-5">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-base font-bold text-gray-800">Approval sequence</h3>
-                        <span id="stepCount" class="text-xs text-gray-500"></span>
-                    </div>
-
-                    <ol id="routingList"></ol>
-
-                    <div id="emptyState" class="hidden text-center py-10">
-                        <p class="text-sm font-medium text-gray-700">No approval steps yet</p>
-                        <p class="text-xs text-gray-500 mt-1">Add the first department using the form.</p>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 
@@ -135,16 +130,22 @@
                         const name = esc(r.location.name);
                         const isEditing = String(r.id) === String(editingId);
                         const moveBtn =
-                            'move-btn p-1.5 rounded text-gray-600 hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent';
+                            'move-btn p-1.5 rounded text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent';
+
+                        // Colors come from the theme variables so the list follows data-theme
+                        const cardStyle = isEditing ?
+                            'background: var(--ft-mist); border-color: var(--ft-accent); box-shadow: 0 0 0 2px var(--ft-accent);' :
+                            'background: var(--ft-mist); border-color: var(--ft-line);';
 
                         listEl.insertAdjacentHTML('beforeend', `
                             <li class="relative flex gap-3 ${isLast ? '' : 'pb-4'}">
-                                ${isLast ? '' : '<span class="absolute left-4 top-8 bottom-0 w-px bg-gray-300" aria-hidden="true"></span>'}
-                                <span class="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-600 text-white text-xs font-bold">
+                                ${isLast ? '' : '<span class="absolute left-4 top-8 bottom-0 w-px" style="background: var(--ft-border);" aria-hidden="true"></span>'}
+                                <span class="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+                                    style="background: var(--ft-ink); color: var(--ft-on-ink);">
                                     ${i + 1}
                                 </span>
-                                <div class="flex flex-1 items-center justify-between rounded-lg border px-3 py-2 ${isEditing ? 'border-blue-400 bg-blue-50' : 'border-gray-200 bg-gray-50'}">
-                                    <span class="text-sm font-medium text-gray-800">${name}</span>
+                                <div class="flex flex-1 items-center justify-between rounded-lg border px-3 py-2" style="${cardStyle}">
+                                    <span class="text-sm font-semibold" style="color: var(--ft-ink);">${name}</span>
                                     <div class="flex items-center gap-0.5">
                                         <button type="button" title="Move ${name} up" aria-label="Move ${name} up"
                                             class="${moveBtn}" data-id="${r.id}" data-direction="up" ${isFirst ? 'disabled' : ''}>
@@ -154,9 +155,9 @@
                                             class="${moveBtn}" data-id="${r.id}" data-direction="down" ${isLast ? 'disabled' : ''}>
                                             ${chevronDown}
                                         </button>
-                                        <span class="w-px h-5 bg-gray-300 mx-1" aria-hidden="true"></span>
+                                        <span class="w-px h-5 mx-1" style="background: var(--ft-border);" aria-hidden="true"></span>
                                         <button type="button" title="Edit ${name}" aria-label="Edit ${name}"
-                                            class="edit-btn p-1.5 rounded text-blue-600 hover:bg-blue-100"
+                                            class="edit-btn p-1.5 rounded text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300"
                                             data-id="${r.id}"
                                             data-location="${r.location_id}">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -165,7 +166,7 @@
                                             </svg>
                                         </button>
                                         <button type="button" title="Delete ${name}" aria-label="Delete ${name}"
-                                            class="delete-btn p-1.5 rounded text-red-600 hover:bg-red-100"
+                                            class="delete-btn p-1.5 rounded text-gray-500 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
                                             data-id="${r.id}"
                                             data-location_name="${name}">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -250,7 +251,7 @@
                 document.getElementById('formHint').textContent =
                     'Change the department for this step. Its position stays the same.';
                 addBtn.textContent = 'Save changes';
-                cancelBtn.classList.remove('hidden');
+                cancelBtn.style.display = '';
 
                 document.getElementById('formCard').scrollIntoView({
                     behavior: 'smooth',
@@ -284,7 +285,7 @@
             document.getElementById('formHint').textContent =
                 'New departments are added to the end of the sequence. Use the arrows to reorder.';
             addBtn.textContent = 'Add step';
-            cancelBtn.classList.add('hidden');
+            cancelBtn.style.display = 'none';
         }
     </script>
 @endsection

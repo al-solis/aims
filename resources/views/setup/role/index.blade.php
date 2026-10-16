@@ -3,13 +3,14 @@
 @section('title', 'Roles')
 
 @section('content')
-    <div class="mx-auto max-w-5xl">
+    {{-- Colors come from <html data-theme="..."> defined in the layout; do not set data-theme here --}}
+    <div class="ft-page max-w-5xl px-4 py-10 sm:px-6 lg:px-8 lg:py-6 mx-auto">
+
         @if (session('success'))
-            <div id="success-alert"
-                class="mt-3 mb-3 rounded-lg border border-green-300 bg-green-50 p-3 text-sm text-green-800 shadow-sm transition-all duration-500">
+            <div id="success-alert" class="ft-alert ft-alert-success">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
-                        <svg class="h-4 w-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                 clip-rule="evenodd" />
@@ -17,7 +18,7 @@
                         {{ session('success') }}
                     </div>
                     <button type="button" onclick="this.closest('[id$=-alert]').style.display='none'"
-                        class="text-green-600 hover:text-green-800">
+                        class="hover:opacity-75">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M6 18L18 6M6 6l12 12" />
@@ -27,62 +28,63 @@
             </div>
         @endif
 
-        <div class="mt-5 mb-5 bg-white rounded-xl shadow-sm border border-gray-200">
-            <div class="flex items-center justify-between border-b px-6 py-5">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">Roles</h1>
-                    <p class="mt-1 text-sm text-gray-500">Manage roles. Configure what each role can access under
-                        <a href="{{ route('setup.access.index') }}" class="text-blue-600 hover:underline">Access
-                            Rights</a>.
-                    </p>
-                </div>
-                <div class="flex gap-2">
-                    <a href="{{ route('setup.index') }}"
-                        class="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-all duration-200">
-                        Back
-                    </a>
-                    <a href="{{ route('setup.roles.create') }}"
-                        class="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700">
-                        + New Role
-                    </a>
+        <div class="ft-card">
+            <div class="ft-card-head">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1>Roles</h1>
+                        <p>Manage roles. Configure what each role can access under
+                            <a href="{{ route('setup.access.index') }}"
+                                style="color: var(--ft-accent); text-decoration: underline;">Access Rights</a>.
+                        </p>
+                    </div>
+                    <div class="flex gap-2">
+                        <a href="{{ route('setup.index') }}" class="ft-btn ft-btn-ghost">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            Back
+                        </a>
+                        <a href="{{ route('setup.roles.create') }}" class="ft-btn ft-btn-primary">
+                            + New Role
+                        </a>
+                    </div>
                 </div>
             </div>
 
             <form method="GET" action="{{ route('setup.role.index') }}"
-                class="flex flex-wrap items-center gap-3 border-b px-6 py-4">
+                class="flex flex-wrap items-center gap-3 border-b px-6 py-4" style="border-color: var(--ft-line);">
                 <input type="text" name="searchname" value="{{ request('searchname') }}"
-                    placeholder="Search by role name"
-                    class="flex-1 min-w-[220px] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-xs">
-                <button type="submit"
-                    class="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-xs font-medium text-gray-700 hover:bg-gray-100">
-                    Filter
-                </button>
+                    placeholder="Search by role name" class="ft-field flex-1 min-w-[220px]">
+                <button type="submit" class="ft-btn ft-btn-ghost">Filter</button>
                 @if (request()->filled('searchname'))
-                    <a href="{{ route('setup.role.index') }}" class="text-xs text-gray-500 hover:text-gray-700">Clear</a>
+                    <a href="{{ route('setup.role.index') }}" class="text-xs hover:underline"
+                        style="color: var(--ft-muted);">Clear</a>
                 @endif
             </form>
 
-            <div class="overflow-x-auto">
-                <table class="min-w-full text-xs">
-                    <thead class="border-y border-gray-200 bg-gray-50 uppercase text-gray-500">
+            <div class="ft-table-wrap" style="border: 0; border-radius: 0;">
+                <table class="ft-table">
+                    <thead>
                         <tr>
-                            <th class="px-6 py-3 text-left">Role Name</th>
-                            <th class="px-3 py-3 text-left">Description</th>
-                            <th class="px-3 py-3 text-right">Users</th>
-                            <th class="px-3 py-3 text-right w-24">Actions</th>
+                            <th>Role Name</th>
+                            <th>Description</th>
+                            <th class="text-right">Users</th>
+                            <th class="text-right w-24">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody>
                         @forelse ($roles as $role)
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-3 font-medium text-gray-800">{{ $role->name }}</td>
-                                <td class="px-3 py-3 text-gray-500">{{ $role->description ?? '—' }}</td>
-                                <td class="px-3 py-3 text-right tabular-nums text-gray-700">{{ $role->users_count }}</td>
-                                <td class="px-3 py-3 text-right">
+                            <tr>
+                                <td class="font-semibold" style="color: var(--ft-ink);">{{ $role->name }}</td>
+                                <td style="color: var(--ft-muted);">{{ $role->description ?? '—' }}</td>
+                                <td class="text-right tabular-nums" style="color: var(--ft-text);">
+                                    {{ $role->users_count }}</td>
+                                <td class="text-right">
                                     <div class="flex items-center justify-end gap-3">
                                         {{-- <a href="{{ route('admin.access', ['role_id' => $role->id]) }}"
                                             title="Manage Access"
-                                            class="text-gray-500 hover:text-green-600 transition-colors">
+                                            class="p-1.5 rounded text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" viewBox="0 0 16 16">
                                                 <path
@@ -90,7 +92,7 @@
                                             </svg>
                                         </a> --}}
                                         <a href="{{ route('setup.roles.edit', $role) }}" title="Edit Role"
-                                            class="text-gray-500 hover:text-blue-600 transition-colors">
+                                            class="p-1.5 rounded text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" viewBox="0 0 16 16">
                                                 <path
@@ -106,14 +108,15 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-6 py-12 text-center text-gray-500">No roles found.</td>
+                                <td colspan="4" class="ft-empty">No roles found.</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
 
-            <div class="flex items-center justify-between border-t px-6 py-4 text-xs text-gray-500">
+            <div class="flex items-center justify-between border-t px-6 py-4 text-xs"
+                style="border-color: var(--ft-line); color: var(--ft-muted);">
                 <div>Showing {{ $roles->firstItem() ?? 0 }}-{{ $roles->lastItem() ?? 0 }} of {{ $roles->total() }}</div>
                 {{ $roles->links() }}
             </div>

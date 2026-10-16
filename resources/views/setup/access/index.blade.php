@@ -3,13 +3,14 @@
 @section('title', 'Access Rights')
 
 @section('content')
-    <div class="mx-auto max-w-6xl" x-data="accessRightsMatrix()">
+    {{-- Colors come from <html data-theme="..."> defined in the layout; do not set data-theme here --}}
+    <div class="ft-page max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-6 mx-auto" x-data="accessRightsMatrix()">
+
         @if (session('success'))
-            <div id="success-alert"
-                class="mt-3 mb-3 rounded-lg border border-green-300 bg-green-50 p-3 text-sm text-green-800 shadow-sm transition-all duration-500">
+            <div id="success-alert" class="ft-alert ft-alert-success">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
-                        <svg class="h-4 w-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                 clip-rule="evenodd" />
@@ -17,7 +18,7 @@
                         {{ session('success') }}
                     </div>
                     <button type="button" onclick="this.closest('[id$=-alert]').style.display='none'"
-                        class="text-green-600 hover:text-green-800">
+                        class="hover:opacity-75">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M6 18L18 6M6 6l12 12" />
@@ -27,91 +28,104 @@
             </div>
         @endif
 
-        <div class="mt-5 mb-5">
-            <h1 class="text-2xl font-bold text-gray-800">Access Rights</h1>
-            <p class="mt-1 text-sm text-gray-500">Define what each role can see and do, per module and sub-module.</p>
-        </div>
-
-        <!-- Role selector -->
-        <form method="GET" action="{{ route('setup.access.index') }}"
-            class="mb-5 flex flex-wrap items-center gap-3 rounded-xl border border-gray-200 bg-white p-4">
-            <label class="text-xs font-medium text-gray-700">Role</label>
-            <select name="role_id" onchange="this.form.submit()"
-                class="rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-xs min-w-[220px]">
-                @forelse ($roles as $role)
-                    <option value="{{ $role->id }}" @selected($selectedRoleId == $role->id)>{{ $role->name }}</option>
-                @empty
-                    <option value="">No roles yet</option>
-                @endforelse
-            </select>
-            <a href="{{ route('setup.roles.create') }}" class="text-xs text-blue-600 hover:underline">+ New Role</a>
-        </form>
-
-        @if ($roles->isEmpty())
-            <div class="rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center text-sm text-gray-500">
-                No roles exist yet. <a href="{{ route('setup.roles.create') }}" class="text-blue-600 hover:underline">Create
-                    one first</a>.
+        <div class="ft-card">
+            <div class="ft-card-head">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1>Access Rights</h1>
+                        <p>Define what each role can see and do, per module and sub-module.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <a href="{{ route('setup.role.index') }}" class="ft-btn ft-btn-ghost"
+                            style="color: var(--ft-on-ink); background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25);">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            Back
+                        </a>
+                    </div>
+                </div>
             </div>
-        @else
-            <form method="POST" action="{{ route('setup.access.update') }}" id="access-form">
-                @csrf
-                @method('PUT')
-                <input type="hidden" name="role_id" value="{{ $selectedRoleId }}">
 
-                <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
-                    <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-                        <p class="text-xs text-gray-500 flex-1">
+            {{-- Role selector --}}
+            <form method="GET" action="{{ route('setup.access.index') }}"
+                class="flex flex-wrap items-center gap-3 border-b px-6 py-4" style="border-color: var(--ft-line);">
+                <label class="ft-label" style="margin-bottom: 0;">Role</label>
+                <select name="role_id" onchange="this.form.submit()" class="ft-field min-w-[220px]">
+                    @forelse ($roles as $role)
+                        <option value="{{ $role->id }}" @selected($selectedRoleId == $role->id)>{{ $role->name }}</option>
+                    @empty
+                        <option value="">No roles yet</option>
+                    @endforelse
+                </select>
+                <a href="{{ route('setup.roles.create') }}" class="text-xs hover:underline"
+                    style="color: var(--ft-accent);">+ New Role</a>
+            </form>
+
+            @if ($roles->isEmpty())
+                <div class="ft-body">
+                    <div class="ft-info text-center" style="border-left: 0; border: 1px dashed var(--ft-border);">
+                        <p class="text-sm" style="color: var(--ft-muted);">
+                            No roles exist yet.
+                            <a href="{{ route('setup.roles.create') }}" class="hover:underline"
+                                style="color: var(--ft-accent);">Create one first</a>.
+                        </p>
+                    </div>
+                </div>
+            @else
+                <form method="POST" action="{{ route('setup.access.update') }}" id="access-form">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="role_id" value="{{ $selectedRoleId }}">
+
+                    <div class="flex flex-col gap-3 border-b px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
+                        style="border-color: var(--ft-line);">
+                        <p class="text-xs flex-1" style="color: var(--ft-muted);">
                             Toggling a column header checks/unchecks that permission for every row currently shown.
                         </p>
-                        <div class="flex gap-3 flex-shrink-0">
-                            <a type="button" href="{{ route('setup.role.index') }}"
-                                class="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-all duration-200">
-                                Back
-                            </a>
-                            <button type="submit"
-                                class="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700">
-                                Save Changes
-                            </button>
+                        <div class="flex gap-2 flex-shrink-0">
+                            <a href="{{ route('setup.role.index') }}" class="ft-btn ft-btn-ghost">Back</a>
+                            <button type="submit" class="ft-btn ft-btn-primary">Save Changes</button>
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full text-xs">
-                            <thead class="border-y border-gray-200 bg-gray-50 uppercase text-gray-500">
+                    <div class="ft-table-wrap" style="border: 0; border-radius: 0;">
+                        <table class="ft-table">
+                            <thead>
                                 <tr>
-                                    <th class="px-6 py-3 text-left">Module / Sub-Module</th>
-                                    <th class="px-3 py-3 text-center w-20">
+                                    <th class="text-left">Module / Sub-Module</th>
+                                    <th class="text-center w-20">
                                         <div class="flex flex-col items-center gap-1">
                                             <span>Create</span>
                                             <input type="checkbox"
                                                 @change="toggleColumn('can_create', $event.target.checked)">
                                         </div>
                                     </th>
-                                    <th class="px-3 py-3 text-center w-20">
+                                    <th class="text-center w-20">
                                         <div class="flex flex-col items-center gap-1">
                                             <span>Read</span>
                                             <input type="checkbox"
                                                 @change="toggleColumn('can_read', $event.target.checked)">
                                         </div>
                                     </th>
-                                    <th class="px-3 py-3 text-center w-20">
+                                    <th class="text-center w-20">
                                         <div class="flex flex-col items-center gap-1">
                                             <span>Update</span>
                                             <input type="checkbox"
                                                 @change="toggleColumn('can_update', $event.target.checked)">
                                         </div>
                                     </th>
-                                    <th class="px-3 py-3 text-center w-20">
+                                    <th class="text-center w-20">
                                         <div class="flex flex-col items-center gap-1">
                                             <span>Delete</span>
                                             <input type="checkbox"
                                                 @change="toggleColumn('can_delete', $event.target.checked)">
                                         </div>
                                     </th>
-                                    <th class="px-3 py-3 text-center w-16">All</th>
+                                    <th class="text-center w-16">All</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100">
+                            <tbody>
                                 @forelse ($modules as $module)
                                     @php
                                         $subModules = $module->subModules;
@@ -134,15 +148,14 @@
                                     @endphp
 
                                     <!-- Module header row -->
-                                    <tr class="bg-gray-50/70">
-                                        <td colspan="5" class="px-6 py-2 font-semibold text-gray-800">
+                                    <tr style="background: var(--ft-mist);">
+                                        <td colspan="5" class="px-6 py-2 font-semibold" style="color: var(--ft-ink);">
                                             {{ $module->name }}
-                                            <span class="ml-2 font-normal text-gray-400">({{ $module->code }})</span>
+                                            <span class="ml-2 font-normal" style="color: var(--ft-muted);">
+                                                ({{ $module->code }})
+                                            </span>
                                             @if ($isDisabled)
-                                                <span
-                                                    class="ml-2 inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
-                                                    Features Not Applicable
-                                                </span>
+                                                <span class="ft-badge ft-badge-na ml-2">Features Not Applicable</span>
                                             @endif
                                         </td>
                                         <td class="px-3 py-2 text-center">
@@ -157,9 +170,9 @@
                                             $key = $module->id . '-null';
                                             $existing = $rightsMap->get($key);
                                         @endphp
-                                        <tr class="hover:bg-gray-50" data-row-key="{{ $key }}">
-                                            <td class="px-6 py-2 pl-10 text-gray-600">
-                                                <span class="text-gray-400">(module-level access)</span>
+                                        <tr data-row-key="{{ $key }}">
+                                            <td class="px-6 py-2 pl-10" style="color: var(--ft-muted);">
+                                                <span>(module-level access)</span>
                                             </td>
                                             @foreach (['can_create', 'can_read', 'can_update', 'can_delete'] as $flag)
                                                 <td class="px-3 py-2 text-center">
@@ -185,8 +198,9 @@
                                                 $key = $module->id . '-' . $subModule->id;
                                                 $existing = $rightsMap->get($key);
                                             @endphp
-                                            <tr class="hover:bg-gray-50" data-row-key="{{ $key }}">
-                                                <td class="px-6 py-2 pl-10 text-gray-700">{{ $subModule->name }}</td>
+                                            <tr data-row-key="{{ $key }}">
+                                                <td class="px-6 py-2 pl-10" style="color: var(--ft-text);">
+                                                    {{ $subModule->name }}</td>
                                                 @foreach (['can_create', 'can_read', 'can_update', 'can_delete'] as $flag)
                                                     <td class="px-3 py-2 text-center">
                                                         <input type="hidden"
@@ -209,24 +223,19 @@
                                     @endif
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="px-6 py-12 text-center text-gray-500">
-                                            No active modules found.
-                                        </td>
+                                        <td colspan="6" class="ft-empty">No active modules found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
 
-                    <div class="flex items-center justify-end border-t border-gray-200 px-6 py-4">
-                        <button type="submit"
-                            class="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700">
-                            Save Changes
-                        </button>
+                    <div class="ft-divider flex items-center justify-end px-6 py-4">
+                        <button type="submit" class="ft-btn ft-btn-primary">Save Changes</button>
                     </div>
-                </div>
-            </form>
-        @endif
+                </form>
+            @endif
+        </div>
     </div>
 
     <script>

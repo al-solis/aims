@@ -1,5 +1,9 @@
 @extends('dashboard')
 @section('content')
+    @php
+        use Carbon\Carbon;
+        use Illuminate\Support\Facades\Auth;
+    @endphp
     <div class="max-w-2xl px-4 py-10 sm:px-6 lg:px-8 lg:py-6 mx-auto">
         @if ($errors->any())
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 pt-1">
@@ -40,193 +44,667 @@
                     @method('PUT')
                 @endif
 
-                <div class="grid gap-2 sm:grid-cols-2 sm:gap-2 mb-2">
-                    <input type="hidden" id="id" name="id" value="{{ old('id', $employee->id ?? '') }}">
+                <div class="">
+                    <div class="mb-2 border-b border-gray-200 dark:border-gray-700">
+                        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="employee-tab"
+                            data-tabs-toggle="#employee-tab-content"
+                            data-tabs-active-classes="text-blue-600 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-500 border-blue-600 dark:border-blue-500"
+                            data-tabs-inactive-classes="dark:border-transparent text-gray-500 hover:text-gray-600 dark:text-gray-400 border-gray-100 hover:border-gray-300 dark:border-gray-700 dark:hover:text-gray-300 role="tablist">
+                            <li class="me-2" role="presentation">
+                                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="basic-tab"
+                                    data-tabs-target="#basic" type="button" role="tab" aria-controls="basic"
+                                    aria-selected="true">Basic Info</button>
+                            </li>
 
-                    <input type="hidden" name="employee_path" id="employee_path"
-                        value="{{ old('employee_path', $employee->photo_path ?? '') }}">
-                    <input type="hidden" name="temp_photo_name" id="temp_photo_name" value="">
+                            <li class="me-2" role="presentation">
+                                <button
+                                    class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                                    id="employment-tab" data-tabs-target="#employment" type="button" role="tab"
+                                    aria-controls="employment" aria-selected="false">Employment Details</button>
+                            </li>
 
-                    <div class="sm:col-span-1">
-                        <label for="imgPreview" class="block mb-2 text-xs font-medium text-gray-900 dark:text-white">
-                            Employee Photo (Click to upload)
-                        </label>
-                        <div class="flex items-center gap-3 mb-2">
-                            <img id="empPreview"
-                                class="inline-block size-32 rounded-lg ring-white dark:ring-neutral-900 cursor-pointer hover:opacity-80 transition-opacity duration-200 border border-gray-300"
-                                src="{{ $employee && $employee->photo_path ? asset('storage/' . $employee->photo_path) : asset('storage/default/employee.jpg') }}"
-                                alt="Employee photo" title="Click to upload photo">
-                            <input type="file" id="photoInput" name="photo" accept="image/*" class="hidden">
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">Click on the image to upload a photo (Max: 2MB)</p>
+                            @if ($employee)
+                                <li class="me-2" role="presentation">
+                                    <button
+                                        class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                                        id="idinfo-tab" data-tabs-target="#idinfo" type="button" role="tab"
+                                        aria-controls="idinfo" aria-selected="false">ID Info</button>
+                                </li>
+
+
+                                <li class="me-2" role="presentation">
+                                    <button
+                                        class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                                        id="history-tab" data-tabs-target="#history" type="button" role="tab"
+                                        aria-controls="history" aria-selected="false">Employment History</button>
+                                </li>
+                            @endif
+                            {{-- @if ($employee)
+                                <li class="me-2" role="presentation">
+                                    <button
+                                        class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                                        id="history-tab" data-tabs-target="#history" type="button" role="tab"
+                                        aria-controls="history" aria-selected="false">Employee History</button>
+                                </li>
+                            @endif --}}
+                        </ul>
                     </div>
 
-                    <div class="w-full">
-                        <label for="idno" class="block text-xs font-medium text-gray-900 dark:text-white">ID
-                            No*</label>
-                        <input type="text" name="idno" id="idno"
-                            value="{{ old('idno', $employee->employee_code ?? '') }}"
-                            class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. 001-26, 2026-00001" required>
-                        <small id="id-feedback" class="text-red-500 text-xs mb-1 hidden">
-                            ID number already exists in another record.
-                        </small>
+                    <div id="employee-tab-content">
+                        <div class="p-1 rounded-lg bg-gray-50 dark:bg-gray-800" id="basic" role="tabpanel"
+                            aria-labelledby="basic-tab">
+                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">Please fill the following information
+                                <strong class="font-medium text-gray-800 dark:text-white">Basic Information tab's associated
+                                    content</strong>.
+                            </p>
+                            <div class="grid gap-2 sm:grid-cols-3 sm:gap-2 mb-2">
+                                <input type="hidden" id="id" name="id"
+                                    value="{{ old('id', $employee->id ?? '') }}">
 
-                        <label for="date" class="block text-xs font-medium text-gray-900 dark:text-white">Date
-                            Hired*</label>
-                        <input type="date" name="date" id="date"
-                            value="{{ old('date', $employee->hire_date ?? '') }}"
-                            class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. 04/08/1984" required>
+                                <input type="hidden" name="employee_path" id="employee_path"
+                                    value="{{ old('employee_path', $employee->photo_path ?? '') }}">
+                                <input type="hidden" name="temp_photo_name" id="temp_photo_name" value="">
 
-                        <label for="status"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                        <select id="status" name="status"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            required>
-                            <option value="1" @selected(old('status', $employee->status ?? 1) == 1)>Active</option>
-                            <option value="0" @selected(old('status', $employee->status ?? 1) == 0)>Inactive</option>
-                            <option value="2" @selected(old('status', $employee->status ?? 1) == 2)>On leave</option>
-                        </select>
-                    </div>
-                </div>
+                                <div class="sm:col-span-1">
+                                    <label for="imgPreview"
+                                        class="block mb-2 text-xs font-medium text-gray-900 dark:text-white">
+                                        Employee Photo (Click to upload)
+                                    </label>
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <img id="empPreview"
+                                            class="inline-block size-32 rounded-lg ring-white dark:ring-neutral-900 cursor-pointer hover:opacity-80 transition-opacity duration-200 border border-gray-300"
+                                            src="{{ $employee && $employee->photo_path ? asset('storage/' . $employee->photo_path) : asset('storage/default/employee.jpg') }}"
+                                            alt="Employee photo" title="Click to upload photo">
+                                        <input type="file" id="photoInput" name="photo" accept="image/*"
+                                            class="hidden">
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">Click on the image to upload a photo (Max: 2MB)
+                                    </p>
+                                </div>
 
-                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
-                    <div class="w-full">
-                        <label for="lname" class="block text-xs font-medium text-gray-900 dark:text-white">Last
-                            Name*</label>
-                        <input type="text" name="lname" id="lname"
-                            value ="{{ old('lname', $employee->last_name ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. Dela Cruz" required="">
-                    </div>
-                    <div class="w-full">
-                        <label for="fname" class="block text-xs font-medium text-gray-900 dark:text-white">First
-                            Name*</label>
-                        <input type="text" name="fname" id="fname"
-                            value ="{{ old('fname', $employee->first_name ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. Juan" required="">
-                    </div>
-                    <div class="w-full">
-                        <label for="mname" class="block text-xs font-medium text-gray-900 dark:text-white">Middle
-                            Name</label>
-                        <input type="text" name="mname" id="mname"
-                            value ="{{ old('mname', $employee->middle_name ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. Santos">
-                    </div>
-                </div>
+                                <div class="sm:col-span-2">
 
-                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
-                    <div class="w-full">
-                        <label for="bday"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Birthday</label>
-                        <input type="date" name="bday" id="bday"
-                            value="{{ old('bday', $employee->date_of_birth ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. mm/dd/yyyy">
-                    </div>
-                    <div class="w-full">
-                        <label for="mobile" class="block text-xs font-medium text-gray-900 dark:text-white">Mobile
-                            No</label>
-                        <input type="tel" name="mobile" id="mobile"
-                            value="{{ old('mobile', $employee->mobile ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. 09xxxxxxxxx">
-                    </div>
-                    <div class="w-full">
-                        <label for="email"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Email</label>
-                        <input type="email" name="email" id="email"
-                            value="{{ old('email', $employee->email ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. juandelacruz@yahoo.com">
-                    </div>
-                </div>
 
-                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
-                    <div class="w-full">
-                        <label for="position"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Position</label>
-                        <input type="text" name="position" id="position"
-                            value="{{ old('position', $employee->position ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. Manager">
-                    </div>
-                    <div class="w-full">
-                        <label for="department"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Department</label>
-                        <select name="department" id="department"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                            <option selected="" value="">Select Department/ Location</option>
-                            @foreach ($locations as $location)
-                                <option value="{{ $location->id }}"
-                                    {{ old('department', $employee->location_id ?? '') == $location->id ? 'selected' : '' }}>
-                                    {{ $location->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label for="idno"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">ID
+                                                No*</label>
+                                            <input type="text" name="idno" id="idno"
+                                                value="{{ old('idno', $employee->employee_code ?? $employeeNumber) }}"
+                                                class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                                placeholder="e.g. 001-26, 2026-00001" required>
+                                            <small id="id-feedback" class="text-red-500 text-xs mb-1 hidden">
+                                                ID number already exists in another record.
+                                            </small>
+                                        </div>
 
-                <label for="address" class="block text-xs font-medium text-gray-900 dark:text-white">Address*</label>
-                <textarea name="address" id="address" rows="3" text="{{ old('address', $employee->address ?? '') }}"
-                    class="mb-2 px-3 py-2 w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                    placeholder="Address..." required>{{ old('address', $employee->address ?? '') }}
+                                        <div>
+                                            <label for="date"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Date
+                                                Hired*</label>
+                                            <input type="date" name="date" id="date"
+                                                value="{{ old('date', $employee->hire_date ?? '') }}"
+                                                class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                                placeholder="e.g. 04/08/1984" required>
+                                        </div>
+
+                                        <div>
+                                            <label for="status"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
+                                            <select id="status" name="status"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5"
+                                                required>
+                                                <option value="0" @selected(old('status', $employee->status ?? 0) == 0)>Inactive</option>
+                                                <option value="1" @selected(old('status', $employee->status ?? 1) == 1)>Active</option>
+                                                <option value="2" @selected(old('status', $employee->status ?? 2) == 2)>On leave</option>
+                                                <option value="3" @selected(old('status', $employee->status ?? 3) == 3)>Resigned</option>
+                                                <option value="4" @selected(old('status', $employee->status ?? 4) == 4)>Retired</option>
+                                                <option value="5" @selected(old('status', $employee->status ?? 5) == 5)>Terminated</option>
+                                                <option value="6" @selected(old('status', $employee->status ?? 6) == 6)>AWOL</option>
+                                                <option value="7" @selected(old('status', $employee->status ?? 7) == 7)>Deceased</option>
+                                                <option value="8" @selected(old('status', $employee->status ?? 8) == 8)>Dropped</option>
+                                                <option value="9" @selected(old('status', $employee->status ?? 9) == 9)>Labor</option>
+                                                <option value="10" @selected(old('status', $employee->status ?? 10) == 10)>Floating</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label for="termination_date"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Termination
+                                                Date</label>
+                                            <input type="date" name="termination_date" id="termination_date"
+                                                value="{{ old('termination_date', $employee->termination_date ?? '') }}"
+                                                class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                        </div>
+
+                                        <div>
+                                            <label for="gender"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Gender*</label>
+                                            <select id="gender" name="gender"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5"
+                                                required>
+                                                <option value="1" @selected(old('gender', $employee->gender ?? 1) == 1)>Male</option>
+                                                <option value="2" @selected(old('gender', $employee->gender ?? 2) == 2)>Female</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label for="marital_status"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Marital
+                                                Status*</label>
+                                            <select id="marital_status" name="marital_status"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5"
+                                                required>
+                                                <option value="1" @selected(old('marital_status', $employee->marital_status ?? 1) == 1)>Single</option>
+                                                <option value="2" @selected(old('marital_status', $employee->marital_status ?? 2) == 2)>Married</option>
+                                                <option value="3" @selected(old('marital_status', $employee->marital_status ?? 3) == 3)>Widowed</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
+                                <div class="w-full">
+                                    <label for="lname"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Last
+                                        Name*</label>
+                                    <input type="text" name="lname" id="lname"
+                                        value ="{{ old('lname', $employee->last_name ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Dela Cruz" required="">
+                                </div>
+                                <div class="w-full">
+                                    <label for="fname"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">First
+                                        Name*</label>
+                                    <input type="text" name="fname" id="fname"
+                                        value ="{{ old('fname', $employee->first_name ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Juan" required="">
+                                </div>
+                                <div class="w-full">
+                                    <label for="mname"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Middle
+                                        Name</label>
+                                    <input type="text" name="mname" id="mname"
+                                        value ="{{ old('mname', $employee->middle_name ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Santos">
+                                </div>
+                            </div>
+
+                            <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
+                                <div class="w-full">
+                                    <label for="bday"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Birthday</label>
+                                    <input type="date" name="bday" id="bday"
+                                        value="{{ old('bday', $employee->date_of_birth ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. mm/dd/yyyy">
+                                </div>
+                                <div class="w-full">
+                                    <label for="mobile"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Mobile
+                                        No</label>
+                                    <input type="tel" name="mobile" id="mobile"
+                                        value="{{ old('mobile', $employee->mobile ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 09xxxxxxxxx">
+                                </div>
+                                <div class="w-full">
+                                    <label for="email"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Email</label>
+                                    <input type="email" name="email" id="email"
+                                        value="{{ old('email', $employee->email ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. juandelacruz@yahoo.com">
+                                </div>
+                            </div>
+
+                            {{-- <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                                <div class="w-full">
+                                    <label for="position"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Position</label>
+                                    <input type="text" name="position" id="position"
+                                        value="{{ old('position', $employee->position ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Manager">
+                                </div>
+                                <div class="w-full">
+                                    <label for="department"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Department</label>
+                                    <select name="department" id="department"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                        <option selected="" value="">Select Department/ Location</option>
+                                        @foreach ($locations as $location)
+                                            <option value="{{ $location->id }}"
+                                                {{ old('department', $employee->location_id ?? '') == $location->id ? 'selected' : '' }}>
+                                                {{ $location->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div> --}}
+
+                            <label for="address"
+                                class="block text-xs font-medium text-gray-900 dark:text-white">Address*</label>
+                            <textarea name="address" id="address" rows="3" text="{{ old('address', $employee->address ?? '') }}"
+                                class="mb-2 px-3 py-2 w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                placeholder="Address..." required>{{ old('address', $employee->address ?? '') }}
                 </textarea>
 
-                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-4">
-                    <div class="w-full">
-                        <label for="city" class="block text-xs font-medium text-gray-900 dark:text-white">City</label>
-                        <input type="text" name="city" id="city"
-                            value="{{ old('city', $employee->city ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. City">
-                    </div>
-                    <div class="w-full">
-                        <label for="state" class="block text-xs font-medium text-gray-900 dark:text-white">State/
-                            Province</label>
-                        <input type="text" name="state" id="state"
-                            value="{{ old('state', $employee->state ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. State/ Province">
-                    </div>
-                    <div class="w-full">
-                        <label for="country"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Country</label>
-                        <input type="text" name="country" id="country"
-                            value="{{ old('country', $employee->country ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. Philippines">
-                    </div>
-                    <div class="w-full">
-                        <label for="zip" class="block text-xs font-medium text-gray-900 dark:text-white">Zip
-                            Code</label>
-                        <input type="text" name="zip" id="zip"
-                            value="{{ old('zip', $employee->postal_code ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. 4103">
+                            <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-4">
+                                <div class="w-full">
+                                    <label for="city"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">City</label>
+                                    <input type="text" name="city" id="city"
+                                        value="{{ old('city', $employee->city ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. City">
+                                </div>
+                                <div class="w-full">
+                                    <label for="state"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">State/
+                                        Province</label>
+                                    <input type="text" name="state" id="state"
+                                        value="{{ old('state', $employee->state ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. State/ Province">
+                                </div>
+                                <div class="w-full">
+                                    <label for="country"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Country</label>
+                                    <input type="text" name="country" id="country"
+                                        value="{{ old('country', $employee->country ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Philippines">
+                                </div>
+                                <div class="w-full">
+                                    <label for="zip"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Zip
+                                        Code</label>
+                                    <input type="text" name="zip" id="zip"
+                                        value="{{ old('zip', $employee->postal_code ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 4103">
+                                </div>
+                            </div>
+
+                            <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                                <div class="w-full">
+                                    <label for="highest_education"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Highest
+                                        Education</label>
+                                    <input type="text" name="highest_education" id="highest_education"
+                                        value="{{ old('highest_education', $employee->highest_education ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. College Graduate">
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="school"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">School</label>
+                                    <input type="text" name="school" id="school"
+                                        value="{{ old('school', $employee->school ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. University of the Philippines">
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="course"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Course</label>
+                                    <input type="text" name="course" id="course"
+                                        value="{{ old('course', $employee->course ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Bachelor of Science in Computer Science">
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="year_attended"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Year Attended/
+                                        Graduated</label>
+                                    <input type="text" name="year_attended" id="year_attended"
+                                        value="{{ old('year_attended', $employee->year_attended ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 2024-2025">
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="emergency"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Emergency
+                                        Contact</label>
+                                    <input type="text" name="emergency" id="emergency"
+                                        value="{{ old('emergency', $employee->emergency_contact ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Emergency Contact">
+                                </div>
+                                <div class="w-full">
+                                    <label for="e_no"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Emergency
+                                        No.</label>
+                                    <input type="tel" name="e_no" id="e_no"
+                                        value="{{ old('e_no', $employee->emergency_phone ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 09xxxxxxxxx">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-1 rounded-lg bg-gray-50 dark:bg-gray-800" id="employment" role="tabpanel"
+                            aria-labelledby="employment-tab">
+                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">Please fill the following information
+                                <strong class="font-medium text-gray-800 dark:text-white">Employment Details tab's
+                                    associated
+                                    content</strong>.
+                            </p>
+
+                            <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                                <div class="w-full">
+                                    <label for="position"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Position</label>
+                                    <input type="text" name="position" id="position"
+                                        value="{{ old('position', $employee->position ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. Manager">
+                                </div>
+                                <div class="w-full">
+                                    <label for="department"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Department</label>
+                                    <select name="department" id="department"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                        <option selected="" value="">Select Department/ Location</option>
+                                        @foreach ($locations as $location)
+                                            <option value="{{ $location->id }}"
+                                                {{ old('department', $employee->location_id ?? '') == $location->id ? 'selected' : '' }}>
+                                                {{ $location->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                                <div>
+                                    <label for="employment_type"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Employment
+                                        Type*</label>
+                                    <select id="employment_type" name="employment_type"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5"
+                                        required>
+                                        <option value="1" @selected(old('employment_type', $employee->employment_type ?? 1) == 1)>Regular</option>
+                                        <option value="2" @selected(old('employment_type', $employee->employment_type ?? 1) == 2)>Contractual</option>
+                                        <option value="3" @selected(old('employment_type', $employee->employment_type ?? 1) == 3)>Probationary</option>
+                                    </select>
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="monthly_salary"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Monthly
+                                        Salary</label>
+                                    <input type="number" name="monthly_salary" id="monthly_salary"
+                                        value="{{ old('monthly_salary', $employee->monthly_salary ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 50000">
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="daily_rate"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">Daily Rate</label>
+                                    <input type="number" name="daily_rate" id="daily_rate"
+                                        value="{{ old('daily_rate', $employee->daily_rate ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 2000">
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="sss_rate"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">SSS Rate</label>
+                                    <input type="number" name="sss_rate" id="sss_rate"
+                                        value="{{ old('sss_rate', $employee->sss_rate ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 500">
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="philhealth_rate"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">PhilHealth
+                                        Rate</label>
+                                    <input type="number" name="philhealth_rate" id="philhealth_rate"
+                                        value="{{ old('philhealth_rate', $employee->philhealth_rate ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 250">
+                                </div>
+
+                                <div class="w-full">
+                                    <label for="pagibig_rate"
+                                        class="block text-xs font-medium text-gray-900 dark:text-white">PAGIBIG
+                                        Rate</label>
+                                    <input type="number" name="pagibig_rate" id="pagibig_rate"
+                                        value="{{ old('pagibig_rate', $employee->pagibig_rate ?? '') }}"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                        placeholder="e.g. 250">
+                                </div>
+
+                            </div>
+                        </div>
+
+                        @if ($employee)
+                            {{-- ID Information Tab --}}
+                            <meta name="csrf-token" content="{{ csrf_token() }}">
+                            <div id="employeeIdSection" data-employee-id="{{ $employee->id }}">
+                                <div class="hidden p-1 rounded-lg bg-gray-50 dark:bg-gray-800" id="idinfo"
+                                    role="tabpanel" aria-labelledby="idinfo-tab">
+                                    <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">Maintenance of
+                                        <strong class="font-medium text-gray-800 dark:text-white">Employee ID</strong>
+                                        records.
+                                    </p>
+                                    <input type="hidden" id="employee_id_record_id" name="employee_id_record_id"
+                                        value="">
+                                    <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
+                                        <div class="w-full">
+                                            <label for="employee_id_type"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">ID
+                                                Type*</label>
+                                            <select name="employee_id_type" id="employee_id_type"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                                                <option selected="" value="">Select ID Type</option>
+                                                @foreach ($idTypes as $idType)
+                                                    <option value="{{ $idType->id }}">{{ $idType->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="w-full">
+                                            <label for="employee_id_number"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">ID
+                                                Number*</label>
+                                            <input type="text" name="employee_id_number" id="employee_id_number"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                                placeholder="e.g. 242-327-268">
+                                        </div>
+                                        <div class="w-full">
+                                            <label for="badge"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Badge
+                                                Number</label>
+                                            <input type="text" name="badge" id="badge"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                                placeholder="e.g. 04-4146789-0">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
+                                        <div class="w-full">
+                                            <label for="employee_id_issued_date"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Issued
+                                                Date</label>
+                                            <input type="date" name="employee_id_issued_date"
+                                                id="employee_id_issued_date"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                                placeholder="e.g. mm/dd/yyyy">
+                                        </div>
+                                        <div class="w-full">
+                                            <label for="employee_id_expiry_date"
+                                                class="block text-xs font-medium text-gray-900 dark:text-white">Expiry
+                                                Date</label>
+                                            <input type="date" name="employee_id_expiry_date"
+                                                id="employee_id_expiry_date"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                                placeholder="e.g. mm/dd/yyyy">
+                                        </div>
+
+                                        <button id="add-id-btn" type="button"
+                                            @if (Auth::user()->role == 2) disabled @endif
+                                            class="mt-4 h-fit text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-sm px-4 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 {{ Auth::user()->role == 2 ? 'cursor-not-allowed' : '' }}">
+                                            Add ID
+                                        </button>
+                                    </div>
+
+                                    {{-- Table --}}
+                                    <div class="bg-white border rounded-xl overflow-hidden">
+                                        <table class="min-w-full text-xs" id="employeeIdsTable">
+                                            <thead class="bg-gray-200 text-gray-600">
+                                                <tr>
+                                                    <th scope="col" class="px-4 py-3 text-left w-[100px]">ID Type</th>
+                                                    <th scope="col" class="px-4 py-3 text-left w-[80px]">ID Number</th>
+                                                    <th scope="col" class="px-4 py-3 text-left w-[100px]">Badge Number
+                                                    </th>
+                                                    <th scope="col" class="px-4 py-3 text-left w-[60px]">Issued</th>
+                                                    <th scope="col" class="px-4 py-3 text-left w-[60px]">Expiry</th>
+                                                    <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody id="employeeIdsBody" class="divide-y">
+                                                @forelse($employeeIds as $employeeId)
+                                                    <tr id="row-{{ $employeeId->id }}" class="hover:bg-gray-50">
+                                                        <td class="px-2 py-2 font-medium w-[100px]">
+                                                            {{ $employeeId->idType->name }}</td>
+                                                        <td class="px-2 py-2 w-[80px]">{{ $employeeId->id_number }}</td>
+                                                        <td class="px-2 py-2 w-[100px]">{{ $employeeId->badge }}</td>
+                                                        <td class="px-2 py-2 w-[60px]">{{ $employeeId->issue_date }}</td>
+                                                        <td class="px-2 py-2 w-[60px]">{{ $employeeId->expiry_date }}</td>
+                                                        <td class="px-2 py-2 w-[50px]">
+                                                            <div class="flex items-center justify-center space-x-2">
+                                                                <button type="button"
+                                                                    onclick="editEmployeeId({{ $employeeId->id }})"
+                                                                    title="Edit ID"
+                                                                    class="text-blue-600 hover:text-blue-800 transition-colors">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                        height="16" fill="currentColor"
+                                                                        class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                                        <path
+                                                                            d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                                                        <path fill-rule="evenodd"
+                                                                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                                                    </svg>
+                                                                </button>
+                                                                <button type="button"
+                                                                    onclick="deleteEmployeeId({{ $employeeId->id }})"
+                                                                    title="Delete ID"
+                                                                    class="text-red-600 hover:text-red-800 transition-colors">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                        height="16" fill="currentColor"
+                                                                        class="bi bi-trash" viewBox="0 0 16 16">
+                                                                        <path
+                                                                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                                        <path
+                                                                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr id="no-ids-row">
+                                                        <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                                                            No IDs found.
+                                                        </td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($employee)
+                            <div class="hidden p-1 rounded-lg bg-gray-50 dark:bg-gray-800" id="history" role="tabpanel"
+                                aria-labelledby="history-tab">
+                                <p class="text-sm text-body mb-2">Employee's <strong class="font-medium text-heading">Work
+                                        History</strong>.
+                                </p>
+
+                                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
+                                    <div class="w-full">
+                                        <label for="company_name"
+                                            class="block text-xs font-medium text-gray-900 dark:text-white">Company
+                                            Name*</label>
+                                        <input type="text" name="company_name" id="company_name"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                            placeholder="e.g. ABC Corporation">
+                                    </div>
+                                    <div class="w-full">
+                                        <label for="position_held"
+                                            class="block text-xs font-medium text-gray-900 dark:text-white">Position
+                                            Held*</label>
+                                        <input type="text" name="position_held" id="position_held"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                            placeholder="e.g. Software Engineer">
+                                    </div>
+                                </div>
+                                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-3">
+                                    <div class="w-full">
+                                        <label for="start_date"
+                                            class="block text-xs font-medium text-gray-900 dark:text-white">Start
+                                            Date</label>
+                                        <input type="date" name="start_date" id="start_date"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                            placeholder="e.g. mm/dd/yyyy">
+                                    </div>
+                                    <div class="w-full">
+                                        <label for="end_date"
+                                            class="block text-xs font-medium text-gray-900 dark:text-white">End
+                                            Date</label>
+                                        <input type="date" name="end_date" id="end_date"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                            placeholder="e.g. mm/dd/yyyy">
+                                    </div>
+
+                                    <button id="add-workhistory-btn" type="button"
+                                        @if (Auth::user()->role == 2) disabled @endif
+                                        class="mt-4 h-fit text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-sm px-4 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 {{ Auth::user()->role == 2 ? 'cursor-not-allowed' : '' }}">
+                                        Add Work History
+                                    </button>
+                                </div>
+
+                                {{-- Table --}}
+                                <div class="bg-white border rounded-xl overflow-hidden">
+                                    <table class="min-w-full text-xs" id="employeeWorkHistoryTable">
+                                        <thead class="bg-gray-200 text-gray-600">
+                                            <tr>
+                                                <th scope="col" class="px-4 py-3 text-left w-[150px]">Company Name</th>
+                                                <th scope="col" class="px-4 py-3 text-left w-[120px]">Position Held
+                                                </th>
+                                                <th scope="col" class="px-4 py-3 text-left w-[80px]">Start Date</th>
+                                                <th scope="col" class="px-4 py-3 text-left w-[80px]">End Date</th>
+                                                <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody id="employeeWorkHistoryBody" class="divide-y">
+                                            {{-- Work history records will be dynamically added here --}}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        @endif
+
                     </div>
                 </div>
 
-                <div class="grid gap-2 mb-2 sm:grid-cols-1 md:grid-cols-2">
-                    <div class="w-full">
-                        <label for="emergency" class="block text-xs font-medium text-gray-900 dark:text-white">Emergency
-                            Contact</label>
-                        <input type="text" name="emergency" id="emergency"
-                            value="{{ old('emergency', $employee->emergency_contact ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. Emergency Contact">
-                    </div>
-                    <div class="w-full">
-                        <label for="e_no" class="block text-xs font-medium text-gray-900 dark:text-white">Emergency
-                            No.</label>
-                        <input type="tel" name="e_no" id="e_no"
-                            value="{{ old('e_no', $employee->emergency_phone ?? '') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="e.g. 09xxxxxxxxx">
-                    </div>
-                </div>
 
                 <div class="mt-5 flex justify-end gap-x-2">
                     <a href="{{ route('employee.index') }}" type="button" id="closeButton"
@@ -236,8 +714,8 @@
                         </svg>
                         Back
                     </a>
-                    <button type="submit" id="saveBtn"
-                        class="py-1.5 sm:py-2 px-3 inline-flex items-center gap-x-2 border text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
+                    <button type="submit" id="saveBtn" @if (Auth::user()->role == 2) disabled @endif
+                        class="py-1.5 sm:py-2 px-3 inline-flex items-center gap-x-2 border text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 {{ Auth::user()->role == 2 ? 'cursor-not-allowed' : '' }}">
                         @if ($employee)
                             Save changes
                         @else
@@ -268,6 +746,20 @@
                 uploadedTempPhoto = null;
             }
         }
+
+        function formatDateForInput(dateString) {
+            if (!dateString) return '';
+
+            const date = new Date(dateString);
+            if (isNaN(date)) return '';
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+        }
+
 
         function cleanupTempFile(filePath) {
             if (!filePath) return;
@@ -408,6 +900,183 @@
                     }, 100);
                 }
             });
+
+            // ========== EMPLOYEE ID MANAGEMENT ==========
+            const employeeIdSection = document.getElementById('employeeIdSection');
+
+            if (employeeIdSection) {
+                const addIdBtn = document.getElementById('add-id-btn');
+                const employeeIdForm = {
+                    recordId: document.getElementById('employee_id_record_id'),
+                    type: document.getElementById('employee_id_type'),
+                    number: document.getElementById('employee_id_number'),
+                    badge: document.getElementById('badge'),
+                    issuedDate: document.getElementById('employee_id_issued_date'),
+                    expiryDate: document.getElementById('employee_id_expiry_date')
+                };
+
+                // Add ID Button Click Handler
+                addIdBtn.addEventListener('click', function() {
+                    const employeeId = employeeIdForm.recordId.value;
+                    const idType = employeeIdForm.type.value;
+                    const idNumber = employeeIdForm.number.value.trim();
+                    const badge = employeeIdForm.badge.value.trim();
+                    const issuedDate = employeeIdForm.issuedDate.value;
+                    const expiryDate = employeeIdForm.expiryDate.value;
+
+                    // Validation
+                    if (!idType) {
+                        alert('Please select ID Type.');
+                        employeeIdForm.type.focus();
+                        return;
+                    }
+
+                    if (!idNumber) {
+                        showToast('ID Number is required.', 'error');
+                        employeeIdForm.number.classList.add('border-red-500');
+                        employeeIdForm.number.focus();
+                        return;
+                    } else {
+                        employeeIdForm.number.classList.remove('border-red-500');
+                    }
+
+                    const employeeIdData = {
+                        id: employeeId || null,
+                        id_type_id: idType,
+                        id_number: idNumber,
+                        badge: badge || null,
+                        issue_date: issuedDate || null,
+                        expiry_date: expiryDate || null,
+                        _token: document.querySelector('meta[name="csrf-token"]').content
+                    };
+
+                    const url = employeeId ?
+                        `/employee/{{ $employee->id ?? 0 }}/ids/${employeeId}` :
+                        `/employee/{{ $employee->id ?? 0 }}/ids`;
+
+                    const method = employeeId ? 'PUT' : 'POST';
+
+
+                    // Make AJAX request
+                    fetch(url, {
+                            method: method,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': employeeIdData._token
+                            },
+                            body: JSON.stringify(employeeIdData)
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Clear form
+                                clearIdForm();
+
+                                // Refresh the table
+                                refreshEmployeeIds();
+
+                                // Show success message
+                                showToast(data.message || 'ID saved successfully!', 'success');
+                            } else {
+                                throw new Error(data.message || 'Failed to save ID');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showToast(error.message || 'An error occurred', 'error');
+                        });
+                });
+
+                // Function to clear ID form
+                function clearIdForm() {
+                    employeeIdForm.recordId.value = '';
+                    employeeIdForm.type.value = '';
+                    employeeIdForm.number.value = '';
+                    employeeIdForm.badge.value = '';
+                    employeeIdForm.issuedDate.value = '';
+                    employeeIdForm.expiryDate.value = '';
+                    addIdBtn.textContent = 'Add ID';
+                    addIdBtn.classList.remove('bg-blue-700', 'hover:bg-blue-800');
+                    addIdBtn.classList.add('bg-green-700', 'hover:bg-green-800');
+                }
+
+                // Function to refresh employee IDs table
+                function refreshEmployeeIds() {
+                    fetch(`/employee/{{ $employee->id ?? 0 }}/ids`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const tbody = document.getElementById('employeeIdsBody');
+                            const noIdsRow = document.getElementById('no-ids-row');
+
+                            if (data.length === 0) {
+                                if (!noIdsRow) {
+                                    tbody.innerHTML = `
+                            <tr id="no-ids-row">
+                                <td colspan="6" class="px-4 py-6 text-center text-gray-500">
+                                    No IDs found.
+                                </td>
+                            </tr>
+                        `;
+                                }
+                                return;
+                            }
+
+                            // Remove no-ids row if exists
+                            if (noIdsRow) {
+                                noIdsRow.remove();
+                            }
+
+                            // Build table rows
+                            let rowsHtml = '';
+                            data.forEach(id => {
+                                rowsHtml += `
+                        <tr id="row-${id.id}" class="hover:bg-gray-50">
+                            <td class="px-2 py-2 font-medium w-[100px]">${id.id_type.name}</td>
+                            <td class="px-2 py-2 w-[80px]">${id.id_number}</td>
+                            <td class="px-2 py-2 w-[100px]">${id.badge || ''}</td>
+                            <td class="px-2 py-2 w-[60px]">${id.issue_date || ''}</td>
+                            <td class="px-2 py-2 w-[60px]">${id.expiry_date || ''}</td>
+                            <td class="px-2 py-2 w-[50px]">
+                                <div class="flex items-center justify-center space-x-2">
+                                    <button type="button" onclick="editEmployeeId(${id.id})" 
+                                        title="Edit ID" 
+                                        class="text-blue-600 hover:text-blue-800 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" 
+                                            fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                        </svg>
+                                    </button>
+                                    <button type="button" onclick="deleteEmployeeId(${id.id})" 
+                                        title="Delete ID" 
+                                        class="text-red-600 hover:text-red-800 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" 
+                                            fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2 2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                            });
+
+                            tbody.innerHTML = rowsHtml;
+                        })
+                        .catch(error => {
+                            console.error('Error refreshing IDs:', error);
+                        });
+                }
+            }
+
+            //LOAD EMPLOYEE WORK HISTORY
+            const employeeId = {{ $employee->id ?? 'null' }};
+            if (employeeId) {
+                loadWorkHistory(employeeId);
+            }
+
         });
 
         document.getElementById('idno').addEventListener('blur', function() {
@@ -449,5 +1118,386 @@
                 })
                 .catch(err => console.error('Error:', err));
         });
+
+
+        // Function to edit employee ID
+        function editEmployeeId(id) {
+            // Fetch the ID details
+            fetch(`/employee/{{ $employee->id ?? 0 }}/ids/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Populate the form with the ID data
+                        document.getElementById('employee_id_record_id').value = data.id.id;
+                        document.getElementById('employee_id_type').value = data.id.id_type_id;
+                        document.getElementById('employee_id_number').value = data.id.id_number;
+                        document.getElementById('badge').value = data.id.badge || '';
+                        document.getElementById('employee_id_issued_date').value = formatDateForInput(data.id
+                            .issue_date) || '';
+                        document.getElementById('employee_id_expiry_date').value = formatDateForInput(data.id
+                            .expiry_date) || '';
+
+                        // Change button to "Update ID"
+                        const addBtn = document.getElementById('add-id-btn');
+                        addBtn.textContent = 'Update ID';
+                        addBtn.classList.remove('bg-green-700', 'hover:bg-green-800', 'focus:ring-4',
+                            'focus:outline-none', 'focus:ring-green-300', 'font-medium', 'rounded-md', 'text-sm',
+                            'px-4', 'py-2.5', 'text-center', 'dark:bg-green-600', 'dark:hover:bg-green-700',
+                            'dark:focus:ring-green-800');
+                        addBtn.classList.add('bg-blue-700', 'hover:bg-blue-800', 'focus:ring-4', 'focus:outline-none',
+                            'focus:ring-blue-300', 'font-medium', 'rounded-md', 'text-sm', 'px-4', 'py-2.5',
+                            'text-center', 'dark:bg-blue-600', 'dark:hover:bg-blue-700', 'dark:focus:ring-blue-800');
+
+                        // Scroll to the form
+                        document.getElementById('employee_id_number').focus();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching ID:', error);
+                    showToast('Failed to load ID details', 'error');
+                });
+        }
+
+        // Function to delete employee ID
+        function deleteEmployeeId(id) {
+            const row = document.getElementById(`row-${id}`);
+            if (!row) return;
+
+            const idNumberCell = row.querySelector('td:nth-child(2)');
+            const idNumber = idNumberCell ? idNumberCell.textContent.trim() : 'this';
+
+            if (!confirm(`Are you sure you want to delete this ID (${idNumber})?`)) {
+                return;
+            }
+
+            fetch(`/employee/{{ $employee->id ?? 0 }}/ids/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the row from the table
+                        const row = document.getElementById(`row-${id}`);
+                        if (row) {
+                            row.remove();
+                        }
+
+                        // Check if table is empty
+                        const tbody = document.getElementById('employeeIdsBody');
+                        if (tbody.children.length === 0) {
+                            tbody.innerHTML = `
+                                <tr id="no-ids-row">
+                                    <td colspan="6" class="px-4 py-6 text-center text-gray-500">
+                                        No IDs found.
+                                    </td>
+                                </tr>
+                            `;
+                        }
+
+                        showToast(data.message || 'ID deleted successfully!', 'success');
+                    } else {
+                        throw new Error(data.message || 'Failed to delete ID');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast(error.message || 'An error occurred', 'error');
+                });
+        }
+
+        //EMPLOYEE HISTORY 
+        function loadWorkHistory(employeeId) {
+
+            fetch(`/employee/${employeeId}/history`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to load work history');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+
+                    const tbody = document.getElementById('employeeWorkHistoryBody');
+                    tbody.innerHTML = '';
+
+                    data.forEach(history => {
+                        appendRow(history);
+                    });
+
+                })
+                .catch(error => {
+                    console.error('Load Error:', error);
+                });
+        }
+
+
+        // Save Work History
+        document.getElementById('add-workhistory-btn').addEventListener('click', function() {
+            const addBtn = this;
+            const recordId = addBtn.getAttribute('data-record-id');
+
+            const companyName = document.getElementById('company_name').value.trim();
+            const positionHeld = document.getElementById('position_held').value.trim();
+            const startDate = document.getElementById('start_date').value;
+            const endDate = document.getElementById('end_date').value;
+
+
+            if (!companyName || !positionHeld) {
+                alert('Company Name and Position Held are required.');
+                return;
+            }
+
+            if (recordId) {
+                updateWorkHistory(recordId);
+                return;
+            }
+
+            fetch('/employee-history/store', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        employee_id: {{ $employee->id ?? 'null' }},
+                        company_name: companyName,
+                        position_held: positionHeld,
+                        start_date: startDate || null,
+                        end_date: endDate || null
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+
+                    appendRow(data);
+
+                    document.getElementById('company_name').value = '';
+                    document.getElementById('position_held').value = '';
+                    document.getElementById('start_date').value = '';
+                    document.getElementById('end_date').value = '';
+
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while saving work history. Please try again.');
+                });
+        });
+
+
+        function appendRow(history) {
+            const tableBody = document.getElementById('employeeWorkHistoryBody');
+            const newRow = document.createElement('tr');
+            const startDate = history.start_date ? new Date(history.start_date).toLocaleDateString() : '';
+            const endDate = history.end_date ? new Date(history.end_date).toLocaleDateString() : '';
+            newRow.setAttribute('id', 'row-' + history.id);
+            newRow.classList.add('hover:bg-gray-50');
+            newRow.innerHTML = `
+                <td class="px-2 py-2 font-medium w-[150px]">${history.company}</td>
+                <td class="px-2 py-2 w-[120px]">${history.position}</td>
+                <td class="px-2 py-2 w-[80px]">${startDate || ''}</td>
+                <td class="px-2 py-2 w-[80px]">${endDate || ''}</td>
+                <td class="px-2 py-2 w-[50px]">
+                    <div class="flex items-center justify-center">
+                        <div class="flex items-center justify-center space-x-2">
+                                <button type="button" onclick="editWorkHistory(${history.id})" 
+                                    title="Edit work history: ${history.company} - ${history.position}" 
+                                    class="text-blue-600 hover:text-blue-800 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" 
+                                        fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                    </svg>
+                                </button>
+                                <button type="button" onclick="deleteWorkHistory(${history.id})" 
+                                    title="Delete work history: ${history.company} - ${history.position}" 
+                                    class="text-red-600 hover:text-red-800 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                    </svg>
+                                </button>
+                        </div>
+                    </div>
+                </td>
+            `;
+            tableBody.appendChild(newRow);
+        }
+
+        function deleteWorkHistory(id) {
+            const row = document.getElementById(`row-${id}`);
+            if (!row) return;
+
+            if (!confirm('Are you sure you want to delete this work history record?')) {
+                return;
+            }
+
+            fetch(`/employee-history/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the row from the table
+                        const row = document.getElementById(`row-${id}`);
+                        if (row) {
+                            row.remove();
+                        }
+
+                        showToast(data.message || 'Work history record deleted successfully!', 'success');
+                    } else {
+                        throw new Error(data.message || 'Failed to delete work history record');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast(error.message || 'An error occurred', 'error');
+                });
+        }
+
+        function editWorkHistory(id) {
+            fetch(`/employee-history/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const history = data.history;
+                        document.getElementById('company_name').value = history.company;
+                        document.getElementById('position_held').value = history.position;
+                        document.getElementById('start_date').value = formatDateForInput(history.start_date) || '';
+                        document.getElementById('end_date').value = formatDateForInput(history.end_date) || '';
+
+                        // Change button to "Update Work History"
+                        const addBtn = document.getElementById('add-workhistory-btn');
+                        addBtn.textContent = 'Update Work History';
+                        addBtn.classList.remove('bg-green-700', 'hover:bg-green-800', 'focus:ring-4',
+                            'focus:outline-none', 'focus:ring-green-300', 'font-medium', 'rounded-md', 'text-sm',
+                            'px-4', 'py-2.5', 'text-center', 'dark:bg-green-600', 'dark:hover:bg-green-700',
+                            'dark:focus:ring-green-800');
+                        addBtn.classList.add('bg-blue-700', 'hover:bg-blue-800', 'focus:ring-4', 'focus:outline-none',
+                            'focus:ring-blue-300', 'font-medium', 'rounded-md', 'text-sm', 'px-4', 'py-2.5',
+                            'text-center', 'dark:bg-blue-600', 'dark:hover:bg-blue-700', 'dark:focus:ring-blue-800');
+
+                        // Store the record ID in a hidden field or data attribute
+                        addBtn.setAttribute('data-record-id', history.id);
+
+                        // Scroll to the form
+                        document.getElementById('company_name').focus();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching work history:', error);
+                    showToast('Failed to load work history details', 'error');
+                });
+        }
+
+        function updateWorkHistory(id) {
+
+            fetch(`/employee-history/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        company: document.getElementById('company_name').value,
+                        position: document.getElementById('position_held').value,
+                        start_date: document.getElementById('start_date').value,
+                        end_date: document.getElementById('end_date').value,
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+
+                    document.getElementById('row-' + id).remove();
+                    appendRow(data);
+
+                    resetForm();
+
+                });
+        }
+
+        function resetForm() {
+
+            document.getElementById('company_name').value = '';
+            document.getElementById('position_held').value = '';
+            document.getElementById('start_date').value = '';
+            document.getElementById('end_date').value = '';
+
+            const addBtn = document.getElementById('add-workhistory-btn');
+
+            addBtn.textContent = 'Add Work History';
+            addBtn.classList.remove('bg-blue-700', 'hover:bg-blue-800', 'focus:ring-4', 'focus:outline-none',
+                'focus:ring-blue-300', 'font-medium', 'rounded-md', 'text-sm', 'px-4', 'py-2.5', 'text-center',
+                'dark:bg-blue-600', 'dark:hover:bg-blue-700', 'dark:focus:ring-blue-800');
+            addBtn.classList.add('bg-green-700', 'hover:bg-green-800', 'focus:ring-4', 'focus:outline-none',
+                'focus:ring-green-300', 'font-medium', 'rounded-md', 'text-sm', 'px-4', 'py-2.5', 'text-center',
+                'dark:bg-green-600', 'dark:hover:bg-green-700', 'dark:focus:ring-green-800');
+
+            addBtn.removeAttribute('data-record-id');
+        }
+
+
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 
+                ${type === 'success' ? 'bg-green-100 text-green-700 border border-green-300' : 
+                type === 'error' ? 'bg-red-100 text-red-700 border border-red-300' : 
+                'bg-blue-100 text-blue-700 border border-blue-300'}`;
+            toast.textContent = message;
+            toast.style.animation = 'slideInRight 0.3s ease-out';
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+
+        // Add CSS for animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 @endsection

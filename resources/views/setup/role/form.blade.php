@@ -3,11 +3,13 @@
 @section('title', $targetRole->exists ? 'Edit Role' : 'New Role')
 
 @section('content')
-    <div class="mx-auto max-w-xl">
+    {{-- Colors come from <html data-theme="..."> defined in the layout; do not set data-theme here --}}
+    <div class="ft-page max-w-xl px-4 py-10 sm:px-6 lg:px-8 lg:py-6 mx-auto">
+
         @if ($errors->any())
-            <div class="mt-3 mb-3 rounded-lg border border-red-300 bg-red-50 p-3 shadow-sm">
-                <div class="font-semibold text-red-700 text-sm">Please correct the following errors:</div>
-                <ul class="mt-1 list-disc list-inside text-xs text-red-600">
+            <div class="ft-alert ft-alert-error">
+                <div class="font-semibold text-sm">Please correct the following errors:</div>
+                <ul class="mt-1 list-disc list-inside text-xs">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -26,46 +28,48 @@
                 @method('PUT')
             @endif
 
-            <div class="mt-5 mb-5 bg-white rounded-2xl shadow-lg border border-gray-200/80 overflow-hidden">
-                <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6">
-                    <div class="flex items-center justify-between">
+            <div class="ft-card">
+                <div class="ft-card-head">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h1 class="text-2xl font-bold text-white">{{ $isEdit ? 'Edit Role' : 'New Role' }}</h1>
-                            <p class="mt-1 text-sm text-blue-100">
-                                {{ $isEdit ? 'Update this role' : 'Define a new role' }}
-                            </p>
+                            <h1>{{ $isEdit ? 'Edit Role' : 'New Role' }}</h1>
+                            <p>{{ $isEdit ? 'Update this role' : 'Define a new role' }}</p>
                         </div>
-                        <div class="flex gap-3">
-                            <a href="{{ route('setup.role.index') }}"
-                                class="inline-flex items-center gap-2 rounded-lg bg-white/10 px-5 py-2.5 text-sm font-medium text-white hover:bg-white/20 border border-white/20">
+                        <div class="flex gap-2">
+                            <a href="{{ route('setup.role.index') }}" class="ft-btn ft-btn-ghost"
+                                style="color: var(--ft-on-ink); background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25);">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
                                 Back
                             </a>
-                            <button type="submit"
-                                class="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-2.5 text-sm font-medium text-blue-700 hover:bg-blue-50 shadow-lg">
+                            <button type="submit" class="ft-btn ft-btn-primary"
+                                style="color: var(--ft-ink); background: var(--ft-surface); border-color: var(--ft-surface);">
                                 {{ $isEdit ? 'Update Role' : 'Save Role' }}
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="px-8 py-4 space-y-2 mb-2">
+                <div class="ft-body space-y-4">
                     <div>
-                        <label class="block text-xs font-medium text-gray-900">
+                        <label for="name" class="ft-label">
                             Role Name <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" name="name" value="{{ old('name', $targetRole->name) }}"
-                            placeholder="e.g. Administrator" required
-                            class="mt-1 w-full rounded-lg border border-gray-300 p-2.5 text-sm">
+                        <input type="text" id="name" name="name" value="{{ old('name', $targetRole->name) }}"
+                            placeholder="e.g. Administrator" required class="ft-field">
                     </div>
+
                     <div>
-                        <label class="block text-xs font-medium text-gray-900">Description</label>
-                        <textarea name="description" rows="3" class="mt-1 w-full rounded-lg border border-gray-300 p-2.5 text-sm"
+                        <label for="description" class="ft-label">Description</label>
+                        <textarea id="description" name="description" rows="3" class="ft-field"
                             placeholder="e.g. Administrator role with full access.">{{ old('description', $targetRole->description) }}</textarea>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-medium text-gray-900">Status</label>
-                        <select name="is_active" class="mt-1 w-full rounded-lg border border-gray-300 p-2.5 text-sm">
+                        <label for="is_active" class="ft-label">Status</label>
+                        <select id="is_active" name="is_active" class="ft-field">
                             <option value="1" {{ old('is_active', $targetRole->is_active) === '1' ? 'selected' : '' }}>
                                 Active</option>
                             <option value="0" {{ old('is_active', $targetRole->is_active) === '0' ? 'selected' : '' }}>
@@ -74,10 +78,13 @@
                     </div>
 
                     {{-- @if ($isEdit)
-                        <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-gray-500">
-                            To configure what this role can see and do, use
-                            <a href="{{ route('admin.access', ['role_id' => $targetRole->id]) }}"
-                                class="text-blue-600 hover:underline">Access Rights</a> after saving.
+                        <div class="ft-info">
+                            <p class="text-xs" style="color: var(--ft-muted);">
+                                To configure what this role can see and do, use
+                                <a href="{{ route('admin.access', ['role_id' => $targetRole->id]) }}"
+                                    style="color: var(--ft-accent); text-decoration: underline;">Access Rights</a>
+                                after saving.
+                            </p>
                         </div>
                     @endif --}}
                 </div>
