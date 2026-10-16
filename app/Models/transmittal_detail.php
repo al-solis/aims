@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\transmittal_header;
+use App\Models\supplies;
+use App\Models\asset;
 
 class transmittal_detail extends Model
 {
@@ -23,10 +26,10 @@ class transmittal_detail extends Model
     }
     public function item()
     {
-        return $this->belongsTo(Supplies::class, 'item_id');
+        return $this->belongsTo(supplies::class, 'item_id');
     }
     public function asset()
     {
-        return $this->belongsTo(Asset::class, 'asset_id');
+        return $this->belongsTo(asset::class, 'asset_id');
     }
 }
