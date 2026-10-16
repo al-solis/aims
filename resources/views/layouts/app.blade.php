@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="forest-sage">
 @php
     use Illuminate\Support\Facades\Auth;
 @endphp
@@ -16,10 +16,12 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/form-theme.css') }}">
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/flowbite.min.js', 'resources/js/select2.min.js', 'resources/js/chart.js', 'resources/js/apexcharts.min.js', 'resources/js/preline.js'])
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
 
 </head>
 

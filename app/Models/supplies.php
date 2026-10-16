@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\SuppliesCategory;
+use App\Models\Uom;
+use App\Models\supplier;
 
 class Supplies extends Model
 {

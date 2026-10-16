@@ -1,0 +1,557 @@
+/* ==========================================================================
+   Form theme: shared look for all form / detail pages
+   Change the colors in the :root block below. Everything else reads from it.
+
+   The palettes
+
+    Name	            Feel
+    navy-gold	        Navy header, gold accents. Corporate and traditional.
+    burgundy-stone	    Deep wine with a warm stone accent. Formal and refined.
+    slate-teal	        Blue-grey with a teal accent. Modern and calm.
+    charcoal-copper	    Near-black with copper accents. Bold and understated.
+    royal-purple	    Deep purple with gold. Premium look.
+    forest-sage	        Dark green with an olive-sage accent. Natural and softer than the default.
+    ocean-blue	        Corporate blue with a sky accent. Familiar and clean.
+    midnight-rose	    Dark indigo with a rose accent. Elegant.
+    espresso-cream	    Brown with a tan accent on warm backgrounds. Cozy and classic.
+    graphite	        Neutral greys. The most minimal option.
+
+    <html data-theme="navy-gold">                  {{-- whole app --}}
+    <div class="ft-page" data-theme="slate-teal">  {{-- one page only --}}
+   ========================================================================== */
+
+:root {
+    /* Brand */
+    --ft-ink: #0f2a2b; /* header band, primary button, headings */
+    --ft-ink-soft: #1c3d3e; /* primary button hover */
+    --ft-accent: #b08d57; /* brass lines, tile edge, header underline */
+    --ft-accent-dark: #8f6f3f;
+    --ft-accent-ring: rgba(176, 141, 87, 0.25); /* focus ring */
+
+    /* Surfaces & text */
+    --ft-surface: #ffffff;
+    --ft-mist: #f6f7f5; /* tiles, table headers, read-only fields */
+    --ft-row-hover: #fbfcfb;
+    --ft-line: #e3e7e3; /* dividers, card border */
+    --ft-border: #d9ded9; /* input borders */
+    --ft-text: #2b3437;
+    --ft-muted: #6b7678;
+    --ft-on-ink: #ffffff;
+    --ft-on-ink-muted: rgba(255, 255, 255, 0.65);
+    --ft-shadow: rgba(15, 42, 43, 0.3);
+    --ft-disabled: #9aa5a5;
+
+    /* Status colors: bg / text / border */
+    --ft-success-bg: #e4f3ea;
+    --ft-success-text: #1f6b45;
+    --ft-success-border: #8cc9a6;
+    --ft-success-solid: #2e8b57;
+    --ft-danger-bg: #fbe7e7;
+    --ft-danger-text: #a42a2a;
+    --ft-danger-border: #e59a9a;
+    --ft-danger-solid: #c0392b;
+    --ft-warning-bg: #fdf6e3;
+    --ft-warning-text: #8a6414;
+    --ft-warning-border: #e6c36e;
+    --ft-orange-bg: #fdeede;
+    --ft-orange-text: #9a4f0f;
+    --ft-orange-border: #efb27a;
+    --ft-neutral-bg: #eceeed;
+    --ft-neutral-text: #4a5558;
+}
+
+/* ==========================================================================
+   Ready-made palettes
+   The default palette (emerald + brass) is the :root block above.
+   To switch, add data-theme to <html> (whole app) or to the .ft-page
+   wrapper (one page):
+
+       <html data-theme="navy-gold">
+       <div class="ft-page" data-theme="burgundy-stone">
+
+   Remove the attribute to go back to the default.
+   Status colors (green / red / amber) stay the same in every palette.
+
+   Available: navy-gold, burgundy-stone, slate-teal, charcoal-copper,
+   royal-purple, forest-sage, ocean-blue, midnight-rose, espresso-cream,
+   graphite
+   ========================================================================== */
+
+/* Navy + gold */
+[data-theme="navy-gold"] {
+    --ft-ink: #14213d;
+    --ft-ink-soft: #22345c;
+    --ft-accent: #c9a227;
+    --ft-accent-dark: #a0801c;
+    --ft-accent-ring: rgba(201, 162, 39, 0.26);
+    --ft-mist: #f5f6f9;
+    --ft-line: #e2e5ec;
+    --ft-border: #d5d9e3;
+    --ft-row-hover: #fafbfd;
+    --ft-text: #232a3b;
+    --ft-muted: #697189;
+    --ft-shadow: rgba(20, 33, 61, 0.3);
+    --ft-disabled: #9aa3b5;
+}
+
+/* Burgundy + stone */
+[data-theme="burgundy-stone"] {
+    --ft-ink: #4a1420;
+    --ft-ink-soft: #661c2c;
+    --ft-accent: #b8956a;
+    --ft-accent-dark: #946f45;
+    --ft-accent-ring: rgba(184, 149, 106, 0.26);
+    --ft-mist: #f8f5f2;
+    --ft-line: #ebe4de;
+    --ft-border: #ddd3cb;
+    --ft-row-hover: #fcfaf8;
+    --ft-text: #342a2c;
+    --ft-muted: #7a6b6e;
+    --ft-shadow: rgba(74, 20, 32, 0.3);
+    --ft-disabled: #b0a2a4;
+}
+
+/* Slate + teal */
+[data-theme="slate-teal"] {
+    --ft-ink: #1f2f3d;
+    --ft-ink-soft: #2c4256;
+    --ft-accent: #2a9d8f;
+    --ft-accent-dark: #1f7a6f;
+    --ft-accent-ring: rgba(42, 157, 143, 0.26);
+    --ft-mist: #f4f7f8;
+    --ft-line: #e1e8eb;
+    --ft-border: #d3dde1;
+    --ft-row-hover: #f9fbfb;
+    --ft-text: #26323b;
+    --ft-muted: #66767f;
+    --ft-shadow: rgba(31, 47, 61, 0.3);
+    --ft-disabled: #9aaab2;
+}
+
+/* Charcoal + copper */
+[data-theme="charcoal-copper"] {
+    --ft-ink: #26262b;
+    --ft-ink-soft: #3a3a41;
+    --ft-accent: #b87333;
+    --ft-accent-dark: #965a24;
+    --ft-accent-ring: rgba(184, 115, 51, 0.26);
+    --ft-mist: #f6f5f3;
+    --ft-line: #e6e3df;
+    --ft-border: #d8d4ce;
+    --ft-row-hover: #fbfaf9;
+    --ft-text: #2c2b2e;
+    --ft-muted: #6f6c70;
+    --ft-shadow: rgba(38, 38, 43, 0.3);
+    --ft-disabled: #a5a2a6;
+}
+
+/* Royal purple + gold */
+[data-theme="royal-purple"] {
+    --ft-ink: #2e1f5e;
+    --ft-ink-soft: #44317f;
+    --ft-accent: #d4a84b;
+    --ft-accent-dark: #a8832f;
+    --ft-accent-ring: rgba(212, 168, 75, 0.26);
+    --ft-mist: #f7f6fb;
+    --ft-line: #e6e3f0;
+    --ft-border: #d9d5e8;
+    --ft-row-hover: #fbfafd;
+    --ft-text: #2a2540;
+    --ft-muted: #6e6a85;
+    --ft-shadow: rgba(46, 31, 94, 0.3);
+    --ft-disabled: #a8a4bd;
+}
+
+/* Forest + sage */
+[data-theme="forest-sage"] {
+    --ft-ink: #1e3a2b;
+    --ft-ink-soft: #2c5740;
+    --ft-accent: #8a9a5b;
+    --ft-accent-dark: #6c7a43;
+    --ft-accent-ring: rgba(138, 154, 91, 0.26);
+    --ft-mist: #f5f7f2;
+    --ft-line: #e2e7dc;
+    --ft-border: #d4dccb;
+    --ft-row-hover: #fafbf8;
+    --ft-text: #263229;
+    --ft-muted: #667563;
+    --ft-shadow: rgba(30, 58, 43, 0.3);
+    --ft-disabled: #9aa896;
+}
+
+/* Ocean blue + sky */
+[data-theme="ocean-blue"] {
+    --ft-ink: #0b3c5d;
+    --ft-ink-soft: #14577f;
+    --ft-accent: #328cc1;
+    --ft-accent-dark: #226a95;
+    --ft-accent-ring: rgba(50, 140, 193, 0.26);
+    --ft-mist: #f3f7fa;
+    --ft-line: #dfe8ee;
+    --ft-border: #d0dde6;
+    --ft-row-hover: #f9fbfd;
+    --ft-text: #20313d;
+    --ft-muted: #627584;
+    --ft-shadow: rgba(11, 60, 93, 0.3);
+    --ft-disabled: #9bb0bd;
+}
+
+/* Midnight + rose */
+[data-theme="midnight-rose"] {
+    --ft-ink: #1d1b2f;
+    --ft-ink-soft: #2f2c4a;
+    --ft-accent: #c9707f;
+    --ft-accent-dark: #a4535f;
+    --ft-accent-ring: rgba(201, 112, 127, 0.26);
+    --ft-mist: #f7f5f7;
+    --ft-line: #e8e3e8;
+    --ft-border: #dbd4db;
+    --ft-row-hover: #fbfafb;
+    --ft-text: #2a2833;
+    --ft-muted: #706c7b;
+    --ft-shadow: rgba(29, 27, 47, 0.3);
+    --ft-disabled: #aaa6b4;
+}
+
+/* Espresso + cream */
+[data-theme="espresso-cream"] {
+    --ft-ink: #3b2a20;
+    --ft-ink-soft: #55402f;
+    --ft-accent: #c19a6b;
+    --ft-accent-dark: #9a774c;
+    --ft-accent-ring: rgba(193, 154, 107, 0.26);
+    --ft-mist: #f8f4ee;
+    --ft-line: #eae2d6;
+    --ft-border: #ddd2c3;
+    --ft-row-hover: #fcfaf6;
+    --ft-text: #33291f;
+    --ft-muted: #7a6b5b;
+    --ft-shadow: rgba(59, 42, 32, 0.3);
+    --ft-disabled: #b3a595;
+}
+
+/* Graphite (minimal, neutral) */
+[data-theme="graphite"] {
+    --ft-ink: #111827;
+    --ft-ink-soft: #1f2937;
+    --ft-accent: #6b7280;
+    --ft-accent-dark: #4b5563;
+    --ft-accent-ring: rgba(107, 114, 128, 0.26);
+    --ft-mist: #f6f7f8;
+    --ft-line: #e5e7eb;
+    --ft-border: #d1d5db;
+    --ft-row-hover: #fafafa;
+    --ft-text: #1f2937;
+    --ft-muted: #6b7280;
+    --ft-shadow: rgba(17, 24, 39, 0.3);
+    --ft-disabled: #9ca3af;
+}
+
+/* Card ------------------------------------------------------------------- */
+.ft-card {
+    background: var(--ft-surface);
+    border: 1px solid var(--ft-line);
+    border-radius: 12px;
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.04),
+        0 14px 34px -20px var(--ft-shadow);
+    overflow: hidden;
+}
+
+.ft-card-head {
+    background: var(--ft-ink);
+    color: var(--ft-on-ink);
+    padding: 1.5rem 2rem;
+    border-bottom: 3px solid var(--ft-accent);
+}
+
+.ft-card-head h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.ft-card-head p {
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    color: var(--ft-on-ink-muted);
+}
+
+.ft-body {
+    padding: 2rem;
+    color: var(--ft-text);
+}
+
+.ft-divider {
+    border-top: 1px solid var(--ft-line);
+}
+
+/* Info tiles ------------------------------------------------------------- */
+.ft-eyebrow {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ft-muted);
+}
+
+.ft-info {
+    background: var(--ft-mist);
+    border-left: 3px solid var(--ft-accent);
+    border-radius: 4px;
+    padding: 0.85rem 1rem;
+}
+
+.ft-info-value {
+    margin-top: 0.2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ft-ink);
+}
+
+/* Section titles --------------------------------------------------------- */
+.ft-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 2rem 0 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ft-ink);
+}
+
+.ft-section-title::before {
+    content: "";
+    width: 18px;
+    height: 2px;
+    background: var(--ft-accent);
+}
+
+/* Fields ----------------------------------------------------------------- */
+.ft-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--ft-text);
+}
+
+.ft-field {
+    width: 100%;
+    background: var(--ft-surface);
+    border: 1px solid var(--ft-border);
+    border-radius: 6px;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.75rem;
+    color: var(--ft-text);
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+}
+
+.ft-field:focus {
+    outline: none;
+    border-color: var(--ft-ink);
+    box-shadow: 0 0 0 3px var(--ft-accent-ring);
+}
+
+.ft-field[readonly] {
+    background: var(--ft-mist);
+    color: var(--ft-muted);
+}
+
+.ft-field-plain {
+    border-color: transparent;
+    background: transparent;
+    font-weight: 600;
+    color: var(--ft-ink);
+}
+
+/* Tables ----------------------------------------------------------------- */
+.ft-table-wrap {
+    border: 1px solid var(--ft-line);
+    border-radius: 10px;
+    overflow-x: auto;
+}
+
+.ft-table {
+    width: 100%;
+    min-width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+}
+
+.ft-table thead th {
+    background: var(--ft-mist);
+    color: var(--ft-ink);
+    padding: 0.8rem 1rem;
+    text-align: left;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--ft-line);
+}
+
+.ft-table tbody td {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--ft-line);
+}
+
+.ft-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+.ft-table tbody tr:hover {
+    background: var(--ft-row-hover);
+}
+
+.ft-empty {
+    text-align: center;
+    color: var(--ft-muted);
+    padding: 1.5rem 1rem !important;
+}
+
+/* Badges ----------------------------------------------------------------- */
+.ft-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 600;
+}
+
+.ft-badge-ok {
+    background: var(--ft-success-bg);
+    color: var(--ft-success-text);
+}
+.ft-badge-no {
+    background: var(--ft-danger-bg);
+    color: var(--ft-danger-text);
+}
+.ft-badge-na {
+    background: var(--ft-neutral-bg);
+    color: var(--ft-neutral-text);
+}
+
+/* Status select (color follows data-status) ------------------------------ */
+.ft-status {
+    width: 100%;
+    border: 1px solid var(--ft-border);
+    border-radius: 6px;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    transition:
+        background 0.15s,
+        border-color 0.15s,
+        color 0.15s;
+}
+
+.ft-status:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ft-accent-ring);
+}
+
+.ft-status[data-status="0"] {
+    background: var(--ft-warning-bg);
+    border-color: var(--ft-warning-border);
+    color: var(--ft-warning-text);
+}
+.ft-status[data-status="1"] {
+    background: var(--ft-success-bg);
+    border-color: var(--ft-success-border);
+    color: var(--ft-success-text);
+}
+.ft-status[data-status="2"] {
+    background: var(--ft-orange-bg);
+    border-color: var(--ft-orange-border);
+    color: var(--ft-orange-text);
+}
+.ft-status[data-status="3"] {
+    background: var(--ft-danger-bg);
+    border-color: var(--ft-danger-border);
+    color: var(--ft-danger-text);
+}
+
+.ft-status option {
+    background: var(--ft-surface);
+    color: var(--ft-text);
+    font-weight: 400;
+}
+
+/* Alerts ----------------------------------------------------------------- */
+.ft-alert {
+    border-left: 4px solid;
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+}
+
+.ft-alert-error {
+    background: var(--ft-danger-bg);
+    border-color: var(--ft-danger-solid);
+    color: var(--ft-danger-text);
+}
+.ft-alert-success {
+    background: var(--ft-success-bg);
+    border-color: var(--ft-success-solid);
+    color: var(--ft-success-text);
+}
+
+/* Buttons ---------------------------------------------------------------- */
+.ft-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition:
+        background 0.15s,
+        border-color 0.15s;
+}
+
+.ft-btn:focus-visible {
+    outline: 2px solid var(--ft-accent);
+    outline-offset: 2px;
+}
+
+.ft-btn-ghost {
+    color: var(--ft-ink);
+    background: var(--ft-surface);
+    border: 1px solid var(--ft-border);
+}
+
+.ft-btn-ghost:hover {
+    background: var(--ft-mist);
+    border-color: var(--ft-ink);
+}
+
+.ft-btn-primary {
+    color: var(--ft-on-ink);
+    background: var(--ft-ink);
+    border: 1px solid var(--ft-ink);
+}
+
+.ft-btn-primary:hover {
+    background: var(--ft-ink-soft);
+}
+
+.ft-btn-primary:disabled {
+    background: var(--ft-disabled);
+    border-color: var(--ft-disabled);
+    cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ft-page * {
+        transition: none !important;
+    }
+}
