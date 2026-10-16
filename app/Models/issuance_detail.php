@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\issuance_header;
 use App\Models\supplies;
-use App\Models\Uom;
+use App\Models\uom;
 
 class issuance_detail extends Model
 {
@@ -32,6 +32,6 @@ class issuance_detail extends Model
 
     public function uom()
     {
-        return $this->belongsTo(Uom::class, 'uom_id');
+        return $this->belongsTo(uom::class, 'uom_id');
     }
 }
