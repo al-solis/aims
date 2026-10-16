@@ -37,7 +37,8 @@
                         class="py-1.5 px-2.5 flex flex-col items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700 hover:bg-gray-200">
                         @php($imgSrc = $sm->img ?: $sm->src)
                         @if ($imgSrc)
-                            <img width="48" height="48" src="{{ $imgSrc }}" alt="{{ $sm->name }}" />
+                            {{-- <img width="48" height="48" src="{{ $imgSrc }}" alt="{{ $sm->name }}" /> --}}
+                            <img width="48" height="48" src="{{ asset($imgSrc) }}" alt="{{ $sm->name }}" />
                         @elseif ($sm->icon)
                             <i class="{{ $sm->icon }}" style="font-size: 48px; line-height: 48px;"></i>
                         @endif
