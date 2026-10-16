@@ -7,7 +7,7 @@ use App\Models\SuppliesCategory;
 use App\Models\Uom;
 use App\Models\supplier;
 
-class Supplies extends Model
+class supplies extends Model
 {
     protected $table = 'supplies';
 

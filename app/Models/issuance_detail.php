@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\issuance_header;
-use App\Models\Supplies;
+use App\Models\supplies;
 use App\Models\Uom;
 
 class issuance_detail extends Model

@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\employee;
+use App\Models\location as Location;
+use App\Models\issuance_detail;
 
 class issuance_header extends Model
 {
