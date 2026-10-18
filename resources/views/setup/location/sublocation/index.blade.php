@@ -237,14 +237,16 @@
                             <div class="w-full md:col-span-1">
                                 <label for="code"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Code*</label>
-                                <input type="text" name="code" id="code"
+                                <input type="text" name="code" id="code" minlength="1" maxlength="15"
+                                    pattern="[A-Za-z0-9\-]+" title="Code can only contain letters, numbers, and hyphens"
+                                    oninput="this.value = this.value.replace(/[^A-Za-z0-9\-]/g, '')"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. HQ-MAIN-REC" required>
                             </div>
                             <div class="w-full md:col-span-2">
                                 <label for="name"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                                <input type="text" name="name" id="name"
+                                <input type="text" name="name" id="name" maxlength="60"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. Ground Floor - Reception" required>
                             </div>
@@ -252,7 +254,7 @@
                         <div class="sm:col-span-2">
                             <label for="description"
                                 class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                            <textarea type="text" name="description" id="description" rows="3"
+                            <textarea type="text" name="description" id="description" rows="3" maxlength="150"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                 placeholder="Location description"></textarea>
                         </div>
@@ -322,14 +324,16 @@
                             <div class="w-full md:col-span-1">
                                 <label for="edit_code"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Code*</label>
-                                <input type="text" name="edit_code" id="edit_code"
+                                <input type="text" name="edit_code" id="edit_code" minlength="1" maxlength="15"
+                                    pattern="[A-Za-z0-9\-]+" title="Code can only contain letters, numbers, and hyphens"
+                                    oninput="this.value = this.value.replace(/[^A-Za-z0-9\-]/g, '')"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. HQ-MAIN-REC" required>
                             </div>
                             <div class="w-full md:col-span-2">
                                 <label for="edit_name"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                                <input type="text" name="edit_name" id="edit_name"
+                                <input type="text" name="edit_name" id="edit_name" maxlength="60"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. Ground Floor - Reception" required>
                             </div>
@@ -337,7 +341,7 @@
                         <div class="sm:col-span-2">
                             <label for="edit_description"
                                 class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                            <textarea type="text" name="edit_description" id="edit_description" rows="3"
+                            <textarea type="text" name="edit_description" id="edit_description" rows="3" maxlength="150"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                 placeholder="Location description"></textarea>
                         </div>

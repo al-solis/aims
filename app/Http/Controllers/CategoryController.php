@@ -41,8 +41,8 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:50',
-            'description' => 'nullable|string|max:255',
+            'name' => 'required|string|max:60',
+            'description' => 'nullable|string|max:150',
             'asset_code' => 'required|string|max:10',
         ]);
 
@@ -61,7 +61,7 @@ class CategoryController extends Controller
     {
         $request->validate([
             'edit_name' => 'required|string|max:50',
-            'edit_description' => 'nullable|string|max:255',
+            'edit_description' => 'nullable|string|max:150',
             'edit_asset_code' => 'required|string|max:10',
         ]);
 

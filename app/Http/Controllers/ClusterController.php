@@ -38,8 +38,8 @@ class ClusterController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:50',
-            'description' => 'nullable|string|max:255',
+            'name' => 'required|string|max:60',
+            'description' => 'nullable|string|max:150',
         ]);
 
         cluster::create([
@@ -55,8 +55,8 @@ class ClusterController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'edit_name' => 'required|string|max:50',
-            'edit_description' => 'nullable|string|max:255',
+            'edit_name' => 'required|string|max:60',
+            'edit_description' => 'nullable|string|max:150',
         ]);
 
         $docType = cluster::findOrFail($id);

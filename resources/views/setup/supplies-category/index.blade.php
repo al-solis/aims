@@ -233,14 +233,14 @@
                             <div class="sm:col-span-2">
                                 <label for="name"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                                <input type="text" name="name" id="name"
+                                <input type="text" name="name" id="name" maxlength="50"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. Office Supplies" required>
                             </div>
                             <div class="sm:col-span-2">
                                 <label for="description"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                <textarea type="text" name="description" id="description" rows="3"
+                                <textarea type="text" name="description" id="description" rows="3" maxlength="150"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="Category description"></textarea>
                             </div>
@@ -249,7 +249,7 @@
                                 <label for="supplies_code"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Supplies
                                     Code*</label>
-                                <input type="text" name="supplies_code" id="supplies_code"
+                                <input type="text" name="supplies_code" id="supplies_code" maxlength="10"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. SUP" required>
                             </div>
@@ -316,21 +316,21 @@
                             <div class="sm:col-span-2">
                                 <label for="edit_name"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                                <input type="text" name="edit_name" id="edit_name"
+                                <input type="text" name="edit_name" id="edit_name" maxlength="50"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. Office Supplies" required>
                             </div>
                             <div class="sm:col-span-2">
                                 <label for="edit_description"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                <textarea type="text" name="edit_description" id="edit_description" rows="3"
+                                <textarea type="text" name="edit_description" id="edit_description" rows="3" maxlength="150"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="Supplies category description"></textarea>
                             </div>
                             <div class="sm:col-span-1">
                                 <label for="edit_supplies_code"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Supplies Code*</label>
-                                <input type="text" name="edit_supplies_code" id="edit_supplies_code"
+                                <input type="text" name="edit_supplies_code" id="edit_supplies_code" maxlength="10"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. SUP" required>
                             </div>

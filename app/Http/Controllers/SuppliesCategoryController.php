@@ -40,7 +40,7 @@ class SuppliesCategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:50',
-            'description' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:150',
             'supplies_code' => 'required|string|max:10',
         ]);
 
@@ -59,7 +59,7 @@ class SuppliesCategoryController extends Controller
     {
         $request->validate([
             'edit_name' => 'required|string|max:50',
-            'edit_description' => 'nullable|string|max:255',
+            'edit_description' => 'nullable|string|max:150',
             'edit_supplies_code' => 'required|string|max:10',
         ]);
 

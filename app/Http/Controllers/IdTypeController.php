@@ -39,7 +39,7 @@ class IdTypeController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:50',
-            'description' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:150',
         ]);
 
         IdType::create([
@@ -56,7 +56,7 @@ class IdTypeController extends Controller
     {
         $request->validate([
             'edit_name' => 'required|string|max:50',
-            'edit_description' => 'nullable|string|max:255',
+            'edit_description' => 'nullable|string|max:150',
         ]);
 
         $idType = IdType::findOrFail($id);

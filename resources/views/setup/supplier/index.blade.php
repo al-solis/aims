@@ -240,7 +240,7 @@
                             <div class="sm:col-span-2">
                                 <label for="name"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                                <input type="text" name="name" id="name"
+                                <input type="text" name="name" id="name" maxlength="150"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. ABC Company" required>
                             </div>
@@ -248,7 +248,7 @@
                             <div class="sm:col-span-2">
                                 <label for="contact_person"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Contact Person</label>
-                                <input type="text" name="contact_person" id="contact_person"
+                                <input type="text" name="contact_person" id="contact_person" maxlength="50"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. Juan Dela Cruz">
                             </div>
@@ -256,7 +256,7 @@
                             <div class="sm:col-span-1">
                                 <label for="contact_number"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Telephone</label>
-                                <input type="tel" name="contact_number" id="contact_number"
+                                <input type="tel" name="contact_number" id="contact_number" maxlength="20"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. 09123456789">
                             </div>
@@ -264,7 +264,9 @@
                             <div class="sm:col-span-1">
                                 <label for="contact_email"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Email</label>
-                                <input type="email" name="contact_email" id="contact_email"
+                                <input type="email" name="contact_email" id="contact_email" maxlength="50"
+                                    pattern="[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}"
+                                    title="Enter a valid email address, e.g. juandelacruz@yahoo.com"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. juandelacruz@yahoo.com">
                             </div>
@@ -272,7 +274,7 @@
                             <div class="sm:col-span-2">
                                 <label for="address"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Address</label>
-                                <textarea type="text" name="address" id="address" rows="3"
+                                <textarea type="text" name="address" id="address" rows="3" maxlength="255"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="Supplier address"></textarea>
                             </div>
@@ -340,7 +342,7 @@
                             <div class="sm:col-span-2">
                                 <label for="edit_name"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                                <input type="text" name="edit_name" id="edit_name"
+                                <input type="text" name="edit_name" id="edit_name" maxlength="150"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. ABC Company" required>
                             </div>
@@ -348,7 +350,7 @@
                             <div class="sm:col-span-2">
                                 <label for="edit_contact_person"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Contact Person</label>
-                                <input type="text" name="edit_contact_person" id="edit_contact_person"
+                                <input type="text" name="edit_contact_person" id="edit_contact_person" maxlength="50"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. Juan Dela Cruz">
                             </div>
@@ -356,7 +358,7 @@
                             <div class="sm:col-span-1">
                                 <label for="edit_contact_number"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Telephone</label>
-                                <input type="tel" name="edit_contact_number" id="edit_contact_number"
+                                <input type="tel" name="edit_contact_number" id="edit_contact_number" maxlength="20"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. 09123456789">
                             </div>
@@ -364,7 +366,9 @@
                             <div class="sm:col-span-1">
                                 <label for="edit_contact_email"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Email</label>
-                                <input type="email" name="edit_contact_email" id="edit_contact_email"
+                                <input type="email" name="edit_contact_email" id="edit_contact_email" maxlength="50"
+                                    pattern="[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}"
+                                    title="Enter a valid email address, e.g. juandelacruz@yahoo.com"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. juandelacruz@yahoo.com">
                             </div>

@@ -44,11 +44,11 @@ class SupplierController extends Controller
     {
 
         $request->validate([
-            'name' => 'required|string|max:100',
+            'name' => 'required|string|max:150',
             'address' => 'nullable|string|max:255',
-            'contact_person' => 'nullable|string|max:100',
+            'contact_person' => 'nullable|string|max:50',
             'contact_number' => 'nullable|string|max:20',
-            'email' => 'nullable|string|email|max:100',
+            'email' => 'nullable|string|email|max:50',
         ]);
 
         Supplier::create([
@@ -68,10 +68,10 @@ class SupplierController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'edit_name' => 'required|string|max:100',
-            'edit_contact_person' => 'nullable|string|max:100',
+            'edit_name' => 'required|string|max:150',
+            'edit_contact_person' => 'nullable|string|max:50',
             'edit_contact_number' => 'nullable|string|max:20',
-            'edit_contact_email' => 'nullable|string|email|max:100',
+            'edit_contact_email' => 'nullable|string|email|max:50',
             'edit_address' => 'nullable|string|max:255',
             'edit_status' => 'required|boolean',
         ]);

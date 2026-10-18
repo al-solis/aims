@@ -42,8 +42,8 @@ class UomController extends Controller
         $baseUom = UOM::pluck('code')->implode(',');
         // dd($baseUom);
         $request->validate([
-            'name' => 'required|string|max:100',
-            'code' => 'nullable|string|max:20|unique:uoms,code',
+            'name' => 'required|string|max:20',
+            'code' => 'nullable|string|max:10|unique:uoms,code',
             'base_uom' => 'required|string|in:' . $baseUom,
             'conversion_factor' => 'required|numeric|min:0',
         ]);
@@ -64,8 +64,8 @@ class UomController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'edit_name' => 'required|string|max:100',
-            'edit_code' => 'nullable|string|max:20|unique:uoms,code,' . $id,
+            'edit_name' => 'required|string|max:20',
+            'edit_code' => 'nullable|string|max:10|unique:uoms,code,' . $id,
             'edit_conversion_factor' => 'required|numeric|min:0',
             'edit_base_uom' => 'required|string|max:10',
         ]);

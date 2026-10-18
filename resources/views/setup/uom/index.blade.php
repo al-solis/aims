@@ -234,14 +234,14 @@
                             <div class="sm:col-span-2">
                                 <label for="name"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                                <input type="text" name="name" id="name"
+                                <input type="text" name="name" id="name" maxlength="20"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. Pack" required>
                             </div>
                             <div class="sm:col-span-1">
                                 <label for="code"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Code*</label>
-                                <input type="text" name="code" id="code"
+                                <input type="text" name="code" id="code" maxlength="10"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. PK" required>
                             </div>
@@ -250,7 +250,8 @@
                                 <label for="conversion_factor"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Conversion
                                     Factor*</label>
-                                <input type="number" name="conversion_factor" id="conversion_factor"
+                                <input type="number" name="conversion_factor" id="conversion_factor" min="0.01"
+                                    step="0.01"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. 12" required>
                             </div>
@@ -258,7 +259,7 @@
                             <div class="md:col-span-1">
                                 <label for="base_uom" class="block text-xs font-medium text-gray-900 dark:text-white">Base
                                     UOM*</label>
-                                <input type="text" name="base_uom" id="base_uom"
+                                <input type="text" name="base_uom" id="base_uom" maxlength="10"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. PC" required>
                             </div>
@@ -326,14 +327,14 @@
                             <div class="sm:col-span-2">
                                 <label for="edit_name"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                                <input type="text" name="edit_name" id="edit_name"
+                                <input type="text" name="edit_name" id="edit_name" maxlength="20"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. Pack" required>
                             </div>
                             <div class="sm:col-span-1">
                                 <label for="edit_code"
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Code*</label>
-                                <input type="text" name="edit_code" id="edit_code"
+                                <input type="text" name="edit_code" id="edit_code" maxlength="10"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. PK" required>
                             </div>
@@ -343,6 +344,7 @@
                                     class="block text-xs font-medium text-gray-900 dark:text-white">Conversion
                                     Factor*</label>
                                 <input type="number" name="edit_conversion_factor" id="edit_conversion_factor"
+                                    min="0.01" step = "0.01"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. 12" required>
                             </div>
@@ -350,7 +352,7 @@
                             <div class="md:col-span-1">
                                 <label for="base_uom" class="block text-xs font-medium text-gray-900 dark:text-white">Base
                                     UOM*</label>
-                                <input type="text" name="edit_base_uom" id="edit_base_uom"
+                                <input type="text" name="edit_base_uom" id="edit_base_uom" maxlength="10"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                                     placeholder="e.g. PC" required>
                             </div>

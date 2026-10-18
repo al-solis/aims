@@ -54,7 +54,7 @@ class SublocationController extends Controller
             'location_id' => 'required|exists:locations,id',
             'code' => 'required|string|max:15|unique:sublocations,code',
             'name' => 'required|string|max:60',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:150',
             'status' => 'required|integer|in:0,1,2',
         ]);
 
@@ -77,7 +77,7 @@ class SublocationController extends Controller
         $request->validate([
             'edit_code' => 'required|string|max:15|unique:sublocations,code,' . $sublocation->id,
             'edit_name' => 'required|string|max:60',
-            'edit_description' => 'nullable|string',
+            'edit_description' => 'nullable|string|max:150',
             'edit_status' => 'required|integer|in:0,1,2',
         ]);
 

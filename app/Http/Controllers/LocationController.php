@@ -58,8 +58,8 @@ class LocationController extends Controller
             'cluster' => 'required|exists:clusters,id',
             'code' => 'required|string|max:15|unique:locations,code',
             'name' => 'required|string|max:60',
-            'description' => 'nullable|string',
-            'address' => 'nullable|string',
+            'description' => 'nullable|string|max:150',
+            'address' => 'nullable|string|max:255',
             'contact_number' => 'nullable|string|max:20',
             'status' => 'required|integer|in:0,1,2',
         ]);
@@ -85,8 +85,8 @@ class LocationController extends Controller
         $request->validate([
             'edit_code' => 'required|string|max:15|unique:locations,code,' . $location->id,
             'edit_name' => 'required|string|max:60',
-            'edit_description' => 'nullable|string',
-            'edit_address' => 'nullable|string',
+            'edit_description' => 'nullable|string|max:150',
+            'edit_address' => 'nullable|string|max:255',
             'edit_contact_number' => 'nullable|string|max:20',
             'edit_cluster' => 'required|exists:clusters,id',
             'edit_status' => 'required|integer|in:0,1,2',
