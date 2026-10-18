@@ -3,224 +3,191 @@
     @php
         use Carbon\Carbon;
     @endphp
-    <div class="max-w-3xl px-4 py-10 sm:px-6 lg:px-8 lg:py-6 mx-auto">
+    <div class="ft-page max-w-4xl px-4 py-10 sm:px-6 lg:px-8 lg:py-6 mx-auto">
+
         @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 pt-1">
-                <ul>
+            <div class="ft-alert ft-alert-error mb-4">
+                <ul class="list-disc list-inside">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
             </div>
         @elseif (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 pt-1"
-                data-success="true">
-                {{ session('success') }}
+            <div class="ft-alert ft-alert-success flex items-center justify-between mb-4" data-success="true">
+                <div class="flex items-center gap-2">
+                    <svg class="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    {{ session('success') }}
+                </div>
             </div>
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Clear form fields after successful submission
                     clearModalFields();
                 });
             </script>
         @endif
 
-        <div class="bg-white rounded-xl shadow-xs p-3 sm:p-8">
-            <div class="text-center mb-4">
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-800">
-                    Odometer Readings
-                </h2>
-                <p class="text-sm text-gray-600">
-                    Display vehicle odometer reading details.
-                </p>
+        <div class="ft-card">
+            <div class="ft-card-head">
+                <div class="text-center">
+                    <h1 class="text-2xl md:text-3xl font-bold" style="color: var(--ft-on-ink);">Odometer Readings</h1>
+                    <p class="text-sm mt-1" style="color: var(--ft-on-ink-muted);">Display vehicle odometer reading details.
+                    </p>
+                </div>
             </div>
-            <hr style="border: 0; height: 1px; background-color: #ccc; margin: 10px 0;">
 
-            <div class="mt-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div class="ft-body space-y-6">
+
+                {{-- Asset Info --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4 border-b" style="border-color: var(--ft-line);">
                     <div>
-                        <p class="text-sm font-medium text-gray-600">Asset Code</p>
-                        <p class="text-lg font-semibold text-gray-800">
+                        <p class="ft-eyebrow">Asset Code</p>
+                        <p class="text-lg font-semibold mt-1" style="color: var(--ft-ink);">
                             {{ $asset->asset_code ?? 'N/A' }}
                         </p>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-600">Asset Name</p>
-                        <p class="text-lg font-semibold text-gray-800">
+                        <p class="ft-eyebrow">Asset Name</p>
+                        <p class="text-lg font-semibold mt-1" style="color: var(--ft-ink);">
                             {{ $asset->name ?? 'N/A' }}
                         </p>
                     </div>
                 </div>
-            </div>
 
-            <form action="" method="POST" id="odometerForm">
-                @csrf
-                @method('PUT')
-                <div class="grid ml-1 mr-1 mt-2 gap-2 mb-2 sm:grid-cols-2">
-                    <div class="sm:col-span-1">
-                        <label for="employee_id"
-                            class="select2 block text-xs font-medium text-gray-900 dark:text-white">Employee*</label>
-                        <select id="employee_id" name="employee_id"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                            <option value = "0" selected>Select employee</option>
-                            @foreach ($employees as $employee)
-                                <option value="{{ $employee->id }}">{{ $employee->last_name }},
-                                    {{ $employee->first_name }} {{ $employee->middle_name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                {{-- Form --}}
+                <form action="" method="POST" id="odometerForm">
+                    @csrf
+                    @method('PUT')
 
-                    <div class="sm:col-span-1">
-                        <label for="date" class="block text-xs font-medium text-gray-900 dark:text-white">Date*</label>
-                        <input type="date" name="date" id="date" max="{{ now()->format('Y-m-d') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"></input>
-                    </div>
-
-                    <div class="sm:col-span-1">
-                        <label for="reading_from" class="block text-xs font-medium text-gray-900 dark:text-white">Reading
-                            From*</label>
-                        <input type="number" name="reading_from" id="reading_from" min="0"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"></input>
-                    </div>
-
-                    <div class="sm:col-span-1">
-                        <label for="reading_to" class="block text-xs font-medium text-gray-900 dark:text-white">Reading
-                            To*</label>
-                        <input type="number" name="reading_to" id="reading_to" min="0"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"></input>
-                    </div>
-
-                    <div class="sm:col-span-2">
-                        <label for="remarks"
-                            class="block text-xs font-medium text-gray-900 dark:text-white">Remarks</label>
-                        <textarea name="remarks" id="remarks" rows="3"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                            placeholder="Provide travel details, etc."></textarea>
-                    </div>
-
-                    @if ($asset->canBeTransferred())
-                        <div class="sm:col-span-2">
-                            <button id="add-odometer-btn" type="button"
-                                class="mt-2 h-fit text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-xs px-4 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                                Add Odometer
-                            </button>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div class="sm:col-span-1">
+                            <label for="employee_id" class="ft-label">Employee <span class="text-red-600">*</span></label>
+                            <select id="employee_id" name="employee_id" class="ft-field select2">
+                                <option value="0" selected>Select employee</option>
+                                @foreach ($employees as $employee)
+                                    <option value="{{ $employee->id }}">
+                                        {{ $employee->last_name }}, {{ $employee->first_name }} {{ $employee->middle_name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
-                    @else
-                        <div class="sm:col-span-2">
-                            <button id="add-odometer-btn" type="button"
-                                class="mt-2 h-fit text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-xs px-4 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800
-                                cursor-not-allowed opacity-50"
-                                disabled>
-                                Add Odometer
-                            </button>
+
+                        <div class="sm:col-span-1">
+                            <label for="date" class="ft-label">Date <span class="text-red-600">*</span></label>
+                            <input type="date" name="date" id="date" max="{{ now()->format('Y-m-d') }}"
+                                class="ft-field">
                         </div>
-                    @endif
-                </div>
-                <hr style="border: 0; height: 1px; background-color: #ccc; margin: 10px 0;">
-                <div class="mt-5 flex justify-end gap-x-2">
-                    <a href="{{ route('asset.index') }}" type="button" id="closeButton"
-                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 ">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        Back
-                    </a>
 
-                    <button type="button" data-modal-target="print-modal" data-modal-toggle="print-modal"
-                        class="py-1.5 sm:py-2 px-3 inline-flex items-center gap-x-2 border text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-printer" viewBox="0 0 16 16">
-                            <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1" />
-                            <path
-                                d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1" />
-                        </svg>
-                        Print
-                    </button>
-                </div>
+                        <div class="sm:col-span-1">
+                            <label for="reading_from" class="ft-label">Reading From <span
+                                    class="text-red-600">*</span></label>
+                            <input type="number" name="reading_from" id="reading_from" min="0" class="ft-field">
+                        </div>
 
-                <h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">Odometer</h3>
-                <div class="bg-white border rounded-xl overflow-x-auto overflow-y-auto md:overflow-visible scroll-smooth">
-                    <table class="min-w-full text-xs">
-                        <thead class="bg-gray-200 text-gray-600">
-                            <tr class="rounded-xl">
-                                <th class="px-4 py-3 text-left w-[120px]">Date</th>
-                                <th class="px-4 py-3 text-left w-[120px]">Employee</th>
-                                <th class="px-4 py-3 text-left w-[200px]">Remarks</th>
-                                <th class="px-4 py-3 text-left w-[100px]">From</th>
-                                <th class="px-4 py-3 text-left w-[100px]">To</th>
-                                <th class="px-4 py-3 text-left w-[140px]">Action</th>
-                            </tr>
-                        </thead>
+                        <div class="sm:col-span-1">
+                            <label for="reading_to" class="ft-label">Reading To <span class="text-red-600">*</span></label>
+                            <input type="number" name="reading_to" id="reading_to" min="0" class="ft-field">
+                        </div>
 
-                        <tbody id="odoBody" class="divide-y">
-                            {{-- @foreach ($odometerReadings as $detail)
-                                <tr class="hover:bg-gray-50">
-                                    <input type="hidden" name="odometer_id[]" value="{{ $detail->id }}">
+                        <div class="sm:col-span-2">
+                            <label for="remarks" class="ft-label">Remarks</label>
+                            <textarea name="remarks" id="remarks" rows="3" class="ft-field" placeholder="Provide travel details, etc."></textarea>
+                        </div>
 
-                                    <td class="px-4 py-3 w-[120px]">
-                                        {{ Carbon::parse($detail->date ?? 'N/A')->format('Y-m-d') }}
-                                    </td>
+                        <div class="sm:col-span-2">
+                            @if ($asset->canBeTransferred())
+                                <button id="add-odometer-btn" type="button"
+                                    class="ft-btn ft-btn-primary w-full justify-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Add Odometer
+                                </button>
+                            @else
+                                <button id="add-odometer-btn" type="button"
+                                    class="ft-btn ft-btn-primary w-full justify-center cursor-not-allowed opacity-50"
+                                    disabled>
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Add Odometer
+                                </button>
+                            @endif
+                        </div>
+                    </div>
 
-                                    <td class="px-4 py-3 w-[120px]">
-                                        {{ $detail->employee ? $detail->employee->last_name . ', ' . $detail->employee->first_name . ' ' . $detail->employee->middle_name : 'N/A' }}
-                                    </td>
-                                    <td class="px-4 py-3 w-[200px]">{{ $detail->remarks ?? 'N/A' }}</td>
-                                    <td class="px-4 py-3 w-[100px]">{{ $detail->from_reading ?? 'N/A' }}</td>
-                                    <td class="px-4 py-3 w-[100px]">{{ $detail->to_reading ?? 'N/A' }}</td>
+                    <div class="ft-divider mt-6 pt-6 flex justify-between items-center">
+                        <a href="{{ route('asset.index') }}" class="ft-btn ft-btn-ghost">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 19l-7-7 7-7" />
+                            </svg>
+                            Back
+                        </a>
 
-                                    <td class="px-4 py-2 w-[50px]">
-                                        <div class="flex items-center justify-center space-x-2">
-                                            <button type="button" title="Edit asset: {{ $asset->asset_code }}"
-                                                data-modal-target="edit-modal" data-modal-toggle="edit-modal"
-                                                data-id="{{ $asset->id }}" data-code="{{ $asset->asset_code }}"
-                                                data-name="{{ $asset->name }}" onclick="openEditModal(this)"
-                                                class="group flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+                        <button type="button" data-modal-target="print-modal" data-modal-toggle="print-modal"
+                            class="ft-btn ft-btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="mr-1" viewBox="0 0 16 16">
+                                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1" />
+                                <path
+                                    d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1" />
+                            </svg>
+                            Print
+                        </button>
+                    </div>
+                </form>
 
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                                    <path fill-rule="evenodd"
-                                                        d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                                                </svg>
-                                            </button>
-
-
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                            @if ($odometerReadings->isEmpty())
+                {{-- Table --}}
+                <div class="mt-6">
+                    <h3 class="ft-section-title" style="margin-top: 0;">Odometer History</h3>
+                    <div class="ft-table-wrap">
+                        <table class="ft-table">
+                            <thead>
                                 <tr>
-                                    <td colspan="7" class="px-4 py-3 text-center text-gray-600">
-                                        No odometer readings found.
-                                    </td>
+                                    <th class="w-[120px]">Date</th>
+                                    <th class="w-[180px]">Employee</th>
+                                    <th class="w-[200px]">Remarks</th>
+                                    <th class="text-right w-[100px]">From</th>
+                                    <th class="text-right w-[100px]">To</th>
+                                    <th class="text-center w-[100px]">Actions</th>
                                 </tr>
-                            @endif --}}
-                        </tbody>
-                    </table>
-                    <!-- Pagination Links -->
-                    <div
-                        class="w-full md:w-auto text-xs flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0 mb-2">
+                            </thead>
+                            <tbody id="odoBody">
+                                {{-- Loaded dynamically via JS --}}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {{-- Pagination --}}
+                    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-end text-xs mt-4"
+                        style="color: var(--ft-muted);">
                         {{ $odometerReadings->links() }}
                     </div>
                 </div>
+            </div>
         </div>
     </div>
 
     <!-- Print modal -->
     <div id="print-modal" tabindex="-1" aria-hidden="true"
-        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full bg-black/50 backdrop-blur-sm">
         <div class="relative p-4 w-full max-w-md h-full md:h-auto">
             <!-- Modal content -->
-            <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+            <div class="relative bg-white rounded-xl shadow-lg border border-[var(--ft-line)] sm:p-1">
                 <!-- Modal header -->
-                <div class="flex justify-between items-center pb-4 mb-2 rounded-t border-b sm:mb-5 dark:border-gray-600">
-                    <h3 class="text-md font-semibold text-gray-900 dark:text-white">
+                <div class="flex justify-between items-center p-4 rounded-t border-b border-[var(--ft-line)]">
+                    <h3 class="text-base font-bold text-[var(--ft-ink)]">
                         Print Odometer Details
                     </h3>
                     <button type="button"
-                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center transition-colors"
                         data-modal-toggle="print-modal">
                         <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg">
@@ -232,35 +199,30 @@
                     </button>
                 </div>
                 <!-- Modal body -->
-                <div class="overflow-y-auto max-h-[70vh]">
+                <div class="p-4 overflow-y-auto max-h-[75vh]">
                     <form>
-                        <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-1">
-                            <div class="sm:col-span-1">
-                                <label for="from_date"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">From Date*</label>
-                                <input type="date" name="from_date" id="from_date"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    required>
+                        <div class="grid gap-4 mb-4 sm:grid-cols-1">
+                            <div>
+                                <label for="from_date" class="ft-label">From Date <span
+                                        class="text-red-600">*</span></label>
+                                <input type="date" name="from_date" id="from_date" class="ft-field" required>
                             </div>
 
-                            <div class="sm:col-span-1">
-                                <label for="to_date" class="block text-xs font-medium text-gray-900 dark:text-white">To
-                                    Date*</label>
-                                <input type="date" name="to_date" id="to_date"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    required>
+                            <div>
+                                <label for="to_date" class="ft-label">To Date <span
+                                        class="text-red-600">*</span></label>
+                                <input type="date" name="to_date" id="to_date" class="ft-field" required>
                             </div>
                         </div>
-                        <a href="#" type="button" id="printOdometer"
-                            class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                        <button type="button" id="printOdometer" class="ft-btn ft-btn-primary w-full justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-printer" viewBox="0 0 16 16">
+                                class="mr-1" viewBox="0 0 16 16">
                                 <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1" />
                                 <path
                                     d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1" />
                             </svg>
                             Print
-                        </a>
+                        </button>
                     </form>
                 </div>
             </div>
@@ -297,38 +259,23 @@
             }, 3000);
         }
 
-        function formatDateForInput(dateString) {
-            if (!dateString) return '';
-
-            const date = new Date(dateString);
-            if (isNaN(date)) return '';
-
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-
-            return `${year}-${month}-${day}`;
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
             const successMessage = document.querySelector('[data-success="true"]');
             if (successMessage) {
                 setTimeout(() => {
                     successMessage.remove();
-                }, 3000); // Remove after 3 seconds
+                }, 3000);
             }
 
-            //LOAD ODOMEETER DETAILS TO TABLE
+            // LOAD ODOMETER DETAILS TO TABLE
             const assetId = {{ $asset->id ?? null }};
             if (assetId) {
                 loadOdometerReadings(assetId);
             }
-
         });
 
         function resetForm() {
-
-            document.getElementById('employee_id').value = '';
+            document.getElementById('employee_id').value = '0';
             document.getElementById('date').value = '';
             document.getElementById('reading_from').value = '';
             document.getElementById('reading_to').value = '';
@@ -336,7 +283,7 @@
 
             const addBtn = document.getElementById('add-odometer-btn');
 
-            addBtn.textContent = 'Add Odometer Reading';
+            addBtn.textContent = 'Add Odometer';
             addBtn.classList.remove('bg-blue-700', 'hover:bg-blue-800', 'focus:ring-4', 'focus:outline-none',
                 'focus:ring-blue-300', 'font-medium', 'rounded-md', 'text-xs', 'px-4', 'py-2.5', 'text-center',
                 'dark:bg-blue-600', 'dark:hover:bg-blue-700', 'dark:focus:ring-blue-800');
@@ -356,14 +303,12 @@
                     return response.json();
                 })
                 .then(data => {
-
                     const tbody = document.getElementById('odoBody');
                     tbody.innerHTML = '';
 
                     data.odometer.forEach(odometerReadings => {
                         appendRow(odometerReadings);
                     });
-
                 })
                 .catch(error => {
                     console.error('Load Error:', error);
@@ -382,14 +327,12 @@
             const readingTo = document.getElementById('reading_to').value;
             const remarks = document.getElementById('remarks').value;
 
-
             if (!employeeId || employeeId == 0 || !date || !readingFrom || !readingTo) {
                 alert('Employee, Date, Reading From and Reading To are required.');
                 return;
             }
 
             if (recordId) {
-                // alert('Odo: Updating record with ID: ' + recordId);
                 updateOdometer(recordId);
                 return;
             }
@@ -412,20 +355,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.errors) {
-                        // Handle validation errors
-                        const errorMessage = Object.values(data.errors)
-                            .flat()
-                            .join('\n');
+                        const errorMessage = Object.values(data.errors).flat().join('\n');
                         showToast(errorMessage || 'Validation failed', 'error');
                         return;
                     }
 
-                    // Success case
                     appendRow(data.odometer);
                     showToast(data.message, 'success');
 
-                    // Reset form
-                    document.getElementById('employee_id').value = '';
+                    document.getElementById('employee_id').value = '0';
                     document.getElementById('date').value = '';
                     document.getElementById('reading_from').value = '';
                     document.getElementById('reading_to').value = '';
@@ -441,38 +379,34 @@
             const tableBody = document.getElementById('odoBody');
             const newRow = document.createElement('tr');
             newRow.setAttribute('id', 'row-' + odometer.id);
-            newRow.classList.add('hover:bg-gray-50');
+
             newRow.innerHTML = `
-                <td class="px-2 py-2 font-medium w-[120px]">${odometer.date}</td>
-                <td class="px-2 py-2 w-[120px]">${odometer.employee.first_name} ${odometer.employee.middle_name} ${odometer.employee.last_name}</td>
-                <td class="px-2 py-2 w-[200px]">${odometer.remarks || ''}</td>
-                <td class="px-2 py-2 w-[100px]">${odometer.from_reading || ''}</td>
-                <td class="px-2 py-2 w-[100px]">${odometer.to_reading || ''}</td>
-                <td class="px-2 py-2 w-[50px]">
-                    <div class="flex items-center justify-center">                       
-                        <div class="flex items-center justify-center space-x-2">
-                             ${odometer.can_be_transferred ? 
-                             `
-                                        <button type="button" onclick="editOdometer(${odometer.id})" 
-                                            title="Edit odometer reading: ${odometer.from_reading} to ${odometer.to_reading} on ${odometer.date}" 
-                                            class="text-blue-600 hover:text-blue-800 transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" 
-                                                fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                                            </svg>
-                                        </button>
-                                        <button type="button" onclick="deleteOdometer(${odometer.id})" 
-                                            title="Delete odometer reading: ${odometer.from_reading} to ${odometer.to_reading} on ${odometer.date}" 
-                                            class="text-red-600 hover:text-red-800 transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-                                            </svg>
-                                        </button>
-                                ` :
-                                `<span class="text-gray-400 italic">No actions available</span>`}
-                        </div>
+                <td class="whitespace-nowrap align-middle font-semibold" style="color: var(--ft-ink);">${odometer.date}</td>
+                <td class="align-middle" style="color: var(--ft-text);">${odometer.employee.first_name} ${odometer.employee.middle_name} ${odometer.employee.last_name}</td>
+                <td class="align-middle" style="color: var(--ft-muted);">${odometer.remarks || '—'}</td>
+                <td class="text-right tabular-nums align-middle" style="color: var(--ft-text);">${odometer.from_reading || ''}</td>
+                <td class="text-right tabular-nums align-middle" style="color: var(--ft-text);">${odometer.to_reading || ''}</td>
+                <td>
+                    <div class="flex items-center justify-center gap-1">                       
+                        ${odometer.can_be_transferred ? 
+                            `<button type="button" onclick="editOdometer(${odometer.id})" 
+                                    title="Edit odometer reading: ${odometer.from_reading} to ${odometer.to_reading} on ${odometer.date}" 
+                                    class="p-1.5 rounded text-gray-500 hover:bg-gray-200 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" 
+                                        fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                    </svg>
+                                </button>
+                                <button type="button" onclick="deleteOdometer(${odometer.id})" 
+                                    title="Delete odometer reading: ${odometer.from_reading} to ${odometer.to_reading} on ${odometer.date}" 
+                                    class="p-1.5 rounded text-gray-500 hover:bg-gray-200 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                    </svg>
+                                </button>` 
+                            : `<span class="text-xs italic" style="color: var(--ft-muted);">No actions available</span>`}
                     </div>
                 </td>
             `;
@@ -498,12 +432,10 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Remove the row from the table
                         const row = document.getElementById(`row-${id}`);
                         if (row) {
                             row.remove();
                         }
-
                         showToast(data.message || 'Odometer reading deleted successfully!', 'success');
                     } else {
                         throw new Error(data.message || 'Failed to delete odometer reading');
@@ -521,15 +453,16 @@
                 .then(data => {
                     if (data.success) {
                         const odometer = data.odometer;
-                        document.getElementById('employee_id').value = odometer.employee_id;
+                        $('#employee_id').val(odometer.employee_id).trigger('change');
                         document.getElementById('date').value = odometer.date;
                         document.getElementById('reading_from').value = odometer.from_reading;
                         document.getElementById('reading_to').value = odometer.to_reading;
                         document.getElementById('remarks').value = odometer.remarks;
 
-                        // Change button to "Update Odometer Reading"
                         const addBtn = document.getElementById('add-odometer-btn');
-                        addBtn.textContent = 'Update Odometer Reading';
+                        addBtn.textContent = 'Update Odometer';
+
+                        // Keep it simple by reusing the primary button style, but maybe change color
                         addBtn.classList.remove('bg-green-700', 'hover:bg-green-800', 'focus:ring-4',
                             'focus:outline-none', 'focus:ring-green-300', 'font-medium', 'rounded-md', 'text-sm',
                             'px-4', 'py-2.5', 'text-center', 'dark:bg-green-600', 'dark:hover:bg-green-700',
@@ -538,10 +471,7 @@
                             'focus:ring-blue-300', 'font-medium', 'rounded-md', 'text-sm', 'px-4', 'py-2.5',
                             'text-center', 'dark:bg-blue-600', 'dark:hover:bg-blue-700', 'dark:focus:ring-blue-800');
 
-                        // Store the record ID in a hidden field or data attribute
                         addBtn.setAttribute('data-record-id', odometer.id);
-
-                        // Scroll to the form
                         document.getElementById('employee_id').focus();
                     }
                 })
@@ -552,7 +482,6 @@
         }
 
         function updateOdometer(id) {
-
             fetch(`/asset/odometer/${id}`, {
                     method: 'PUT',
                     headers: {
@@ -569,16 +498,13 @@
                 })
                 .then(res => res.json())
                 .then(data => {
-
                     document.getElementById('row-' + id).remove();
                     appendRow(data.odometer);
-
                     resetForm();
-
                 });
         }
 
-        //Print odometer details
+        // Print odometer details
         document.getElementById('printOdometer').addEventListener('click', function(e) {
             e.preventDefault();
 
@@ -592,14 +518,7 @@
 
             const baseUrl = "{{ route('asset.odometer.print', $asset->id) }}";
             const url = `${baseUrl}?from_date=${fromDate}&to_date=${toDate}`;
-
-            //File will open in a new tab
-
             window.open(url, '_blank');
-
-            //File will be downloaded directly
-            // window.location.href = url; 
         });
     </script>
-
 @endsection

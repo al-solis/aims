@@ -1,220 +1,208 @@
 @extends('dashboard')
 @section('content')
-    <div class="p-6 space-y-6">
+    <div class="ft-page p-6 space-y-6 max-w-7xl mx-auto">
 
-        {{-- Header --}}
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-semibold text-gray-900">Supplies Category Management</h1>
-                <p class="text-sm text-gray-500">
-                    Manage supplies categories
-                </p>
-            </div>
-            <div class="flex items-center gap-2 mt-0">
-                <a href="{{ route('setup.index') }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 ">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Back
-                </a>
-
-                <button data-modal-target="add-modal" data-modal-toggle="add-modal"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Add Supplies Category
-                </button>
-            </div>
-        </div>
-
-        {{-- Stats Cards --}}
-        @php
-            $cards = [
-                [
-                    'title' => 'Total Categories',
-                    'value' => $totalCategories,
-                    'color' => 'blue',
-                    'icon' => '
-                        <svg xmlns="http://www.w3.org/2000/svg" class = "w-5 h-5 text-blue-600" width="16" height="16" fill="currentColor" class="bi bi-grid-3x3-gap" viewBox="0 0 16 16">
-                        <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2zm3.564 1.426L5.596 5 8 5.961 14.154 3.5zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
-                        </svg>',
-                ],
-                [
-                    'title' => 'Active',
-                    'value' => $activeCategories,
-                    'color' => 'green',
-                    'icon' => '
-                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M5 13l4 4L19 7" />
-                        </svg>',
-                ],
-                [
-                    'title' => 'Inactive',
-                    'value' => $inactiveCategories,
-                    'color' => 'red',
-                    'icon' => '
-                        <svg class="w-5 h-5 text-red-600" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                        </svg>',
-                ],
-            ];
-        @endphp
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            @foreach ($cards as $card)
-                <div class="bg-white border rounded-xl p-4 flex items-center gap-4">
-                    <div
-                        class="w-10 h-10 rounded-lg bg-{{ $card['color'] }}-100 
-                                flex items-center justify-center">
-                        {!! $card['icon'] !!}
-                    </div>
-
+        <div class="ft-card">
+            <div class="ft-card-head">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <p class="text-sm text-gray-500">{{ $card['title'] }}</p>
-                        <p class="text-xl font-semibold text-gray-900">
-                            {{ $card['value'] }}
-                        </p>
+                        <h1>Supplies Category Management</h1>
+                        <p>Manage supplies categories</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('setup.index') }}" class="ft-btn ft-btn-ghost"
+                            style="color: var(--ft-on-ink); background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25);">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            Back
+                        </a>
+                        <button data-modal-target="add-modal" data-modal-toggle="add-modal" class="ft-btn ft-btn-primary"
+                            style="color: var(--ft-ink); background: var(--ft-surface); border-color: var(--ft-surface);">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add Supplies Category
+                        </button>
                     </div>
                 </div>
-            @endforeach
-        </div>
+            </div>
 
-        @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 pt-1">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
+            <div class="ft-body space-y-6">
+
+                {{-- Stats Cards --}}
+                @php
+                    $cards = [
+                        [
+                            'title' => 'Total Categories',
+                            'value' => $totalCategories,
+                            'icon' =>
+                                '<svg class="w-5 h-5" style="color: var(--ft-accent);" fill="currentColor" viewBox="0 0 16 16"><path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2zm3.564 1.426L5.596 5 8 5.961 14.154 3.5zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/></svg>',
+                        ],
+                        [
+                            'title' => 'Active',
+                            'value' => $activeCategories,
+                            'icon' =>
+                                '<svg class="w-5 h-5" style="color: var(--ft-success-text);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>',
+                        ],
+                        [
+                            'title' => 'Inactive',
+                            'value' => $inactiveCategories,
+                            'icon' =>
+                                '<svg class="w-5 h-5" style="color: var(--ft-danger-text);" fill="currentColor" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/></svg>',
+                        ],
+                    ];
+                @endphp
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    @foreach ($cards as $card)
+                        <div class="ft-info flex items-center gap-4" style="padding: 1rem;">
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                                style="background: var(--ft-surface); border: 1px solid var(--ft-line);">
+                                {!! $card['icon'] !!}
+                            </div>
+                            <div>
+                                <p class="ft-eyebrow">{{ $card['title'] }}</p>
+                                <p class="text-xl font-semibold mt-0.5" style="color: var(--ft-ink);">{{ $card['value'] }}
+                                </p>
+                            </div>
+                        </div>
                     @endforeach
-                </ul>
-            </div>
-        @elseif (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 pt-1"
-                data-success="true">
-                {{ session('success') }}
-            </div>
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Clear form fields after successful submission
-                    clearModalFields();
-                });
-            </script>
-        @endif
-
-        {{-- Filters --}}
-        <form action="" method="GET">
-            <div class="flex flex-col md:flex-row gap-2 text-xs md:text-sm">
-                <div class="md:w-2/3 w-full">
-                    <input type="text" id="simple-search" name="search" placeholder="Search by name or description..."
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                        value = "{{ request()->query('search') }}" oninput="this.form.submit()">
                 </div>
 
-                <div class="md:w-1/3 w-full">
-                    <select id="status" name="status"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                        onchange="this.form.submit()">
-                        <option value="">All Status</option>
-                        <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Active</option>
-                        <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Inactive</option>
-                    </select>
+                {{-- Alerts --}}
+                @if ($errors->any())
+                    <div class="ft-alert ft-alert-error">
+                        <ul class="list-disc list-inside">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @elseif (session('success'))
+                    <div class="ft-alert ft-alert-success flex items-center justify-between" data-success="true">
+                        <div class="flex items-center gap-2">
+                            <svg class="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            {{ session('success') }}
+                        </div>
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            clearModalFields();
+                        });
+                    </script>
+                @endif
+
+                {{-- Filters --}}
+                <form action="" method="GET" class="flex flex-col md:flex-row gap-3">
+                    <div class="md:w-2/3 w-full">
+                        <input type="text" name="search" placeholder="Search by name or description..." class="ft-field"
+                            value="{{ request()->query('search') }}" oninput="this.form.submit()">
+                    </div>
+                    <div class="md:w-1/3 w-full">
+                        <select name="status" class="ft-field" onchange="this.form.submit()">
+                            <option value="">All Status</option>
+                            <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Active</option>
+                            <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Inactive</option>
+                        </select>
+                    </div>
+                </form>
+
+                {{-- Table --}}
+                <div class="ft-table-wrap">
+                    <table class="ft-table">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="w-[150px]">Name</th>
+                                <th scope="col" class="w-[200px]">Description</th>
+                                <th scope="col" class="w-[80px]">Supplies Code</th>
+                                <th scope="col" class="w-[80px]">Status</th>
+                                <th scope="col" class="text-center w-[50px]">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($categories as $category)
+                                <tr>
+                                    <td class="whitespace-normal break-all align-top font-semibold"
+                                        style="color: var(--ft-ink);">
+                                        {{ $category->name }}
+                                    </td>
+                                    <td class="whitespace-normal break-all align-top" style="color: var(--ft-muted);">
+                                        {{ $category->description ?? '—' }}
+                                    </td>
+                                    <td class="whitespace-normal break-all align-top" style="color: var(--ft-text);">
+                                        {{ $category->supplies_code }}
+                                    </td>
+                                    <td>
+                                        @php
+                                            $statuses = [
+                                                0 => ['class' => 'ft-badge-no', 'label' => 'Inactive'],
+                                                1 => ['class' => 'ft-badge-ok', 'label' => 'Active'],
+                                            ];
+                                            $status = $statuses[$category->is_active] ?? [
+                                                'class' => 'ft-badge-na',
+                                                'label' => 'Unknown',
+                                            ];
+                                        @endphp
+                                        <span class="ft-badge {{ $status['class'] }}">
+                                            {{ $status['label'] }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center justify-center">
+                                            <button type="button" title="Edit category {{ $category->name }}"
+                                                data-modal-target="edit-modal" data-modal-toggle="edit-modal"
+                                                data-id="{{ $category->id }}" data-name="{{ $category->name }}"
+                                                data-supplies_code="{{ $category->supplies_code }}"
+                                                data-description="{{ $category->description }}"
+                                                data-status="{{ $category->is_active }}" onclick="openEditModal(this)"
+                                                class="p-1.5 rounded text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                                    <path fill-rule="evenodd"
+                                                        d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="ft-empty">No categories found.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Pagination --}}
+                <div class="flex flex-col md:flex-row items-stretch md:items-center justify-end text-xs"
+                    style="color: var(--ft-muted);">
+                    {{ $categories->links() }}
                 </div>
             </div>
-            <button type="submit"
-                class="hidden mt-4 w-full shrink-0 rounded-lg bg-gray-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800 sm:mt-0 sm:w-auto">Search</button>
-        </form>
-
-        {{-- Table --}}
-        <div class="bg-white border rounded-xl overflow-x-auto md:overflow-visible scroll-smooth">
-            <table class="min-w-full text-xs">
-                <thead class="bg-gray-200 text-gray-600">
-                    <tr>
-                        <th scope="col" class="px-4 py-3 text-left w-[150px]">Name</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[200px]">Description</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Supplies Code</th>
-                        <th scope="col" class="px-4 py-3 text-left w-[80px]">Status</th>
-                        <th scope="col" class="px-4 py-3 text-center w-[50px]">Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody class="divide-y">
-                    @forelse($categories as $category)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 w-[150px] whitespace-normal break-all align-top">{{ $category->name }}</td>
-                            <td class="px-4 py-3 w-[200px] whitespace-normal break-all align-top">
-                                {{ $category->description }}</td>
-                            <td class="px-4 py-3 w-[80px] whitespace-normal break-all align-top">
-                                {{ $category->supplies_code }}</td>
-                            <td class="px-4 py-3 w-[80px] text-xs font-semibold">
-                                @php
-                                    $statuses = [
-                                        0 => ['color' => 'bg-red-100 text-red-600', 'label' => 'Inactive'],
-                                        1 => ['color' => 'bg-green-100 text-green-700', 'label' => 'Active'],
-                                    ];
-                                    $status = $statuses[$category->is_active] ?? [
-                                        'color' => 'bg-gray-100 text-gray-600',
-                                        'label' => 'Unknown',
-                                    ];
-                                @endphp
-
-                                <span class="px-2 py-1 text-xs rounded-full {{ $status['color'] }}">
-                                    {{ $status['label'] }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 w-[50px]">
-                                <div class="flex items-center justify-center space-x-2">
-                                    <button type="button" title="Edit category {{ $category->name }}"
-                                        data-modal-target="edit-modal" data-modal-toggle="edit-modal"
-                                        data-id="{{ $category->id }}" data-name="{{ $category->name }}"
-                                        data-supplies_code="{{ $category->supplies_code }}"
-                                        data-description="{{ $category->description }}"
-                                        data-status="{{ $category->is_active }}" onclick="openEditModal(this)"
-                                        class="group flex space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                            <path
-                                                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                            <path fill-rule="evenodd"
-                                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                                        </svg>
-                                        {{-- <span class="hidden group-hover:inline transition-opacity duration-200"></span> --}}
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="9" class="px-4 py-6 text-center text-gray-500">
-                                No categories found.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        <!-- Pagination Links -->
-        <div
-            class="w-full md:w-auto text-xs flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0 mb-2">
-            {{ $categories->links() }}
         </div>
     </div>
 
-    <!-- Create category modal -->
+    <!-- Create Supplies Category modal -->
     <div id="add-modal" tabindex="-1" aria-hidden="true"
-        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full bg-black/50 backdrop-blur-sm">
         <div class="relative p-4 w-full max-w-md h-full md:h-auto">
             <!-- Modal content -->
-            <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+            <div class="relative bg-white rounded-xl shadow-lg border border-[var(--ft-line)] sm:p-1">
                 <!-- Modal header -->
-                <div class="flex justify-between items-center pb-4 mb-2 rounded-t border-b sm:mb-5 dark:border-gray-600">
-                    <h3 class="text-md font-semibold text-gray-900 dark:text-white">
+                <div class="flex justify-between items-center p-4 rounded-t border-b border-[var(--ft-line)]">
+                    <h3 class="text-base font-bold text-[var(--ft-ink)]">
                         Add New Supplies Category
                     </h3>
                     <button type="button"
-                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center transition-colors"
                         data-modal-toggle="add-modal">
                         <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg">
@@ -226,48 +214,36 @@
                     </button>
                 </div>
                 <!-- Modal body -->
-                <div class="overflow-y-auto max-h-[70vh]">
+                <div class="p-4 overflow-y-auto max-h-[70vh]">
                     <form action="{{ route('supplies-category.store') }}" method="POST">
                         @csrf
-                        <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-2">
+                        <div class="grid gap-4 mb-4 sm:grid-cols-2">
                             <div class="sm:col-span-2">
-                                <label for="name"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                                <input type="text" name="name" id="name" maxlength="50"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                <label for="name" class="ft-label">Name <span class="text-red-600">*</span></label>
+                                <input type="text" name="name" id="name" maxlength="50" class="ft-field"
                                     placeholder="e.g. Office Supplies" required>
                             </div>
                             <div class="sm:col-span-2">
-                                <label for="description"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                <textarea type="text" name="description" id="description" rows="3" maxlength="150"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                <label for="description" class="ft-label">Description</label>
+                                <textarea name="description" id="description" rows="3" maxlength="150" class="ft-field"
                                     placeholder="Category description"></textarea>
                             </div>
-
                             <div class="md:col-span-1">
-                                <label for="supplies_code"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Supplies
-                                    Code*</label>
+                                <label for="supplies_code" class="ft-label">Supplies Code <span
+                                        class="text-red-600">*</span></label>
                                 <input type="text" name="supplies_code" id="supplies_code" maxlength="10"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="e.g. SUP" required>
+                                    class="ft-field" placeholder="e.g. SUP" required>
                             </div>
                             <div class="md:col-span-1">
-                                <label for="status"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                                <select id="status" name="status"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    required>
-                                    {{-- <option selected="">Select product type</option> --}}
+                                <label for="status" class="ft-label">Status <span class="text-red-600">*</span></label>
+                                <select id="status" name="status" class="ft-field" required>
                                     <option value="1">Active</option>
                                     <option value="0">Inactive</option>
                                 </select>
                             </div>
                         </div>
-                        <button type="submit"
-                            class="text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
-                            <svg class="mr-1 -ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
+                        <button type="submit" class="ft-btn ft-btn-primary w-full justify-center">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd"
                                     d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
@@ -282,22 +258,21 @@
     </div>
     <!-- End create category modal -->
 
-    <!-- Modal  Edit-->
+    <!-- Modal Edit -->
     <div id="edit-modal" tabindex="-1" aria-hidden="true"
-        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-black/50 backdrop-blur-sm">
         <div class="relative p-4 w-full max-w-md max-h-full">
             <!-- Modal content -->
-            <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+            <div class="relative bg-white rounded-xl shadow-lg border border-[var(--ft-line)] sm:p-1">
                 <!-- Modal header -->
-                <div
-                    class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                <div class="flex items-center justify-between p-4 border-b border-[var(--ft-line)]">
+                    <h3 class="text-base font-bold text-[var(--ft-ink)]">
                         Update Supplies Category
                     </h3>
                     <button type="button"
-                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center transition-colors"
                         data-modal-toggle="edit-modal">
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                             viewBox="0 0 14 14">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
@@ -306,50 +281,40 @@
                     </button>
                 </div>
                 <!-- Modal body -->
-                <div class="overflow-y-auto max-h-[70vh]">
-                    <form id="editForm" class="p-4 md:p-5" method="POST">
+                <div class="p-4 overflow-y-auto max-h-[70vh]">
+                    <form id="editForm" method="POST">
                         @csrf
                         @method('PUT')
                         <input type="hidden" name="edit_id" id="edit_id">
 
-                        <div class="grid ml-1 mr-1 gap-2 mb-4 sm:grid-cols-2">
+                        <div class="grid gap-4 mb-4 sm:grid-cols-2">
                             <div class="sm:col-span-2">
-                                <label for="edit_name"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Name*</label>
-                                <input type="text" name="edit_name" id="edit_name" maxlength="50"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                <label for="edit_name" class="ft-label">Name <span class="text-red-600">*</span></label>
+                                <input type="text" name="edit_name" id="edit_name" maxlength="50" class="ft-field"
                                     placeholder="e.g. Office Supplies" required>
                             </div>
                             <div class="sm:col-span-2">
-                                <label for="edit_description"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Description</label>
-                                <textarea type="text" name="edit_description" id="edit_description" rows="3" maxlength="150"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                                <label for="edit_description" class="ft-label">Description</label>
+                                <textarea name="edit_description" id="edit_description" rows="3" maxlength="150" class="ft-field"
                                     placeholder="Supplies category description"></textarea>
                             </div>
                             <div class="sm:col-span-1">
-                                <label for="edit_supplies_code"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Supplies Code*</label>
+                                <label for="edit_supplies_code" class="ft-label">Supplies Code <span
+                                        class="text-red-600">*</span></label>
                                 <input type="text" name="edit_supplies_code" id="edit_supplies_code" maxlength="10"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    placeholder="e.g. SUP" required>
+                                    class="ft-field" placeholder="e.g. SUP" required>
                             </div>
                             <div class="sm:col-span-1">
-                                <label for="edit_status"
-                                    class="block text-xs font-medium text-gray-900 dark:text-white">Status*</label>
-                                <select id="edit_status" name="edit_status"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                                    required>
-                                    {{-- <option selected="">Select product type</option> --}}
+                                <label for="edit_status" class="ft-label">Status <span
+                                        class="text-red-600">*</span></label>
+                                <select id="edit_status" name="edit_status" class="ft-field" required>
                                     <option value="1">Active</option>
                                     <option value="0">Inactive</option>
                                 </select>
                             </div>
                         </div>
 
-                        <button type="submit"
-                            class="mt-2 text-white inline-flex items-center bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-xs px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
-                            {{-- <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg> --}}
+                        <button type="submit" class="ft-btn ft-btn-primary w-full justify-center">
                             Update Supplies Category
                         </button>
                     </form>

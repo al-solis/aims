@@ -15,6 +15,22 @@
     midnight-rose	    Dark indigo with a rose accent. Elegant.
     espresso-cream	    Brown with a tan accent on warm backgrounds. Cozy and classic.
     graphite	        Neutral greys. The most minimal option.
+    crimson-ash         Deep red with a cool ash-grey accent. Serious and strong.
+    indigo-amber        Rich indigo with an amber accent. Energetic but professional.
+    teal-coral          Deep teal with a coral-orange accent. Fresh and friendly.
+    plum-mauve          Dark plum with a soft mauve accent. Creative and warm.
+    terracotta-sand     Clay red-brown with a sand accent. Earthy and inviting.
+    steel-orange        Steel blue-grey with an orange accent. Industrial and clear.
+    olive-bronze        Dark olive with a bronze accent. Heritage and grounded.
+    black-lime          Near-black with a lime accent. Bold and modern.
+    sky-light           Soft blue with a pale sky accent. Airy and clean.
+    mint-fresh          Gentle green with a mint accent. Fresh and calm.
+    blush-pink          Dusty rose with a light pink accent. Soft and friendly.
+    lavender-mist       Muted violet with a lavender accent. Light and creative.
+    peach-apricot       Warm apricot with a peach accent. Sunny and welcoming.
+    butter-olive        Soft olive with a butter-yellow accent. Gentle and natural.
+    cloud-grey          Light slate with a pale grey-blue accent. Quiet and neutral.
+    aqua-sand           Soft teal with a sand accent. Beachy and relaxed.
 
     <html data-theme="navy-gold">                  {{-- whole app --}}
     <div class="ft-page" data-theme="slate-teal">  {{-- one page only --}}
@@ -245,6 +261,278 @@
     --ft-muted: #6b7280;
     --ft-shadow: rgba(17, 24, 39, 0.3);
     --ft-disabled: #9ca3af;
+}
+
+/* Crimson + ash */
+[data-theme="crimson-ash"] {
+    --ft-ink: #7b1e1e;
+    --ft-ink-soft: #9a2a2a;
+    --ft-accent: #8d99a6;
+    --ft-accent-dark: #6b7783;
+    --ft-accent-ring: rgba(141, 153, 166, 0.26);
+    --ft-mist: #f7f6f6;
+    --ft-line: #e8e5e5;
+    --ft-border: #dbd6d6;
+    --ft-row-hover: #fbfafa;
+    --ft-text: #2e2a2a;
+    --ft-muted: #766e6e;
+    --ft-shadow: rgba(123, 30, 30, 0.3);
+    --ft-disabled: #aea6a6;
+}
+
+/* Indigo + amber */
+[data-theme="indigo-amber"] {
+    --ft-ink: #272b66;
+    --ft-ink-soft: #3a3f8a;
+    --ft-accent: #f0a202;
+    --ft-accent-dark: #c28100;
+    --ft-accent-ring: rgba(240, 162, 2, 0.26);
+    --ft-mist: #f5f5fa;
+    --ft-line: #e3e4f0;
+    --ft-border: #d5d7e8;
+    --ft-row-hover: #fafafd;
+    --ft-text: #25274a;
+    --ft-muted: #6a6d8f;
+    --ft-shadow: rgba(39, 43, 102, 0.3);
+    --ft-disabled: #a0a3c0;
+}
+
+/* Teal + coral */
+[data-theme="teal-coral"] {
+    --ft-ink: #0f4c5c;
+    --ft-ink-soft: #176a7e;
+    --ft-accent: #e36414;
+    --ft-accent-dark: #b94e0c;
+    --ft-accent-ring: rgba(227, 100, 20, 0.26);
+    --ft-mist: #f3f7f8;
+    --ft-line: #dfe9eb;
+    --ft-border: #d0dee1;
+    --ft-row-hover: #f9fbfc;
+    --ft-text: #1f3338;
+    --ft-muted: #61777c;
+    --ft-shadow: rgba(15, 76, 92, 0.3);
+    --ft-disabled: #9bb2b7;
+}
+
+/* Plum + mauve */
+[data-theme="plum-mauve"] {
+    --ft-ink: #4a2545;
+    --ft-ink-soft: #663562;
+    --ft-accent: #b78fb0;
+    --ft-accent-dark: #946b8d;
+    --ft-accent-ring: rgba(183, 143, 176, 0.26);
+    --ft-mist: #f8f5f8;
+    --ft-line: #eae3ea;
+    --ft-border: #ddd3dd;
+    --ft-row-hover: #fcfafc;
+    --ft-text: #332834;
+    --ft-muted: #766a77;
+    --ft-shadow: rgba(74, 37, 69, 0.3);
+    --ft-disabled: #b0a3b0;
+}
+
+/* Terracotta + sand */
+[data-theme="terracotta-sand"] {
+    --ft-ink: #7a3b26;
+    --ft-ink-soft: #98492f;
+    --ft-accent: #d9a66c;
+    --ft-accent-dark: #b3834a;
+    --ft-accent-ring: rgba(217, 166, 108, 0.28);
+    --ft-mist: #faf5f0;
+    --ft-line: #eee3d8;
+    --ft-border: #e2d3c4;
+    --ft-row-hover: #fdfaf7;
+    --ft-text: #3a2b24;
+    --ft-muted: #85705f;
+    --ft-shadow: rgba(122, 59, 38, 0.3);
+    --ft-disabled: #b8a595;
+}
+
+/* Steel + orange */
+[data-theme="steel-orange"] {
+    --ft-ink: #2b3a4a;
+    --ft-ink-soft: #3d5268;
+    --ft-accent: #e8710a;
+    --ft-accent-dark: #bd5a05;
+    --ft-accent-ring: rgba(232, 113, 10, 0.26);
+    --ft-mist: #f4f6f8;
+    --ft-line: #e2e7ec;
+    --ft-border: #d3dae1;
+    --ft-row-hover: #f9fafb;
+    --ft-text: #26303a;
+    --ft-muted: #66737f;
+    --ft-shadow: rgba(43, 58, 74, 0.3);
+    --ft-disabled: #9ba8b4;
+}
+
+/* Olive + bronze */
+[data-theme="olive-bronze"] {
+    --ft-ink: #3b3d1c;
+    --ft-ink-soft: #54572b;
+    --ft-accent: #a67c37;
+    --ft-accent-dark: #84602a;
+    --ft-accent-ring: rgba(166, 124, 55, 0.26);
+    --ft-mist: #f7f6f0;
+    --ft-line: #e7e6da;
+    --ft-border: #dad8c8;
+    --ft-row-hover: #fbfbf7;
+    --ft-text: #302f22;
+    --ft-muted: #726f5c;
+    --ft-shadow: rgba(59, 61, 28, 0.3);
+    --ft-disabled: #aeab98;
+}
+
+/* Black + lime */
+[data-theme="black-lime"] {
+    --ft-ink: #0f1115;
+    --ft-ink-soft: #1f232b;
+    --ft-accent: #84cc16;
+    --ft-accent-dark: #65a30d;
+    --ft-accent-ring: rgba(132, 204, 22, 0.28);
+    --ft-mist: #f5f6f4;
+    --ft-line: #e4e6e1;
+    --ft-border: #d6d9d2;
+    --ft-row-hover: #fafbf9;
+    --ft-text: #1c1f24;
+    --ft-muted: #6a6f68;
+    --ft-shadow: rgba(15, 17, 21, 0.3);
+    --ft-disabled: #a0a59b;
+}
+
+/* Sky light */
+[data-theme="sky-light"] {
+    --ft-ink: #2f6f9f;
+    --ft-ink-soft: #3f86b8;
+    --ft-accent: #7cc0e8;
+    --ft-accent-dark: #4fa3d4;
+    --ft-accent-ring: rgba(124, 192, 232, 0.3);
+    --ft-mist: #f2f8fc;
+    --ft-line: #e0edf5;
+    --ft-border: #d0e2ee;
+    --ft-row-hover: #f8fbfd;
+    --ft-text: #243645;
+    --ft-muted: #67808f;
+    --ft-shadow: rgba(47, 111, 159, 0.25);
+    --ft-disabled: #a3b7c4;
+}
+
+/* Mint fresh */
+[data-theme="mint-fresh"] {
+    --ft-ink: #2f7d68;
+    --ft-ink-soft: #3d9a81;
+    --ft-accent: #8fd5bd;
+    --ft-accent-dark: #5fb89c;
+    --ft-accent-ring: rgba(143, 213, 189, 0.3);
+    --ft-mist: #f2faf7;
+    --ft-line: #dff0e9;
+    --ft-border: #cfe5db;
+    --ft-row-hover: #f8fcfa;
+    --ft-text: #24372f;
+    --ft-muted: #688377;
+    --ft-shadow: rgba(47, 125, 104, 0.25);
+    --ft-disabled: #a2bab0;
+}
+
+/* Blush pink */
+[data-theme="blush-pink"] {
+    --ft-ink: #b0456a;
+    --ft-ink-soft: #c55c80;
+    --ft-accent: #f2a7bf;
+    --ft-accent-dark: #e07f9f;
+    --ft-accent-ring: rgba(242, 167, 191, 0.3);
+    --ft-mist: #fdf5f8;
+    --ft-line: #f5e2e9;
+    --ft-border: #ecd2dc;
+    --ft-row-hover: #fffafb;
+    --ft-text: #3b2831;
+    --ft-muted: #86707a;
+    --ft-shadow: rgba(176, 69, 106, 0.25);
+    --ft-disabled: #c4aab4;
+}
+
+/* Lavender mist */
+[data-theme="lavender-mist"] {
+    --ft-ink: #6d5bb5;
+    --ft-ink-soft: #8070c6;
+    --ft-accent: #c4b8f0;
+    --ft-accent-dark: #a393e0;
+    --ft-accent-ring: rgba(196, 184, 240, 0.32);
+    --ft-mist: #f7f5fd;
+    --ft-line: #e8e4f6;
+    --ft-border: #dcd6ef;
+    --ft-row-hover: #fbfaff;
+    --ft-text: #2f2a45;
+    --ft-muted: #787394;
+    --ft-shadow: rgba(109, 91, 181, 0.25);
+    --ft-disabled: #b5b0cc;
+}
+
+/* Peach apricot */
+[data-theme="peach-apricot"] {
+    --ft-ink: #c2571a;
+    --ft-ink-soft: #d66b2c;
+    --ft-accent: #f7c59f;
+    --ft-accent-dark: #eba06c;
+    --ft-accent-ring: rgba(247, 197, 159, 0.35);
+    --ft-mist: #fef8f2;
+    --ft-line: #f6e8db;
+    --ft-border: #eddac9;
+    --ft-row-hover: #fffcf9;
+    --ft-text: #3c2e24;
+    --ft-muted: #8a7565;
+    --ft-shadow: rgba(194, 87, 26, 0.25);
+    --ft-disabled: #c4b2a3;
+}
+
+/* Butter + olive */
+[data-theme="butter-olive"] {
+    --ft-ink: #667a2b;
+    --ft-ink-soft: #7b9137;
+    --ft-accent: #e6d96f;
+    --ft-accent-dark: #c9bb48;
+    --ft-accent-ring: rgba(230, 217, 111, 0.38);
+    --ft-mist: #fbfbf0;
+    --ft-line: #eeeedb;
+    --ft-border: #e1e1c8;
+    --ft-row-hover: #fdfdf7;
+    --ft-text: #33361f;
+    --ft-muted: #77795a;
+    --ft-shadow: rgba(102, 122, 43, 0.25);
+    --ft-disabled: #b3b59a;
+}
+
+/* Cloud grey */
+[data-theme="cloud-grey"] {
+    --ft-ink: #55657a;
+    --ft-ink-soft: #6b7d93;
+    --ft-accent: #aebccd;
+    --ft-accent-dark: #8d9eb3;
+    --ft-accent-ring: rgba(174, 188, 205, 0.35);
+    --ft-mist: #f6f8fa;
+    --ft-line: #e6eaef;
+    --ft-border: #d8dee6;
+    --ft-row-hover: #fafbfc;
+    --ft-text: #2a323d;
+    --ft-muted: #6f7a89;
+    --ft-shadow: rgba(85, 101, 122, 0.25);
+    --ft-disabled: #a9b2bf;
+}
+
+/* Aqua + sand */
+[data-theme="aqua-sand"] {
+    --ft-ink: #237a83;
+    --ft-ink-soft: #2f949e;
+    --ft-accent: #f0d9a8;
+    --ft-accent-dark: #dcc080;
+    --ft-accent-ring: rgba(240, 217, 168, 0.4);
+    --ft-mist: #f3fafa;
+    --ft-line: #e0eff0;
+    --ft-border: #d0e4e6;
+    --ft-row-hover: #f9fcfc;
+    --ft-text: #23373a;
+    --ft-muted: #668084;
+    --ft-shadow: rgba(35, 122, 131, 0.25);
+    --ft-disabled: #a2babd;
 }
 
 /* Card ------------------------------------------------------------------- */
