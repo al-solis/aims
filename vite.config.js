@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
+import tailwindcss from "@tailwindcss/vite"; // Import
 
 export default defineConfig({
     plugins: [
@@ -15,6 +16,7 @@ export default defineConfig({
             ],
             refresh: true,
         }),
+        tailwindcss(),
     ],
     server: {
         cors: true,
