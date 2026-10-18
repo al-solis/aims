@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="mint-fresh">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="forest-sage">
 @php
     use Illuminate\Support\Facades\Auth;
 @endphp
