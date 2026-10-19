@@ -1,15 +1,19 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="forest-sage">
 @php
     use Illuminate\Support\Facades\Auth;
+
+    $user = Auth::user();
+    $theme = $user?->userRole?->theme?->name ?? 'forest-sage';
 @endphp
+
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="{{ $theme }}">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Asset Inventory Management System') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -59,6 +63,7 @@
             text-white transition-opacity duration-300 
             bg-gray-900 rounded-lg shadow-xs opacity-0 whitespace-nowrap tooltip">
                 Sign out ({{ Auth::user()->fname }} {{ Auth::user()->lname }})
+
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
