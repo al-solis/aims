@@ -280,8 +280,8 @@
                             </div>
 
                             <div class="md:col-span-1">
-                                <label for="role" class="ft-label">Role <span class="text-red-600">*</span></label>
-                                <select id="role" name="role" class="ft-field" required>
+                                <label for="role_id" class="ft-label">Role <span class="text-red-600">*</span></label>
+                                <select id="role_id" name="role_id" class="ft-field" required>
                                     @foreach ($roles as $role)
                                         <option value="{{ $role->id }}">{{ $role->name }}</option>
                                     @endforeach
@@ -389,7 +389,8 @@
                             </div>
 
                             <div class="md:col-span-1">
-                                <label for="edit_role" class="ft-label">Role <span class="text-red-600">*</span></label>
+                                <label for="edit_role_id" class="ft-label">Role <span
+                                        class="text-red-600">*</span></label>
                                 <select id="edit_role_id" name="edit_role_id" class="ft-field" required>
                                     @foreach ($roles as $role)
                                         <option value="{{ $role->id }}">{{ $role->name }}</option>

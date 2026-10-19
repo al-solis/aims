@@ -36,7 +36,7 @@ class RegisteredUserController extends Controller
             'mname' => ['nullable', 'string', 'max:30'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role_id' => ['integer'],
+            'role_id' => ['nullable', 'integer'],
             'is_active' => ['boolean'],
         ]);
 
