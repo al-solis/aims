@@ -84,7 +84,7 @@ $palette = [
                             {{ $sm->description }}
                         </p>
                         <a href="{{ $resolveLink($sm) }}"
-                            class="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition">
+                            class="px-4 py-2 rounded-lg text-xs font-medium bg-gray-900 text-white hover:bg-gray-700 transition">
                             Open {{ $sm->name }}
                         </a>
                     </div>

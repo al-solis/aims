@@ -68,11 +68,26 @@
                     </div>
 
                     <div>
+                        <label for="theme_id" class="ft-label">Theme</label>
+                        <select id="theme_id" name="theme_id" class="ft-field">
+                            <option value="">Select theme</option>
+                            @foreach ($themes as $theme)
+                                <option value="{{ $theme->id }}"
+                                    {{ old('theme_id', $targetRole->theme_id ?? '') == $theme->id ? 'selected' : '' }}>
+                                    {{ $theme->name }} — {{ $theme->description }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
                         <label for="is_active" class="ft-label">Status</label>
                         <select id="is_active" name="is_active" class="ft-field">
-                            <option value="1" {{ old('is_active', $targetRole->is_active) === '1' ? 'selected' : '' }}>
+                            <option value="1"
+                                {{ old('is_active', $targetRole->is_active) === '1' ? 'selected' : '' }}>
                                 Active</option>
-                            <option value="0" {{ old('is_active', $targetRole->is_active) === '0' ? 'selected' : '' }}>
+                            <option value="0"
+                                {{ old('is_active', $targetRole->is_active) === '0' ? 'selected' : '' }}>
                                 Inactive</option>
                         </select>
                     </div>

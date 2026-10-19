@@ -377,6 +377,17 @@
                                     placeholder="e.g. juandelacruz@yahoo.com" required>
                             </div>
 
+                            <div class="sm:col-span-2">
+                                <label for="edit_password" class="ft-label">Password </label>
+                                <input type="password" name="edit_password" id="edit_password" class="ft-field">
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label for="edit_confirm_password" class="ft-label">Confirm Password </label>
+                                <input type="password" name="edit_confirm_password" id="edit_confirm_password"
+                                    class="ft-field">
+                            </div>
+
                             <div class="md:col-span-1">
                                 <label for="edit_role" class="ft-label">Role <span class="text-red-600">*</span></label>
                                 <select id="edit_role_id" name="edit_role_id" class="ft-field" required>

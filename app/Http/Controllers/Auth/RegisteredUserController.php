@@ -120,7 +120,14 @@ class RegisteredUserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $user->update([
+        $password = request('edit_password');
+
+        if (!empty($password) && $password != request('edit_confirm_password')) {
+            return redirect()->route('user.index')
+                ->with('error', 'Password not same with confirm password');
+        }
+
+        $data = [
             'lname' => request('edit_lname'),
             'fname' => request('edit_fname'),
             'mname' => request('edit_mname'),
@@ -128,8 +135,16 @@ class RegisteredUserController extends Controller
             'email' => request('edit_email'),
             'role_id' => request('edit_role_id'),
             'is_active' => request('edit_is_active'),
-        ]);
+        ];
 
-        return redirect()->route('user.index')->with('success', 'User updated successfully.');
+        // Update password only if provided
+        if (!empty($password)) {
+            $data['password'] = Hash::make($password);
+        }
+
+        $user->update($data);
+
+        return redirect()->route('user.index')
+            ->with('success', 'User updated successfully.');
     }
 }

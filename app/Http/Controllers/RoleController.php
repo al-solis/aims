@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\role;
 use Illuminate\Http\Request;
 use App\Models\user;
+use App\Models\system_theme;
 
 class RoleController extends Controller
 {
@@ -21,8 +22,11 @@ class RoleController extends Controller
 
     public function create()
     {
+        $themes = system_theme::orderBy('name')->get();
+
         return view('setup.role.form', [
             'targetRole' => new role(),
+            'themes' => $themes,
         ]);
     }
 
@@ -31,6 +35,7 @@ class RoleController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name',
             'description' => 'nullable|string|max:255',
+            'theme_id' => 'nullable',
             'is_active' => 'required|in:1,0',
         ]);
 
@@ -41,8 +46,11 @@ class RoleController extends Controller
 
     public function edit(role $role)
     {
+        $themes = system_theme::orderBy('name')->get();
+
         return view('setup.role.form', [
             'targetRole' => $role,
+            'themes' => $themes,
         ]);
     }
 
@@ -51,6 +59,7 @@ class RoleController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
             'description' => 'nullable|string|max:255',
+            'theme_id' => 'nullable',
             'is_active' => 'required|in:1,0',
         ]);
 
