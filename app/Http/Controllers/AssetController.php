@@ -21,6 +21,7 @@ use App\Models\asset_license as AssetLicense;
 use App\Models\duty_order as DutyOrder;
 use App\Models\clearance_header as ClearanceHeader;
 use App\Models\clearance_detail as ClearanceDetail;
+use App\Models\numseq;
 
 class AssetController extends Controller
 {
@@ -445,14 +446,21 @@ class AssetController extends Controller
         // Only create duty orders for assets that don't have them yet
         if (!empty($newAssetIds)) {
             $now = Carbon::now();
-            $lastOrderNo = DutyOrder::whereYear('created_at', $now->year)
-                ->whereMonth('created_at', $now->month)
-                ->lockForUpdate()
-                ->max('order_number');
+            // $lastOrderNo = DutyOrder::whereYear('created_at', $now->year)
+            //     ->whereMonth('created_at', $now->month)
+            //     ->lockForUpdate()
+            //     ->max('order_number');
 
-            $parts = explode('-', $lastOrderNo);
-            $lastOrderId = (int) end($parts);
-            $newOrderNo = $now->format('F Y') . '-' . str_pad(($lastOrderId ?? 0) + 1, 3, '0', STR_PAD_LEFT);
+            $lastOrderNo = numseq::where('year', $now->year)
+                ->where('month', $now->month)
+                ->value('current_number');
+
+            $lastOrderId = (int) ($lastOrderNo ?? 0);
+
+            $newOrderId = $lastOrderId + 1;
+
+            $newOrderNo = $now->format('F Y') . '-'
+                . str_pad($newOrderId, 3, '0', STR_PAD_LEFT);
 
             foreach ($newAssetIds as $assetId) {
                 $asset = Asset::find($assetId);
