@@ -466,7 +466,7 @@
         function voidBudget(id, requestNumber) {
             if (confirm(
                     `You will not be able to edit the data once voided. Are you sure you want to void budget request ${requestNumber}?`
-                    )) {
+                )) {
                 $.ajax({
                     url: `/budget/${id}/void`,
                     method: 'POST',

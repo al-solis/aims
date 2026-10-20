@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\receiving_header;
+use App\Models\uom;
+use App\Models\supplies;
 
 class receiving_detail extends Model
 {
@@ -30,11 +33,11 @@ class receiving_detail extends Model
 
     public function uom()
     {
-        return $this->belongsTo(UOM::class, 'uom_id');
+        return $this->belongsTo(uom::class, 'uom_id');
     }
 
     public function product()
     {
-        return $this->belongsTo(Supplies::class, 'product_id');
+        return $this->belongsTo(supplies::class, 'product_id');
     }
 }

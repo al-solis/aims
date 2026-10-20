@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\employee;
-use App\Models\location as Location;
+use App\Models\location;
 use App\Models\issuance_detail;
 
 class issuance_header extends Model
@@ -29,7 +29,7 @@ class issuance_header extends Model
     }
     public function location()
     {
-        return $this->belongsTo(Location::class, 'location_id');
+        return $this->belongsTo(location::class, 'location_id');
     }
 
     public function details()

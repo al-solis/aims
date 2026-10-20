@@ -27,7 +27,7 @@ class issuance_detail extends Model
 
     public function supply()
     {
-        return $this->belongsTo(Supplies::class, 'supply_id');
+        return $this->belongsTo(supplies::class, 'supply_id');
     }
 
     public function uom()

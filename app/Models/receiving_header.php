@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\supplier;
+use App\Models\employee;
+use App\Models\receiving_detail;
 
 class receiving_header extends Model
 {
@@ -28,12 +31,12 @@ class receiving_header extends Model
 
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class, 'supplier_id');
+        return $this->belongsTo(supplier::class, 'supplier_id');
     }
 
     public function receiver()
     {
-        return $this->belongsTo(Employee::class, 'received_by');
+        return $this->belongsTo(employee::class, 'received_by');
     }
 
     public function details()
