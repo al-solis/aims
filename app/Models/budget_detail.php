@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Uom;
+use App\Models\uom;
 use App\Models\budget_header;
 
 class budget_detail extends Model
@@ -28,6 +28,6 @@ class budget_detail extends Model
 
     public function unit()
     {
-        return $this->belongsTo(Uom::class, 'unit_id');
+        return $this->belongsTo(uom::class, 'unit_id');
     }
 }
