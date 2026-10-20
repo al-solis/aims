@@ -44,13 +44,13 @@ $palette = [
     @endphp --}}
     <div class="container mx-auto px-2 sm:px-4 lg:px-4 py-2">
         <!-- Header -->
-        <div class="mb-2">
+        {{-- <div class="mb-2">
             <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Reports</h1>
             <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Select a report to generate</p>
-        </div>
+        </div> --}}
 
         <!-- Reports Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-4">
             @forelse ($reportCards as $sm)
                 @php
                     $c = $palette[$loop->index % count($palette)];

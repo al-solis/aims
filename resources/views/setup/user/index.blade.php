@@ -121,10 +121,10 @@
                                 <th scope="col" class="w-[80px]">Last Name</th>
                                 <th scope="col" class="w-[80px]">First Name</th>
                                 <th scope="col" class="w-[80px]">Middle Name</th>
-                                <th scope="col" class="w-[80px]">Email</th>
+                                <th scope="col" class="w-[150px]">Email</th>
                                 <th scope="col" class="w-[80px]">Role</th>
                                 <th scope="col" class="w-[80px]">Status</th>
-                                <th scope="col" class="text-center w-[50px]">Actions</th>
+                                <th scope="col" class="text-center w-[20px]">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
