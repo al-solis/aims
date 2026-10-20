@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\budget_header;
+use App\Models\location;
+use App\Models\User;
 
 class budget_approval extends Model
 {
@@ -23,7 +26,7 @@ class budget_approval extends Model
 
     public function location()
     {
-        return $this->belongsTo(Location::class, 'location_id');
+        return $this->belongsTo(location::class, 'location_id');
     }
 
     public function approver()
