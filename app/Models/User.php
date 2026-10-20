@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\role;
+use App\Models\employee;
+use App\Models\access_right;
 
 class User extends Authenticatable
 {
@@ -56,7 +58,7 @@ class User extends Authenticatable
 
     public function employee()
     {
-        return $this->hasOne(Employee::class, 'employee_code', 'employee_code');
+        return $this->hasOne(employee::class, 'employee_code', 'employee_code');
     }
 
     public function getDepartmentAttribute()
