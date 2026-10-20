@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+    @if (config('app.theme')) data-theme="{{ config('app.theme') }}" @endif>
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Guardforce Utilization, Asset & Resource Deployment System') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -15,54 +16,61 @@
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
+    <link rel="stylesheet" href="{{ asset('assets/css/form-theme.css') }}">
 </head>
 
-<body
-    class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
+{{-- Wallpaper with an overlay tinted by the theme's ink color --}}
 
-    <header class="flex items-center justify-end w-full mb-4">
-        @if (route('login', absolute: false))
-            <nav class="flex items-center justify-end gap-4">
+<body class="min-h-screen flex flex-col items-center justify-center p-6"
+    style="background-image: linear-gradient(color-mix(in srgb, var(--ft-ink) 82%, transparent), color-mix(in srgb, var(--ft-ink) 90%, transparent)), url('{{ asset('images/wallpaper.jpg') }}'); background-size: cover; background-position: center; background-attachment: fixed;">
+
+    <main class="ft-card w-full max-w-md text-center"
+        style="border: 1px solid color-mix(in srgb, var(--ft-accent) 60%, transparent);">
+
+        {{-- Logo sits on the dark header band, as it did on the old dark panel --}}
+        <div class="ft-card-head flex items-center justify-center" style="padding: 2rem;">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-auto max-w-[220px] max-h-32">
+        </div>
+
+        <div class="ft-body" style="padding: 2rem 2rem 2.25rem;">
+            <h1 class="text-3xl font-semibold leading-tight"
+                style="color: var(--ft-ink); font-family: 'Cormorant Garamond', Georgia, serif;">
+                {{ config('app.name', 'Guardforce Utilization, Asset & Resource Deployment System') }}
+            </h1>
+
+            <p class="mt-2 text-sm" style="color: var(--ft-muted);">
                 @auth
-                    <a class="py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg 
-                            bg-gray-900 text-white hover:bg-gray-800 focus:outline-none"
-                        href="{{ url('/dashboard') }}">
-                        Dashboard
-                    </a>
+                    Welcome back. Continue to your dashboard.
                 @else
-                    <a class="py-3 px-4 w-[120px] inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg 
-                                bg-gray-900 text-white hover:bg-gray-800 focus:outline-none"
-                        href="{{ route('login') }}">
-                        Login
-                    </a>
-
-                    @if (route(name: 'register', absolute: false))
-                        <a class="py-3 px-4 w-[120px] inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg 
-                                bg-gray-200 text-gray-800 hover:bg-gray-300 focus:outline-none"
-                            href="{{ route('register') }}">
-                            Register
-                        </a>
-                    @endif
+                    Sign in to continue.
                 @endauth
-            </nav>
-        @endif
-    </header>
-    <div
-        class="flex flex-col items-center justify-center w-full
-                    transition-opacity opacity-100 duration-750 lg:grow
-                    starting:opacity-0 bg-gray-600 p-6 rounded-lg">
+            </p>
 
-        {{-- <img src="{{ asset('images/kesia_banner.webp') }}" alt="Logo" class="w-auto max-w-[280px] lg:max-w-sm"> --}}
-        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-auto max-w-[280px] lg:max-w-sm">
-        <p class="mt-4 text-center text-4xl font-medium text-white tracking-wide">
-            {{ env('APP_NAME', 'Asset and Workforce Management System') }}
-        </p>
+            @if (route('login', absolute: false))
+                <nav class="ft-divider mt-6 pt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                    @auth
+                        <a class="ft-btn ft-btn-primary justify-center sm:min-w-[9rem]" href="{{ url('/dashboard') }}">
+                            Dashboard
+                        </a>
+                    @else
+                        <a class="ft-btn ft-btn-primary justify-center sm:min-w-[9rem]" href="{{ route('login') }}">
+                            Login
+                        </a>
 
-    </div>
+                        @if (route(name: 'register', absolute: false))
+                            <a class="ft-btn ft-btn-ghost justify-center sm:min-w-[9rem]" href="{{ route('register') }}">
+                                Register
+                            </a>
+                        @endif
+                    @endauth
+                </nav>
+            @endif
+        </div>
+    </main>
 
-    @if (route('login', absolute: false))
-        <div class="h-14.5 hidden lg:block"></div>
-    @endif
+    <footer class="mt-6 text-xs" style="color: var(--ft-on-ink-muted);">
+        &copy; {{ date('Y') }} {{ config('app.name', 'Asset and Workforce Management System') }}
+    </footer>
 </body>
 
 </html>
