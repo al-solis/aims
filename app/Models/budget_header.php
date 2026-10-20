@@ -3,6 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\budget_approval;
+use App\Models\budget_detail;
+use App\Models\location;
+use App\Models\User;
 
 class budget_header extends Model
 {
@@ -44,12 +48,12 @@ class budget_header extends Model
 
     public function budgetApprover()
     {
-        return $this->belongsTo(Location::class, 'current_approver');
+        return $this->belongsTo(location::class, 'current_approver');
     }
 
     public function location()
     {
-        return $this->belongsTo(Location::class, 'location_id');
+        return $this->belongsTo(location::class, 'location_id');
     }
 
     public function approvalHistory()
