@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Uom;
+use App\Models\budget_header;
 
 class budget_detail extends Model
 {
