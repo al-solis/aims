@@ -10,6 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\asset;
 use App\Models\category;
@@ -451,16 +452,36 @@ class AssetController extends Controller
             //     ->lockForUpdate()
             //     ->max('order_number');
 
-            $lastOrderNo = numseq::where('year', $now->year)
+            $now = now();
+
+            $lastNo = numseq::where('name', 'ddo')
+                ->where('year', $now->year)
                 ->where('month', $now->month)
-                ->value('current_number');
+                ->value('current_number') ?? 0;
 
-            $lastOrderId = (int) ($lastOrderNo ?? 0);
+            $nextNo = $lastNo + 1;
 
-            $newOrderId = $lastOrderId + 1;
+            if ($lastNo == 0) {
+                //insert to num sequence
+                DB::table('numseqs')->insert([
+                    'name' => 'ddo',
+                    'month' => $now->month,
+                    'year' => $now->year,
+                    'current_number' => 1,
+                    'created_by' => 1,
+                    'created_at' => $now,
+                ]);
+            } else {
+                DB::table('numseqs')
+                    ->where('name', 'ddo')
+                    ->where('year', $now->year)
+                    ->where('month', $now->month)
+                    ->increment('current_number', 1, [
+                        'updated_at' => $now,
+                    ]);
+            }
 
-            $newOrderNo = $now->format('F Y') . '-'
-                . str_pad($newOrderId, 3, '0', STR_PAD_LEFT);
+            $nextDdoNo = $now->format('F Y') . '-' . str_pad($nextNo, 3, '0', STR_PAD_LEFT);
 
             foreach ($newAssetIds as $assetId) {
                 $asset = Asset::find($assetId);
@@ -468,7 +489,7 @@ class AssetController extends Controller
                     $expiryDate = $asset->licenses->min('expiration_date');
 
                     DutyOrder::create([
-                        'order_number' => $newOrderNo,
+                        'order_number' => $nextDdoNo,
                         'employee_id' => $id,
                         'asset_id' => $asset->id,
                         'expiry_date' => $expiryDate ?? null,

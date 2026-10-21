@@ -1180,6 +1180,9 @@ class ReportController extends Controller
                     'month' => Carbon::parse($request->from_date)->month,
                     'year' => Carbon::parse($request->from_date)->year,
                     'current_number' => 1,
+                    'number_length' => 5,
+                    'created_by' => Auth::user(),
+                    'created_at' => now(),
                 ]);
             }
 
