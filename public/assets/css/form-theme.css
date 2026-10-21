@@ -843,3 +843,66 @@
         transition: none !important;
     }
 }
+
+/* ==========================================================================
+   Login page
+   Use on the guest-layout page:  <div class="ft-card ft-login"> ... </div>
+   The wallpaper path is relative to this file (public/assets/css/ -> public/images/).
+   ========================================================================== */
+
+body:has(.ft-login) {
+    background-image:
+        linear-gradient(
+            color-mix(in srgb, var(--ft-ink) 82%, transparent),
+            color-mix(in srgb, var(--ft-ink) 88%, transparent)
+        ),
+        url("../../images/wallpaper.jpeg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+div:has(> .ft-login) {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    max-width: 26rem !important;
+    overflow: visible !important;
+}
+
+.ft-login {
+    border: 1px solid color-mix(in srgb, var(--ft-accent) 60%, transparent);
+}
+
+.ft-login .ft-card-head h1 {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 2rem;
+    line-height: 1.1;
+}
+
+.ft-login input[type="checkbox"] {
+    border-radius: 3px;
+    border-color: var(--ft-border);
+    color: var(--ft-ink);
+}
+
+.ft-login input[type="checkbox"]:checked {
+    border-color: var(--ft-ink);
+}
+
+.ft-login input[type="checkbox"]:focus,
+.ft-login a:focus {
+    --tw-ring-color: var(--ft-accent);
+}
+
+.ft-login a {
+    color: var(--ft-ink);
+    text-decoration-color: var(--ft-accent);
+    text-underline-offset: 3px;
+}
+
+.ft-login a:hover {
+    color: var(--ft-accent-dark);
+}
