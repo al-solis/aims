@@ -149,7 +149,7 @@
                                 <th scope="col" style="min-width: 120px;">Number/ Serial</th>
                                 <th scope="col" style="min-width: 150px;">Issuing Authority</th>
                                 <th scope="col" style="min-width: 110px;">Expiration Date</th>
-                                <th scope="col" style="min-width: 100px;">Status</th>
+                                <th scope="col" style="min-width: 120px;">Status</th>
                                 <th scope="col" style="min-width: 200px;">Alert</th>
                                 @if ($canUpdate || $canDelete)
                                     <th scope="col" class="text-center" style="width: 60px;">Actions</th>

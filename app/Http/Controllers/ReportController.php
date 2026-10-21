@@ -981,9 +981,7 @@ class ReportController extends Controller
                     'd.name as asset_name',
                     'd.serial',
 
-                    DB::raw("
-            FORMAT(MAX(e.expiration_date), 'MMMM d, yyyy') as expiration_date
-        ")
+                    DB::raw("TO_CHAR(MAX(e.expiration_date), 'FMMonth FMDD, YYYY') as expiration_date")
                 )
 
                 ->groupBy(
@@ -1029,7 +1027,7 @@ class ReportController extends Controller
                     'd.name as asset_name',
                     'd.serial',
 
-                    DB::raw("FORMAT(MAX(e.expiration_date), 'MMMM d, yyyy') as expiration_date")
+                    DB::raw("TO_CHAR(MAX(e.expiration_date), 'FMMonth FMDD, YYYY') as expiration_date")
                 )
                 ->groupBy(
                     'c.id',
@@ -1114,11 +1112,11 @@ class ReportController extends Controller
             ->whereNull('d.assigned_to')                   // unassigned assets only
 
             ->select(
-                DB::raw('0 as employee_id'),
-                DB::raw("'' as last_name"),
-                DB::raw("'' as first_name"),
-                DB::raw("'' as middle_name"),
-                DB::raw("'' as position"),
+                DB::raw('0::integer as employee_id'),
+                DB::raw("''::varchar as last_name"),
+                DB::raw("''::varchar as first_name"),
+                DB::raw("''::varchar as middle_name"),
+                DB::raw("''::varchar as position"),
 
                 'l.name as location_name',
                 'l.address as location_address',
@@ -1131,7 +1129,7 @@ class ReportController extends Controller
                 'd.name as asset_name',
                 'd.serial',
 
-                DB::raw("FORMAT(MAX(e.expiration_date), 'MMMM d, yyyy') as expiration_date")
+                DB::raw("TO_CHAR(MAX(e.expiration_date), 'FMMonth FMDD, YYYY') as expiration_date")
             )
 
             ->groupBy(

@@ -138,13 +138,13 @@
                                 <th scope="col" class="w-[90px]">Request ID</th>
                                 <th scope="col" class="w-[180px]">Employee</th>
                                 <th scope="col" class="w-[150px]">Department</th>
-                                <th scope="col" class="w-[100px]">Type</th>
+                                <th scope="col" class="w-[200px]">Type</th>
                                 <th scope="col" class="w-[80px]">Expected Date</th>
                                 <th scope="col" class="w-[100px]">Status</th>
                                 <th scope="col" class="w-[120px]">Approver</th>
-                                <th scope="col" class="w-[150px]">Current Approver</th>
+                                <th scope="col" class="w-[220px]">Current Approver</th>
                                 <th scope="col" class="text-right w-[60px]">Assets</th>
-                                <th scope="col" class="text-right w-[80px]">Value</th>
+                                <th scope="col" class="text-right w-[180px]">Value</th>
                                 <th scope="col" class="text-center w-[50px]">Actions</th>
                             </tr>
                         </thead>
@@ -536,7 +536,7 @@
         function markAsComplete(id, requestNumber) {
             if (confirm(
                     `You will not be able to edit the data once marked as complete. Are you sure you want to mark clearance ${requestNumber} as complete?`
-                    )) {
+                )) {
                 $.ajax({
                     url: `/clearance/${id}/mark-complete`,
                     method: 'POST',
@@ -557,7 +557,7 @@
         function voidClearance(id, requestNumber) {
             if (confirm(
                     `You will not be able to edit the data once voided. Are you sure you want to void clearance ${requestNumber}?`
-                    )) {
+                )) {
                 $.ajax({
                     url: `/clearance/${id}/void`,
                     method: 'POST',

@@ -98,7 +98,6 @@ class SuppliesController extends Controller
             'unit_price' => 'required|numeric|min:0',
             'initial_stock' => 'required|integer|min:0',
             'supplier_id' => 'nullable|exists:suppliers,id',
-            'reorder_level' => 'nullable|numeric|min:0',
             'reorder_quantity' => 'nullable|numeric|min:0',
         ]);
 
@@ -114,7 +113,7 @@ class SuppliesController extends Controller
             'supplier_id' => $validatedData['supplier_id'] ?? null,
             'category_id' => $validatedData['category_id'],
             'uom_id' => $validatedData['uom_id'],
-            'reorder_level' => $validatedData['reorder_level'] ?? 0,
+            'reorder_level' => 0,
             'reorder_quantity' => $validatedData['reorder_quantity'] ?? 0,
             'unit_price' => $validatedData['unit_price'],
             'allocated_stock' => 0,

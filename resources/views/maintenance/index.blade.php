@@ -134,7 +134,7 @@
                                 <th scope="col" class="w-[100px]">Status</th>
                                 <th scope="col" class="w-[80px]">Priority</th>
                                 <th scope="col" class="w-[150px]">Technician</th>
-                                <th scope="col" class="text-right w-[80px]">Cost</th>
+                                <th scope="col" class="text-right w-[120px]">Cost</th>
                                 <th scope="col" class="text-center w-[50px]">Actions</th>
                             </tr>
                         </thead>
@@ -460,7 +460,8 @@
                                     <option value="" disabled selected>Select asset</option>
                                     @foreach ($assets as $asset)
                                         <option value="{{ $asset->id }}">{{ $asset->asset_code }}
-                                            ({{ $asset->name }})</option>
+                                            ({{ $asset->name }})
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -687,7 +688,7 @@
         function markAsComplete(id, maintenanceCode) {
             if (confirm(
                     `You will not be able to edit the data once marked as complete. Are you sure you want to mark maintenance ${maintenanceCode} as complete?`
-                    )) {
+                )) {
                 $.ajax({
                     url: `/maintenance/${id}/mark-complete`,
                     method: 'POST',
@@ -708,7 +709,7 @@
         function voidMaintenance(id, maintenanceCode) {
             if (confirm(
                     `You will not be able to edit the data once voided. Are you sure you want to void maintenance ${maintenanceCode}?`
-                    )) {
+                )) {
                 $.ajax({
                     url: `/maintenance/${id}/void`,
                     method: 'POST',

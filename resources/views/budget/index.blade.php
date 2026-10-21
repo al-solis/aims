@@ -142,7 +142,7 @@
                                 <th scope="col" style="min-width: 140px;">Requested By</th>
                                 <th scope="col" style="min-width: 100px;">Amount</th>
                                 <th scope="col" style="min-width: 110px;">Status</th>
-                                <th scope="col" style="min-width: 120px;">Approver</th>
+                                <th scope="col" style="min-width: 130px;">Approver</th>
                                 <th scope="col" style="min-width: 150px;">Current Approver</th>
                                 <th scope="col" class="text-center" style="width: 150px;">Actions</th>
                             </tr>
