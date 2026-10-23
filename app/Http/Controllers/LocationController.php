@@ -46,7 +46,8 @@ class LocationController extends Controller
             $query->where('cluster_id', $cluster);
         }
 
-        $locations = $query->withCount('sublocations')->paginate(config('app.paginate'));
+        $locations = $query->orderBy('name')
+            ->withCount('sublocations')->paginate(config('app.paginate'));
 
         return view('setup.location.index', compact('locations', 'clusters', 'totalLocations', 'activeLocations', 'totalSubLocations', 'search', 'status'));
 
