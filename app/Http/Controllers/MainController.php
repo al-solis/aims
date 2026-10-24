@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\asset as Asset;
 use App\Models\location as Location;
-use App\Models\category;
 use Carbon\Carbon;
 use App\Models\maintenance as Maintenance;
 use App\Models\asset_license as AssetLicense;
@@ -16,6 +15,18 @@ use App\Models\setting;
 use App\Models\supplies as Supplies;
 use App\Models\cluster as Cluster;
 
+/**
+ * Dashboard controller - written to run on both Microsoft SQL Server and PostgreSQL.
+ *
+ * Portability rules used in this file:
+ *  - No big "WHERE id IN (?, ?, ...)" lists: SQL Server rejects queries with > 2100 bound
+ *    parameters. Location filters are expressed as a sub-select instead.
+ *  - No whereDate(): it becomes CAST(col AS date) / col::date, which is slow (not index friendly).
+ *    Plain range comparisons on the raw column are used instead.
+ *  - Every non-aggregated SELECT column is in GROUP BY (PostgreSQL is strict about this).
+ *  - Request IDs are cast to integers (PostgreSQL throws on "abc" for a bigint column).
+ *  - No vendor functions (FORMAT, to_char, DATEPART ...). Month bucketing is done in PHP.
+ */
 class MainController extends Controller
 {
     public function index(Request $request)
@@ -23,12 +34,13 @@ class MainController extends Controller
         $today = Carbon::today();
 
         // ================= FILTERS =================
-        $filterClusterId = $request->input('searchcluster') ?: null;
-        $filterLocationId = $request->input('searchloc') ?: null;
+        // Accept only positive integers; anything else is ignored.
+        $toId = fn($v) => (is_scalar($v) && ctype_digit((string) $v) && (int) $v > 0) ? (int) $v : null;
 
-        // FIX: reconcile the two filters. Previously a location from a different
-        // cluster (or a stale location left in the form after changing the cluster)
-        // was AND-ed with the cluster filter and produced an empty dashboard.
+        $filterClusterId = $toId($request->input('searchcluster'));
+        $filterLocationId = $toId($request->input('searchloc'));
+
+        // Reconcile the two filters: a location outside the chosen cluster is dropped (cluster wins).
         $selectedLocation = $filterLocationId ? Location::find($filterLocationId) : null;
         if ($filterLocationId && !$selectedLocation) {
             $filterLocationId = null; // unknown location id
@@ -36,45 +48,36 @@ class MainController extends Controller
             $selectedLocation && $filterClusterId
             && (int) $selectedLocation->cluster_id !== (int) $filterClusterId
         ) {
-            $filterLocationId = null; // location does not belong to the chosen cluster -> cluster wins
+            $filterLocationId = null;
             $selectedLocation = null;
         }
 
         $filtersActive = (bool) ($filterClusterId || $filterLocationId);
 
-        $locationQuery = Location::query();
-        if ($filterClusterId) {
-            $locationQuery->where('cluster_id', $filterClusterId);
-        }
-        if ($filterLocationId) {
-            $locationQuery->where('id', $filterLocationId);
-        }
+        // Locations used for chart labels (names + ids)
+        $activeLocations = Location::query()
+            ->when($filterClusterId, fn($q) => $q->where('cluster_id', $filterClusterId))
+            ->when($filterLocationId, fn($q) => $q->where('id', $filterLocationId))
+            ->orderBy('name')
+            ->pluck('name', 'id');
 
-        $activeLocations = $locationQuery->pluck('name', 'id');
-        $locationIds = $activeLocations->keys();
+        // Only scope when a filter is active, so records with NULL location_id still count in the unfiltered totals.
+        $scopeByLocation = fn($query) => $filtersActive
+            ? $query->whereIn('location_id', function ($sub) use ($filterClusterId, $filterLocationId) {
+                $sub->from('locations')->select('id')
+                    ->when($filterClusterId, fn($q) => $q->where('cluster_id', $filterClusterId))
+                    ->when($filterLocationId, fn($q) => $q->where('id', $filterLocationId));
+            })
+            : $query;
 
-        // FIX: only scope by location when a filter is active. Before, the "no filter"
-        // view still did whereIn(all locations), which silently dropped every asset /
-        // employee with a NULL location_id from the totals (while the "Unassigned
-        // Employees" card counted them separately).
-        $scopeByLocation = function ($query) use ($locationIds, $filtersActive) {
-            if (!$filtersActive) {
-                return $query;
-            }
-            return $locationIds->isNotEmpty()
-                ? $query->whereIn('location_id', $locationIds)
-                : $query->whereRaw('1 = 0');
-        };
-
-        // Same idea for models that reach location through a relation (asset / employee)
-        $scopeByRelation = function ($query, string $relation) use ($locationIds, $filtersActive) {
-            if (!$filtersActive) {
-                return $query;
-            }
-            return $locationIds->isNotEmpty()
-                ? $query->whereHas($relation, fn($q) => $q->whereIn('location_id', $locationIds))
-                : $query->whereRaw('1 = 0');
-        };
+        // For models that reach a location through a relation (asset / employee)
+        $scopeByRelation = fn($query, string $relation) => $filtersActive
+            ? $query->whereHas($relation, fn($q) => $q->whereIn('location_id', function ($sub) use ($filterClusterId, $filterLocationId) {
+                $sub->from('locations')->select('id')
+                    ->when($filterClusterId, fn($q) => $q->where('cluster_id', $filterClusterId))
+                    ->when($filterLocationId, fn($q) => $q->where('id', $filterLocationId));
+            }))
+            : $query;
 
         // ================= ASSET STATS =================
         $assetQuery = $scopeByLocation(Asset::query());
@@ -85,13 +88,12 @@ class MainController extends Controller
         $maintenanceAssets = (clone $assetQuery)->where('status', 4)->count();
         $retiredAssets = (clone $assetQuery)->where('status', 5)->count();
 
-        // ---- NEW: financial / utilization KPIs
-        $totalAssetValue = (float) (clone $assetQuery)->whereNotIn('status', [5])->sum('cost'); // excludes retired
+        $totalAssetValue = (float) (clone $assetQuery)->where('status', '<>', 5)->sum('cost'); // excludes retired
         $usableAssets = $activeAssets + $assignedAssets;
         $utilizationRate = $usableAssets > 0 ? round($assignedAssets / $usableAssets * 100, 1) : 0;
         $retiredRate = $totalAssets > 0 ? round($retiredAssets / $totalAssets * 100, 1) : 0;
 
-        // Data-quality: marked "assigned" but nobody is actually assigned
+        // Data quality: marked "assigned" but nobody is assigned
         $assignedNoOwner = (clone $assetQuery)->where('status', 3)->whereNull('assigned_to')->count();
 
         // ================= EMPLOYEE STATS =================
@@ -106,12 +108,11 @@ class MainController extends Controller
 
         $totalClusters = $filterClusterId ? 1 : Cluster::where('is_active', 1)->count();
 
-        // ---- NEW: workforce KPIs
         $assetsPerEmployee = $activeEmployees > 0 ? round($assignedAssets / $activeEmployees, 2) : 0;
-        $newHires30 = (clone $employeeQuery)->whereNotNull('hire_date')
-            ->whereDate('hire_date', '>=', $today->copy()->subDays(30)->toDateString())->count();
-        $separations30 = (clone $employeeQuery)->whereNotNull('termination_date')
-            ->whereDate('termination_date', '>=', $today->copy()->subDays(30)->toDateString())->count();
+
+        $since30 = $today->copy()->subDays(30)->toDateString();
+        $newHires30 = (clone $employeeQuery)->where('hire_date', '>=', $since30)->count();
+        $separations30 = (clone $employeeQuery)->where('termination_date', '>=', $since30)->count();
 
         $employmentTypeCounts = (clone $employeeQuery)->where('status', 1)
             ->select('employment_type', DB::raw('count(*) as total'))
@@ -122,22 +123,23 @@ class MainController extends Controller
         $employmentTypeData = $employmentTypeCounts->values();
 
         // ================= CHART DATA: ASSETS BY LOCATION =================
-        $assetCounts = $locationIds->isEmpty() ? collect() : (clone $assetQuery)
+        $assetCounts = (clone $assetQuery)
+            ->whereNotNull('location_id')
             ->select('location_id', DB::raw('count(*) as total'))
             ->groupBy('location_id')
             ->pluck('total', 'location_id');
 
         $locationLabels = $activeLocations->values();
-        $assetData = $activeLocations->map(fn($name, $id) => $assetCounts[$id] ?? 0)->values();
+        $assetData = $activeLocations->map(fn($name, $id) => (int) ($assetCounts[$id] ?? 0))->values();
 
         // ================= CHART DATA: EMPLOYEES BY LOCATION =================
-        $employeeCounts = $locationIds->isEmpty() ? collect() : (clone $employeeQuery)
-            ->select('location_id', DB::raw('count(*) as total'))
+        $employeeCounts = (clone $employeeQuery)
             ->whereNotNull('location_id')
+            ->select('location_id', DB::raw('count(*) as total'))
             ->groupBy('location_id')
             ->pluck('total', 'location_id');
 
-        $employeeData = $activeLocations->map(fn($name, $id) => $employeeCounts[$id] ?? 0)->values();
+        $employeeData = $activeLocations->map(fn($name, $id) => (int) ($employeeCounts[$id] ?? 0))->values();
 
         // ================= CHART DATA: ASSETS BY CLUSTER =================
         $clusterQuery = Cluster::where('is_active', 1);
@@ -147,18 +149,17 @@ class MainController extends Controller
             $clusterQuery->where('id', $selectedLocation->cluster_id);
         }
 
-        $clusters = $clusterQuery->pluck('name', 'id');
-        $clusterIds = $clusters->keys();
+        $clusters = $clusterQuery->orderBy('name')->pluck('name', 'id');
 
-        $assetClusterCounts = $clusterIds->isEmpty() ? collect() : Asset::join('locations', 'assets.location_id', '=', 'locations.id')
-            ->select('locations.cluster_id', DB::raw('count(assets.id) as total'))
-            ->whereIn('locations.cluster_id', $clusterIds)
+        $assetClusterCounts = $clusters->isEmpty() ? collect() : Asset::join('locations', 'assets.location_id', '=', 'locations.id')
+            ->whereIn('locations.cluster_id', $clusters->keys()->all())
             ->when($filterLocationId, fn($q) => $q->where('assets.location_id', $filterLocationId))
+            ->select('locations.cluster_id', DB::raw('count(assets.id) as total'))
             ->groupBy('locations.cluster_id')
-            ->pluck('total', 'locations.cluster_id');
+            ->pluck('total', 'cluster_id');
 
         $clusterLabels = $clusters->values();
-        $assetClusterData = $clusters->map(fn($name, $id) => $assetClusterCounts[$id] ?? 0)->values();
+        $assetClusterData = $clusters->map(fn($name, $id) => (int) ($assetClusterCounts[$id] ?? 0))->values();
 
         // ================= CATEGORY STATS (count + value, aggregated in SQL) =================
         $categoryRows = (clone $assetQuery)
@@ -172,14 +173,13 @@ class MainController extends Controller
             ->map(fn($g) => (int) $g->sum('total'))
             ->sortDesc();
 
-        // NEW: asset value by category (top 6)
         $categoryValue = $categoryRows
             ->groupBy(fn($r) => optional($r->category)->name ?? 'Uncategorized')
             ->map(fn($g) => (float) $g->sum('total_value'))
             ->sortDesc()
             ->take(6);
 
-        // ================= NEW: CONDITION BREAKDOWN =================
+        // ================= CONDITION BREAKDOWN =================
         $conditionCounts = (clone $assetQuery)
             ->select('condition', DB::raw('count(*) as total'))
             ->groupBy('condition')
@@ -188,26 +188,31 @@ class MainController extends Controller
             ->map(fn($k) => ($k === null || $k === '') ? 'Not specified' : (string) $k)->values();
         $conditionData = $conditionCounts->values();
 
-        // ================= NEW: TOP LOCATIONS BY ASSET VALUE =================
-        $topLocations = (clone $assetQuery)
+        // ================= TOP LOCATIONS BY ASSET VALUE =================
+        // Location names are looked up for just these 5 ids (unaffected by the chart-label list).
+        $topRows = (clone $assetQuery)
             ->whereNotNull('location_id')
             ->select('location_id', DB::raw('count(*) as total'), DB::raw('sum(cost) as total_value'))
             ->groupBy('location_id')
             ->orderByDesc('total_value')
             ->limit(5)
-            ->get()
-            ->map(fn($r) => [
-                'name' => $activeLocations->get($r->location_id, 'Unknown'),
-                'count' => (int) $r->total,
-                'value' => (float) $r->total_value,
-            ]);
+            ->get();
 
-        // ================= NEW: ACQUISITION TREND (last 12 months) =================
+        $topNames = Location::whereIn('id', $topRows->pluck('location_id')->all())->pluck('name', 'id');
+
+        $topLocations = $topRows->map(fn($r) => [
+            'name' => $topNames->get($r->location_id, 'Unknown'),
+            'count' => (int) $r->total,
+            'value' => (float) $r->total_value,
+        ]);
+
+        // ================= ACQUISITION TREND (last 12 months) =================
+        // Month bucketing is done in PHP so no vendor-specific date function is needed.
         $months = collect(range(11, 0))->map(fn($i) => $today->copy()->startOfMonth()->subMonths($i));
 
         $purchases = (clone $assetQuery)
             ->whereNotNull('purchase_date')
-            ->whereDate('purchase_date', '>=', $months->first()->toDateString())
+            ->where('purchase_date', '>=', $months->first()->toDateString())
             ->get(['purchase_date', 'cost'])
             ->groupBy(fn($a) => Carbon::parse($a->purchase_date)->format('Y-m'));
 
@@ -216,12 +221,15 @@ class MainController extends Controller
         $acquisitionSpend = $months->map(fn($m) => round((float) $purchases->get($m->format('Y-m'), collect())->sum('cost'), 2))->values();
 
         // ================= ALERTS =================
-        $alertDays = (int) (setting::where('key', 'license_expiring_days')->first()->value ?? 30);
-        $windowEnd = $today->copy()->addDays($alertDays);
+        $alertDays = (int) (setting::where('key', 'license_expiring_days')->value('value') ?? 30);
+        // Exclusive upper bound = "up to and including the last day of the window", valid for date and datetime columns
+        $windowEnd = $today->copy()->addDays($alertDays + 1)->toDateString();
+
+        // Whole days from today until $date (negative = already past)
+        $daysUntil = fn($date) => (int) $today->diffInDays(Carbon::parse($date)->startOfDay(), false);
 
         $alerts = collect();
 
-        // NEW: operational health counters shown as tiles
         $ops = [
             'license_expired' => 0,
             'license_expiring' => 0,
@@ -235,11 +243,11 @@ class MainController extends Controller
 
         /* LICENSE ALERTS */
         $licenseExpirations = $scopeByRelation(AssetLicense::with('asset'), 'asset')
-            ->whereDate('expiration_date', '<=', $windowEnd->toDateString())
+            ->where('expiration_date', '<', $windowEnd)
             ->get();
 
         foreach ($licenseExpirations as $license) {
-            $daysLeft = (int) $today->diffInDays(Carbon::parse($license->expiration_date), false);
+            $daysLeft = $daysUntil($license->expiration_date);
             $absDays = abs($daysLeft);
             $dayLabel = $absDays == 1 ? 'day' : 'days';
             $assetCode = optional($license->asset)->asset_code ?? 'Unknown asset';
@@ -261,11 +269,11 @@ class MainController extends Controller
         /* CLEARANCE ALERTS */
         $clearanceExpirations = $scopeByRelation(ClearanceHeader::with('employee'), 'employee')
             ->whereIn('status', [0, 1, 3])
-            ->whereDate('expected_date', '<=', $windowEnd->toDateString())
+            ->where('expected_date', '<', $windowEnd)
             ->get();
 
         foreach ($clearanceExpirations as $clearance) {
-            $daysLeft = (int) $today->diffInDays(Carbon::parse($clearance->expected_date), false);
+            $daysLeft = $daysUntil($clearance->expected_date);
             $name = optional($clearance->employee)->first_name ?? 'Employee';
 
             if ($daysLeft < 0) {
@@ -292,11 +300,11 @@ class MainController extends Controller
         /* MAINTENANCE ALERTS */
         $maintenanceAlerts = $scopeByRelation(Maintenance::with('asset'), 'asset')
             ->whereIn('status', [1, 2])
-            ->whereDate('scheduled_date', '<=', $windowEnd->toDateString())
+            ->where('scheduled_date', '<', $windowEnd)
             ->get();
 
         foreach ($maintenanceAlerts as $maintenance) {
-            $daysLeft = (int) $today->diffInDays(Carbon::parse($maintenance->scheduled_date), false);
+            $daysLeft = $daysUntil($maintenance->scheduled_date);
             $assetName = optional($maintenance->asset)->name ?? 'Unknown asset';
 
             if ($daysLeft < 0) {
@@ -342,30 +350,16 @@ class MainController extends Controller
             ]);
         }
 
-        // Most severe first, then oldest first (previously: oldest only, which could hide critical items)
+        // Most severe first, then oldest first
         $totalAlerts = $alerts->count();
         $alerts = $alerts->sortBy([['severity', 'desc'], ['date', 'asc']])->take(10)->values();
 
         // ================= DROPDOWNS =================
         $allClusters = Cluster::where('is_active', 1)->orderBy('name')->get();
-        // Location dropdown follows the selected cluster so mismatched combos can't be chosen
         $allLocations = Location::where('status', 1)
             ->when($filterClusterId, fn($q) => $q->where('cluster_id', $filterClusterId))
             ->orderBy('name')
             ->get();
-
-        // dd([
-        //     'searchloc' => $request->input('searchloc'),
-        //     'filterLocationId' => $filterLocationId,
-        //     'filterClusterId' => $filterClusterId,
-        //     'locationIds' => $locationIds,
-        //     'assets_by_location_id' => Asset::where('location_id', $filterLocationId)->count(),
-        //     'assets_by_subloc_id' => Asset::where('subloc_id', $filterLocationId)->count(),
-        //     'employees_by_location' => Employee::where('location_id', $filterLocationId)->count(),
-        //     'asset_sql' => (clone $assetQuery)->toSql(),
-        //     'asset_bindings' => (clone $assetQuery)->getBindings(),
-        //     'totalAssets' => $totalAssets,
-        // ]);
 
         return view('main', compact(
             'totalAssets',
