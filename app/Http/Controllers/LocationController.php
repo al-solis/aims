@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\location as Location;
 use App\Models\sublocation as SubLocation;
 use App\Models\cluster;
+
 class LocationController extends Controller
 {
     public function index(Request $request)
@@ -46,11 +47,28 @@ class LocationController extends Controller
             $query->where('cluster_id', $cluster);
         }
 
+        // Pins for the overview map (respects the current filters, ignores pagination)
+        $mapLocations = (clone $query)
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->select('id', 'code', 'name', 'address', 'latitude', 'longitude', 'employee_count', 'status')
+            ->withCount('employees')
+            ->get();
+
         $locations = $query->orderBy('name')
-            ->withCount('sublocations')->paginate(config('app.paginate'));
+            ->withCount(['sublocations', 'employees'])
+            ->paginate(config('app.paginate'));
 
-        return view('setup.location.index', compact('locations', 'clusters', 'totalLocations', 'activeLocations', 'totalSubLocations', 'search', 'status'));
-
+        return view('setup.location.index', compact(
+            'locations',
+            'clusters',
+            'totalLocations',
+            'activeLocations',
+            'totalSubLocations',
+            'search',
+            'status',
+            'mapLocations'
+        ));
     }
 
     public function store(Request $request)
@@ -62,6 +80,9 @@ class LocationController extends Controller
             'description' => 'nullable|string|max:150',
             'address' => 'nullable|string|max:255',
             'contact_number' => 'nullable|string|max:20',
+            'latitude' => 'nullable|numeric|between:-90,90|required_with:longitude',
+            'longitude' => 'nullable|numeric|between:-180,180|required_with:latitude',
+            'employee_count' => 'nullable|integer|min:0',
             'status' => 'required|integer|in:0,1,2',
         ]);
 
@@ -71,6 +92,9 @@ class LocationController extends Controller
             'description' => $request->description,
             'address' => $request->address,
             'contact_number' => $request->contact_number,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'employee_count' => $request->employee_count ?? 0,
             'status' => $request->status,
             'cluster_id' => $request->cluster,
             'created_by' => Auth::id(),
@@ -89,6 +113,9 @@ class LocationController extends Controller
             'edit_description' => 'nullable|string|max:150',
             'edit_address' => 'nullable|string|max:255',
             'edit_contact_number' => 'nullable|string|max:20',
+            'edit_latitude' => 'nullable|numeric|between:-90,90|required_with:edit_longitude',
+            'edit_longitude' => 'nullable|numeric|between:-180,180|required_with:edit_latitude',
+            'edit_employee_count' => 'nullable|integer|min:0',
             'edit_cluster' => 'required|exists:clusters,id',
             'edit_status' => 'required|integer|in:0,1,2',
         ]);
@@ -100,6 +127,9 @@ class LocationController extends Controller
             'description' => $request->edit_description,
             'address' => $request->edit_address,
             'contact_number' => $request->edit_contact_number,
+            'latitude' => $request->edit_latitude,
+            'longitude' => $request->edit_longitude,
+            'employee_count' => $request->edit_employee_count ?? 0,
             'status' => $request->edit_status,
             'updated_by' => Auth::id(),
         ]);
@@ -109,9 +139,7 @@ class LocationController extends Controller
 
     public function getSublocations($locationId)
     {
-        $sublocations = SubLocation::where('location_id', $locationId)
-            // ->whereNot('status', 0)
-            ->get();
+        $sublocations = SubLocation::where('location_id', $locationId)->get();
         return response()->json($sublocations);
     }
 }

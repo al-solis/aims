@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\employee;
+use App\Models\sublocation;
+use App\Models\cluster;
 
 class location extends Model
 {
@@ -15,9 +18,19 @@ class location extends Model
         'description',
         'address',
         'contact_number',
+        'latitude',
+        'longitude',
+        'place_id',
+        'employee_count',
         'status',
         'created_by',
         'updated_by',
+    ];
+
+    protected $casts = [
+        'latitude' => 'float',
+        'longitude' => 'float',
+        'employee_count' => 'integer',
     ];
 
     public function sublocations()
@@ -29,4 +42,10 @@ class location extends Model
     {
         return $this->belongsTo(cluster::class, 'cluster_id');
     }
+
+    public function employees()
+    {
+        return $this->hasMany(employee::class, 'location_id');
+    }
+
 }

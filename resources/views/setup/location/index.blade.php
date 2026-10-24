@@ -101,6 +101,28 @@
                     </script>
                 @endif
 
+                {{-- Locations Map --}}
+                <div class="ft-info" style="padding: 0.75rem;">
+                    <div class="flex items-center justify-between mb-2 px-1">
+                        <p class="ft-eyebrow">Locations Map</p>
+                        <p class="text-xs" style="color: var(--ft-muted);">
+                            {{ $mapLocations->count() }} of {{ $locations->total() }} plotted
+                        </p>
+                    </div>
+                    @if (config('services.google_maps.key'))
+                        <div id="locations-map" class="w-full h-80 rounded-lg border border-[var(--ft-line)]"></div>
+
+                        <div class="flex flex-wrap gap-4 mt-2 px-1 text-xs" style="color: var(--ft-muted);">
+                            <span><span style="color:#dc2626;">●</span> Understaffed</span>
+                            <span><span style="color:#16a34a;">●</span> Fully staffed</span>
+                            <span><span style="color:#d97706;">●</span> Overstaffed</span>
+                            <span><span style="color:#6b7280;">●</span> No requirement set</span>
+                        </div>
+                    @else
+                        <p class="ft-empty">Set GOOGLE_MAPS_API_KEY to display the map.</p>
+                    @endif
+                </div>
+
                 {{-- Filters --}}
                 <form action="" method="GET" class="flex flex-col md:flex-row gap-3">
                     <div class="md:w-2/3 w-full">
@@ -138,6 +160,7 @@
                                 <th scope="col" class="w-[350px]">Address</th>
                                 <th scope="col" class="w-[80px]">Contact</th>
                                 <th scope="col" class="w-[150px]">Sub-Locations</th>
+                                <th scope="col" class="w-[130px]">Deployed / Required</th>
                                 <th scope="col" class="w-[150px]">Cluster</th>
                                 <th scope="col" class="w-[150px]">Status</th>
                                 <th scope="col" class="text-center w-[50px]">Actions</th>
@@ -156,8 +179,19 @@
                                     <td class="whitespace-normal break-all align-top" style="color: var(--ft-muted);">
                                         {{ $location->description ?? '—' }}
                                     </td>
+                                    {{-- <td class="whitespace-normal break-all align-top" style="color: var(--ft-muted);">
+                                        {{ $location->address ?? '—' }}
+                                    </td> --}}
                                     <td class="whitespace-normal break-all align-top" style="color: var(--ft-muted);">
                                         {{ $location->address ?? '—' }}
+                                        @if ($location->latitude !== null && $location->longitude !== null)
+                                            <a href="https://www.google.com/maps?q={{ $location->latitude }},{{ $location->longitude }}"
+                                                target="_blank" rel="noopener"
+                                                class="block text-xs font-medium hover:underline"
+                                                style="color: var(--ft-accent);">
+                                                View on map
+                                            </a>
+                                        @endif
                                     </td>
                                     <td class="whitespace-normal break-all align-top" style="color: var(--ft-text);">
                                         {{ $location->contact_number ?? '—' }}
@@ -168,6 +202,21 @@
                                             ({{ $location->sublocations_count }})
                                             sub-locations
                                         </a>
+                                    </td>
+                                    @php
+                                        $required = (int) $location->employee_count;
+                                        $deployed = (int) $location->employees_count;
+                                        $staffColor =
+                                            $required === 0
+                                                ? 'var(--ft-muted)'
+                                                : ($deployed < $required
+                                                    ? '#dc2626'
+                                                    : ($deployed > $required
+                                                        ? '#d97706'
+                                                        : '#16a34a'));
+                                    @endphp
+                                    <td class="align-top font-medium" style="color: {{ $staffColor }};">
+                                        {{ number_format($deployed) }} / {{ number_format($required) }}
                                     </td>
                                     <td>
                                         @if ($location->cluster)
@@ -214,6 +263,9 @@
                                                 data-description="{{ $location->description }}"
                                                 data-address="{{ $location->address }}"
                                                 data-contact="{{ $location->contact_number }}"
+                                                data-latitude="{{ $location->latitude }}"
+                                                data-longitude="{{ $location->longitude }}"
+                                                data-employees="{{ $location->employee_count }}"
                                                 data-status="{{ $location->status }}" onclick="openEditModal(this)"
                                                 class="p-1.5 rounded text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -309,6 +361,24 @@
                                 <textarea name="address" id="address" rows="3" maxlength="255" class="ft-field"
                                     placeholder="Location address"></textarea>
                             </div>
+                            <div>
+                                <label class="ft-label">Map Location</label>
+                                <div id="add_map" class="w-full h-56 rounded-lg border border-[var(--ft-line)]"></div>
+                                <p class="text-xs mt-1" style="color: var(--ft-muted);">Click the map or drag the pin to
+                                    set coordinates.</p>
+                            </div>
+                            <div class="grid gap-4 grid-cols-2">
+                                <div>
+                                    <label for="latitude" class="ft-label">Latitude</label>
+                                    <input type="number" step="any" min="-90" max="90" name="latitude"
+                                        id="latitude" class="ft-field" placeholder="e.g. 14.5995">
+                                </div>
+                                <div>
+                                    <label for="longitude" class="ft-label">Longitude</label>
+                                    <input type="number" step="any" min="-180" max="180" name="longitude"
+                                        id="longitude" class="ft-field" placeholder="e.g. 120.9842">
+                                </div>
+                            </div>
                             <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-3">
                                 <div class="md:col-span-2">
                                     <label for="contact_number" class="ft-label">Contact Number</label>
@@ -324,6 +394,11 @@
                                         <option value="2">Under Maintenance</option>
                                     </select>
                                 </div>
+                            </div>
+                            <div>
+                                <label for="employee_count" class="ft-label">Required Employees</label>
+                                <input type="number" min="0" name="employee_count" id="employee_count"
+                                    value="0" class="ft-field">
                             </div>
                         </div>
 
@@ -409,6 +484,26 @@
                                 <textarea name="edit_address" id="edit_address" rows="2" maxlength="255" class="ft-field"
                                     placeholder="Location address"></textarea>
                             </div>
+                            <div>
+                                <label class="ft-label">Map Location</label>
+                                <div id="edit_map" class="w-full h-56 rounded-lg border border-[var(--ft-line)]"></div>
+                                <p class="text-xs mt-1" style="color: var(--ft-muted);">Click the map or drag the pin to
+                                    set coordinates.</p>
+                            </div>
+                            <div class="grid gap-4 grid-cols-2">
+                                <div>
+                                    <label for="edit_latitude" class="ft-label">Latitude</label>
+                                    <input type="number" step="any" min="-90" max="90"
+                                        name="edit_latitude" id="edit_latitude" class="ft-field"
+                                        placeholder="e.g. 14.5995">
+                                </div>
+                                <div>
+                                    <label for="edit_longitude" class="ft-label">Longitude</label>
+                                    <input type="number" step="any" min="-180" max="180"
+                                        name="edit_longitude" id="edit_longitude" class="ft-field"
+                                        placeholder="e.g. 120.9842">
+                                </div>
+                            </div>
                             <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-3">
                                 <div class="md:col-span-2">
                                     <label for="edit_contact_number" class="ft-label">Contact Number</label>
@@ -425,6 +520,11 @@
                                     </select>
                                 </div>
                             </div>
+                            <div>
+                                <label for="edit_employee_count" class="ft-label">Required Employees</label>
+                                <input type="number" min="0" name="edit_employee_count" id="edit_employee_count"
+                                    value="0" class="ft-field">
+                            </div>
                         </div>
 
                         <button type="submit" class="ft-btn ft-btn-primary w-full justify-center">
@@ -437,13 +537,45 @@
     </div>
     <!-- End edit modal -->
 
+    <style>
+        .map-label {
+            position: absolute;
+            transform: translate(-50%, 14px);
+            background: #fff;
+            border: 2px solid #6b7280;
+            /* overridden per location in JS */
+            border-radius: 6px;
+            padding: 2px 6px;
+            font: 12px/1.3 system-ui, sans-serif;
+            text-align: center;
+            white-space: nowrap;
+            pointer-events: none;
+            /* clicks still reach the marker */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+        }
+
+        .map-label-name {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .map-label-count {
+            font-weight: 600;
+        }
+    </style>
+
     <script>
+        const DEFAULT_CENTER = {
+            lat: 14.5995,
+            lng: 120.9842
+        }; // Manila
+        const mapLocations = @json($mapLocations);
+        const pickers = {};
+
         function clearModalFields() {
-            // Clear all form fields
             const form = document.querySelector('form');
             form.reset();
 
-            // Remove any success messages after a delay
             setTimeout(() => {
                 const successMessage = document.querySelector('[data-success]');
                 if (successMessage) {
@@ -454,17 +586,231 @@
 
         function openEditModal(button) {
             const id = button.getAttribute('data-id');
-            document.getElementById('edit_id').value = button.getAttribute('data-id');
+            document.getElementById('edit_id').value = id;
             document.getElementById('edit_cluster').value = button.getAttribute('data-cluster');
             document.getElementById('edit_code').value = button.getAttribute('data-code');
             document.getElementById('edit_name').value = button.getAttribute('data-name');
             document.getElementById('edit_description').value = button.getAttribute('data-description');
             document.getElementById('edit_address').value = button.getAttribute('data-address');
             document.getElementById('edit_contact_number').value = button.getAttribute('data-contact');
+            document.getElementById('edit_latitude').value = button.getAttribute('data-latitude') || '';
+            document.getElementById('edit_longitude').value = button.getAttribute('data-longitude') || '';
+            document.getElementById('edit_employee_count').value = button.getAttribute('data-employees') || 0;
             document.getElementById('edit_status').value = button.getAttribute('data-status');
 
             const form = document.getElementById('editForm');
             form.action = `location/${id}`;
+
+            // Map needs a resize once the modal is visible
+            setTimeout(() => pickers.edit && pickers.edit.sync(), 200);
+        }
+
+        // Click-to-place / drag pin picker bound to lat/lng inputs
+        function createPicker(mapElId, latId, lngId) {
+            const latEl = document.getElementById(latId);
+            const lngEl = document.getElementById(lngId);
+            const map = new google.maps.Map(document.getElementById(mapElId), {
+                center: DEFAULT_CENTER,
+                zoom: 6,
+                streetViewControl: false,
+                mapTypeControl: false,
+            });
+            const marker = new google.maps.Marker({
+                map,
+                draggable: true,
+                visible: false
+            });
+
+            const place = (pos) => {
+                marker.setPosition(pos);
+                marker.setVisible(true);
+                latEl.value = pos.lat.toFixed(7);
+                lngEl.value = pos.lng.toFixed(7);
+            };
+
+            const fromInputs = () => {
+                const lat = parseFloat(latEl.value);
+                const lng = parseFloat(lngEl.value);
+                if (isFinite(lat) && isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180) {
+                    const pos = {
+                        lat,
+                        lng
+                    };
+                    marker.setPosition(pos);
+                    marker.setVisible(true);
+                    map.setCenter(pos);
+                    map.setZoom(16);
+                } else {
+                    marker.setVisible(false);
+                }
+            };
+
+            map.addListener('click', (e) => place(e.latLng.toJSON()));
+            marker.addListener('dragend', (e) => place(e.latLng.toJSON()));
+            latEl.addEventListener('change', fromInputs);
+            lngEl.addEventListener('change', fromInputs);
+
+            return {
+                sync() {
+                    google.maps.event.trigger(map, 'resize');
+                    fromInputs();
+                },
+            };
+        }
+
+        function staffingInfo(required, deployed) {
+            if (required === 0) return {
+                color: '#6b7280',
+                label: 'No requirement set'
+            };
+            if (deployed < required) return {
+                color: '#dc2626',
+                label: `Understaffed (short by ${required - deployed})`
+            };
+            if (deployed > required) return {
+                color: '#d97706',
+                label: `Overstaffed (+${deployed - required})`
+            };
+            return {
+                color: '#16a34a',
+                label: 'Fully staffed'
+            };
+        }
+
+        function initOverviewMap() {
+            const el = document.getElementById('locations-map');
+            if (!el) return;
+
+            const map = new google.maps.Map(el, {
+                center: DEFAULT_CENTER,
+                zoom: 6,
+                streetViewControl: false,
+                mapTypeControl: false,
+            });
+            if (!mapLocations.length) return;
+            defineLabelOverlay();
+
+            const bounds = new google.maps.LatLngBounds();
+            const info = new google.maps.InfoWindow();
+
+            mapLocations.forEach((loc) => {
+                const pos = {
+                    lat: Number(loc.latitude),
+                    lng: Number(loc.longitude)
+                };
+                const required = Number(loc.employee_count) || 0;
+                const deployed = Number(loc.employees_count) || 0;
+                const staff = staffingInfo(required, deployed);
+
+                const marker = new google.maps.Marker({
+                    map,
+                    position: pos,
+                    title: `${loc.name}: ${deployed}/${required}`,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 9,
+                        fillColor: staff.color,
+                        fillOpacity: 1,
+                        strokeColor: '#ffffff',
+                        strokeWeight: 2,
+                    },
+                });
+
+                new LabelOverlay(pos, loc.name, `${deployed} / ${required}`, staff.color).setMap(map);
+
+                marker.addListener('click', () => {
+                    const row = (text, bold = false) => {
+                        const d = document.createElement('div');
+                        d.textContent = text;
+                        if (bold) d.style.fontWeight = '600';
+                        return d;
+                    };
+
+                    const box = document.createElement('div');
+                    box.style.minWidth = '180px';
+                    box.append(
+                        row(`${loc.name} (${loc.code})`, true),
+                        row(loc.address || ''),
+                        row(`Required employees: ${required}`),
+                        row(`Deployed employees: ${deployed}`)
+                    );
+                    const status = row(staff.label, true);
+                    status.style.color = staff.color;
+                    box.append(status);
+
+                    info.setContent(box);
+                    info.open(map, marker);
+                });
+
+                bounds.extend(pos);
+            });
+
+            if (mapLocations.length === 1) {
+                map.setCenter(bounds.getCenter());
+                map.setZoom(15);
+            } else {
+                map.fitBounds(bounds);
+            }
+        }
+
+        let LabelOverlay;
+
+        // Must run after the Google Maps API has loaded
+        function defineLabelOverlay() {
+            LabelOverlay = class extends google.maps.OverlayView {
+                constructor(position, nameText, countText, color) {
+                    super();
+                    this.position = position;
+
+                    this.div = document.createElement('div');
+                    this.div.className = 'map-label';
+                    this.div.style.borderColor = color;
+
+                    const name = document.createElement('div');
+                    name.className = 'map-label-name';
+                    name.textContent = nameText;
+
+                    const count = document.createElement('div');
+                    count.className = 'map-label-count';
+                    count.style.color = color;
+                    count.textContent = countText;
+
+                    this.div.append(name, count);
+                }
+
+                onAdd() {
+                    this.getPanes().floatPane.appendChild(this.div);
+                }
+
+                draw() {
+                    const p = this.getProjection().fromLatLngToDivPixel(new google.maps.LatLng(this.position));
+                    if (p) {
+                        this.div.style.left = p.x + 'px';
+                        this.div.style.top = p.y + 'px';
+                    }
+                }
+
+                onRemove() {
+                    this.div.remove();
+                }
+            };
+        }
+
+        // Google Maps callback
+        function initMaps() {
+            initOverviewMap();
+            pickers.add = createPicker('add_map', 'latitude', 'longitude');
+            pickers.edit = createPicker('edit_map', 'edit_latitude', 'edit_longitude');
+
+            document.querySelectorAll('[data-modal-target="add-modal"]').forEach((btn) => {
+                btn.addEventListener('click', () => setTimeout(() => pickers.add.sync(), 200));
+            });
         }
     </script>
+
+    @if (config('services.google_maps.key'))
+        <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&callback=initMaps">
+        </script>
+    @endif
 @endsection
