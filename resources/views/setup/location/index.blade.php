@@ -797,7 +797,10 @@
         }
 
         // Google Maps callback
-        function initMaps() {
+        async function initMaps() {
+            await google.maps.importLibrary('maps');
+            await google.maps.importLibrary('marker');
+
             initOverviewMap();
             pickers.add = createPicker('add_map', 'latitude', 'longitude');
             pickers.edit = createPicker('edit_map', 'edit_latitude', 'edit_longitude');
@@ -810,7 +813,7 @@
 
     @if (config('services.google_maps.key'))
         <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&callback=initMaps">
+            src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&loading=async&callback=initMaps">
         </script>
     @endif
 @endsection
