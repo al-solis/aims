@@ -27,7 +27,7 @@
                 <p class="text-sm mt-1" style="color: var(--ft-muted);">Real-time overview of agency assets and property</p>
             </div>
 
-            <form action="{{ route('dashboard') }}" method="GET" class="flex flex-col sm:flex-row items-center gap-2">
+            <form action="{{ route('main') }}" method="GET" class="flex flex-col sm:flex-row items-center gap-2">
                 <!-- Cluster Filter -->
                 {{-- FIX: changing the cluster now clears the location, otherwise the old location was submitted
                      together with the new cluster and the two filters cancelled each other out (empty dashboard). --}}
