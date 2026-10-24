@@ -146,6 +146,7 @@ class AssetController extends Controller
                 : $request->sublocation_id,
             'warranty' => $request->warranty,
             'remarks' => $request->remarks,
+            'condition' => 1,
             'created_by' => Auth::id(),
             'created_at' => now(),
         ]);
