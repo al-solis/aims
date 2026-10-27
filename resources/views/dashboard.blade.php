@@ -19,7 +19,7 @@
             </div>
 
             <h2 class="ml-3 font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight mt-0">
-                {{ env('APP_NAME', 'Asset and Workforce Management System') }}
+                {{ env('APP_NAME', 'Guardforce Utilization, Asset & Resource Deployment System') }}
             </h2>
         </div>
 

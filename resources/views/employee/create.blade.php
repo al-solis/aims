@@ -456,7 +456,7 @@
 
                                         <div class="flex items-end">
                                             <button id="add-id-btn" type="button" class="ft-btn ft-btn-primary"
-                                                @if (Auth::user()->role == 2) disabled @endif>
+                                                @if (!$canCreate || !$canUpdate) disabled @endif>
                                                 Add ID
                                             </button>
                                         </div>
@@ -557,7 +557,7 @@
 
                                     <div class="flex items-end">
                                         <button id="add-workhistory-btn" type="button" class="ft-btn ft-btn-primary"
-                                            @if (Auth::user()->role == 2) disabled @endif>
+                                            @if (!$canCreate || !$canUpdate) disabled @endif>
                                             Add Work History
                                         </button>
                                     </div>
@@ -595,7 +595,7 @@
                             Back
                         </a>
                         <button type="submit" id="saveBtn" class="ft-btn ft-btn-primary"
-                            @if (Auth::user()->role == 2) disabled @endif>
+                            @if (!$canCreate || !$canUpdate) disabled @endif>
                             @if ($employee)
                                 Save changes
                             @else
@@ -609,6 +609,8 @@
     </div>
 
     <script>
+        const canDelete = @json($canDelete ?? false);
+
         let uploadedTempPhoto = null;
         let isSubmitting = false;
 
@@ -1026,6 +1028,11 @@
 
         // Function to delete employee ID
         function deleteEmployeeId(id) {
+            if (!canDelete) {
+                showToast('You do not have permission to delete this ID.', 'error');
+                return;
+            }
+
             const row = document.getElementById(`row-${id}`);
             if (!row) return;
 
@@ -1183,6 +1190,11 @@
         }
 
         function deleteWorkHistory(id) {
+            if (!canDelete) {
+                showToast('You do not have permission to delete this work history.', 'error');
+                return;
+            }
+
             const row = document.getElementById(`row-${id}`);
             if (!row) return;
 

@@ -487,11 +487,12 @@
                             </div>
                         </div>
 
-                        @if ($assets->canBeTransferred())
-                            <button type="submit" id="updateBtn" class="ft-btn ft-btn-primary w-full justify-center">
-                                Update transfer
-                            </button>
+                        <button type="submit" id="updateBtn" @if (!$assets->canBeTransferred() || !$canUpdate) disabled @endif
+                            class="ft-btn ft-btn-primary w-full justify-center">
+                            Update transfer
+                        </button>
 
+                        @if ($transfer->cancelled)
                             <div id="cancelledMsg"
                                 class="mt-2 text-white inline-flex items-center justify-center w-full bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-md text-xs px-5 py-2.5 text-center">
                                 <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
@@ -674,7 +675,7 @@
             if (this.value == from_employee_id) {
                 alert(
                     'The "Destination" employee cannot be the same as the "Source" employee. Please select a different employee.'
-                    );
+                );
                 this.value = '';
                 this.focus();
             }
@@ -686,7 +687,7 @@
             if (selectedDate < new Date(purchaseDate)) {
                 alert(
                     `The transfer date cannot be before the purchase date ${purchaseDate}. Please select a valid date.`
-                    );
+                );
                 this.value = '';
                 this.focus();
             }

@@ -22,8 +22,8 @@
                             Back
                         </a>
 
-                        <a href="{{ route('transmittal.create') }}" @if (Auth::user()->role == 2) disabled @endif
-                            class="ft-btn ft-btn-primary {{ Auth::user()->role == 2 ? 'cursor-not-allowed opacity-50' : '' }}"
+                        <a href="{{ route('transmittal.create') }}" @if (!$canCreate) disabled @endif
+                            class="ft-btn ft-btn-primary {{ $canCreate ? '' : 'cursor-not-allowed opacity-50' }}"
                             style="color: var(--ft-ink); background: var(--ft-surface); border-color: var(--ft-surface);">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />

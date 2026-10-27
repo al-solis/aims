@@ -52,7 +52,7 @@
                 </select>
 
                 @if ($filterClusterId || $filterLocationId)
-                    <a href="{{ route('dashboard') }}" class="ft-btn ft-btn-ghost whitespace-nowrap">Clear Filters</a>
+                    <a href="{{ route('main') }}" class="ft-btn ft-btn-ghost whitespace-nowrap">Clear Filters</a>
                 @endif
             </form>
         </div>

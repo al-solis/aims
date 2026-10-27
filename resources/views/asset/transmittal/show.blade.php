@@ -156,7 +156,7 @@
 
                     {{-- Actions --}}
                     <div class="ft-divider mt-8 pt-5 flex flex-wrap items-center justify-end gap-x-2 gap-y-3">
-                        @if ($saveDisabled)
+                        @if (!$canUpdate)
                             <p class="mr-auto rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
                                 You can't save changes to this transmittal.
                             </p>
@@ -169,7 +169,8 @@
                             Back
                         </a>
 
-                        <button type="submit" id="saveButton" class="ft-btn ft-btn-primary" @disabled($saveDisabled)>
+                        <button type="submit" id="saveButton" class="ft-btn ft-btn-primary"
+                            @if (!$canUpdate) disabled @endif>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 viewBox="0 0 16 16">
                                 <path d="M11 2H9v3h2z" />

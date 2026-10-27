@@ -24,8 +24,24 @@ class EmployeeController extends Controller
 {
     private $tempFolder = 'temp/employees';
 
+    private const EMPLOYEES_CODE = 'EM-01';
+
+    private function authorizeEmployee(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::EMPLOYEES_CODE, $action),
+            403,
+            'You do not have permission in Employee Management to perform this action.'
+        );
+    }
+
     public function index(Request $request)
     {
+        $this->authorizeEmployee('read');
+        $canCreate = Auth::user()->hasAccess(self::EMPLOYEES_CODE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::EMPLOYEES_CODE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::EMPLOYEES_CODE, 'delete');
+
         $search = $request->query('search');
         $status = $request->query('status');
         $searchloc = $request->query('searchloc');
@@ -97,12 +113,20 @@ class EmployeeController extends Controller
             'search',
             'status',
             'searchloc',
-            'docTypes'
+            'docTypes',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
         ));
     }
 
     public function create()
     {
+        $this->authorizeEmployee('read');
+        $canCreate = Auth::user()->hasAccess(self::EMPLOYEES_CODE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::EMPLOYEES_CODE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::EMPLOYEES_CODE, 'delete');
+
         $numberSequence = unused_sequence::where('name', 'employee_number')
             ->where('created_by', Auth::id())
             ->first();
@@ -154,14 +178,25 @@ class EmployeeController extends Controller
         return view('employee.create', [
             'employee' => null,
             'employeeNumber' => $employeeNumber,
+            'canCreate' => $canCreate,
+            'canUpdate' => $canUpdate,
+            'canDelete' => $canDelete,
             'locations' => Location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get(),
         ]);
     }
 
     public function edit(Employee $employee)
     {
+        $this->authorizeEmployee('read');
+        $canCreate = Auth::user()->hasAccess(self::EMPLOYEES_CODE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::EMPLOYEES_CODE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::EMPLOYEES_CODE, 'delete');
+
         return view('employee.create', [
             'employee' => $employee,
+            'canCreate' => $canCreate,
+            'canUpdate' => $canUpdate,
+            'canDelete' => $canDelete,
             'locations' => Location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get(),
             'idTypes' => IdType::where('is_active', 1)->get(),
             'employeeIds' => EmployeeId::where('employee_id', $employee->id)->get(),
@@ -170,6 +205,8 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizeEmployee('create');
+
         $request->validate([
             'idno' => 'required|string|max:20|unique:employees,employee_code',
             'fname' => 'required|string|max:50',
@@ -284,6 +321,8 @@ class EmployeeController extends Controller
 
     public function update(Request $request, Employee $employee)
     {
+        $this->authorizeEmployee('update');
+
         $request->validate([
             'idno' => 'required|string|max:20|unique:employees,employee_code,' . $employee->id,
             'fname' => 'required|string|max:50',

@@ -15,8 +15,23 @@ use App\Models\asset as Asset;
 
 class TransmittalController extends Controller
 {
+    private const ASSET_CODE = 'AM-01';
+
+    private function authorizeAsset(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::ASSET_CODE, $action),
+            403,
+            'You do not have permission in Asset Management to perform this action.'
+        );
+    }
     public function index(Request $request)
     {
+        $this->authorizeAsset('read');
+        $canCreate = Auth::user()->hasAccess(self::ASSET_CODE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::ASSET_CODE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::ASSET_CODE, 'delete');
+
         $search = $request->input('search');
         $searchemployee = $request->input('searchemployee');
         $searchlocation = $request->input('searchlocation');
@@ -52,12 +67,20 @@ class TransmittalController extends Controller
         return view('asset.transmittal.index', compact(
             'transmittals',
             'employees',
-            'locations'
+            'locations',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
         ));
     }
 
     public function create()
     {
+        $this->authorizeAsset('create');
+        $canCreate = Auth::user()->hasAccess(self::ASSET_CODE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::ASSET_CODE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::ASSET_CODE, 'delete');
+
         $employees = Employee::where('status', 1)
             ->orderBy('last_name')
             ->get();
@@ -66,7 +89,10 @@ class TransmittalController extends Controller
 
         return view('asset.transmittal.show', compact(
             'employees',
-            'locations'
+            'locations',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
         ));
     }
 
@@ -86,6 +112,8 @@ class TransmittalController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizeAsset('create');
+
         // dd($request->all());
         $request->validate([
             'date' => 'required|date',
@@ -154,6 +182,8 @@ class TransmittalController extends Controller
 
     public function voidTransmittal($id)
     {
+        $this->authorizeAsset('delete');
+
         $transmittal = transmittal_header::findOrFail($id);
 
         if ($transmittal->status != 1) {
@@ -205,6 +235,11 @@ class TransmittalController extends Controller
 
     public function show($id)
     {
+        $this->authorizeAsset('read');
+        $canCreate = Auth::user()->hasAccess(self::ASSET_CODE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::ASSET_CODE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::ASSET_CODE, 'delete');
+
         $transmittal = transmittal_header::with([
             'details.asset',
             'transmittedTo',
@@ -219,7 +254,10 @@ class TransmittalController extends Controller
         return view('asset.transmittal.show', compact(
             'transmittal',
             'employees',
-            'locations'
+            'locations',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
         ));
     }
 
@@ -247,6 +285,8 @@ class TransmittalController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeAsset('update');
+
         $request->validate([
             'date' => 'required|date',
             'location_id' => 'required',
