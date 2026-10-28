@@ -797,28 +797,53 @@
         }
 
         // Google Maps callback
-        async function initMaps() {
+        window.initMaps = async function() {
+            console.log('Google Maps callback started');
+
             try {
                 await google.maps.importLibrary('maps');
                 await google.maps.importLibrary('marker');
 
+                console.log('Google Maps libraries loaded');
+
                 initOverviewMap();
 
-                pickers.add = createPicker(
-                    'add_map',
-                    'latitude',
-                    'longitude'
-                );
+                console.log('Overview map initialized');
 
-                pickers.edit = createPicker(
-                    'edit_map',
-                    'edit_latitude',
-                    'edit_longitude'
-                );
+                const addMap = document.getElementById('add_map');
+                const editMap = document.getElementById('edit_map');
+
+                if (addMap) {
+                    pickers.add = createPicker(
+                        'add_map',
+                        'latitude',
+                        'longitude'
+                    );
+                    console.log('Add-location map initialized');
+                }
+
+                if (editMap) {
+                    pickers.edit = createPicker(
+                        'edit_map',
+                        'edit_latitude',
+                        'edit_longitude'
+                    );
+                    console.log('Edit-location map initialized');
+                }
+
+                document
+                    .querySelectorAll('[data-modal-target="add-modal"]')
+                    .forEach((btn) => {
+                        btn.addEventListener('click', () => {
+                            setTimeout(() => {
+                                pickers.add?.sync();
+                            }, 200);
+                        });
+                    });
             } catch (error) {
                 console.error('Google Maps initialization failed:', error);
             }
-        }
+        };
     </script>
 
     @if (config('services.google_maps.key'))
