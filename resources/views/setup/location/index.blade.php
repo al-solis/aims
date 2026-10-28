@@ -798,16 +798,26 @@
 
         // Google Maps callback
         async function initMaps() {
-            await google.maps.importLibrary('maps');
-            await google.maps.importLibrary('marker');
+            try {
+                await google.maps.importLibrary('maps');
+                await google.maps.importLibrary('marker');
 
-            initOverviewMap();
-            pickers.add = createPicker('add_map', 'latitude', 'longitude');
-            pickers.edit = createPicker('edit_map', 'edit_latitude', 'edit_longitude');
+                initOverviewMap();
 
-            document.querySelectorAll('[data-modal-target="add-modal"]').forEach((btn) => {
-                btn.addEventListener('click', () => setTimeout(() => pickers.add.sync(), 200));
-            });
+                pickers.add = createPicker(
+                    'add_map',
+                    'latitude',
+                    'longitude'
+                );
+
+                pickers.edit = createPicker(
+                    'edit_map',
+                    'edit_latitude',
+                    'edit_longitude'
+                );
+            } catch (error) {
+                console.error('Google Maps initialization failed:', error);
+            }
         }
     </script>
 
