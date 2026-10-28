@@ -29,7 +29,7 @@
 
         {{-- Logo sits on the dark header band, as it did on the old dark panel --}}
         <div class="ft-card-head flex items-center justify-center" style="padding: 2rem;">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-auto max-w-[220px] max-h-32">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-auto max-w-[150px] max-h-32">
         </div>
 
         <div class="ft-body" style="padding: 2rem 2rem 2.25rem;">
