@@ -15,7 +15,7 @@
                         <p>Manage employees and their details</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        @if (Auth::user()->role != 2)
+                        @if ($canCreate)
                             <a href="{{ route('employee.create') }}" class="ft-btn ft-btn-primary"
                                 style="color: var(--ft-ink); background: var(--ft-surface); border-color: var(--ft-surface);">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,12 +115,12 @@
 
                 {{-- Filters --}}
                 <form action="" method="GET" class="flex flex-col md:flex-row gap-3">
-                    <div class="md:w-2/3 w-full">
+                    <div class="md:w-1/3 w-full">
                         <input type="text" id="simple-search" name="search"
                             placeholder="Search by name, code, or position..." class="ft-field"
                             value="{{ request()->query('search') }}">
                     </div>
-                    <div class="md:w-1/3 w-full flex flex-col md:flex-row gap-3">
+                    <div class="md:w-2/3 w-full flex flex-col md:flex-row gap-3">
                         <select name="searchloc" class="ft-field flex-1" onchange="this.form.submit()">
                             <option value="">All Locations</option>
                             @foreach ($locations as $location)
@@ -152,6 +152,16 @@
                             <option value="8" {{ request('status') === '8' ? 'selected' : '' }}>Dropped</option>
                             <option value="9" {{ request('status') === '9' ? 'selected' : '' }}>Labor</option>
                             <option value="10" {{ request('status') === '10' ? 'selected' : '' }}>Floating</option>
+                        </select>
+                        <select name="searchtype" class="ft-field flex-1" onchange="this.form.submit()">
+                            <option value="">All Types</option>
+                            <option value="1" {{ request('searchtype') === '1' ? 'selected' : '' }}>Regular</option>
+                            <option value="2" {{ request('searchtype') === '2' ? 'selected' : '' }}>Contractual
+                            </option>
+                            <option value="3" {{ request('searchtype') === '3' ? 'selected' : '' }}>Probationary
+                            </option>
+                            <option value="4" {{ request('searchtype') === '4' ? 'selected' : '' }}>Project Based
+                            </option>
                         </select>
                     </div>
                 </form>

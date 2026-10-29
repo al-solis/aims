@@ -367,6 +367,7 @@
                                         <option value="1" @selected(old('employment_type', $employee->employment_type ?? 1) == 1)>Regular</option>
                                         <option value="2" @selected(old('employment_type', $employee->employment_type ?? 1) == 2)>Contractual</option>
                                         <option value="3" @selected(old('employment_type', $employee->employment_type ?? 1) == 3)>Probationary</option>
+                                        <option value="4" @selected(old('employment_type', $employee->employment_type ?? 1) == 4)>Project Based</option>
                                     </select>
                                 </div>
 

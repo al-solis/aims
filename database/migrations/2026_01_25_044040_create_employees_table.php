@@ -27,7 +27,7 @@ return new class extends Migration {
 
             $table->unsignedBigInteger('location_id')->nullable();
             $table->foreign('location_id')->references('id')->on('locations');
-            $table->integer('employment_type')->default(1); // 1: Regular, 2: Contractual, 3: Probationary
+            $table->integer('employment_type')->default(1); // 1: Regular, 2: Contractual, 3: Probationary, 4: Project Based
             $table->decimal('monthly_salary', 15, 2)->nullable();
             $table->decimal('daily_rate', 15, 2)->nullable();
             $table->decimal('sss_rate', 15, 2)->nullable();

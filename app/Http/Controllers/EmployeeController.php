@@ -46,6 +46,7 @@ class EmployeeController extends Controller
         $status = $request->query('status');
         $searchloc = $request->query('searchloc');
         $searchdoc = $request->query('searchdoc');
+        $searchtype = $request->query('searchtype');
 
         $locations = Location::orderByRaw('LTRIM(RTRIM(name)) ASC')->get();
         $query = Employee::query();
@@ -57,10 +58,11 @@ class EmployeeController extends Controller
         $docTypes = document_type::where('is_active', 1)->get();
 
         // If status or location is selected and search exists, redirect without search
-        if (($status || $searchloc) && $search) {
+        if (($status || $searchloc || $searchtype) && $search) {
             return redirect()->route('employee.index', [
                 'status' => $status,
                 'searchloc' => $searchloc,
+                'searchtype' => $searchtype
             ]);
         }
 
@@ -87,6 +89,10 @@ class EmployeeController extends Controller
             $query->where('status', $status);
         }
 
+        if ($searchtype !== null && $searchtype !== '') {
+            $query->where('employment_type', $searchtype);
+        }
+
         if ($searchdoc) {
             $query->whereHas('uploadedFiles', function ($fileQuery) use ($searchdoc) {
                 $fileQuery->where('document_type_id', $searchdoc);
@@ -100,7 +106,8 @@ class EmployeeController extends Controller
             ->appends([
                 'search' => $search,
                 'searchloc' => $searchloc,
-                'status' => $status
+                'status' => $status,
+                'searchtype' => $searchtype
             ]);
 
         return view('employee.index', compact(
@@ -221,7 +228,7 @@ class EmployeeController extends Controller
             'mobile' => 'nullable|string|max:15',
             'position' => 'nullable|string|max:60',
             'department' => 'nullable',
-            'employment_type' => 'required|integer|in:1,2,3',
+            'employment_type' => 'required|integer|in:1,2,3,4',
             'monthly_salary' => 'nullable|numeric|min:0',
             'daily_rate' => 'nullable|numeric|min:0',
             'sss_rate' => 'nullable|numeric|min:0',
@@ -337,7 +344,7 @@ class EmployeeController extends Controller
             'mobile' => 'nullable|string|max:15',
             'position' => 'nullable|string|max:60',
             'department' => 'nullable',
-            'employment_type' => 'required|integer|in:1,2,3',
+            'employment_type' => 'required|integer|in:1,2,3,4',
             'monthly_salary' => 'nullable|numeric|min:0',
             'daily_rate' => 'nullable|numeric|min:0',
             'sss_rate' => 'nullable|numeric|min:0',
