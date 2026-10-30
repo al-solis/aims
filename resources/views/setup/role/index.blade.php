@@ -45,7 +45,9 @@
                             </svg>
                             Back
                         </a>
-                        <a href="{{ route('setup.roles.create') }}" class="ft-btn ft-btn-primary">
+                        <a href="{{ $canCreate ? route('setup.roles.create') : '#' }}"
+                            class="ft-btn ft-btn-primary {{ !$canCreate ? 'pointer-events-none opacity-50 cursor-not-allowed' : '' }}"
+                            @if (!$canCreate) aria-disabled="true" tabindex="-1" @endif>
                             + New Role
                         </a>
                     </div>
@@ -91,8 +93,11 @@
                                                     d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2" />
                                             </svg>
                                         </a> --}}
-                                        <a href="{{ route('setup.roles.edit', $role) }}" title="Edit Role"
-                                            class="p-1.5 rounded text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors">
+                                        <a href="{{ $canUpdate ? route('setup.roles.edit', $role) : '#' }}"
+                                            title="Edit Role"
+                                            class="p-1.5 rounded text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors
+                                            {{ !$canUpdate ? 'pointer-events-none opacity-50 cursor-not-allowed' : '' }}
+                                            ">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" viewBox="0 0 16 16">
                                                 <path
@@ -113,6 +118,22 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            <div>
+                @if (!$canCreate && !$canUpdate)
+                    <p class="mt-2 mr-auto rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                        You don't have permission to create or update role information.
+                    </p>
+                @elseif (!$canCreate)
+                    <p class="mt-2 mr-auto rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                        You don't have permission to create role information.
+                    </p>
+                @elseif (!$canUpdate)
+                    <p class="mt-2 mr-auto rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                        You don't have permission to update role information.
+                    </p>
+                @endif
             </div>
 
             <div class="flex items-center justify-between border-t px-6 py-4 text-xs"

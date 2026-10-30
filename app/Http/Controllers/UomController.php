@@ -9,8 +9,24 @@ use App\Models\uom as UOM;
 
 class UomController extends Controller
 {
+    private const SET_UOM = 'SET-09';
+
+    private function authorizeUOMSetup(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::SET_UOM, $action),
+            403,
+            'You do not have permission in Supplies Unit of Measure Management to perform this action.'
+        );
+    }
+
     public function index(Request $request)
     {
+        $this->authorizeUOMSetup('read');
+        $canCreate = Auth::user()->hasAccess(self::SET_UOM, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SET_UOM, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SET_UOM, 'delete');
+
         $search = $request->input('search');
         $status = $request->input('status');
         $totalUoms = UOM::count();
@@ -33,11 +49,20 @@ class UomController extends Controller
 
         $uoms = $query->paginate(config('app.paginate'));
 
-        return view('setup.uom.index', compact('uoms', 'totalUoms', 'activeUoms', 'inactiveUoms'));
+        return view('setup.uom.index', compact(
+            'uoms',
+            'totalUoms',
+            'activeUoms',
+            'inactiveUoms',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
+        ));
     }
 
     public function store(Request $request)
     {
+        $this->authorizeUOMSetup('create');
 
         $baseUom = UOM::pluck('code')->implode(',');
         // dd($baseUom);
@@ -63,6 +88,8 @@ class UomController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeUOMSetup('update');
+
         $request->validate([
             'edit_name' => 'required|string|max:20',
             'edit_code' => 'nullable|string|max:10|unique:uoms,code,' . $id,

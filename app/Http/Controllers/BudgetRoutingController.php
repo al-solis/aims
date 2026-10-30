@@ -11,14 +11,31 @@ use App\Models\budget_routing;
 
 class BudgetRoutingController extends Controller
 {
+    private const SET_BUDGET = 'SET-13';
+
+    private function authorizeBudgetSetup(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::SET_BUDGET, $action),
+            403,
+            'You do not have permission in Budget Approval to perform this action.'
+        );
+    }
     public function index()
     {
+        $this->authorizeBudgetSetup('read');
+
+        $canCreate = Auth::user()->hasAccess(self::SET_BUDGET, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SET_BUDGET, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SET_BUDGET, 'delete');
+
         $locations = Location::where('status', 1)->orderByRaw('LTRIM(RTRIM(name)) ASC')->get();
-        return view('setup.budget-routing.index', compact('locations'));
+        return view('setup.budget-routing.index', compact('locations', 'canCreate', 'canUpdate', 'canDelete'));
     }
 
     public function viewRouting()
     {
+
         $data = budget_routing::with('location')
             ->orderBy('order', 'asc')
             ->orderBy('id', 'asc')
@@ -30,6 +47,8 @@ class BudgetRoutingController extends Controller
     // New steps always go to the end of the sequence.
     public function store(Request $request)
     {
+        $this->authorizeBudgetSetup('create');
+
         $request->validate([
             'location_id' => 'required|exists:locations,id',
         ]);
@@ -50,6 +69,8 @@ class BudgetRoutingController extends Controller
     // Edit only changes the department; position is changed with move().
     public function update(Request $request, $id)
     {
+        $this->authorizeBudgetSetup('update');
+
         $request->validate([
             'location_id' => 'required|exists:locations,id',
         ]);
@@ -64,6 +85,8 @@ class BudgetRoutingController extends Controller
     // Swap a step with its neighbour (direction: up | down).
     public function move(Request $request, $id)
     {
+        $this->authorizeBudgetSetup('update');
+
         $request->validate([
             'direction' => 'required|in:up,down',
         ]);
@@ -86,6 +109,8 @@ class BudgetRoutingController extends Controller
 
     public function destroy($id)
     {
+        $this->authorizeBudgetSetup('delete');
+
         DB::transaction(function () use ($id) {
             budget_routing::findOrFail($id)->delete();
             $this->resequence(); // close the gap

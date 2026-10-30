@@ -9,8 +9,23 @@ use App\Models\license_type as LicenseType;
 
 class LicenseTypeController extends Controller
 {
+    private const SET_LICENSE = 'SET-05';
+
+    private function authorizeLicenseSetup(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::SET_LICENSE, $action),
+            403,
+            'You do not have permission in License Type Management to perform this action.'
+        );
+    }
     public function index(Request $request)
     {
+        $this->authorizeLicenseSetup('read');
+        $canCreate = Auth::user()->hasAccess(self::SET_LICENSE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SET_LICENSE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SET_LICENSE, 'delete');
+
         $search = $request->input('search');
         $status = $request->input('status');
         $totalLicenseTypes = LicenseType::count();
@@ -32,11 +47,21 @@ class LicenseTypeController extends Controller
 
         $licenseTypes = $query->paginate(config('app.paginate'));
 
-        return view('setup.license.index', compact('licenseTypes', 'totalLicenseTypes', 'activeLicenseTypes', 'inactiveLicenseTypes'));
+        return view('setup.license.index', compact(
+            'licenseTypes',
+            'totalLicenseTypes',
+            'activeLicenseTypes',
+            'inactiveLicenseTypes',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
+        ));
     }
 
     public function store(Request $request)
     {
+        $this->authorizeLicenseSetup('create');
+
         $request->validate([
             'name' => 'required|string|max:50',
             'description' => 'nullable|string|max:150',
@@ -54,6 +79,8 @@ class LicenseTypeController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeLicenseSetup('update');
+
         $request->validate([
             'edit_name' => 'required|string|max:50',
             'edit_description' => 'nullable|string|max:150',

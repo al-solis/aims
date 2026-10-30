@@ -11,8 +11,24 @@ use App\Models\category as Category;
 
 class CategoryController extends Controller
 {
+    private const SET_CATEGORY = 'SET-04';
+
+    private function authorizeCategorySetup(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::SET_CATEGORY, $action),
+            403,
+            'You do not have permission in Asset Category Management to perform this action.'
+        );
+    }
+
     public function index(Request $request)
     {
+        $this->authorizeCategorySetup('read');
+        $canCreate = Auth::user()->hasAccess(self::SET_CATEGORY, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SET_CATEGORY, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SET_CATEGORY, 'delete');
+
         $search = $request->input('search');
         $status = $request->input('status');
         $totalCategories = Category::count();
@@ -35,11 +51,21 @@ class CategoryController extends Controller
 
         $categories = $query->paginate(config('app.paginate'));
 
-        return view('setup.category.index', compact('categories', 'totalCategories', 'activeCategories', 'inactiveCategories'));
+        return view('setup.category.index', compact(
+            'categories',
+            'totalCategories',
+            'activeCategories',
+            'inactiveCategories',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
+        ));
     }
 
     public function store(Request $request)
     {
+        $this->authorizeCategorySetup('create');
+
         $request->validate([
             'name' => 'required|string|max:60',
             'description' => 'nullable|string|max:150',
@@ -59,6 +85,8 @@ class CategoryController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeCategorySetup('update');
+
         $request->validate([
             'edit_name' => 'required|string|max:50',
             'edit_description' => 'nullable|string|max:150',

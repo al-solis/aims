@@ -139,8 +139,12 @@
                                         </select>
                                     </div>
 
-                                    <button type="button" id="addEmployeeButton"
-                                        class="ft-btn ft-btn-primary w-full justify-center">
+                                    @php
+                                        $isDisabled = $ddo ? !$canUpdate : !$canCreate;
+                                    @endphp
+
+                                    <button type="button" id="addEmployeeButton" @disabled($isDisabled)
+                                        class="ft-btn ft-btn-primary w-full justify-center {{ $isDisabled ? 'cursor-not-allowed opacity-50' : '' }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" viewBox="0 0 16 16">
                                             <path
@@ -214,7 +218,8 @@
                             {{-- Footer actions --}}
                             <div class="ft-divider flex items-center justify-end gap-3 p-4">
                                 <a href="{{ route('ddo.index') }}" class="ft-btn ft-btn-ghost">Cancel</a>
-                                <button type="submit" id="saveButton" class="ft-btn ft-btn-primary">
+                                <button type="submit" id="saveButton" @if (!$canCreate || !$canUpdate) disabled @endif
+                                    class="ft-btn ft-btn-primary {{ !$canCreate || !$canUpdate ? 'cursor-not-allowed opacity-50' : '' }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M11 2H9v3h2z" />
@@ -226,6 +231,20 @@
                             </div>
                         </section>
                     </div>
+                    @if (!$canCreate && !$canUpdate)
+                        <p class="mt-2 mr-auto rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                            You don't have permission to create or update DDO information.
+                        </p>
+                    @elseif (!$canCreate)
+                        <p class="mt-2 mr-auto rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                            You don't have permission to create DDO information.
+                        </p>
+                    @elseif (!$canUpdate)
+                        <p class="mt-2 mr-auto rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                            You don't have permission to update DDO information.
+                        </p>
+                    @endif
+
                 </div>
             </div>
         </form>

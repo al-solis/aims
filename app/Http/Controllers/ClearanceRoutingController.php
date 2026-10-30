@@ -11,10 +11,25 @@ use App\Models\location as Location;
 
 class ClearanceRoutingController extends Controller
 {
+    private const SET_CLEARANCE = 'SET-12';
+
+    private function authorizeClearanceSetup(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::SET_CLEARANCE, $action),
+            403,
+            'You do not have permission in Clearance Approval to perform this action.'
+        );
+    }
     public function index()
     {
+        $this->authorizeClearanceSetup('read');
+        $canCreate = Auth::user()->hasAccess(self::SET_CLEARANCE, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SET_CLEARANCE, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SET_CLEARANCE, 'delete');
+
         $locations = Location::where('status', 1)->orderByRaw('LTRIM(RTRIM(name)) ASC')->get();
-        return view('setup.clearance-routing.index', compact('locations'));
+        return view('setup.clearance-routing.index', compact('locations', 'canCreate', 'canUpdate', 'canDelete'));
     }
 
     public function viewRouting()
@@ -30,6 +45,8 @@ class ClearanceRoutingController extends Controller
     // New steps always go to the end of the sequence.
     public function store(Request $request)
     {
+        $this->authorizeClearanceSetup('create');
+
         $request->validate([
             'location_id' => 'required|exists:locations,id',
         ]);
@@ -50,6 +67,8 @@ class ClearanceRoutingController extends Controller
     // Edit only changes the department; position is changed with move().
     public function update(Request $request, $id)
     {
+        $this->authorizeClearanceSetup('update');
+
         $request->validate([
             'location_id' => 'required|exists:locations,id',
         ]);
@@ -64,6 +83,8 @@ class ClearanceRoutingController extends Controller
     // Swap a step with its neighbour (direction: up | down).
     public function move(Request $request, $id)
     {
+        $this->authorizeClearanceSetup('update');
+
         $request->validate([
             'direction' => 'required|in:up,down',
         ]);
@@ -86,6 +107,8 @@ class ClearanceRoutingController extends Controller
 
     public function destroy($id)
     {
+        $this->authorizeClearanceSetup('delete');
+
         DB::transaction(function () use ($id) {
             clearance_routing::findOrFail($id)->delete();
             $this->resequence(); // close the gap

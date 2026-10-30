@@ -16,8 +16,23 @@ use Carbon\Carbon;
 
 class DdoHeaderController extends Controller
 {
+    private const SET_DDO = 'SET-11';
+
+    private function authorizeDDOSetup(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::SET_DDO, $action),
+            403,
+            'You do not have permission in DDO Location Setup to perform this action.'
+        );
+    }
     public function index(Request $request)
     {
+        $this->authorizeDDOSetup('read');
+        $canCreate = Auth::user()->hasAccess(self::SET_DDO, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SET_DDO, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SET_DDO, 'delete');
+
         $search = $request->input('search');
         $searchlocation = $request->input('searchlocation');
         $status = $request->input('status');
@@ -54,11 +69,24 @@ class DdoHeaderController extends Controller
             ->paginate(config('app.paginate'))
             ->appends($request->only('search', 'status'));
 
-        return view('setup.ddo.index', compact('totalSetups', 'activeSetups', 'totalInactiveSetups', 'locations', 'employees', 'setups', 'destination'));
+        return view('setup.ddo.index', compact(
+            'totalSetups',
+            'activeSetups',
+            'totalInactiveSetups',
+            'locations',
+            'employees',
+            'setups',
+            'destination',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
+        ));
     }
 
     public function create(Request $request, $id = null)
     {
+        $this->authorizeDDOSetup('create');
+
         $locations = DB::table('locations')
             ->where('status', 1)
             ->whereNotIn('id', function ($query) {
@@ -81,6 +109,8 @@ class DdoHeaderController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizeDDOSetup('create');
+
         // dd($request->all());
         $request->validate([
             'location_id_display' => 'required|exists:locations,id',
@@ -148,6 +178,11 @@ class DdoHeaderController extends Controller
 
     public function edit(Request $request, ddo_header $ddo)
     {
+        $this->authorizeDDOSetup('read');
+        $canCreate = Auth::user()->hasAccess(self::SET_DDO, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SET_DDO, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SET_DDO, 'delete');
+
         $locations = Location::where('status', 1)
             ->orderBy('name')->get();
 
@@ -158,8 +193,14 @@ class DdoHeaderController extends Controller
             ->where('id', $ddo->id)
             ->first();
 
-
-        return view('setup.ddo.create', compact('locations', 'employees', 'ddo'));
+        return view('setup.ddo.create', compact(
+            'locations',
+            'employees',
+            'ddo',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
+        ));
 
     }
 

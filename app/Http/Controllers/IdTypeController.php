@@ -9,8 +9,24 @@ use App\Models\id_type as IdType;
 
 class IdTypeController extends Controller
 {
+    private const SET_ID = 'SET-07';
+
+    private function authorizeIDSetup(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::SET_ID, $action),
+            403,
+            'You do not have permission in Government ID Management to perform this action.'
+        );
+    }
+
     public function index(Request $request)
     {
+        $this->authorizeIDSetup('read');
+        $canCreate = Auth::user()->hasAccess(self::SET_ID, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SET_ID, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SET_ID, 'delete');
+
         $search = $request->input('search');
         $status = $request->input('status');
         $totalIdTypes = IdType::count();
@@ -32,11 +48,21 @@ class IdTypeController extends Controller
 
         $idTypes = $query->paginate(config('app.paginate'));
 
-        return view('setup.idtype.index', compact('idTypes', 'totalIdTypes', 'activeIdTypes', 'inactiveIdTypes'));
+        return view('setup.idtype.index', compact(
+            'idTypes',
+            'totalIdTypes',
+            'activeIdTypes',
+            'inactiveIdTypes',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
+        ));
     }
 
     public function store(Request $request)
     {
+        $this->authorizeIDSetup('create');
+
         $request->validate([
             'name' => 'required|string|max:50',
             'description' => 'nullable|string|max:150',
@@ -54,6 +80,8 @@ class IdTypeController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeIDSetup('update');
+
         $request->validate([
             'edit_name' => 'required|string|max:50',
             'edit_description' => 'nullable|string|max:150',

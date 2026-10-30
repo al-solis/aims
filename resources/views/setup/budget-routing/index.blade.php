@@ -36,7 +36,8 @@
                         </div>
 
                         <div class="mt-5 flex gap-2">
-                            <button id="add-routing" type="button" class="ft-btn ft-btn-primary flex-1 justify-center">
+                            <button id="add-routing" type="button" @if (!$canCreate || !$canUpdate) disabled @endif
+                                class="ft-btn ft-btn-primary flex-1 justify-center">
                                 Add step
                             </button>
                             <button id="cancel-edit" type="button" class="ft-btn ft-btn-ghost" style="display: none;">
@@ -64,6 +65,12 @@
 
                 {{-- Actions --}}
                 <div class="ft-divider mt-8 pt-5 flex justify-end gap-x-2">
+                    @if (!$canUpdate)
+                        <p class="mr-auto rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                            You can't save changes to this budget approval.
+                        </p>
+                    @endif
+
                     <a href="{{ route('setup.index') }}" class="ft-btn ft-btn-ghost">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />

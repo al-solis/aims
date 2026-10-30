@@ -9,8 +9,24 @@ use App\Models\suppliescategory as SuppliesCategory;
 
 class SuppliesCategoryController extends Controller
 {
+    private const SET_SUPCAT = 'SET-08';
+
+    private function authorizeSupCatSetup(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::SET_SUPCAT, $action),
+            403,
+            'You do not have permission in Supplies Category Management to perform this action.'
+        );
+    }
+
     public function index(Request $request)
     {
+        $this->authorizeSupCatSetup('read');
+        $canCreate = Auth::user()->hasAccess(self::SET_SUPCAT, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SET_SUPCAT, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SET_SUPCAT, 'delete');
+
         $search = $request->input('search');
         $status = $request->input('status');
         $totalCategories = SuppliesCategory::count();
@@ -33,11 +49,21 @@ class SuppliesCategoryController extends Controller
 
         $categories = $query->paginate(config('app.paginate'));
 
-        return view('setup.supplies-category.index', compact('categories', 'totalCategories', 'activeCategories', 'inactiveCategories'));
+        return view('setup.supplies-category.index', compact(
+            'categories',
+            'totalCategories',
+            'activeCategories',
+            'inactiveCategories',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
+        ));
     }
 
     public function store(Request $request)
     {
+        $this->authorizeSupCatSetup('create');
+
         $request->validate([
             'name' => 'required|string|max:50',
             'description' => 'nullable|string|max:150',
@@ -57,6 +83,8 @@ class SuppliesCategoryController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeSupCatSetup('update');
+
         $request->validate([
             'edit_name' => 'required|string|max:50',
             'edit_description' => 'nullable|string|max:150',

@@ -492,7 +492,7 @@
                             Update transfer
                         </button>
 
-                        @if ($transfer->cancelled)
+                        {{-- @if ($transfer?->cancelled)
                             <div id="cancelledMsg"
                                 class="mt-2 text-white inline-flex items-center justify-center w-full bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-md text-xs px-5 py-2.5 text-center">
                                 <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
@@ -503,7 +503,7 @@
                                 </svg>
                                 This transfer is cancelled
                             </div>
-                        @endif
+                        @endif --}}
                     </form>
                 </div>
             </div>

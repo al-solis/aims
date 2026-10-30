@@ -11,8 +11,24 @@ use App\Models\supplier as Supplier;
 
 class SupplierController extends Controller
 {
+    private const SET_SUPPLIER = 'SET-10';
+
+    private function authorizeSupplierSetup(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::SET_SUPPLIER, $action),
+            403,
+            'You do not have permission in Supplier Management to perform this action.'
+        );
+    }
+
     public function index(Request $request)
     {
+        $this->authorizeSupplierSetup('read');
+        $canCreate = Auth::user()->hasAccess(self::SET_SUPPLIER, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SET_SUPPLIER, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SET_SUPPLIER, 'delete');
+
         $search = $request->input('search');
         $status = $request->input('status');
         $totalSuppliers = Supplier::count();
@@ -37,11 +53,20 @@ class SupplierController extends Controller
 
         $suppliers = $query->paginate(config('app.paginate'));
 
-        return view('setup.supplier.index', compact('suppliers', 'totalSuppliers', 'activeSuppliers', 'inactiveSuppliers'));
+        return view('setup.supplier.index', compact(
+            'suppliers',
+            'totalSuppliers',
+            'activeSuppliers',
+            'inactiveSuppliers',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
+        ));
     }
 
     public function store(Request $request)
     {
+        $this->authorizeSupplierSetup('create');
 
         $request->validate([
             'name' => 'required|string|max:150',
@@ -67,6 +92,8 @@ class SupplierController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeSupplierSetup('update');
+
         $request->validate([
             'edit_name' => 'required|string|max:150',
             'edit_contact_person' => 'nullable|string|max:50',

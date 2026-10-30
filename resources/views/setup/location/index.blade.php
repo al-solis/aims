@@ -21,7 +21,9 @@
                             </svg>
                             Back
                         </a>
-                        <button data-modal-target="add-modal" data-modal-toggle="add-modal" class="ft-btn ft-btn-primary"
+                        <button data-modal-target="add-modal" data-modal-toggle="add-modal"
+                            @if (!$canCreate) disabled @endif
+                            class="ft-btn ft-btn-primary {{ !$canCreate ? 'cursor-not-allowed opacity-50' : '' }}"
                             style="color: var(--ft-ink); background: var(--ft-surface); border-color: var(--ft-surface);">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -256,6 +258,7 @@
                                     <td>
                                         <div class="flex items-center justify-center">
                                             <button type="button" title="Edit location {{ $location->name }}"
+                                                @if (!$canUpdate) disabled @endif
                                                 data-modal-target="edit-modal" data-modal-toggle="edit-modal"
                                                 data-id="{{ $location->id }}" data-name="{{ $location->name }}"
                                                 data-code="{{ $location->code }}"
@@ -267,7 +270,8 @@
                                                 data-longitude="{{ $location->longitude }}"
                                                 data-employees="{{ $location->employee_count }}"
                                                 data-status="{{ $location->status }}" onclick="openEditModal(this)"
-                                                class="p-1.5 rounded text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors">
+                                                class="p-1.5 rounded text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors
+                                                {{ !$canUpdate ? 'cursor-not-allowed opacity-50' : '' }}">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                     fill="currentColor" viewBox="0 0 16 16">
                                                     <path
@@ -287,6 +291,20 @@
                         </tbody>
                     </table>
                 </div>
+
+                @if (!$canCreate && !$canUpdate)
+                    <p class="mt-2 mr-auto rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                        You don't have permission to create or update location information.
+                    </p>
+                @elseif (!$canCreate)
+                    <p class="mt-2 mr-auto rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                        You don't have permission to create location information.
+                    </p>
+                @elseif (!$canUpdate)
+                    <p class="mt-2 mr-auto rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                        You don't have permission to update location information.
+                    </p>
+                @endif
 
                 {{-- Pagination --}}
                 <div class="flex flex-col md:flex-row items-stretch md:items-center justify-end text-xs"

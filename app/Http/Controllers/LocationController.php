@@ -12,8 +12,24 @@ use App\Models\cluster;
 
 class LocationController extends Controller
 {
+    private const SET_LOCATION = 'SET-03';
+
+    private function authorizeLocationSetup(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::SET_LOCATION, $action),
+            403,
+            'You do not have permission in Location Management to perform this action.'
+        );
+    }
+
     public function index(Request $request)
     {
+        $this->authorizeLocationSetup('read');
+        $canCreate = Auth::user()->hasAccess(self::SET_LOCATION, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SET_LOCATION, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SET_LOCATION, 'delete');
+
         $search = $request->query('search');
         $status = $request->query('status');
         $cluster = $request->query('cluster');
@@ -67,12 +83,17 @@ class LocationController extends Controller
             'totalSubLocations',
             'search',
             'status',
-            'mapLocations'
+            'mapLocations',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
         ));
     }
 
     public function store(Request $request)
     {
+        $this->authorizeLocationSetup('create');
+
         $request->validate([
             'cluster' => 'required|exists:clusters,id',
             'code' => 'required|string|max:15|unique:locations,code',
@@ -105,6 +126,8 @@ class LocationController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeLocationSetup('update');
+
         $location = Location::findOrFail($id);
 
         $request->validate([

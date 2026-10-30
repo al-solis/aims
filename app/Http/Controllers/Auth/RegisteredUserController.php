@@ -18,6 +18,17 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
+    private const SET_USER = 'SET-14';
+
+    private function authorizeUserSetup(string $action): void
+    {
+        abort_unless(
+            Auth::user()->hasAccess(self::SET_USER, $action),
+            403,
+            'You do not have permission in User Management to perform this action.'
+        );
+    }
+
     public function create(): View
     {
         return view('auth.register');
@@ -30,6 +41,8 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $this->authorizeUserSetup('create');
+
         $request->validate([
             'lname' => ['required', 'string', 'max:30'],
             'fname' => ['required', 'string', 'max:30'],
@@ -62,6 +75,11 @@ class RegisteredUserController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorizeUserSetup('read');
+        $canCreate = Auth::user()->hasAccess(self::SET_USER, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SET_USER, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SET_USER, 'delete');
+
         $search = $request->query('search');
         $status = $request->query('status');
 
@@ -111,13 +129,18 @@ class RegisteredUserController extends Controller
                 'totalUsers',
                 'activeUsers',
                 'inactiveUsers',
-                'roles'
+                'roles',
+                'canCreate',
+                'canUpdate',
+                'canDelete'
             )
         );
     }
 
     public function update($id)
     {
+        $this->authorizeUserSetup('update');
+
         $user = User::findOrFail($id);
 
         $password = request('edit_password');
