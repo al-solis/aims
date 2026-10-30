@@ -146,10 +146,9 @@ class TransferController extends Controller
 
         $transfer = Transfer::create([
             'code' => $trxcode,
-
             'date' => $request->transfer_date,
-
             'description' => $request->description,
+            'cancelled' => false,
             'created_by' => Auth::id(),
             'created_at' => now(),
         ]);
