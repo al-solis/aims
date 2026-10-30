@@ -11,7 +11,7 @@
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1>Asset Transfer Management</h1>
-                        <p>Manage Asset Transfers</p>
+                        <p>Manage Asset Transfers for {{ $assets->asset_code . ' — ' . $assets->name }}</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <a href="{{ route('asset.index') }}" class="ft-btn ft-btn-ghost"
