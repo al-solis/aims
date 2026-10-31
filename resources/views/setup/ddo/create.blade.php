@@ -5,6 +5,9 @@
 
         $fieldClass = 'ft-field select2';
         $labelClass = 'ft-label';
+
+        $isDisabled = $ddo ? !$canUpdate : !$canCreate;
+
     @endphp
 
     {{-- Colors come from <html data-theme="..."> defined in the layout; do not set data-theme here --}}
@@ -139,10 +142,6 @@
                                         </select>
                                     </div>
 
-                                    @php
-                                        $isDisabled = $ddo ? !$canUpdate : !$canCreate;
-                                    @endphp
-
                                     <button type="button" id="addEmployeeButton" @disabled($isDisabled)
                                         class="ft-btn ft-btn-primary w-full justify-center {{ $isDisabled ? 'cursor-not-allowed opacity-50' : '' }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -218,8 +217,8 @@
                             {{-- Footer actions --}}
                             <div class="ft-divider flex items-center justify-end gap-3 p-4">
                                 <a href="{{ route('ddo.index') }}" class="ft-btn ft-btn-ghost">Cancel</a>
-                                <button type="submit" id="saveButton" @if (!$canCreate || !$canUpdate) disabled @endif
-                                    class="ft-btn ft-btn-primary {{ !$canCreate || !$canUpdate ? 'cursor-not-allowed opacity-50' : '' }}">
+                                <button type="submit" id="saveButton" @disabled($isDisabled)
+                                    class="ft-btn ft-btn-primary {{ $isDisabled ? 'cursor-not-allowed opacity-50' : '' }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M11 2H9v3h2z" />

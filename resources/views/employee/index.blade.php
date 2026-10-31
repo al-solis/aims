@@ -313,6 +313,20 @@
                     </table>
                 </div>
 
+                @if (!$canCreate && !$canUpdate)
+                    <p class="mt-2 mr-auto rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                        You don't have permission to create or update employee information.
+                    </p>
+                @elseif (!$canCreate)
+                    <p class="mt-2 mr-auto rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                        You don't have permission to create employee information.
+                    </p>
+                @elseif (!$canUpdate)
+                    <p class="mt-2 mr-auto rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                        You don't have permission to update employee information.
+                    </p>
+                @endif
+
                 {{-- Pagination --}}
                 <div class="flex flex-col md:flex-row items-stretch md:items-center justify-end text-xs"
                     style="color: var(--ft-muted);">

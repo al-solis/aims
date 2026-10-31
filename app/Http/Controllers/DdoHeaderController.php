@@ -206,6 +206,8 @@ class DdoHeaderController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeDDOSetup('update');
+
         //  dd($request->all());
         $request->validate([
             'location_id' => 'required|exists:locations,id',
@@ -251,6 +253,8 @@ class DdoHeaderController extends Controller
 
     public function copyLocationSetup(Request $request)
     {
+        $this->authorizeDDOSetup('create');
+
         try {
             $request->validate([
                 'source_id' => 'required|exists:locations,id',

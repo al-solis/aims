@@ -251,10 +251,14 @@
                         @csrf
                         <div class="grid gap-4 mb-4 sm:grid-cols-2">
                             <div class="sm:col-span-2">
-                                <label for="employee_code" class="ft-label">Employee Code <span
-                                        class="text-red-600">*</span></label>
+                                <label for="employee_code" class="ft-label">
+                                    Employee Code <span class="text-red-600">*</span>
+                                </label>
                                 <input type="text" name="employee_code" id="employee_code" class="ft-field"
-                                    placeholder="e.g. EMP001" required>
+                                    placeholder="e.g. EMP001, 001" required>
+                                <p class="mt-1 text-xs text-gray-500">
+                                    Enter the employee code used in Employee Information.
+                                </p>
                             </div>
 
                             <div class="sm:col-span-2">
@@ -365,6 +369,9 @@
                                         class="text-red-600">*</span></label>
                                 <input type="text" name="edit_employee_code" id="edit_employee_code" class="ft-field"
                                     placeholder="e.g. EMP001" required>
+                                <p class="mt-1 text-xs text-gray-500">
+                                    Enter the employee code used in Employee Information.
+                                </p>
                             </div>
 
                             <div class="sm:col-span-2">
