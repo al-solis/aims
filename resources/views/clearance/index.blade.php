@@ -105,11 +105,11 @@
 
                 {{-- Filters --}}
                 <form action="" method="GET" class="flex flex-col md:flex-row gap-3">
-                    <div class="md:w-2/3 w-full">
+                    <div class="md:w-1/3 w-full">
                         <input type="text" name="search" placeholder="Search by name or description..." class="ft-field"
                             value="{{ request()->query('search') }}" oninput="this.form.submit()">
                     </div>
-                    <div class="md:w-1/3 w-full flex flex-col md:flex-row gap-3">
+                    <div class="md:w-2/3 w-full flex flex-col md:flex-row gap-3">
                         <select name="searchloc" class="ft-field flex-1" onchange="this.form.submit()">
                             <option value="">All Locations</option>
                             @foreach ($locations as $location)
@@ -118,6 +118,16 @@
                                     {{ $location->name }}
                                 </option>
                             @endforeach
+                        </select>
+                        <select name="searchtype" class="ft-field flex-1" onchange="this.form.submit()">
+                            <option value="">All Types</option>
+                            <option value="1" {{ request('searchtype') === '1' ? 'selected' : '' }}>Transfer</option>
+                            <option value="2" {{ request('searchtype') === '2' ? 'selected' : '' }}>Resignation
+                            </option>
+                            <option value="3" {{ request('searchtype') === '3' ? 'selected' : '' }}>Contract Ending
+                            </option>
+                            <option value="4" {{ request('searchtype') === '4' ? 'selected' : '' }}>Termination
+                            </option>
                         </select>
                         <select name="status" class="ft-field flex-1" onchange="this.form.submit()">
                             <option value="">All Status</option>
@@ -235,7 +245,7 @@
                                         {{ number_format($clearanceHeader->clearance_details->sum('total'), 2) }}
                                     </td>
                                     <td>
-                                        <div class="flex items-center justify-center gap-1">
+                                        <div class="flex items-center justify-center gap-0">
                                             @if ($canUpdate || Auth::user()->id == $clearanceHeader->created_by)
                                                 <a href="{{ route('clearance.show', $clearanceHeader->id) }}"
                                                     title="Edit clearance : {{ $clearanceHeader->request_number }}"

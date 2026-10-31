@@ -65,11 +65,11 @@
 
                 {{-- Filters --}}
                 <form action="" method="GET" class="flex flex-col md:flex-row gap-3">
-                    <div class="md:w-2/3 w-full">
+                    <div class="md:w-1/3 w-full">
                         <input type="text" name="search" placeholder="Search by name or description..." class="ft-field"
                             value="{{ request()->query('search') }}" oninput="this.form.submit()">
                     </div>
-                    <div class="md:w-1/3 w-full flex gap-3">
+                    <div class="md:w-2/3 w-full flex gap-3">
                         <select name="searchsupplier" class="ft-field flex-1" onchange="this.form.submit()">
                             <option value="">All Suppliers</option>
                             @foreach ($suppliers as $supplier)

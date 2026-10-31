@@ -149,12 +149,12 @@
                     <input type="hidden" name="selected_assets" id="selected_assets"
                         value="{{ implode(',', session('selected_assets', [])) }}">
 
-                    <div class="md:w-2/3 w-full">
+                    <div class="md:w-1/3 w-full">
                         <input type="text" name="search" placeholder="Search by name, code, or serial..."
                             class="ft-field" value="{{ request()->query('search') }}" oninput="this.form.submit()">
                     </div>
 
-                    <div class="md:w-1/3 w-full flex flex-col md:flex-row gap-3">
+                    <div class="md:w-2/3 w-full flex flex-col md:flex-row gap-3">
                         <select name="searchcat" class="ft-field flex-1" onchange="this.form.submit()">
                             <option value="">All Categories</option>
                             @foreach ($categories as $category)

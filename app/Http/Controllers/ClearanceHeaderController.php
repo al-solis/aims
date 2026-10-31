@@ -39,6 +39,7 @@ class ClearanceHeaderController extends Controller
         $search = $request->input('search');
         $status = $request->input('status');
         $searchloc = $request->input('searchloc');
+        $searchtype = $request->input('searchtype');
 
         $employees = employee::where('status', '1')
             ->orderByRaw('LTRIM(RTRIM(last_name)) ASC')
@@ -83,7 +84,17 @@ class ClearanceHeaderController extends Controller
             $query->where('status', $status);
         }
 
-        $clearanceHeaders = $query->orderBy('created_at', 'desc')->paginate(config('app.paginate'));
+        if ($searchtype !== null) {
+            $query->where('type', $searchtype);
+        }
+
+        $clearanceHeaders = $query->orderBy('created_at', 'desc')->paginate(config('app.paginate'))
+            ->appends([
+                'search' => $search,
+                'status' => $status,
+                'searchloc' => $searchloc,
+                'searchtype' => $searchtype
+            ]);
 
         return view('clearance.index', compact(
             'clearanceHeaders',
@@ -94,6 +105,7 @@ class ClearanceHeaderController extends Controller
             'employees',
             'locations',
             'searchloc',
+            'searchtype',
             'userLocation',
             'canCreate',
             'canUpdate',
