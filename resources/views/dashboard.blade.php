@@ -27,8 +27,7 @@
             <div class="flex flex-wrap justify-center gap-1.5 sm:gap-2">
                 <a href="{{ route('main') }}" title="Real-time overview of agency assets and property"
                     class="py-1.5 px-2.5 flex flex-col items-center gap-x-1.5 text-sm text-gray-800 bg-gray-100 hover:text-cyan-700 rounded-lg focus:outline-hidden focus:text-cyan-700 hover:bg-gray-200">
-                    <img width="48" height="48" src="https://img.icons8.com/color/48/dashboard-layout.png"
-                        alt="dashboard" />
+                    <img width="48" height="48" src="{{ asset('icons/dashboard.png') }}" alt="dashboard" />
                     <span class="text-xs mt-1">Dashboard</span>
                 </a>
 
