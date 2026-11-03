@@ -30,7 +30,7 @@
         </div>
     </div>
     <script src="{{ asset('build/assets/flowbite.min.js') }}"></script>
-    <script src="{{ asset('build/assets/preline.js') }}"></script>
+    {{-- <script src="{{ asset('build/assets/preline.js') }}"></script> --}}
 </body>
 
 </html>
