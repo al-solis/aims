@@ -176,7 +176,7 @@
         <table width="100%" style="border:0;">
             <tr>
                 <td width="7%" style="border:0;">
-                    <img src="{{ public_path('images/logo.PNG') }}" style="width:80px;">
+                    <img src="{{ public_path('images/logo.png') }}" style="width:80px;">
                 </td>
                 <td width="93%" style="border:0; text-align:center;">
                     <div class="title">{{ env('APP_COMPANY_NAME') }}</div>

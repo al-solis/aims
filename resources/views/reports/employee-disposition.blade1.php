@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 @php
-    use Carbon\Carbon;
-    use Illuminate\Support\Str;
-    use App\Models\mdr_exc_loc;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
+use App\Models\mdr_exc_loc;
 @endphp
 
 <head>
@@ -129,10 +129,10 @@
 
     {{-- HEADER --}}
     @php
-        $sortLabels = [
-            'last_name' => 'Last Name',
-            'hire_date' => 'Date Hired',
-        ];
+    $sortLabels = [
+    'last_name' => 'Last Name',
+    'hire_date' => 'Date Hired',
+    ];
     @endphp
 
     <div class="header">
@@ -148,7 +148,7 @@
                     <div class="sub-title">{{ env('APP_COMPANY_CONTACT') }}</div>
                 </td>
                 <td width="7%" style="border:0; padding-right:80px; text-align:right;">
-                    <img src="{{ public_path('images/logo.PNG') }}" style="width:80px;">
+                    <img src="{{ public_path('images/logo.png') }}" style="width:80px;">
                 </td>
             </tr>
         </table>
@@ -243,7 +243,11 @@
 
         .no-border {
             border: none;
-        } --}}
+        }
+
+        --
+        }
+        }
     </style>
 
     {{-- RECAPITULATION TABLE --}}
@@ -352,82 +356,96 @@
 
                 {{-- LONG FIREARMS --}}
                 <td>
-                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) => in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '45'))->count() }}
+                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) =>
+                    in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '45'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) => in_array($item->status, [3]) && str_contains(strtolower($item->caliber), 'm16'))->count() }}
+                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) =>
+                    in_array($item->status, [3]) && str_contains(strtolower($item->caliber), 'm16'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) => in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '357'))->count() }}
+                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) =>
+                    in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '357'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) => in_array($item->status, [3]) && str_contains(strtolower($item->caliber), 'ak47'))->count() }}
+                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) =>
+                    in_array($item->status, [3]) && str_contains(strtolower($item->caliber), 'ak47'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) => in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '44'))->count() }}
+                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) =>
+                    in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '44'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) => in_array($item->status, [3]) && str_contains(strtolower($item->caliber), 'ect'))->count() }}
+                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) =>
+                    in_array($item->status, [3]) && str_contains(strtolower($item->caliber), 'ect'))->count() }}
                 </td>
 
                 {{-- TOTAL LONG --}}
                 <td>
-                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(function ($item) {
-                            $caliber = strtolower($item->caliber);
-                    
-                            return in_array($item->status, [3]) &&
-                                (str_contains($caliber, '45') ||
-                                    str_contains($caliber, 'm16') ||
-                                    str_contains($caliber, '357') ||
-                                    str_contains($caliber, 'ak47') ||
-                                    str_contains($caliber, '44') ||
-                                    str_contains($caliber, 'ect'));
-                        })->count() }}
+                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(function
+                    ($item) {
+                    $caliber = strtolower($item->caliber);
+
+                    return in_array($item->status, [3]) &&
+                    (str_contains($caliber, '45') ||
+                    str_contains($caliber, 'm16') ||
+                    str_contains($caliber, '357') ||
+                    str_contains($caliber, 'ak47') ||
+                    str_contains($caliber, '44') ||
+                    str_contains($caliber, 'ect'));
+                    })->count() }}
                 </td>
 
                 {{-- SHORT FIREARMS --}}
                 <td>
-                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) => in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '9mm'))->count() }}
+                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) =>
+                    in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '9mm'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) => in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '38'))->count() }}
+                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) =>
+                    in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '38'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) => in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '380'))->count() }}
+                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) =>
+                    in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '380'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) => in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '32'))->count() }}
+                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) =>
+                    in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '32'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) => in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '12ga'))->count() }}
+                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) =>
+                    in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '12ga'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) => in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '22'))->count() }}
+                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(fn($item) =>
+                    in_array($item->status, [3]) && str_contains(strtolower($item->caliber), '22'))->count() }}
                 </td>
 
                 {{-- TOTAL SHORT --}}
                 <td>
-                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(function ($item) {
-                            $caliber = strtolower($item->caliber);
-                    
-                            return in_array($item->status, [3]) &&
-                                (str_contains($caliber, '9mm') ||
-                                    str_contains($caliber, '38') ||
-                                    str_contains($caliber, '380') ||
-                                    str_contains($caliber, '32') ||
-                                    str_contains($caliber, '12ga') ||
-                                    str_contains($caliber, '22'));
-                        })->count() }}
+                    {{ $noOfFirearms->whereNotIn('location_id', mdr_exc_loc::pluck('location_id'))->filter(function
+                    ($item) {
+                    $caliber = strtolower($item->caliber);
+
+                    return in_array($item->status, [3]) &&
+                    (str_contains($caliber, '9mm') ||
+                    str_contains($caliber, '38') ||
+                    str_contains($caliber, '380') ||
+                    str_contains($caliber, '32') ||
+                    str_contains($caliber, '12ga') ||
+                    str_contains($caliber, '22'));
+                    })->count() }}
                 </td>
             </tr>
             <tr>
@@ -449,82 +467,94 @@
                 <td>NO. FA'S IN VAULT FOR SAFEKEEPING</td>
                 {{-- LONG FIREARMS --}}
                 <td>
-                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2, 3]) && str_contains(strtolower($item->caliber), '45'))->count() }}
+                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2,
+                    3]) && str_contains(strtolower($item->caliber), '45'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2, 3]) && str_contains(strtolower($item->caliber), 'm16'))->count() }}
+                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2,
+                    3]) && str_contains(strtolower($item->caliber), 'm16'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2, 3]) && str_contains(strtolower($item->caliber), '357'))->count() }}
+                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2,
+                    3]) && str_contains(strtolower($item->caliber), '357'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2, 3]) && str_contains(strtolower($item->caliber), 'ak47'))->count() }}
+                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2,
+                    3]) && str_contains(strtolower($item->caliber), 'ak47'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2, 3]) && str_contains(strtolower($item->caliber), '44'))->count() }}
+                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2,
+                    3]) && str_contains(strtolower($item->caliber), '44'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2, 3]) && str_contains(strtolower($item->caliber), 'ect'))->count() }}
+                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2,
+                    3]) && str_contains(strtolower($item->caliber), 'ect'))->count() }}
                 </td>
 
                 {{-- TOTAL LONG --}}
                 <td>
                     {{ $noOfFirearms->where('location_id', 20198)->filter(function ($item) {
-                            $caliber = strtolower($item->caliber);
-                    
-                            return in_array($item->status, [1, 2, 3]) &&
-                                (str_contains($caliber, '45') ||
-                                    str_contains($caliber, 'm16') ||
-                                    str_contains($caliber, '357') ||
-                                    str_contains($caliber, 'ak47') ||
-                                    str_contains($caliber, '44') ||
-                                    str_contains($caliber, 'ect'));
-                        })->count() }}
+                    $caliber = strtolower($item->caliber);
+
+                    return in_array($item->status, [1, 2, 3]) &&
+                    (str_contains($caliber, '45') ||
+                    str_contains($caliber, 'm16') ||
+                    str_contains($caliber, '357') ||
+                    str_contains($caliber, 'ak47') ||
+                    str_contains($caliber, '44') ||
+                    str_contains($caliber, 'ect'));
+                    })->count() }}
                 </td>
 
                 {{-- SHORT FIREARMS --}}
                 <td>
-                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2, 3]) && str_contains(strtolower($item->caliber), '9mm'))->count() }}
+                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2,
+                    3]) && str_contains(strtolower($item->caliber), '9mm'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2, 3]) && str_contains(strtolower($item->caliber), '38'))->count() }}
+                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2,
+                    3]) && str_contains(strtolower($item->caliber), '38'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2, 3]) && str_contains(strtolower($item->caliber), '380'))->count() }}
+                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2,
+                    3]) && str_contains(strtolower($item->caliber), '380'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2, 3]) && str_contains(strtolower($item->caliber), '32'))->count() }}
+                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2,
+                    3]) && str_contains(strtolower($item->caliber), '32'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2, 3]) && str_contains(strtolower($item->caliber), '12ga'))->count() }}
+                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2,
+                    3]) && str_contains(strtolower($item->caliber), '12ga'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2, 3]) && str_contains(strtolower($item->caliber), '22'))->count() }}
+                    {{ $noOfFirearms->where('location_id', 20198)->filter(fn($item) => in_array($item->status, [1, 2,
+                    3]) && str_contains(strtolower($item->caliber), '22'))->count() }}
                 </td>
 
                 {{-- TOTAL SHORT --}}
                 <td>
                     {{ $noOfFirearms->where('location_id', 20198)->filter(function ($item) {
-                            $caliber = strtolower($item->caliber);
-                    
-                            return in_array($item->status, [1, 2, 3]) &&
-                                (str_contains($caliber, '9mm') ||
-                                    str_contains($caliber, '38') ||
-                                    str_contains($caliber, '380') ||
-                                    str_contains($caliber, '32') ||
-                                    str_contains($caliber, '12ga') ||
-                                    str_contains($caliber, '22'));
-                        })->count() }}
+                    $caliber = strtolower($item->caliber);
+
+                    return in_array($item->status, [1, 2, 3]) &&
+                    (str_contains($caliber, '9mm') ||
+                    str_contains($caliber, '38') ||
+                    str_contains($caliber, '380') ||
+                    str_contains($caliber, '32') ||
+                    str_contains($caliber, '12ga') ||
+                    str_contains($caliber, '22'));
+                    })->count() }}
                 </td>
             </tr>
             <tr>
@@ -548,82 +578,94 @@
                 <td><strong>GRAND TOTAL</strong></td>
                 {{-- LONG FIREARMS --}}
                 <td>
-                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '45'))->count() }}
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) &&
+                    str_contains(strtolower($item->caliber), '45'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), 'm16'))->count() }}
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) &&
+                    str_contains(strtolower($item->caliber), 'm16'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '357'))->count() }}
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) &&
+                    str_contains(strtolower($item->caliber), '357'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), 'ak47'))->count() }}
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) &&
+                    str_contains(strtolower($item->caliber), 'ak47'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '44'))->count() }}
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) &&
+                    str_contains(strtolower($item->caliber), '44'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), 'ect'))->count() }}
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) &&
+                    str_contains(strtolower($item->caliber), 'ect'))->count() }}
                 </td>
 
                 {{-- TOTAL LONG --}}
                 <td>
                     {{ $noOfFirearms->filter(function ($item) {
-                            $caliber = strtolower($item->caliber);
-                    
-                            return in_array($item->status, [1, 2, 3, 8]) &&
-                                (str_contains($caliber, '45') ||
-                                    str_contains($caliber, 'm16') ||
-                                    str_contains($caliber, '357') ||
-                                    str_contains($caliber, 'ak47') ||
-                                    str_contains($caliber, '44') ||
-                                    str_contains($caliber, 'ect'));
-                        })->count() }}
+                    $caliber = strtolower($item->caliber);
+
+                    return in_array($item->status, [1, 2, 3, 8]) &&
+                    (str_contains($caliber, '45') ||
+                    str_contains($caliber, 'm16') ||
+                    str_contains($caliber, '357') ||
+                    str_contains($caliber, 'ak47') ||
+                    str_contains($caliber, '44') ||
+                    str_contains($caliber, 'ect'));
+                    })->count() }}
                 </td>
 
                 {{-- SHORT FIREARMS --}}
                 <td>
-                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '9mm'))->count() }}
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) &&
+                    str_contains(strtolower($item->caliber), '9mm'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '38'))->count() }}
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) &&
+                    str_contains(strtolower($item->caliber), '38'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '380'))->count() }}
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) &&
+                    str_contains(strtolower($item->caliber), '380'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '32'))->count() }}
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) &&
+                    str_contains(strtolower($item->caliber), '32'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '12ga'))->count() }}
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) &&
+                    str_contains(strtolower($item->caliber), '12ga'))->count() }}
                 </td>
 
                 <td>
-                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) && str_contains(strtolower($item->caliber), '22'))->count() }}
+                    {{ $noOfFirearms->filter(fn($item) => in_array($item->status, [1, 2, 3, 8]) &&
+                    str_contains(strtolower($item->caliber), '22'))->count() }}
                 </td>
 
                 {{-- TOTAL SHORT --}}
                 <td>
                     {{ $noOfFirearms->filter(function ($item) {
-                            $caliber = strtolower($item->caliber);
-                    
-                            return in_array($item->status, [1, 2, 3, 8]) &&
-                                (str_contains($caliber, '9mm') ||
-                                    str_contains($caliber, '38') ||
-                                    str_contains($caliber, '380') ||
-                                    str_contains($caliber, '32') ||
-                                    str_contains($caliber, '12ga') ||
-                                    str_contains($caliber, '22'));
-                        })->count() }}
+                    $caliber = strtolower($item->caliber);
+
+                    return in_array($item->status, [1, 2, 3, 8]) &&
+                    (str_contains($caliber, '9mm') ||
+                    str_contains($caliber, '38') ||
+                    str_contains($caliber, '380') ||
+                    str_contains($caliber, '32') ||
+                    str_contains($caliber, '12ga') ||
+                    str_contains($caliber, '22'));
+                    })->count() }}
                 </td>
         </tbody>
     </table>
@@ -674,94 +716,94 @@
                 @php $seq = 1; @endphp
                 @forelse ($employees as $locId => $empGroup)
 
-                    @php
-                        // total rows for this location
-                        $locationRowspan = $empGroup->flatten()->count();
-                        $locationFirst = true;
-                    @endphp
+                @php
+                // total rows for this location
+                $locationRowspan = $empGroup->flatten()->count();
+                $locationFirst = true;
+                @endphp
 
-                    @foreach ($empGroup as $empId => $empRows)
-                        @php
-                            $empRowspan = $empRows->count();
-                        @endphp
+                @foreach ($empGroup as $empId => $empRows)
+                @php
+                $empRowspan = $empRows->count();
+                @endphp
 
-                        @foreach ($empRows as $index => $employee)
-                            <tr>
+                @foreach ($empRows as $index => $employee)
+                <tr>
 
-                                {{-- LOCATION (only once) --}}
-                                {{-- @if ($locationFirst)
-                                    <td rowspan="{{ $locationRowspan }}">
-                                        {{ $employee->location_name ?? 'N/A' }}<br>
-                                        {{ $employee->location_address ?? '' }}
-                                    </td>
-                                    @php $locationFirst = false; @endphp
-                                @endif --}}
-                                {{-- CLIENT (repeat per EMPLOYEE, not per LOCATION) --}}
-                                @if ($index == 0)
-                                    <td rowspan="{{ $empRowspan }}">
-                                        {{ $employee->location_name ?? 'N/A' }}<br>
-                                        {{ $employee->location_address ?? '' }}
-                                    </td>
-                                @endif
+                    {{-- LOCATION (only once) --}}
+                    {{-- @if ($locationFirst)
+                    <td rowspan="{{ $locationRowspan }}">
+                        {{ $employee->location_name ?? 'N/A' }}<br>
+                        {{ $employee->location_address ?? '' }}
+                    </td>
+                    @php $locationFirst = false; @endphp
+                    @endif --}}
+                    {{-- CLIENT (repeat per EMPLOYEE, not per LOCATION) --}}
+                    @if ($index == 0)
+                    <td rowspan="{{ $empRowspan }}">
+                        {{ $employee->location_name ?? 'N/A' }}<br>
+                        {{ $employee->location_address ?? '' }}
+                    </td>
+                    @endif
 
-                                {{-- EMPLOYEE DETAILS (only once per employee) --}}
-                                @if ($index == 0)
-                                    <td rowspan="{{ $empRowspan }}">{{ $seq++ }}</td>
+                    {{-- EMPLOYEE DETAILS (only once per employee) --}}
+                    @if ($index == 0)
+                    <td rowspan="{{ $empRowspan }}">{{ $seq++ }}</td>
 
-                                    <td rowspan="{{ $empRowspan }}">
-                                        {{ Str::upper($employee->last_name) }},
-                                        {{ Str::upper($employee->first_name) }}
-                                        {{ Str::upper($employee->middle_name) }}
-                                    </td>
+                    <td rowspan="{{ $empRowspan }}">
+                        {{ Str::upper($employee->last_name) }},
+                        {{ Str::upper($employee->first_name) }}
+                        {{ Str::upper($employee->middle_name) }}
+                    </td>
 
-                                    <td rowspan="{{ $empRowspan }}">
-                                        {{ $employee->gender == 1 ? 'M' : 'F' }}
-                                    </td>
+                    <td rowspan="{{ $empRowspan }}">
+                        {{ $employee->gender == 1 ? 'M' : 'F' }}
+                    </td>
 
-                                    <td rowspan="{{ $empRowspan }}">
-                                        {{ Str::upper($employee->highest_education) }}
-                                    </td>
+                    <td rowspan="{{ $empRowspan }}">
+                        {{ Str::upper($employee->highest_education) }}
+                    </td>
 
-                                    <td rowspan="{{ $empRowspan }}">
-                                        {{ $employee->license_no ?? '' }}
-                                    </td>
+                    <td rowspan="{{ $empRowspan }}">
+                        {{ $employee->license_no ?? '' }}
+                    </td>
 
-                                    <td rowspan="{{ $empRowspan }}">
-                                        {{ $employee->license_expiry ? Carbon::parse($employee->license_expiry)->format('m/d/Y') : '' }}
-                                    </td>
+                    <td rowspan="{{ $empRowspan }}">
+                        {{ $employee->license_expiry ? Carbon::parse($employee->license_expiry)->format('m/d/Y') : '' }}
+                    </td>
 
-                                    <td rowspan="{{ $empRowspan }}">
-                                        {{ $employee->sss_no ?? '' }}
-                                    </td>
-                                @endif
+                    <td rowspan="{{ $empRowspan }}">
+                        {{ $employee->sss_no ?? '' }}
+                    </td>
+                    @endif
 
-                                {{-- ASSET / FIREARM (ALWAYS REPEATED) --}}
-                                <td>{{ $employee->asset_kind ?? '' }}</td>
-                                <td>{{ $employee->asset_make ?? '' }}</td>
-                                <td>{{ $employee->asset_serial ?? '' }}</td>
+                    {{-- ASSET / FIREARM (ALWAYS REPEATED) --}}
+                    <td>{{ $employee->asset_kind ?? '' }}</td>
+                    <td>{{ $employee->asset_make ?? '' }}</td>
+                    <td>{{ $employee->asset_serial ?? '' }}</td>
 
-                                {{-- INSURANCE --}}
-                                @if ($index == 0)
-                                    <td rowspan="{{ $empRowspan }}">{{ $employee->policy_no ?? '' }}</td>
-                                    <td rowspan="{{ $empRowspan }}" style="text-align:right">
-                                        {{ $employee->policy_amount ?? '' }}</td>
-                                @endif
+                    {{-- INSURANCE --}}
+                    @if ($index == 0)
+                    <td rowspan="{{ $empRowspan }}">{{ $employee->policy_no ?? '' }}</td>
+                    <td rowspan="{{ $empRowspan }}" style="text-align:right">
+                        {{ $employee->policy_amount ?? '' }}</td>
+                    @endif
 
-                                {{-- SSS --}}
-                                @if ($index == 0)
-                                    <td rowspan="{{ $empRowspan }}" style="text-align:right">
-                                        {{ number_format($employee->sss_rate, 2) }}
-                                    </td>
-                                @endif
+                    {{-- SSS --}}
+                    @if ($index == 0)
+                    <td rowspan="{{ $empRowspan }}" style="text-align:right">
+                        {{ number_format($employee->sss_rate, 2) }}
+                    </td>
+                    @endif
 
-                            </tr>
-                        @endforeach
-                    @endforeach
+                </tr>
+                @endforeach
+                @endforeach
 
                 @empty
-                    <tr>
-                        <td colspan="14" style="text-align:center;">No employees found.</td>
-                    </tr>
+                <tr>
+                    <td colspan="14" style="text-align:center;">No employees found.</td>
+                </tr>
                 @endforelse
             </tbody>
         </table>
@@ -788,19 +830,19 @@
             </thead>
             <tbody>
                 @forelse ($gains as $index => $gain)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ Str::upper($gain->last_name) }}, {{ Str::upper($gain->first_name) }}
-                            {{ Str::upper($gain->middle_name) }}</td>
-                        <td>{{ $gain->location_name ?? '' }}</td>
-                        <td>{{ Carbon::parse($gain->hire_date)->format('m/d/Y') }}</td>
-                        <td>{{ $gain->previous_employer ?? '' }}</td>
-                        <td></td>
-                    </tr>
+                <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ Str::upper($gain->last_name) }}, {{ Str::upper($gain->first_name) }}
+                        {{ Str::upper($gain->middle_name) }}</td>
+                    <td>{{ $gain->location_name ?? '' }}</td>
+                    <td>{{ Carbon::parse($gain->hire_date)->format('m/d/Y') }}</td>
+                    <td>{{ $gain->previous_employer ?? '' }}</td>
+                    <td></td>
+                </tr>
                 @empty
-                    <tr>
-                        <td colspan="6" style="text-align:center;">No new employees for this period.</td>
-                    </tr>
+                <tr>
+                    <td colspan="6" style="text-align:center;">No new employees for this period.</td>
+                </tr>
                 @endforelse
             </tbody>
         </table>
@@ -818,29 +860,29 @@
             </thead>
             <tbody>
                 @forelse ($losses as $index => $loss)
-                    @php
-                        $statuses = [
-                            0 => 'Inactive',
-                            1 => 'Active',
-                            2 => 'On Leave',
-                            3 => 'Resigned',
-                            4 => 'Retired',
-                            5 => 'Terminated',
-                        ];
-                    @endphp
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ Str::upper($loss->last_name) }}, {{ Str::upper($loss->first_name) }}
-                            {{ Str::upper($loss->middle_name) }}</td>
-                        <td>{{ $loss->location_name ?? '' }}</td>
-                        <td>{{ Carbon::parse($loss->termination_date)->format('m/d/Y') }}</td>
-                        <td>{{ $statuses[$loss->status] ?? '' }}</td>
-                    </tr>
+                @php
+                $statuses = [
+                0 => 'Inactive',
+                1 => 'Active',
+                2 => 'On Leave',
+                3 => 'Resigned',
+                4 => 'Retired',
+                5 => 'Terminated',
+                ];
+                @endphp
+                <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ Str::upper($loss->last_name) }}, {{ Str::upper($loss->first_name) }}
+                        {{ Str::upper($loss->middle_name) }}</td>
+                    <td>{{ $loss->location_name ?? '' }}</td>
+                    <td>{{ Carbon::parse($loss->termination_date)->format('m/d/Y') }}</td>
+                    <td>{{ $statuses[$loss->status] ?? '' }}</td>
+                </tr>
                 @empty
-                    <tr>
-                        <td colspan="5" style="text-align:center;">No resigned/ terminated employees for this period.
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan="5" style="text-align:center;">No resigned/ terminated employees for this period.
+                    </td>
+                </tr>
                 @endforelse
             </tbody>
         </table>
@@ -848,7 +890,7 @@
 
     <br>
     <br>
-    <p style ="font-size: 10px;">
+    <p style="font-size: 10px;">
         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; I HEREBY CERTIFY the correctness of
         the disposition report for the month of
         {{ $dateRangeLabels == 'custom' ? Carbon::parse($pFromDate)->format('F Y') : $dateRangeLabels }}.
@@ -873,12 +915,12 @@
 
     <br>
     <br>
-    <p style ="font-size: 10px;">
+    <p style="font-size: 10px;">
         SUBSCRIBED AND SWORN to before me this ____ day of ____________, 20___, affiant exhibiting to me his/her
         ___________ with No. __________________ issued on ______________ at __________________.
     </p>
     <br>
-    <p style ="font-size: 10px;">
+    <p style="font-size: 10px;">
         (NOTARY PUBLIC) <br><br>
         Doc. No. ______; <br>
         Page No. ______; <br>

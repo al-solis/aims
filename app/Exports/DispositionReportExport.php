@@ -32,7 +32,7 @@ class DispositionReportExport implements FromView, ShouldAutoSize, WithTitle, Wi
 
         $right = new Drawing();
         $right->setName('Logo Right');
-        $right->setPath(public_path('images/logo.PNG'));
+        $right->setPath(public_path('images/logo.png'));
         $right->setHeight(70);
         $right->setCoordinates('N1');
         $right->setOffsetX(10);

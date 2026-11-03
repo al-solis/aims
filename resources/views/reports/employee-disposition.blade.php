@@ -170,7 +170,7 @@
                     <div class="sub-title">{{ env('APP_COMPANY_CONTACT') }}</div>
                 </td>
                 <td width="7%" style="border:0; padding-right:80px; text-align:right;">
-                    <img src="{{ public_path('images/logo.PNG') }}" style="width:80px;">
+                    <img src="{{ public_path('images/logo.png') }}" style="width:80px;">
                 </td>
             </tr>
         </table>

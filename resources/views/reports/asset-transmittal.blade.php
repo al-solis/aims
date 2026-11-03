@@ -137,7 +137,7 @@
         <table width="100%" style="border:0;">
             <tr>
                 <td width="12%" style="border:0;">
-                    <img src="{{ public_path('images/logo.PNG') }}" style="width:70px;">
+                    <img src="{{ public_path('images/logo.png') }}" style="width:70px;">
                 </td>
                 <td width="88%" style="border:0; text-align:center;">
                     <div class="title">
