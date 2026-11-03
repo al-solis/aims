@@ -48,7 +48,7 @@ class IssuanceController extends Controller
 
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('transaction_number', 'like', '%' . $search . '%')
+                $q->where('issuance_number', 'like', '%' . $search . '%')
                     ->orWhere('purpose', 'like', '%' . $search . '%')
                     ->orWhere('remarks', 'like', '%' . $search . '%');
             });

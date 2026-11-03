@@ -152,7 +152,7 @@
                                 <th scope="col" class="w-[80px]">Expected Date</th>
                                 <th scope="col" class="w-[100px]">Status</th>
                                 <th scope="col" class="w-[120px]">Approver</th>
-                                <th scope="col" class="w-[220px]">Current Approver</th>
+                                <th scope="col" class="w-[22    0px]">Current Approver</th>
                                 <th scope="col" class="text-right w-[60px]">Assets</th>
                                 <th scope="col" class="text-right w-[180px]">Value</th>
                                 <th scope="col" class="text-center w-[50px]">Actions</th>
