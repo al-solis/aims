@@ -144,28 +144,23 @@ class ReportController extends Controller
             $queryDDO = DB::table('ddo_headers as a')
                 ->join('ddo_details as b', 'a.id', '=', 'b.ddo_header_id')
                 ->join('employees as c', 'b.employee_id', '=', 'c.id')
-
                 ->leftJoinSub($latestIds, 'x', function ($join) {
                     $join->on('c.id', '=', 'x.employee_id');
                 })
-
                 ->leftJoin('employee_ids as d', function ($join) {
                     $join->on('c.id', '=', 'd.employee_id')
                         ->on('d.expiry_date', '=', 'x.max_expiry_date')
                         ->where('d.id_type_id', 8);
                 })
-
                 ->where('a.location_id', $request->location)
-
                 ->select(
                     'c.last_name',
                     'c.first_name',
                     'c.middle_name',
                     'c.mobile',
                     'd.id_number',
-                    DB::raw("FORMAT(d.expiry_date, 'MMMM d, yyyy') as license_expiry")
+                    'd.expiry_date'
                 )
-
                 ->groupBy(
                     'c.last_name',
                     'c.first_name',
@@ -174,48 +169,45 @@ class ReportController extends Controller
                     'd.id_number',
                     'd.expiry_date'
                 );
+
             if ($queryDDO->exists()) {
                 $employeeLists = $queryDDO
-                    ->orderByRaw('LTRIM(RTRIM(last_name))')
-                    ->orderByRaw('LTRIM(RTRIM(first_name))')
-                    ->orderByRaw('LTRIM(RTRIM(middle_name))')
+                    ->orderByRaw('TRIM(c.last_name)')
+                    ->orderByRaw('TRIM(c.first_name)')
+                    ->orderByRaw('TRIM(c.middle_name)')
                     ->get();
             } else {
-                $latestIds = DB::table('employee_ids')
-                    ->select(
-                        'employee_id',
-                        DB::raw('MAX(expiry_date) as max_expiry_date')
-                    )
-                    ->where('id_type_id', 8)
-                    ->groupBy('employee_id');
-
                 $employeeLists = Employee::from('employees as c')
                     ->leftJoinSub($latestIds, 'x', function ($join) {
                         $join->on('c.id', '=', 'x.employee_id');
                     })
-
                     ->leftJoin('employee_ids as d', function ($join) {
                         $join->on('c.id', '=', 'd.employee_id')
                             ->on('d.expiry_date', '=', 'x.max_expiry_date')
                             ->where('d.id_type_id', 8);
                     })
-
                     ->where('c.location_id', $request->location)
-
                     ->select(
                         'c.last_name',
                         'c.first_name',
                         'c.middle_name',
                         'c.mobile',
                         'd.id_number',
-                        DB::raw("FORMAT(d.expiry_date, 'MMMM d, yyyy') as license_expiry")
+                        'd.expiry_date'
                     )
-
-                    ->orderByRaw('LTRIM(RTRIM(c.last_name))')
-                    ->orderByRaw('LTRIM(RTRIM(c.first_name))')
-                    ->orderByRaw('LTRIM(RTRIM(c.middle_name))')
+                    ->orderByRaw('TRIM(c.last_name)')
+                    ->orderByRaw('TRIM(c.first_name)')
+                    ->orderByRaw('TRIM(c.middle_name)')
                     ->get();
             }
+
+            // Format the date in PHP (database-agnostic)
+            $employeeLists = $employeeLists->map(function ($row) {
+                $row->license_expiry = $row->expiry_date
+                    ? Carbon::parse($row->expiry_date)->format('F j, Y')
+                    : null;
+                return $row;
+            });
         }
 
         if ($request->filled('category')) {
