@@ -294,30 +294,48 @@ class ReportController extends Controller
             '1' => 'employee',
             '2' => 'employee-disposition',
             '3' => 'employee-lesp-expiry',
-            '4' => 'employee-summary'
+            '4' => 'employee-summary',
+            '5' => 'employee-milestone'
         };
 
         $pDateRange = $request->date_range ?? 'this_month';
         $pFromDate = $request->from_date ?? '';
         $pToDate = $request->to_date ?? '';
-        $pStatus = $request->status ?? 1;
+        $pStatus = $reportType == '5'
+            ? $request->input('milestone')
+            : ($request->status ?? 1);
         $pLocation = $request->location ? Location::where('id', $request->location)->first() : null;
         $pLocationName = $pLocation ? $pLocation->name : 'All Locations';
 
-        $statusLabels = [
-            0 => 'Inactive',
-            1 => 'Active',
-            2 => 'On Leave',
-            3 => 'Resigned',
-            4 => 'Retired',
-            5 => 'Terminated',
-            6 => 'AWOL',
-            7 => 'Deceased',
-            8 => 'Dropped',
-            9 => 'Labor',
-            10 => 'Floating',
-            11 => 'Rehired',
-        ];
+        if ($reportType == '5') {
+            $statusLabels = [
+                1 => '5 Years',
+                2 => '10 Years',
+                3 => '15 Years',
+                4 => '20 Years',
+                5 => '25 Years',
+                6 => '30 Years',
+                7 => '35 Years',
+                8 => '40 Years',
+                9 => '45 Years',
+                10 => '50 Years'
+            ];
+        } else {
+            $statusLabels = [
+                0 => 'Inactive',
+                1 => 'Active',
+                2 => 'On Leave',
+                3 => 'Resigned',
+                4 => 'Retired',
+                5 => 'Terminated',
+                6 => 'AWOL',
+                7 => 'Deceased',
+                8 => 'Dropped',
+                9 => 'Labor',
+                10 => 'Floating',
+                11 => 'Rehired',
+            ];
+        }
 
         $dateRangeLabels = [
             'this_month' => Carbon::now()->format('F Y'),
@@ -327,7 +345,11 @@ class ReportController extends Controller
             'custom' => 'custom',
         ];
 
-        $statusLabel = $statusLabels[$pStatus] ?? 'All Statuses';
+        if ($reportType == '5') {
+            $statusLabel = $statusLabels[$pStatus] ?? 'All Milestones';
+        } else {
+            $statusLabel = $statusLabels[$pStatus] ?? 'All Statuses';
+        }
 
         //dd($query->toSql());
         if ($reportType == '1') {
@@ -508,71 +530,6 @@ class ReportController extends Controller
                 ->get()
                 ->groupBy('location_id')
                 ->map(fn($locGroup) => $locGroup->groupBy('employee_id'));
-
-            // $query = DB::table('employees as e')
-            //     ->join('locations as l', 'e.location_id', '=', 'l.id')
-            //     ->whereNotIn('l.id', mdr_exc_loc::pluck('location_id'))
-            //     ->leftJoin('assets as a', function ($join) {
-            //         $join->on('a.assigned_to', '=', 'e.id')
-            //             ->where('a.category_id', 1); // firearms only
-            //     })
-            //     ->leftJoin('employee_ids as ids', function ($join) {
-            //         $join->on('e.id', '=', 'ids.employee_id')
-            //             ->where('ids.id_type_id', 8); // LESP ID
-            //     })
-            //     ->leftJoin('employee_ids as ids2', function ($join) {
-            //         $join->on('e.id', '=', 'ids2.employee_id')
-            //             ->where('ids2.id_type_id', 1); // SSS Id
-            //     })
-            //     ->where('e.status', 1) // Only active employees                
-            //     ->select(
-            //         'l.name as location_name',
-            //         'l.address as location_address',
-            //         'ids.id_number as license_no',
-            //         'ids.expiry_date as license_expiry',
-            //         'ids2.id_number as sss_no',
-            //         'e.id as employee_id',
-            //         'e.first_name',
-            //         'e.middle_name',
-            //         'e.last_name',
-            //         'e.gender',
-            //         'e.highest_education',
-            //         'e.position',
-            //         'e.sss_rate',
-            //         'a.manufacturer as asset_kind',
-            //         'a.model as asset_make',
-            //         'a.serial as asset_serial',
-            //         DB::raw("TO_CHAR(MAX(ids.expiry_date), 'FMMonth FMDD, YYYY') as id_expiration")
-            //     );
-
-            // if ($request->filled('location')) {
-            //     $query->where('e.location_id', $request->location);
-            // }
-
-            // $employees = $query
-            //     ->groupBy(
-            //         'l.name',
-            //         'l.address',
-            //         'ids.id_number',
-            //         'ids.expiry_date',
-            //         'ids2.id_number',
-            //         'e.id',
-            //         'e.first_name',
-            //         'e.middle_name',
-            //         'e.last_name',
-            //         'e.gender',
-            //         'e.highest_education',
-            //         'e.position',
-            //         'e.sss_rate',
-            //         'a.manufacturer',
-            //         'a.model',
-            //         'a.serial'
-            //     )
-            //     ->get()
-            //     ->groupBy('location_name') // FIX: use location_name, not location_id
-            //     ->map(function ($locGroup) {
-            //         return $locGroup->groupBy('employee_id');
-            //     });
 
             $sortField = $request->get('sort', 'hire_date');
             $sortDirection = $request->get('direction', 'desc');
@@ -919,6 +876,65 @@ class ReportController extends Controller
                     'chroot' => public_path(),
                 ]);
 
+        } elseif ($reportType == '5') {
+            $today = Carbon::today();
+
+            // Active employees with at least 5 years of service
+            $query = Employee::query()
+                ->with('location')
+                ->where('status', 1)
+                ->whereNotNull('hire_date')
+                ->whereDate('hire_date', '<=', $today->copy()->subYearsNoOverflow(5));
+
+            // Specific milestone: N years or more, but less than N+5 (50 Years = open-ended)
+            if ($request->filled('milestone')) {
+                $years = (int) $request->milestone * 5;
+
+                $query->whereDate('hire_date', '<=', $today->copy()->subYearsNoOverflow($years));
+
+                if ($years < 50) {
+                    $query->whereDate('hire_date', '>', $today->copy()->subYearsNoOverflow($years + 5));
+                }
+            }
+
+            if ($request->filled('location')) {
+                $query->where('location_id', $request->location);
+            }
+
+            $employees = $query->orderBy('hire_date')->get()
+                ->each(function ($emp) use ($today) {
+                    $yrs = Carbon::parse($emp->hire_date)->diffInYears($today, true);
+                    $emp->years_of_service = (int) floor($yrs);
+                    $emp->milestone = min(intdiv($emp->years_of_service, 5) * 5, 50);
+                });
+
+            $employees = $employees->sortBy([
+                ['milestone', 'desc'],
+                [fn($e) => mb_strtolower($e->last_name), 'asc'],
+                [fn($e) => mb_strtolower($e->first_name), 'asc'],
+            ])->values();
+
+            // [5 => [...], 10 => [...], ...]
+            $groups = $employees->groupBy('milestone')->sortKeysDesc();
+
+            $pdf = Pdf::loadView(
+                'reports.' . $reportFile,
+                compact(
+                    'employees',
+                    'groups',
+                    'pFromDate',
+                    'pToDate',
+                    'pLocationName',
+                    'statusLabel'
+                )
+            )->setPaper('letter', 'portrait')
+                ->setOptions([
+                    'defaultFont' => 'sans-serif',
+                    'isPhpEnabled' => true,
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => true,
+                    'chroot' => public_path(),
+                ]);
         } else {
             abort(400, 'Invalid report type');
         }

@@ -10,22 +10,22 @@
         $reportMap = config('report_keys', []);
 
         // Reports sub-modules (code NOT ending in "-01") the user's role can view, and that have a report mapped.
-$reportCards = Auth::user()
-    ->accessibleSubModules($moduleCode, main: false)
-    ->get()
-    ->filter(fn($sm) => isset($reportMap[$sm->code]))
-    ->values();
+        $reportCards = Auth::user()
+            ->accessibleSubModules($moduleCode, main: false)
+            ->get()
+            ->filter(fn($sm) => isset($reportMap[$sm->code]))
+            ->values();
 
-$allowedReports = $reportCards->map(fn($sm) => $reportMap[$sm->code]['key'])->all();
+        $allowedReports = $reportCards->map(fn($sm) => $reportMap[$sm->code]['key'])->all();
 
-$palette = [
-    ['bg' => 'bg-blue-100 dark:bg-blue-900', 'text' => 'text-blue-600 dark:text-blue-300'],
-    ['bg' => 'bg-green-100 dark:bg-green-900', 'text' => 'text-green-600 dark:text-green-300'],
-    ['bg' => 'bg-yellow-100 dark:bg-yellow-900', 'text' => 'text-yellow-600 dark:text-yellow-300'],
-    ['bg' => 'bg-orange-100 dark:bg-orange-900', 'text' => 'text-orange-600 dark:text-orange-300'],
-    ['bg' => 'bg-purple-100 dark:bg-purple-900', 'text' => 'text-purple-600 dark:text-purple-300'],
-    ['bg' => 'bg-indigo-100 dark:bg-indigo-900', 'text' => 'text-indigo-600 dark:text-indigo-300'],
-    ['bg' => 'bg-red-100 dark:bg-red-900', 'text' => 'text-red-600 dark:text-red-300'],
+        $palette = [
+            ['bg' => 'bg-blue-100 dark:bg-blue-900', 'text' => 'text-blue-600 dark:text-blue-300'],
+            ['bg' => 'bg-green-100 dark:bg-green-900', 'text' => 'text-green-600 dark:text-green-300'],
+            ['bg' => 'bg-yellow-100 dark:bg-yellow-900', 'text' => 'text-yellow-600 dark:text-yellow-300'],
+            ['bg' => 'bg-orange-100 dark:bg-orange-900', 'text' => 'text-orange-600 dark:text-orange-300'],
+            ['bg' => 'bg-purple-100 dark:bg-purple-900', 'text' => 'text-purple-600 dark:text-purple-300'],
+            ['bg' => 'bg-indigo-100 dark:bg-indigo-900', 'text' => 'text-indigo-600 dark:text-indigo-300'],
+            ['bg' => 'bg-red-100 dark:bg-red-900', 'text' => 'text-red-600 dark:text-red-300'],
         ];
     @endphp
 
@@ -507,6 +507,7 @@ $palette = [
                         <option value="2">Monthly Disposition Report</option>
                         <option value="3">Expiring LESP</option>
                         <option value="4">Summary Report</option>
+                        <option value="5">Employee Years of Service Report</option>
                     </select>
                 </div>
                 <div class="sm:col-span-1">
@@ -518,11 +519,11 @@ $palette = [
                         <option value="this_year">This Year</option>
                         <option value="custom">Custom Range</option>
                     </select>
-                </div>
-                
+                </div>                
+
                 <div class="sm:col-span-1">
-                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Status</label>
-                    <select name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                    <label id="statusLabel" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Status</label>
+                    <select id="statusSelect" name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
                         <option value="">All Statuses</option>
                         <option value="0">Inactive</option>
                         <option value="1">Active</option>
@@ -537,7 +538,7 @@ $palette = [
                         <option value="10">Floating</option>
                         <option value="11">Rehired</option>
                     </select>
-                </div>
+                </div>                
 
                 <div class="sm:col-span-2">
                     <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Location/ Department</label>
@@ -1000,6 +1001,59 @@ $palette = [
 
         // Modal functions
         const allowedReports = @json($allowedReports);
+
+        const employeeStatusOptions = `
+        <option value="">All Statuses</option>
+        <option value="0">Inactive</option>
+        <option value="1">Active</option>
+        <option value="2">On Leave</option>
+        <option value="3">Resigned</option>
+        <option value="4">Retired</option>
+        <option value="5">Terminated</option>
+        <option value="6">AWOL</option>
+        <option value="7">Deceased</option>
+        <option value="8">Dropped</option>
+        <option value="9">Labor</option>
+        <option value="10">Floating</option>
+        <option value="11">Rehired</option>
+    `;
+
+        const employeeMilestoneOptions = `
+        <option value="">All Milestone</option>
+        <option value="1">5 Years</option>
+        <option value="2">10 Years</option>
+        <option value="3">15 Years</option>
+        <option value="4">20 Years</option>
+        <option value="5">25 Years</option>
+        <option value="6">30 Years</option>
+        <option value="7">35 Years</option>
+        <option value="8">40 Years</option>
+        <option value="9">45 Years</option>
+        <option value="10">50 Years</option>
+    `;
+
+        function toggleEmployeeStatusField(reportTypeSelect) {
+            const form = reportTypeSelect.closest('form');
+            const statusSelect = form.querySelector('#statusSelect');
+            const statusLabel = form.querySelector('#statusLabel');
+            if (!statusSelect || !statusLabel) return;
+
+            if (reportTypeSelect.value === '5') {
+                statusLabel.textContent = 'Milestone';
+                statusSelect.name = 'milestone';
+                statusSelect.innerHTML = employeeMilestoneOptions;
+            } else {
+                statusLabel.textContent = 'Status';
+                statusSelect.name = 'status';
+                statusSelect.innerHTML = employeeStatusOptions;
+            }
+        }
+
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('#reportForm select[name="report_type"]')) {
+                toggleEmployeeStatusField(e.target);
+            }
+        });
 
         function openReportModal(reportType) {
             if (!allowedReports.includes(reportType)) return;
