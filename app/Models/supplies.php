@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\SuppliesCategory;
-use App\Models\Uom;
+use App\Models\uom;
 use App\Models\supplier;
 
 class supplies extends Model
@@ -36,7 +36,7 @@ class supplies extends Model
 
     public function uom()
     {
-        return $this->belongsTo(Uom::class, 'uom_id');
+        return $this->belongsTo(uom::class, 'uom_id');
     }
 
     public function supplier()
