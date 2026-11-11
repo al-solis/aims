@@ -7,7 +7,7 @@ use App\Models\transfer;
 use App\Models\asset;
 use App\Models\employee;
 use App\Models\location;
-use App\models\sublocation;
+use App\Models\sublocation;
 class transfer_detail extends Model
 {
     protected $table = 'transfer_details';
