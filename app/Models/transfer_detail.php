@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\transfer;
+use App\Models\asset;
+use App\Models\employee;
+use App\Models\location;
+use App\models\sublocation;
 class transfer_detail extends Model
 {
     protected $table = 'transfer_details';
@@ -25,36 +29,36 @@ class transfer_detail extends Model
     }
     public function asset()
     {
-        return $this->belongsTo(Asset::class, 'asset_id');
+        return $this->belongsTo(asset::class, 'asset_id');
     }
 
     public function fromEmployee()
     {
-        return $this->belongsTo(Employee::class, 'from_employee_id');
+        return $this->belongsTo(employee::class, 'from_employee_id');
     }
 
     public function toEmployee()
     {
-        return $this->belongsTo(Employee::class, 'to_employee_id');
+        return $this->belongsTo(employee::class, 'to_employee_id');
     }
 
     public function fromLocation()
     {
-        return $this->belongsTo(Location::class, 'from_location_id');
+        return $this->belongsTo(location::class, 'from_location_id');
     }
 
     public function toLocation()
     {
-        return $this->belongsTo(Location::class, 'to_location_id');
+        return $this->belongsTo(location::class, 'to_location_id');
     }
 
     public function fromSublocation()
     {
-        return $this->belongsTo(Sublocation::class, 'from_subloc_id');
+        return $this->belongsTo(sublocation::class, 'from_subloc_id');
     }
 
     public function toSublocation()
     {
-        return $this->belongsTo(Sublocation::class, 'to_subloc_id');
+        return $this->belongsTo(sublocation::class, 'to_subloc_id');
     }
 }
