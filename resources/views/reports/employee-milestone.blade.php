@@ -134,11 +134,7 @@
             <p>No employees found.</p>
         @endforelse
     </div>
-
-
-
     <p style="text-align: center; font-size: 8px; color:#555"><i>***Nothing Follows***</i></p>
-
 </body>
 
 </html>

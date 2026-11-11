@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\asset;
 
 class Maintenance extends Model
 {
@@ -28,6 +29,6 @@ class Maintenance extends Model
     ];
     public function asset()
     {
-        return $this->belongsTo(Asset::class, 'asset_id');
+        return $this->belongsTo(asset::class, 'asset_id');
     }
 }
