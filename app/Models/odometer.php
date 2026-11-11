@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\asset;
+use App\Models\employee;
 
 class odometer extends Model
 {
@@ -21,11 +23,11 @@ class odometer extends Model
 
     public function asset()
     {
-        return $this->belongsTo(Asset::class);
+        return $this->belongsTo(asset::class);
     }
 
     public function employee()
     {
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(employee::class);
     }
 }

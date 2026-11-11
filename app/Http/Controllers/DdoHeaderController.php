@@ -86,6 +86,9 @@ class DdoHeaderController extends Controller
     public function create(Request $request, $id = null)
     {
         $this->authorizeDDOSetup('create');
+        $canCreate = Auth::user()->hasAccess(self::SET_DDO, 'create');
+        $canUpdate = Auth::user()->hasAccess(self::SET_DDO, 'update');
+        $canDelete = Auth::user()->hasAccess(self::SET_DDO, 'delete');
 
         $locations = DB::table('locations')
             ->where('status', 1)
@@ -104,7 +107,14 @@ class DdoHeaderController extends Controller
             ->where('id', $id)
             ->first();
 
-        return view('setup.ddo.create', compact('locations', 'employees', 'ddo'));
+        return view('setup.ddo.create', compact(
+            'locations',
+            'employees',
+            'ddo',
+            'canCreate',
+            'canUpdate',
+            'canDelete'
+        ));
     }
 
     public function store(Request $request)
