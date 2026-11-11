@@ -23,6 +23,6 @@ class SettingController extends Controller
             ]
         );
 
-        return redirect()->route('licenses.index')->with('success', 'Settings updated successfully.');
+        return redirect()->route('asset-licenses.index')->with('success', 'Settings updated successfully.');
     }
 }
